@@ -1,0 +1,7 @@
+Notion/
+.agents/
+imports/
+backups/
+artifacts/
+.env*
+.git/

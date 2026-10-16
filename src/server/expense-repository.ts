@@ -1,0 +1,163 @@
+import postgres from "postgres";
+import type {
+  ExpenseBook,
+  Jar,
+  MonthInput,
+  Spend,
+  ExpenseYear,
+  Label,
+  Audit,
+} from "../domain/expenses/types";
+import type {
+  ExpenseRepository,
+  ExpenseTransaction,
+  StoredCommand,
+} from "../application/expenses";
+
+type DB = Pick<postgres.Sql, "unsafe">;
+type Params = (string | number | boolean | null)[];
+const json = (value: unknown) => JSON.stringify(value);
+function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
+  const query = <T extends postgres.Row>(sql: string, params: Params = []) =>
+    db.unsafe<T[]>(sql, params);
+  return {
+    async read() {
+      const [header] = await query<{ start: string; version: number }>(
+        "select start_month as start, version from public.expense_books where owner_id=$1",
+        [owner],
+      );
+      if (!header) return null;
+      const jars = await query<Jar>(
+        "select id,kind,start_month as start,opening::text,rules from public.expense_jars where owner_id=$1 order by start_month,id",
+        [owner],
+      );
+      const inputs = await query<MonthInput>(
+        'select jar_id as "jarId",month,target::text,funding::text,extra::text,closing::text from public.expense_month_inputs where owner_id=$1',
+        [owner],
+      );
+      const spends = await query<Spend>(
+        "select id,jar_id as \"jarId\",to_char(date,'YYYY-MM-DD') as date,amount::text,note,deleted from public.expense_spends where owner_id=$1 order by date,id",
+        [owner],
+      );
+      const years = await query<ExpenseYear>(
+        'select year,case when closed_at is null then null else to_char(closed_at at time zone \'UTC\',\'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"\') end as "closedAt",snapshot from public.expense_years where owner_id=$1 order by year',
+        [owner],
+      );
+      const labels = await query<Label>(
+        "select id,kind,name from public.expense_labels where owner_id=$1 order by kind,name",
+        [owner],
+      );
+      const audit = await query<Audit>(
+        "select version,to_char(at at time zone 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as at,action,detail from public.expense_audit where owner_id=$1 order by version",
+        [owner],
+      );
+      return {
+        ...header,
+        jars: [...jars],
+        inputs: [...inputs],
+        spends: [...spends],
+        years: [...years],
+        labels: [...labels],
+        audit: [...audit],
+      } satisfies ExpenseBook;
+    },
+    async command(id) {
+      const [row] = await query<{
+        fingerprint: string;
+        result: StoredCommand["result"];
+      }>(
+        "select fingerprint,result from public.expense_commands where owner_id=$1 and id=$2",
+        [owner, id],
+      );
+      return row ?? null;
+    },
+    async save(book) {
+      await query(
+        `insert into public.expense_books(owner_id,start_month,version) values($1,$2,$3)
+        on conflict(owner_id) do update set version=excluded.version`,
+        [owner, book.start, book.version],
+      );
+      for (const jar of book.jars)
+        await query(
+          `insert into public.expense_jars(owner_id,id,kind,start_month,opening,rules) values($1,$2,$3,$4,$5,$6::text::jsonb)
+        on conflict(owner_id,id) do update set rules=excluded.rules where expense_jars.rules is distinct from excluded.rules`,
+          [owner, jar.id, jar.kind, jar.start, jar.opening, json(jar.rules)],
+        );
+      for (const i of book.inputs)
+        await query(
+          `insert into public.expense_month_inputs(owner_id,jar_id,month,target,funding,extra,closing) values($1,$2,$3,$4,$5,$6,$7)
+        on conflict(owner_id,jar_id,month) do update set target=excluded.target,funding=excluded.funding,extra=excluded.extra,closing=excluded.closing
+        where (expense_month_inputs.target,expense_month_inputs.funding,expense_month_inputs.extra,expense_month_inputs.closing) is distinct from (excluded.target,excluded.funding,excluded.extra,excluded.closing)`,
+          [owner, i.jarId, i.month, i.target, i.funding, i.extra, i.closing],
+        );
+      for (const s of book.spends)
+        await query(
+          `insert into public.expense_spends(owner_id,id,jar_id,date,amount,note,deleted) values($1,$2,$3,$4,$5,$6,$7)
+        on conflict(owner_id,id) do update set date=excluded.date,amount=excluded.amount,note=excluded.note,deleted=excluded.deleted
+        where (expense_spends.date,expense_spends.amount,expense_spends.note,expense_spends.deleted) is distinct from (excluded.date,excluded.amount,excluded.note,excluded.deleted)`,
+          [owner, s.id, s.jarId, s.date, s.amount, s.note, s.deleted],
+        );
+      // Insert or seal a year, but never UPDATE a sealed snapshot, even with equal data.
+      for (const y of book.years)
+        await query(
+          `insert into public.expense_years(owner_id,year,closed_at,snapshot) values($1,$2,$3,$4::text::jsonb)
+        on conflict(owner_id,year) do update set closed_at=excluded.closed_at,snapshot=excluded.snapshot
+        where expense_years.closed_at is null and excluded.closed_at is not null`,
+          [
+            owner,
+            y.year,
+            y.closedAt,
+            y.snapshot === null ? null : json(y.snapshot),
+          ],
+        );
+      await query(
+        "delete from public.expense_labels where owner_id=$1 and not (id=any($2::uuid[]))",
+        [owner, `{${book.labels.map((l) => l.id).join(",")}}`],
+      );
+      for (const l of book.labels)
+        await query(
+          `insert into public.expense_labels(owner_id,id,kind,name) values($1,$2,$3,$4)
+        on conflict(owner_id,id) do update set name=excluded.name where expense_labels.name is distinct from excluded.name`,
+          [owner, l.id, l.kind, l.name],
+        );
+      for (const a of book.audit)
+        await query(
+          `insert into public.expense_audit(owner_id,version,at,action,detail) values($1,$2,$3,$4,$5::text::jsonb) on conflict do nothing`,
+          [owner, a.version, a.at, a.action, json(a.detail)],
+        );
+    },
+    async remember(id, value) {
+      await query(
+        "insert into public.expense_commands(owner_id,id,fingerprint,result) values($1,$2,$3,$4::text::jsonb)",
+        [owner, id, value.fingerprint, json(value.result)],
+      );
+    },
+  };
+}
+
+export function postgresExpenseRepository(
+  sql: postgres.Sql,
+): ExpenseRepository {
+  return {
+    async transaction<T>(
+      owner: string,
+      fn: (tx: ExpenseTransaction) => Promise<T>,
+    ): Promise<T> {
+      if (!/^[0-9a-f-]{36}$/i.test(owner))
+        throw new Error("Invalid authenticated owner");
+      const result = await sql.begin(async (tx) => {
+        await tx.unsafe("set local role authenticated");
+        await tx.unsafe("select set_config('request.jwt.claims', $1, true)", [
+          JSON.stringify({ sub: owner, role: "authenticated" }),
+        ]);
+        // Serialize all commands for one owner, including first initialization and retries.
+        await tx.unsafe(
+          "select pg_advisory_xact_lock(hashtextextended($1, 0))",
+          [owner],
+        );
+        return fn(transactionAdapter(tx, owner));
+      });
+      return result as T;
+    },
+  };
+}

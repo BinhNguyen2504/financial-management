@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+artifacts/
+*.tsbuildinfo
+.DS_Store
+.env*
+!.env.example
+.vercel/
+# Private financial reference material stays on this machine.
+/Notion/
+/imports/
+/backups/
