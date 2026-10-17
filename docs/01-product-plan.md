@@ -1,6 +1,6 @@
 # Phạm vi và lộ trình
 
-**Cập nhật 15/10/2026:** module Chi tiêu đã được triển khai theo [đặc tả riêng](features/expenses.md), với Auth/API/database, test local và [hướng dẫn cloud](09-expenses-cloud.md). Chi tiêu dùng tổng hợp số dư tháng, không phụ thuộc việc nhập từng giao dịch/nghiệp vụ ledger P1 bên dưới. Roadmap còn lại vẫn là đề xuất; chưa kết nối cloud thật.
+**Cập nhật 17/10/2026:** Thu nhập, Chi tiêu và Tiết kiệm đã triển khai trong source, có Auth/API/PostgreSQL/RLS. Tổng quan hiện tổng hợp hũ chi tiêu; Thiết lập có hướng dẫn cài PWA. Các module giao dịch, tài khoản, đầu tư, quỹ an toàn, mục tiêu và báo cáo toàn hệ thống vẫn là định hướng. Landing công khai tại `/`, ứng dụng yêu cầu đăng nhập. Trạng thái source không thay thế xác minh cloud; migration Tiết kiệm chưa được áp dụng lên cloud. Xem [landing/xác thực](features/landing.md) và [xác minh](07-validation.md). Roadmap ban đầu bên dưới là định hướng; các quy tắc từng module đã triển khai được ưu tiên theo đặc tả riêng.
 
 ## Những lựa chọn đã được người dùng xác nhận
 

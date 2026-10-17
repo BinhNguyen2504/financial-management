@@ -250,15 +250,16 @@ describe("Income monthly domain and reports", () => {
       ),
     ).toThrow();
   });
-  it("limits return destinations to implemented modules", () => {
+  it("limits return destinations to known application routes", () => {
     expect(safeReturnPath("/income")).toBe("/income");
+    expect(safeReturnPath("/profile")).toBe("/profile");
     for (const s of [
       "https://evil.test",
       "//evil.test",
       "/income?next=evil",
       undefined,
     ])
-      expect(safeReturnPath(s)).toBe("/budgets");
+      expect(safeReturnPath(s)).toBe("/overview");
   });
 });
 describe("Income command transaction contract", () => {

@@ -54,8 +54,12 @@ try {
   await admin.unsafe(`create role authenticated nologin; create role anon nologin;
     create schema auth; create table auth.users(id uuid primary key);
     create function auth.uid() returns uuid language sql stable as $$ select (current_setting('request.jwt.claims',true)::jsonb->>'sub')::uuid $$;`);
-  for (const migration of (await readdir("supabase/migrations")).filter(name => name.endsWith(".sql")).sort()) {
-    await admin.unsafe(await readFile(join("supabase/migrations", migration), "utf8"));
+  for (const migration of (await readdir("supabase/migrations"))
+    .filter((name) => name.endsWith(".sql"))
+    .sort()) {
+    await admin.unsafe(
+      await readFile(join("supabase/migrations", migration), "utf8"),
+    );
   }
   await admin.unsafe("alter role expense_api login");
   const testEnv = {
@@ -67,7 +71,10 @@ try {
   const child = spawn(
     process.execPath,
     browser
-      ? ["scripts/test-browser.mjs"]
+      ? [
+          "scripts/test-browser.mjs",
+          ...process.argv.slice(process.argv.indexOf("--browser") + 1),
+        ]
       : [
           "node_modules/vitest/vitest.mjs",
           "run",
@@ -76,9 +83,16 @@ try {
         ],
     { env: testEnv, stdio: "inherit" },
   );
+  const stopPreview = () => child.kill("SIGTERM");
+  if (process.env.TEST_REVIEW_PREVIEW === "1") {
+    process.once("SIGTERM", stopPreview);
+    process.once("SIGINT", stopPreview);
+  }
   const code = await new Promise((resolveCode) =>
     child.once("exit", resolveCode),
   );
+  process.removeListener("SIGTERM", stopPreview);
+  process.removeListener("SIGINT", stopPreview);
   process.exitCode = typeof code === "number" ? code : 1;
 } finally {
   await admin?.end();

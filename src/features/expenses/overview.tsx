@@ -130,7 +130,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
           </p>
         )}
         {error && (
-          <div className="expense-notice" role="alert">
+          <div className="expense-notice expense-feedback" role="alert">
             <p>{login ? "Đăng nhập để trở về với các hũ của bạn." : error}</p>
             {login ? (
               <Link className="expense-secondary" href="/login">
@@ -256,12 +256,15 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
       <section className="next-chapters">
         <h2>Những mảnh ghép tiếp theo</h2>
         <p>
-          Tài khoản, tiết kiệm và mục tiêu đang được xây dựng. Bạn đã có thể ghi
-          thu nhập và chăm sóc các hũ của mình.
+          Theo dõi tiền, sổ tiết kiệm và vàng trong Tiết kiệm. Tài khoản dùng
+          chung và mục tiêu sẽ tiếp tục được phát triển.
         </p>
         <div className="expense-actions">
           <Link href="/income" className="text-link">
             Theo dõi Thu nhập <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+          <Link href="/savings" className="text-link">
+            Theo dõi Tiết kiệm <ArrowRight size={16} aria-hidden="true" />
           </Link>
           <Link href="/goals" className="text-link">
             Khám phá hướng phát triển{" "}

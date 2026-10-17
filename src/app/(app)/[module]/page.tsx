@@ -1,14 +1,17 @@
+import { pageAccess } from "@/server/page-auth";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Check, CircleHelp } from "lucide-react";
-import { modules } from "@/features/catalog";
-import { Garden } from "@/components/garden";
+import { modules, moduleStatusLabels } from "@/features/catalog";
+import { Garden, type GardenVariant } from "@/components/garden";
 import { ModuleIcon } from "@/components/module-icon";
 
 export function generateStaticParams() {
   return modules
-    .filter((m) => !["overview", "budgets", "income"].includes(m.slug))
+    .filter(
+      (m) => !["overview", "budgets", "income", "savings"].includes(m.slug),
+    )
     .map((m) => ({ module: m.slug }));
 }
 
@@ -31,14 +34,27 @@ export default async function ModulePage({
   const { module: slug } = await params;
   const item = modules.find((m) => m.slug === slug);
   if (!item || item.slug === "overview") notFound();
+  const denied = await pageAccess(`/${item.slug}`);
+  if (denied) return denied;
+  const scenes: Record<string, GardenVariant> = {
+    goals: "path",
+    accounts: "shelter",
+    funds: "shelter",
+    investments: "grove",
+    reports: "balance",
+    settings: "garden",
+    transactions: "jar",
+  };
   return (
     <>
       <Link className="back-link" href="/overview">
         <ArrowLeft size={16} aria-hidden="true" /> Tổng quan
       </Link>
       <div className="module-heading">
-        <Garden variant="sprout" />
-        <span className="pill">Đang vun đắp · Chưa sẵn sàng sử dụng</span>
+        <Garden variant={scenes[slug] ?? "balance"} />
+        <span className="pill">
+          {moduleStatusLabels[item.status]} · Đang vun đắp
+        </span>
         <span className="module-icon">
           <ModuleIcon name={item.icon} size={27} />
         </span>

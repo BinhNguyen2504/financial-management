@@ -2,6 +2,7 @@ import "server-only";
 import postgres from "postgres";
 import { postgresExpenseRepository } from "./expense-repository";
 import { postgresIncomeRepository } from "./income-repository";
+import { postgresSavingsRepository } from "./savings-repository";
 
 let sql: postgres.Sql | undefined;
 function databaseConnection() {
@@ -20,4 +21,7 @@ export function expenseRepository() {
 }
 export function incomeRepository() {
   return postgresIncomeRepository(databaseConnection());
+}
+export function savingsRepository() {
+  return postgresSavingsRepository(databaseConnection());
 }

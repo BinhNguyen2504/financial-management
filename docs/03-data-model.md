@@ -1,5 +1,7 @@
 # Mô hình dữ liệu sơ bộ
 
+**Tiết kiệm đã triển khai:** sổ giao dịch riêng liên tục nhiều năm, từng sổ gửi/đợt vàng, giá có ngày hiệu lực, revision và snapshot chốt tháng. Chưa nối ledger/tài khoản chung. Xem [đặc tả Tiết kiệm](features/savings.md); các thực thể tổng quát bên dưới vẫn là mô hình dự kiến cho module khác.
+
 **Ngoại lệ đã xác nhận cho Chi tiêu:** thực chi hũ tháng tính từ số tiền có và số dư cuối tháng; hũ tích lũy tính theo các lần sử dụng. Không buộc ghi từng giao dịch ledger. Module có schema riêng trong migration và [đặc tả Chi tiêu](features/expenses.md); dữ liệu này không tự làm tăng/giảm tài khoản ngân hàng. Các thực thể ledger/đầu tư bên dưới tiếp tục là mô hình dự kiến cho những module khác.
 
 **Đề xuất để thảo luận, chưa là schema đã triển khai.** Sẽ chốt sau khi có quy tắc từng tính năng. Hệ thống phải lưu dữ liệu phát sinh và lịch sử định giá, thay vì bảng có cột Tháng 1…Tháng 12 rồi nhập tổng ở nhiều nơi.

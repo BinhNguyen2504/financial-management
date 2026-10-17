@@ -1,13 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
 import { Nunito } from "next/font/google";
-import { PrivacyProvider, PrivacyToggle } from "@/components/privacy";
-import { WalletCards, Menu } from "lucide-react";
-import { Navigation } from "@/components/navigation";
 import { PwaRegistration } from "@/components/pwa-registration";
+import { UserProvider } from "@/features/profile/user-provider";
 import "./globals.css";
 import "@/features/expenses/expenses.css";
 import "./zen.css";
+import "@/features/profile/profile.css";
 const nunito = Nunito({
   subsets: ["latin", "vietnamese"],
   display: "swap",
@@ -15,8 +13,9 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.APP_ORIGIN || "http://localhost:3000"),
   title: { default: "Financial Manager", template: "%s · Financial Manager" },
-  description: "Quản lý thu nhập, hũ chi tiêu theo tháng và báo cáo trong năm.",
+  description: "Quản lý thu nhập, hũ chi tiêu và tiết kiệm, theo nhịp của bạn.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -39,50 +38,13 @@ export default function RootLayout({
   return (
     <html lang="vi" className={nunito.variable}>
       <body>
-        <PrivacyProvider>
+        <UserProvider>
           <a className="skip-link" href="#main">
             Đến nội dung chính
           </a>
-          <aside className="sidebar">
-            <Link href="/overview" className="brand">
-              <span className="brand-icon">
-                <WalletCards size={23} aria-hidden="true" />
-              </span>
-              <span>
-                Financial<span className="brand-sub">Manager</span>
-              </span>
-            </Link>
-            <p className="nav-label">KHÔNG GIAN CÁ NHÂN</p>
-            <Navigation />
-            <div className="sidebar-note">
-              <span className="status-dot" />
-              Từng bước vun đắp<p>Một chút mỗi ngày, theo nhịp của bạn.</p>
-            </div>
-          </aside>
-          <div className="app-body">
-            <header className="topbar">
-              <Link href="/overview" className="mobile-brand">
-                Financial Manager
-              </Link>
-              <span className="desktop-label">Tài chính cá nhân</span>
-              <PrivacyToggle />
-              <details className="mobile-menu">
-                <summary>
-                  <Menu size={19} aria-hidden="true" /> Menu
-                </summary>
-                <Navigation mobile />
-              </details>
-            </header>
-            <main id="main" tabIndex={-1}>
-              {children}
-            </main>
-            <footer className="footer">
-              <span>Thiết kế cho điện thoại & máy tính</span>
-              <span>VND · Giờ Việt Nam</span>
-            </footer>
-          </div>
+          {children}
           <PwaRegistration />
-        </PrivacyProvider>
+        </UserProvider>
       </body>
     </html>
   );

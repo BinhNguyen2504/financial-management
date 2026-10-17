@@ -1,0 +1,226 @@
+"use client";
+
+import Link from "next/link";
+import { useRef, useState, type FormEvent } from "react";
+import type { User } from "@supabase/supabase-js";
+import { Save } from "lucide-react";
+import { browserAuth } from "@/lib/supabase/browser";
+import { useUser } from "./user-provider";
+import {
+  initials,
+  profileFields,
+  profileSchema,
+  type ProfileFields,
+} from "./fields";
+
+export function ProfileWorkspace() {
+  const { user, configured, loading, error, reload } = useUser();
+  return (
+    <div className="profile-workspace">
+      <div className="expense-page-heading">
+        <div>
+          <p className="eyebrow">KHÔNG GIAN CỦA BẠN</p>
+          <h1>Thông tin cá nhân</h1>
+          <p className="lead">
+            Một vài thông tin cơ bản để làm quen và giữ liên lạc.
+          </p>
+        </div>
+      </div>
+      {loading ? (
+        <p role="status">Đang tải thông tin cá nhân…</p>
+      ) : error ? (
+        <div className="panel">
+          <p className="expense-error" role="alert">
+            {error}
+          </p>
+          <button className="expense-secondary" onClick={() => void reload()}>
+            Thử tải lại
+          </button>
+        </div>
+      ) : !configured ? (
+        <section className="panel">
+          <h2>Chưa kết nối dịch vụ đăng nhập</h2>
+          <p>
+            Thông tin cá nhân sẽ được lưu cùng tài khoản khi dịch vụ đăng nhập
+            được kết nối.
+          </p>
+        </section>
+      ) : !user ? (
+        <section className="panel">
+          <h2>Đăng nhập để xem thông tin cá nhân</h2>
+          <Link className="expense-primary" href="/login?next=/profile">
+            Đăng nhập
+          </Link>
+        </section>
+      ) : (
+        <ProfileForm key={user.id} user={user} />
+      )}
+    </div>
+  );
+}
+
+function ProfileForm({ user }: { user: User }) {
+  const { update } = useUser();
+  const [fields, setFields] = useState(() => profileFields(user.user_metadata));
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ProfileFields, string>>
+  >({});
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [busy, setBusy] = useState(false);
+  const form = useRef<HTMLFormElement>(null);
+  function change<K extends keyof ProfileFields>(
+    key: K,
+    value: ProfileFields[K],
+  ) {
+    setFields((previous) => ({ ...previous, [key]: value }));
+    setErrors((previous) => ({ ...previous, [key]: undefined }));
+    setNotice("");
+  }
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    setNotice("");
+    setError("");
+    const parsed = profileSchema.safeParse(fields);
+    if (!parsed.success) {
+      const next: typeof errors = {};
+      for (const issue of parsed.error.issues)
+        next[issue.path[0] as keyof ProfileFields] = issue.message;
+      setErrors(next);
+      form.current
+        ?.querySelector<HTMLInputElement>(`[name="${Object.keys(next)[0]}"]`)
+        ?.focus();
+      return;
+    }
+    setBusy(true);
+    try {
+      const { data, error } = await browserAuth().auth.updateUser({
+        data: parsed.data,
+      });
+      if (error || !data.user) throw error ?? new Error("Missing user");
+      update(data.user);
+      setFields(profileFields(data.user.user_metadata));
+      setNotice("Đã lưu thông tin cá nhân.");
+    } catch {
+      setError(
+        "Chưa lưu được thông tin. Nội dung đang nhập được giữ lại; hãy thử lại.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+  const name = profileFields(user.user_metadata).full_name || "Bạn";
+  return (
+    <section className="panel profile-panel" aria-label="Hồ sơ của bạn">
+      <div className="profile-identity">
+        <span className="user-avatar profile-avatar" aria-hidden="true">
+          {initials(name)}
+        </span>
+        <div>
+          <h2>{name}</h2>
+          <p>{user.email}</p>
+        </div>
+      </div>
+      <form
+        ref={form}
+        className="expense-form profile-form"
+        onSubmit={save}
+        noValidate
+        aria-busy={busy}
+      >
+        <fieldset disabled={busy}>
+          <div className="profile-field">
+            <label htmlFor="profile-name">Họ và tên</label>
+            <input
+              id="profile-name"
+              name="full_name"
+              autoComplete="name"
+              maxLength={100}
+              required
+              value={fields.full_name}
+              onChange={(e) => change("full_name", e.target.value)}
+              aria-invalid={Boolean(errors.full_name)}
+              aria-describedby={
+                errors.full_name ? "profile-name-error" : undefined
+              }
+            />
+            {errors.full_name && (
+              <span id="profile-name-error" className="profile-field-error">
+                {errors.full_name}
+              </span>
+            )}
+          </div>
+          <div className="profile-field">
+            <label htmlFor="profile-email">Email</label>
+            <input
+              id="profile-email"
+              type="email"
+              autoComplete="email"
+              value={user.email ?? ""}
+              readOnly
+              aria-describedby="profile-email-hint"
+            />
+            <span id="profile-email-hint" className="profile-hint">
+              Email dùng để đăng nhập tài khoản.
+            </span>
+          </div>
+          <div className="profile-form-grid">
+            <div className="profile-field">
+              <label htmlFor="profile-birth">Ngày sinh</label>
+              <input
+                id="profile-birth"
+                name="birth_date"
+                type="date"
+                autoComplete="bday"
+                min="1900-01-01"
+                value={fields.birth_date}
+                onChange={(e) => change("birth_date", e.target.value)}
+                aria-invalid={Boolean(errors.birth_date)}
+                aria-describedby={
+                  errors.birth_date ? "profile-birth-error" : undefined
+                }
+              />
+              {errors.birth_date && (
+                <span id="profile-birth-error" className="profile-field-error">
+                  {errors.birth_date}
+                </span>
+              )}
+            </div>
+            <div className="profile-field">
+              <label htmlFor="profile-gender">Giới tính</label>
+              <select
+                id="profile-gender"
+                name="gender"
+                value={fields.gender}
+                onChange={(e) =>
+                  change("gender", e.target.value as ProfileFields["gender"])
+                }
+              >
+                <option value="">Chưa cung cấp</option>
+                <option value="female">Nữ</option>
+                <option value="male">Nam</option>
+                <option value="other">Khác</option>
+                <option value="prefer_not_to_say">Không muốn chia sẻ</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+        <p className="profile-hint">
+          Ngày sinh và giới tính là thông tin tùy chọn.
+        </p>
+        <div className="expense-actions">
+          <button className="expense-primary" disabled={busy}>
+            <Save size={18} aria-hidden="true" />
+            {busy ? "Đang lưu…" : "Lưu thông tin"}
+          </button>
+        </div>
+        <p role="status" className="expense-status">
+          {notice}
+        </p>
+        <p role="alert" className="expense-error">
+          {error}
+        </p>
+      </form>
+    </section>
+  );
+}

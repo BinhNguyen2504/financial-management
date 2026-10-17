@@ -4,17 +4,29 @@
 
 ## Trạng thái hiện tại
 
-**Thu nhập và Chi tiêu đã được triển khai trong source** theo đặc tả ngày 15/10/2026. Có Auth email, HTTP API v1 và migration PostgreSQL/RLS. Các khu vực khác vẫn là bộ khung P0.
+**Thu nhập, Chi tiêu và Tiết kiệm đã được triển khai trong source**. Có Auth email, HTTP API v1 và migration PostgreSQL/RLS. Các khu vực khác vẫn là bộ khung P0.
 
 **Chi tiêu:** hũ chi tháng/tích lũy, tự tính tiền bỏ hũ, nhập số dư, sử dụng tích lũy, cấu hình có hiệu lực, báo cáo bảng/biểu đồ và chốt/xuất backup từng năm.
 
 **Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, báo cáo bảng/biểu đồ và xuất CSV. Xem [đặc tả Thu nhập](docs/features/income.md).
 
-**Chưa kết nối Supabase thật hoặc deploy.** Khi chưa cấu hình cloud, trang Thu nhập/Chi tiêu hiển thị trạng thái thiết lập và không lưu tài chính trong trình duyệt. Dấu `—` trên tổng quan vẫn là chưa có dữ liệu. Ảnh Notion không phải dữ liệu seed. Đọc [đặc tả Chi tiêu](docs/features/expenses.md) và [hướng dẫn kết nối cloud](docs/09-expenses-cloud.md).
+**Tiết kiệm:** tiền/ví, từng sổ tiền gửi và đợt mua vàng; rút/bán, lãi thực nhận, tái tục, giá lịch sử, báo cáo xuyên năm, chốt/mở lại tháng và CSV/JSON. Xem [đặc tả và migration Tiết kiệm](docs/features/savings.md). Chưa tự đồng bộ số dư với Thu nhập/Chi tiêu; chưa áp dụng migration Tiết kiệm lên cloud.
+
+Trang `/` là landing công khai với preview tương tác bằng dữ liệu minh họa. Mọi trang ứng dụng yêu cầu đăng nhập; khi chưa cấu hình Auth, chuyển đến trang đăng nhập có hướng dẫn trạng thái thiết lập. Không lưu tài chính trong trình duyệt. Dấu `—` trên tổng quan vẫn là chưa có dữ liệu. Có thể sinh **bộ dữ liệu mẫu tham khảo Notion** bằng `npm run data:sample -- --owner <USER_UID>`, rồi nạp qua Supabase SQL Editor. Bộ có inspect, seed, backup và reset sau khi chốt UI/UX; không tự kết nối hoặc ghi cloud. Xem [hướng dẫn dữ liệu mẫu](docs/10-sample-data.md), [đặc tả Chi tiêu](docs/features/expenses.md) và [hướng dẫn kết nối cloud](docs/09-expenses-cloud.md).
+
+Để xem ngay cả Tiết kiệm với dữ liệu mẫu local: `npm run data:preview`, dùng URL in ra với `review@example.test` / mã `123456`. Bản preview dùng database/Auth local riêng. Bộ bổ sung và reset đủ 22 bảng: [hướng dẫn dữ liệu review](docs/10-sample-data.md#bổ-sung-tiết-kiệm--17102026).
+
+## Landing và truy cập ứng dụng
+
+Landing giới thiệu sản phẩm theo tinh thần “công cụ từ nhu cầu thật”: màu Zen, câu chuyện ngắn và preview Thu nhập / Chi tiêu / Tiết kiệm. Preview dùng dữ liệu cố định, chỉ chuyển tab và che/hiện tiền, không gọi API tài chính. Người đã đăng nhập vẫn xem được landing, với avatar/hồ sơ và nút Vào ứng dụng.
+
+`/login` dùng email + OTP hoặc liên kết email. Sau đăng nhập mặc định mở `/overview`; `next` chỉ chấp nhận đường dẫn ứng dụng trong danh sách cho phép. Các trang kiểm tra phiên phía server trước khi render, kể cả module còn đang xây dựng. Đăng xuất trở về `/`; PWA vẫn khởi đầu tại `/overview` và yêu cầu đăng nhập. Lỗi Auth tạm thời có trạng thái thử lại, khác với phiên hết hạn.
+
+Catalog dùng chung cho trạng thái module; quy tắc trong `AGENTS.md` yêu cầu rà soát landing, preview, README và tài liệu khi thay đổi sản phẩm. Xem [đặc tả landing và xác thực](docs/features/landing.md).
 
 ## Giao diện Zen
 
-Tổng quan và các màn hình dùng nền kem/xanh xô thơm, Nunito tiếng Việt, minh họa SVG và dark mode theo hệ thống. Tổng quan đọc dữ liệu hũ tháng hiện tại; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Nút mắt ở header che số tiền trong cả Chi tiêu và Thu nhập; form có nút hiện riêng. Chỉ tùy chọn riêng tư lưu trên thiết bị, backup/CSV vẫn chứa số đầy đủ. Xem [hướng UI/UX](docs/04-ux-direction.md).
+Tổng quan và các màn hình dùng nền kem/xanh xô thơm, Nunito tiếng Việt, minh họa SVG và dark mode theo hệ thống. Tổng quan đọc dữ liệu hũ tháng hiện tại; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Nút mắt ở header che số tiền trong Chi tiêu, Thu nhập và Tiết kiệm (kể cả giá/lượng vàng); form có nút hiện riêng. Chỉ tùy chọn riêng tư lưu trên thiết bị, backup/CSV vẫn chứa số đầy đủ. Xem [hướng UI/UX](docs/04-ux-direction.md).
 
 ## Đọc bản kế hoạch
 
@@ -29,6 +41,8 @@ Tổng quan và các màn hình dùng nền kem/xanh xô thơm, Nunito tiếng V
 | [06 — Làm rõ nghiệp vụ](docs/06-feature-discovery.md) | Mẫu mô tả tính năng và các câu hỏi còn mở |
 | [07 — Xác minh](docs/07-validation.md) | Kết quả kiểm tra thực tế và giới hạn |
 | [08 — Xử lý lỗi local](docs/08-troubleshooting.md) | Hydration mismatch do extension thêm thuộc tính vào HTML |
+| [Landing và xác thực](docs/features/landing.md) | Nội dung công khai, preview, đăng nhập và quy tắc cập nhật |
+| [10 — Dữ liệu mẫu](docs/10-sample-data.md) | Nạp mẫu theo tài khoản để review, backup và reset trước khi dùng thật |
 
 ## Chạy local
 
@@ -50,7 +64,7 @@ npm start
 
 Service worker chỉ đăng ký trong production (`build` + `start`). Localhost có thể dùng để kiểm tra; truy cập PWA từ thiết bị khác cần HTTPS. Bản khung cache riêng trang `offline.html`, chưa cache hoặc ghi dữ liệu tài chính ngoại tuyến. Có thể xóa service worker trong DevTools → Application khi đổi cấu hình PWA.
 
-Không cần `.env` để xem khung và trạng thái chưa kết nối. Để dùng Chi tiêu thật, cấu hình `.env.local` theo `.env.example` và [hướng dẫn cloud](docs/09-expenses-cloud.md). Không dùng database admin/postgres làm connection runtime.
+Không cần `.env` để xem landing, preview minh họa và trạng thái đăng nhập chưa kết nối. Để dùng Chi tiêu thật, cấu hình `.env.local` theo `.env.example` và [hướng dẫn cloud](docs/09-expenses-cloud.md). Không dùng database admin/postgres làm connection runtime.
 
 ## Playwright MCP
 
@@ -65,10 +79,11 @@ Chạy ứng dụng bằng `npm run dev`, sau đó yêu cầu Codex mở `http:/
 ```text
 src/
   app/                  Next.js routes, layout, manifest và CSS tokens
-    overview/           Trang tổng quan khung
-    [module]/           Trang phạm vi dự kiến; sẽ tách route theo tính năng
+    (public)/           Landing và đăng nhập, khung công khai
+    (app)/              Trang ứng dụng được bảo vệ, sidebar và Privacy Mode
   components/           Navigation, icon và đăng ký PWA
-  features/catalog.ts   Danh mục module và câu hỏi nghiệp vụ
+  features/catalog.ts   Danh mục, trạng thái và mô tả dùng chung
+  features/landing/     Nội dung, preview dữ liệu mẫu và CSS công khai
   features/expenses/    Chi tiêu: giao diện, form, báo cáo bảng/biểu đồ
   domain/expenses/      Công thức BigInt, quy tắc tháng/năm và báo cáo
   application/          Điều phối preview/lưu, version và idempotency

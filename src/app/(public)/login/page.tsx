@@ -1,14 +1,23 @@
+import { redirect } from "next/navigation";
+import { pageSession } from "@/server/page-auth";
+import { AuthUnavailable } from "@/features/auth/unavailable";
 import type { Metadata } from "next";
 import { Login } from "@/features/auth/login";
 import { safeReturnPath } from "@/lib/auth-return";
 import { authConfigured } from "@/server/auth";
-export const metadata: Metadata = { title: "Đăng nhập" };
+export const metadata: Metadata = {
+  title: "Đăng nhập",
+  robots: { index: false, follow: false },
+};
 export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; next?: string }>;
 }) {
   const query = await searchParams;
+  const session = await pageSession();
+  if (session.state === "authenticated") redirect(safeReturnPath(query.next));
+  if (session.state === "unavailable") return <AuthUnavailable />;
   return (
     <Login
       configured={authConfigured()}

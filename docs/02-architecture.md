@@ -1,10 +1,23 @@
-# Kiến trúc và công nghệ đề xuất
+# Kiến trúc và công nghệ
 
-**Module Chi tiêu đã có source:** Supabase SSR/Auth, API v1, Zod, Postgres.js và transaction/RLS; native form/dialog, biểu đồ HTML/SVG, Vitest/Playwright. Connection server dùng role expense_api và JWT claims theo owner đã xác minh. Chi tiết triển khai và khác biệt so với các công nghệ còn dự kiến bên dưới nằm ở [đặc tả Chi tiêu](features/expenses.md). Chưa deploy hoặc kết nối Supabase thật.
+**Hiện trạng 17/10/2026:** web Next.js có landing công khai, Auth email, API v1 cho Thu nhập/Chi tiêu/Tiết kiệm và migrations PostgreSQL/RLS. Các mô tả P0 và endpoint dự kiến bên dưới là nền định hướng lịch sử, không phải danh sách chức năng đang thiếu của ba module đã triển khai.
+
+## Trang công khai và kiểm soát truy cập
+
+- Root layout giữ font, token, user provider và PWA. Route group `(public)` chứa `/` và `/login`; `(app)` giữ URL hiện có với sidebar, Privacy Mode và metadata noindex.
+- Mỗi page ứng dụng await `pageAccess()` trước khi render. `pageSession()` xác minh qua Supabase `getUser`, chỉ cache trong một lượt render; không dựa vào cookie claim hoặc layout để cấp quyền.
+- Proxy refresh cookie cho trang và API, đặt private/no-store. Chỉ request API có Authorization mới bỏ qua refresh cookie; API tự xác minh Bearer và owner/RLS.
+- Phiên thiếu/hết hạn chuyển `/login?next=...`; whitelist route dùng chung với catalog, mặc định `/overview`. Auth gián đoạn hiện retry, không coi là logout. `/` luôn công khai.
+- Landing HTML và ảnh Open Graph không chờ Auth trong proxy; avatar được xác minh trong trình duyệt, để nội dung công khai vẫn đọc được khi Auth gián đoạn.
+- Landing preview là client component với dữ liệu mẫu cố định; không import workspace hoặc gọi API tài chính. Tài khoản công khai dùng user provider/menu hiện có, tách khỏi dữ liệu preview.
+- Metadata chia sẻ có ảnh Open Graph sinh bằng Next ImageResponse. App và login noindex; service worker chỉ cache offline.html, PWA mở /overview sau xác thực.
+- Catalog là nguồn module/status dùng chung; tài liệu và preview được rà soát cùng thay đổi theo AGENTS.md. Xem [đặc tả landing](features/landing.md).
+
+**Module Chi tiêu đã có source:** Supabase SSR/Auth, API v1, Zod, Postgres.js và transaction/RLS; native form/dialog, biểu đồ HTML/SVG, Vitest/Playwright. Connection server dùng role expense_api và JWT claims theo owner đã xác minh. Chi tiết triển khai và khác biệt so với các công nghệ còn dự kiến bên dưới nằm ở [đặc tả Chi tiêu](features/expenses.md). Mức xác minh cloud theo từng module được ghi riêng trong [validation](07-validation.md); migration Tiết kiệm chưa áp dụng trên cloud.
 
 ## Quyết định chính
 
-Dùng một codebase web và backend theo module, tránh tách microservice ở quy mô cá nhân. Tách nghiệp vụ tài chính khỏi framework; cung cấp HTTP API có phiên bản để PWA và iOS dùng chung. Stack cloud bên dưới là đề xuất kỹ thuật, chưa tạo tài nguyên hoặc kết nối tài khoản dịch vụ.
+Dùng một codebase web và backend theo module, tránh tách microservice ở quy mô cá nhân. Tách nghiệp vụ tài chính khỏi framework; cung cấp HTTP API có phiên bản để PWA và iOS dùng chung. Stack bên dưới phân biệt công nghệ đã dùng trong source và những lựa chọn chỉ bổ sung khi cần.
 
 ```mermaid
 flowchart TD
@@ -26,18 +39,18 @@ flowchart TD
 | Lớp | Công nghệ | Lý do chọn | Trạng thái |
 | --- | --- | --- | --- |
 | Runtime | Node 22 LTS, npm + lockfile | Có runtime phù hợp sẵn trên máy; kiểm tra nhất quán local/CI/cloud | Đã dùng local |
-| Web và API | Next.js App Router + React + TypeScript strict | Routing, rendering và HTTP API trong cùng source; dễ triển khai và tách service về sau | Đã cài và dựng khung |
+| Web và API | Next.js App Router + React + TypeScript strict | Routing, rendering và HTTP API trong cùng source; dễ triển khai và tách service về sau | Đã triển khai landing, Auth và ba module |
 | Styling | Tailwind CSS 4 + CSS semantic tokens | Giao diện responsive, theme và tái sử dụng style | Đã cài; shell dùng CSS tokens |
 | Components | shadcn/ui, bổ sung khi có dialog/form/table thực tế | Sở hữu source component và chuẩn hóa hành vi truy cập | Chưa cài |
 | Icon | Lucide React | Cùng một bộ SVG có nhãn đi kèm | Đã dùng |
-| Forms | React Hook Form + Zod | Form ít render lại; schema kiểm tra dùng ở cả client/server | Dự kiến P1 |
-| Biểu đồ/bảng | Recharts + TanStack Table | Biểu đồ tương tác và lọc/sắp xếp; thêm khi có dữ liệu | Dự kiến theo module |
-| Số học | bigint cho tổng tiền VND và/hoặc decimal.js cho giá/số lượng | Tránh mất chính xác từ float; quyết định theo hợp đồng dữ liệu | Chưa cài/triển khai |
-| Database | PostgreSQL qua Supabase, SQL migrations | Quan hệ, ràng buộc và transaction; dữ liệu dễ xuất | Chưa kết nối |
-| Auth | Supabase Auth + `@supabase/ssr` cho web | Danh tính dùng chung web/iOS, session và RLS | Chưa cài |
-| Client dữ liệu | `@supabase/supabase-js`; gọi DB từ server với token người dùng | RLS vẫn được áp dụng; hạn chế dependency | Dự kiến P1 |
+| Forms | Native form/dialog + Zod | Schema kiểm tra client/server; chưa cần React Hook Form | Đã dùng |
+| Biểu đồ/bảng | HTML/SVG và bảng có accessibility | Tương tác bàn phím, bảng thay thế, ít dependency | Đã dùng; Recharts/TanStack chưa cần |
+| Số học | BigInt; số lượng vàng có scale cố định | Tránh mất chính xác từ float; API dùng decimal string | Đã triển khai |
+| Database | PostgreSQL, Postgres.js và SQL migrations | Transaction, RLS và role expense_api | Source/local đã có; cloud theo module |
+| Auth | Supabase Auth + `@supabase/ssr` cho web | Email/OTP, cookie refresh, page/API verification | Đã triển khai |
+| Client dữ liệu | HTTP API v1 cho tài chính; Supabase SDK cho Auth | Server xác minh owner và áp RLS | Đã dùng |
 | PWA | Manifest của Next.js + service worker giới hạn phạm vi | Bắt đầu nhẹ, offline fallback; hàng đợi offline bổ sung sau | Nền PWA đã dựng |
-| Kiểm thử | Vitest, DB integration/RLS, Playwright | Kiểm công thức, transaction, quyền và tác vụ nhiều thiết bị | P0 typecheck/build và browser smoke; test nghiệp vụ thêm theo module |
+| Kiểm thử | Vitest, DB integration/RLS, Playwright | Kiểm công thức, transaction, quyền và tác vụ nhiều thiết bị | Unit, DB integration/RLS và browser local đã có |
 | Deploy | Vercel + Supabase managed | Hạn chế việc tự vận hành server; preview riêng với production | Mới là kế hoạch |
 
 Khóa phiên bản thực tế trong `package-lock.json`. Dùng TypeScript 5.9 cho bộ khung hiện tại; không tự động chuyển major theo npm latest. Các dependency chưa cần thiết được để ở trạng thái dự kiến.
@@ -52,11 +65,11 @@ Khóa phiên bản thực tế trong `package-lock.json`. Dùng TypeScript 5.9 c
 - `supabase/migrations`: SQL có phiên bản, RLS, constraints và RPC nguyên tử.
 - `tests`: bổ sung theo nghiệp vụ; dữ liệu giả, không dùng tài chính thật.
 
-P0 chỉ tạo những thư mục có nội dung. Trang `[module]` hiện là bản đồ phạm vi; khi triển khai, thay bằng route cụ thể và module tương ứng. Chưa tạo schema SQL vì quy tắc tiền/quỹ/nợ/đầu tư còn mở.
+Trang `[module]` giữ bản đồ phạm vi cho module chưa triển khai; vẫn yêu cầu đăng nhập. Thu nhập, Chi tiêu và Tiết kiệm có route, domain, API và migrations riêng; quy tắc module còn lại tiếp tục được làm rõ theo đặc tả.
 
 ## Ghi dữ liệu và API cho iOS
 
-Đề xuất `/api/v1/accounts`, `/transactions`, `/budgets`, `/funds`, `/goals`, `/trades`, `/valuations`, `/reports` và `/imports`. Đây là hợp đồng dự kiến, **chưa có endpoint tài chính hoạt động**. Khi làm P1, viết OpenAPI/schema request-response trước khi app iOS dùng API.
+Đề xuất `/api/v1/accounts`, `/transactions`, `/budgets`, `/funds`, `/goals`, `/trades`, `/valuations`, `/reports` và `/imports`. Đây là các hợp đồng mở rộng dự kiến. Hiện đã có `/api/v1/income`, `/api/v1/expenses` và `/api/v1/savings`, gồm preview/commands/reports theo module. Viết OpenAPI/schema request-response trước khi app iOS dùng API.
 
 Web dùng session cookie được xác minh phía server; native về sau dùng bearer access token đã kiểm chứng issuer/audience/expiry. Không tin `owner_id` từ request. Mọi use case lấy chủ sở hữu từ danh tính đã xác thực, kiểm quan hệ tài khoản/tài sản thuộc cùng chủ.
 

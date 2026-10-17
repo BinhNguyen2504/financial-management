@@ -282,7 +282,7 @@ svg {
   background: var(--accent-soft);
   border-bottom: 1px solid var(--border);
 }
-main {
+.app-shell main {
   width: 100%;
   max-width: 1350px;
   padding: 44px 42px 50px;
@@ -634,7 +634,7 @@ main {
     grid-template-columns: 1fr 240px;
     gap: 24px;
   }
-  main {
+  .app-shell main {
     padding-inline: 28px;
   }
   .topbar,
@@ -708,7 +708,7 @@ main {
   }
 }
 @media (max-width: 639px) {
-  main {
+  .app-shell main {
     padding: 30px 20px;
   }
   .topbar,

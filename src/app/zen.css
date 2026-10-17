@@ -1,4 +1,19 @@
 /* Shared Zen components; palette and illustration tokens live in globals.css. */
+/* Native iOS selects ignore minimum height/padding while appearance is auto. */
+.expense-form select:not([multiple]),
+.expense-filters select:not([multiple]),
+.income-select select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) 50%,
+    calc(100% - 11px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 32px;
+}
 body {
   font-weight: 400;
 }
@@ -13,7 +28,7 @@ h1 {
 h1 span {
   color: var(--primary);
 }
-main {
+.app-shell main {
   padding-top: 36px;
 }
 .brand {
@@ -293,6 +308,29 @@ button:disabled {
   gap: 24px;
 }
 .expense-page-heading {
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.expense-page-heading:has(> .garden-art) {
+  flex-direction: row;
+  align-items: center;
+}
+.expense-page-heading > div:first-child {
+  min-width: 0;
+}
+.expense-page-heading:has(> .garden-art) > div:first-child {
+  flex: 1;
+}
+.expense-page-heading > .garden-art {
+  flex: 0 0 200px;
+  width: 200px;
+  max-width: 24%;
+}
+.expense-page-heading .lead {
+  max-width: 65ch;
+  line-height: 1.65;
+}
+.expenses-workspace > .expense-page-heading:has(+ .daily-note) {
   margin-bottom: 0;
 }
 .expenses-workspace > .daily-note {
@@ -344,7 +382,7 @@ button:disabled {
 }
 .expense-table-scroll th,
 .expense-table-scroll td {
-  padding: 15px 16px;
+  padding: 14px 16px;
 }
 .expense-name-button {
   gap: 10px;
@@ -376,10 +414,10 @@ button:disabled {
   margin: 0;
 }
 .jar-progress {
-  margin-top: 12px;
+  margin-top: 8px;
   max-width: 230px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
 }
 .jar-progress > div {
@@ -673,7 +711,7 @@ button:disabled {
   }
 }
 @media (max-width: 639px) {
-  main {
+  .app-shell main {
     padding-top: 22px;
   }
   .topbar {
@@ -781,6 +819,10 @@ button:disabled {
   }
   .expense-metrics .metric {
     padding: 16px 12px;
+  }
+  .expense-page-heading > .garden-art {
+    flex-basis: 100px;
+    width: 100px;
   }
   .expense-setup {
     padding: 24px;

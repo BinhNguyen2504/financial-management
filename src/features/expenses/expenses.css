@@ -78,12 +78,32 @@
   margin-bottom: 14px;
 }
 .expense-error {
-  padding: 12px;
+  padding: 14px 16px;
   border: 1px solid var(--accent);
   background: var(--accent-soft);
   color: var(--accent);
   font-size: 14px;
+  line-height: 1.6;
+  border-radius: 12px;
   overflow-wrap: anywhere;
+}
+.expense-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  margin-bottom: 20px;
+}
+.expense-feedback > p {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+.expense-feedback.expense-notice > button,
+.expense-feedback.expense-notice > a,
+.expense-feedback.expense-error > button,
+.expense-feedback.expense-error > a {
+  flex-shrink: 0;
+  margin-top: 0;
 }
 .expense-notice {
   font-size: 13px;
@@ -238,7 +258,7 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 13px;
+  font-size: 14px;
 }
 .expense-table-scroll caption {
   text-align: left;
@@ -247,7 +267,7 @@
 .expense-table-scroll th,
 .expense-table-scroll td {
   padding: 13px 12px;
-  vertical-align: top;
+  vertical-align: middle;
   border-bottom: 1px solid var(--border);
   font-variant-numeric: tabular-nums;
 }
@@ -257,10 +277,27 @@
 }
 .expense-table-scroll thead th {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   background: var(--surface-alt);
   white-space: nowrap;
+}
+.expense-table-scroll thead th:not(:first-child) {
+  text-align: right;
+}
+.expense-desktop-table table {
+  min-width: 1120px;
+}
+.expense-desktop-table tbody th {
+  min-width: 210px;
+  max-width: 270px;
+}
+.expense-desktop-table thead th:last-child {
+  text-align: left;
+}
+.expense-desktop-table td:last-child {
+  width: 164px;
+  text-align: left;
 }
 .expense-table-scroll tbody th {
   min-width: 170px;
@@ -273,7 +310,7 @@
   display: block;
   margin-top: 4px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
 }
 .expense-name-button {
@@ -291,7 +328,9 @@
   overflow-wrap: anywhere;
 }
 .expense-row-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 44px auto;
+  align-items: center;
   gap: 8px;
 }
 .expense-mobile-cards {

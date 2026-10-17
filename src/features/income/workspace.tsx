@@ -4,13 +4,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useMoney } from "@/components/privacy";
 import { DailyNote } from "@/components/daily-note";
 import { Garden } from "@/components/garden";
+import { focusPointerControl } from "@/components/pointer-focus";
 import { Plus, ArrowLeft, ArrowRight, Download } from "lucide-react";
 import type { IncomeRow, IncomeView } from "@/domain/income/types";
 import { ruleAt, hasRecordedIncome } from "@/domain/income/engine";
 import { buildReport, type ReportFilter } from "@/domain/income/reports";
 import { monthName } from "@/features/expenses/format";
 import { ExpenseModal } from "@/features/expenses/modal";
-import { browserAuth } from "@/lib/supabase/browser";
 import { incomeJSON, IncomeAPIError } from "./api";
 import { IncomeEditor, type EditorMode } from "./editor";
 import { useDisplayMoney, IncomeReports } from "./report-panel";
@@ -117,13 +117,13 @@ export function IncomeWorkspace({
     : fixedRows.filter((r) => r.amount === null).length;
   const categories = view?.book?.categories.filter((c) => !c.deleted) ?? [];
   function open(mode: EditorMode) {
-    setDetails(null);
     setEditor(mode);
     setEditorKey((k) => k + 1);
     setNotice("");
   }
   async function saved() {
     setEditor(null);
+    setDetails(null);
     setNotice("Đã lưu thay đổi.");
     try {
       await reload();
@@ -177,12 +177,13 @@ export function IncomeWorkspace({
           <article className="income-item" key={r.key}>
             <div>
               <h3>{r.name}</h3>
-              <p>
-                {monthName(r.month)} · {money(r.amount!)}
-              </p>
+              <p className="expense-muted">{monthName(r.month)}</p>
               {r.description && (
                 <p className="expense-muted">{r.description}</p>
               )}
+            </div>
+            <div className="income-receipt">
+              <p className="income-amount">{money(r.amount!)}</p>
             </div>
             <div className="expense-actions">
               <button
@@ -208,7 +209,10 @@ export function IncomeWorkspace({
     );
   }
   return (
-    <div className="income-workspace expenses-workspace">
+    <div
+      className="income-workspace expenses-workspace"
+      onMouseDownCapture={focusPointerControl}
+    >
       <div className="expense-page-heading">
         <div>
           <p className="eyebrow">THỰC NHẬN THEO THÁNG</p>
@@ -218,25 +222,7 @@ export function IncomeWorkspace({
             năm.
           </p>
         </div>
-        {view && (
-          <button
-            className="expense-secondary"
-            onClick={async () => {
-              try {
-                const result = await browserAuth().auth.signOut();
-                if (result.error) throw result.error;
-                setView(null);
-                setEditor(null);
-                setDetails(null);
-                window.location.replace("/login?next=/income");
-              } catch {
-                setError("Chưa thể đăng xuất. Hãy thử lại.");
-              }
-            }}
-          >
-            Đăng xuất
-          </button>
-        )}
+        <Garden variant="harvest" />
       </div>
       <DailyNote />
       {!configured ? (
@@ -258,8 +244,8 @@ export function IncomeWorkspace({
       ) : (
         <>
           {error && (
-            <div className="expense-error" role="alert">
-              {error}{" "}
+            <div className="expense-error expense-feedback" role="alert">
+              <p>{error}</p>
               <button
                 className="expense-secondary"
                 onClick={() => void reload().catch(() => {})}
@@ -283,7 +269,7 @@ export function IncomeWorkspace({
           {view && (
             <>
               <div className="expense-toolbar">
-                <div className="expense-actions">
+                <div className="expense-actions income-period-controls">
                   <label className="income-select">
                     Năm
                     <select
@@ -414,11 +400,15 @@ export function IncomeWorkspace({
                           {r.description && (
                             <p className="expense-muted">{r.description}</p>
                           )}
+                        </div>
+                        <div className="income-receipt">
                           <p className="income-amount">
                             {r.amount === null ? "Chưa nhập" : money(r.amount)}
                             {!r.active && " · đã ngừng"}
                           </p>
-                          {r.note && <p className="expense-muted">{r.note}</p>}
+                          {r.note && r.note !== r.description && (
+                            <p className="expense-muted">{r.note}</p>
+                          )}
                         </div>
                         <div className="expense-actions">
                           <button

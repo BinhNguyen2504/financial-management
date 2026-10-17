@@ -1,0 +1,354 @@
+.savings-workspace {
+  min-width: 0;
+}
+.savings-workspace h1 span {
+  color: var(--primary);
+}
+.savings-toolbar,
+.savings-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.savings-toolbar > .expense-actions {
+  margin-left: auto;
+}
+.savings-workspace label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 0;
+}
+.savings-workspace input,
+.savings-workspace select,
+.savings-form input,
+.savings-form select {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+  min-width: 0;
+  max-width: 100%;
+}
+.savings-workspace select {
+  padding-right: 30px;
+}
+.savings-main-actions {
+  margin-bottom: 22px;
+}
+.savings-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+.savings-tabs button {
+  font: inherit;
+  font-size: 14px;
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.savings-tabs button[aria-selected="true"] {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 700;
+}
+.savings-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0 0 24px;
+}
+.savings-metrics .metric {
+  min-width: 0;
+  padding: 22px;
+}
+.savings-metrics strong {
+  display: block;
+  font-size: clamp(18px, 1.8vw, 25px);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  margin-top: 12px;
+}
+.savings-metrics p {
+  margin-top: 8px;
+  line-height: 1.6;
+  color: var(--muted);
+  font-size: 12px;
+}
+.savings-workspace [role="tabpanel"] > .panel,
+.savings-workspace [role="tabpanel"] > .expense-notice {
+  margin-bottom: 24px;
+}
+.savings-position {
+  display: grid;
+  grid-template-columns:
+    minmax(140px, 1fr) minmax(120px, 1fr) minmax(140px, 1.6fr)
+    auto;
+  gap: 18px;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+}
+.savings-position:last-child {
+  border-bottom: 0;
+}
+.savings-position h3,
+.savings-activity h3 {
+  font-size: 15px;
+}
+.savings-value {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.savings-position-meta {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.savings-activity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+.savings-activity p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.savings-activity:last-child {
+  border-bottom: 0;
+}
+.savings-chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.savings-chart {
+  min-width: 0;
+}
+.savings-chart .expense-section-heading {
+  align-items: start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.savings-chart-scroll {
+  overflow-x: auto;
+}
+.savings-chart svg {
+  width: 100%;
+}
+.savings-chart-scroll svg {
+  min-width: 400px;
+}
+.savings-chart svg text {
+  font: 11px sans-serif;
+  fill: var(--muted);
+}
+.savings-axis {
+  stroke: var(--border);
+}
+.savings-line {
+  stroke: var(--primary);
+  stroke-width: 3;
+}
+.savings-point {
+  fill: var(--primary);
+}
+.savings-outflow {
+  fill: var(--chart-2);
+}
+.savings-composition {
+  display: grid;
+  grid-template-columns: minmax(100px, 160px) minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+.savings-composition ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.savings-composition li {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  gap: 5px;
+  font-size: 12px;
+}
+.savings-composition li > span:last-child {
+  grid-column: 2 / -1;
+  color: var(--muted);
+}
+.savings-legend {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  align-self: center;
+}
+.savings-table-scroll {
+  overflow: auto;
+  max-width: 100%;
+}
+.savings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.savings-table caption {
+  text-align: left;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 12px 0;
+}
+.savings-table th,
+.savings-table td {
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 12px;
+}
+.savings-table th:first-child {
+  text-align: left;
+}
+.savings-table thead th {
+  color: var(--muted);
+  font-size: 12px;
+}
+.savings-form {
+  gap: 18px;
+}
+.savings-form fieldset {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+.savings-form legend {
+  font-size: 13px;
+  color: var(--muted);
+}
+.savings-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.savings-check {
+  display: flex !important;
+  align-items: center;
+  gap: 12px !important;
+}
+.savings-check input {
+  min-height: 24px;
+  width: 24px;
+}
+.savings-preview {
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--primary-soft);
+  display: grid;
+  gap: 10px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.savings-alert h2 {
+  color: var(--primary);
+}
+.savings-workspace details {
+  padding: 18px 0;
+}
+.savings-workspace summary {
+  cursor: pointer;
+  min-height: 44px;
+}
+@media (max-width: 1200px) {
+  .savings-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .savings-chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  .savings-position {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+  .savings-position .savings-value {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  .savings-position-meta {
+    grid-row: 3;
+    grid-column: 1 / -1;
+  }
+  .savings-position > button {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .savings-activity {
+    flex-wrap: wrap;
+    align-items: start;
+  }
+  .savings-activity > .expense-actions {
+    width: 100%;
+  }
+  .savings-activity > div:first-child {
+    flex: 1;
+    min-width: 150px;
+  }
+  .savings-toolbar > .expense-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+  .savings-metrics {
+    gap: 10px;
+  }
+  .savings-metrics .metric {
+    padding: 16px;
+  }
+  .savings-metrics strong {
+    font-size: 18px;
+  }
+  .savings-tabs {
+    gap: 0;
+  }
+  .savings-tabs button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .savings-filters > label {
+    flex: 1 1 130px;
+  }
+  .savings-composition {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+  .savings-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .savings-workspace * {
+    scroll-behavior: auto;
+  }
+}

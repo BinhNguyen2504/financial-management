@@ -6,6 +6,16 @@ Thiết kế cho thao tác hàng ngày trên điện thoại và kiểm tra sâu
 
 Skill `ui-ux-pro-max` được dùng để tra hướng dashboard dữ liệu, accessibility và Next.js. Hướng Zen và emoji do người dùng chọn được ưu tiên hơn các gợi ý màu/icon tự động của skill. Kết quả tự động có các gợi ý landing/enterprise không phù hợp; không dùng chúng làm cấu trúc ứng dụng. Bản định hướng dưới đây được điều chỉnh cho tác vụ tài chính cá nhân.
 
+## Landing và đăng nhập — 17/10/2026
+
+Landing theo hướng sản phẩm tinh tế: hero “Một nơi rõ ràng hơn cho tài chính của bạn”, preview có tab, lợi ích ba module, câu chuyện từ nhu cầu thật, trạng thái phát triển/FAQ và CTA cuối. Giữ Zen/Nunito, cây chỉ là điểm nhấn; không thêm thành tích hay lời chứng thực chưa có.
+
+Trang công khai có header riêng, không sidebar hoặc Privacy Mode của dữ liệu tài khoản. Avatar thay nút đăng nhập sau khi xác minh phiên, có trạng thái chờ và thử lại. Đăng nhập riêng ở `/login`, quay về đúng trang được yêu cầu; người đã đăng nhập vẫn xem được landing. Logo trong ứng dụng dẫn về landing, mục Tổng quan vẫn có trong điều hướng.
+
+Preview minh họa sát giao diện thật, chỉ đổi module và che tiền trong preview. Không persist trạng thái, không đọc tiền thật. Desktop có sidebar/biểu đồ thu nhỏ; mobile ưu tiên thẻ và nội dung vừa màn hình. Tab hỗ trợ phím mũi tên/Home/End; trạng thái ẩn không giữ số tiền trong accessibility tree. Các phần nội dung chính render được khi chưa có JavaScript; Auth/form vẫn cần JavaScript.
+
+Trang ứng dụng kiểm tra Auth phía server; lỗi gián đoạn có retry. Chưa cấu hình Auth chuyển đến hướng dẫn ở trang đăng nhập. Điều này thay thế hành vi P0 cho phép mở khung ứng dụng ẩn danh.
+
 ## Cấu trúc thông tin
 
 | Khu vực | Câu hỏi mà màn hình trả lời |

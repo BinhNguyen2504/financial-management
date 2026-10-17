@@ -13,7 +13,7 @@ const prior =
     : `${year}-${String(Number(current.slice(5)) - 1).padStart(2, "0")}`;
 const email = () => `${randomUUID()}@example.test`;
 async function login(page: Page, address: string) {
-  await page.goto("/login");
+  await page.goto("/login?next=/budgets");
   await page.getByLabel("Email", { exact: true }).fill(address);
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
@@ -91,7 +91,7 @@ test("monthly balances, accumulation uses, reports, responsive light/dark", asyn
     data.rows.find((r) => r.jarId === jar.id && r.month === current)?.required,
   ).toBe("1700000");
   const edit =
-    testInfo.project.name === "mobile"
+    page.viewportSize()!.width <= 639
       ? page.getByRole("button", { name: "Điều chỉnh", exact: true }).first()
       : page.getByRole("button", { name: "Điều chỉnh Sinh hoạt kiểm thử" });
   await edit.click();

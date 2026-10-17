@@ -416,12 +416,8 @@ test("income API rejects forged auth, CSRF, cross-owner changes and invalid repo
   browser,
 }) => {
   await page.goto("/income");
-  await expect(
-    page.getByRole("heading", {
-      name: "Đăng nhập để quản lý thu nhập",
-      exact: true,
-    }),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/\/login\?next=%2Fincome$/);
+  await expect(page.getByRole("heading", { name: "Đăng nhập", exact: true })).toBeVisible();
   await login(page);
   const id = randomUUID();
   expect(

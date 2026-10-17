@@ -9,7 +9,7 @@ import { ratio } from "./format";
 export function ChartEmpty() {
   return (
     <div className="chart-empty">
-      <Garden variant="sprout" />
+      <Garden variant="balance" />
       <p>Chưa có giá trị để vẽ biểu đồ.</p>
       <span>Các khoản trong kỳ hoặc bộ lọc khác sẽ xuất hiện ở đây.</span>
     </div>

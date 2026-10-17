@@ -1,0 +1,111 @@
+# Dữ liệu mẫu để review UI/UX
+
+Lựa chọn ngày 16/10/2026: **nạp vào tài khoản Supabase hiện tại**. Không cần cung cấp mật khẩu, OTP hoặc service-role key. `data:sample` chỉ sinh file local. Khi `.env.local` đã kết nối app với Supabase, `data:import` có thể nạp bằng đúng role runtime, giữ RLS. SQL Editor là cách thay thế và dùng cho reset sau review.
+
+## Tạo và nạp mẫu
+
+Đăng nhập ứng dụng một lần để tài khoản xuất hiện trong Supabase → Authentication → Users. Sao chép **User UID** của chính tài khoản đó; đây không phải project ID. Dùng Node 22:
+
+```bash
+nvm use 22
+npm run data:sample -- --owner <USER_UID>
+```
+
+Script in ra đường dẫn `imports/ui-review-<ngày>-<mã>/`. Thư mục `imports/` đã được loại khỏi Git. Mỗi lần tạo có mã dataset riêng; giữ nguyên cả bộ cho đến hết review. File được tạo với quyền chỉ user hiện tại đọc/ghi.
+
+| File               | Cách dùng                                                                                 |
+| ------------------ | ----------------------------------------------------------------------------------------- |
+| `sample-data.json` | Xem mẫu và nguồn tham khảo; không phải định dạng restore của app                          |
+| `00-inspect.sql`   | Kiểm tra UID tồn tại, số record ở 14 bảng và marker của bộ mẫu                            |
+| `01-seed.sql`      | Chạy trong Supabase SQL Editor bằng role `postgres`/chủ bảng; tải lại app cùng tài khoản  |
+| `02-backup.sql`    | Xuất record tài chính của owner dưới dạng JSON trước khi reset; lưu kết quả ra file riêng |
+| `03-reset.sql`     | Chỉ dùng sau khi chốt UI/UX; mặc định từ chối chạy vì chưa xác nhận                       |
+
+Cần áp dụng đủ hai migration trong `supabase/migrations/` và cấu hình ứng dụng theo [hướng dẫn cloud](09-expenses-cloud.md). Chọn đúng Supabase project. Chạy nguyên nội dung từng file SQL để giữ transaction. Không đặt connection admin vào `DATABASE_URL` của app; runtime vẫn dùng `expense_api`.
+
+**Seed không ghi đè dữ liệu tài chính có sẵn.** Có thể dùng lại sổ Chi tiêu vừa khởi tạo: version 1, chỉ có audit khởi tạo, tối đa một command khởi tạo, đúng một năm hiện tại chưa chốt, chưa có hũ/nhãn/số tiền/giao dịch. Seed giữ audit/command ban đầu, đưa tháng bắt đầu về tháng 1 để có lịch sử mẫu và thêm marker mới ở version 2. Các trường hợp khác bị từ chối. Không tự xóa dữ liệu để seed thành công. Chạy lại đúng bộ đã nạp giữ nguyên chỉnh sửa review; bộ khác sẽ bị từ chối.
+
+Nếu app đã có `.env.local` với `DATABASE_URL` của `expense_api`, có thể chạy ngay trong terminal:
+
+```bash
+# Mặc định chỉ đọc số record, không ghi database.
+npm run data:import -- --file imports/<BỘ_MẪU>/sample-data.json
+# Nạp nguyên tử sau khi lưu backup owner vào backups/ (đã gitignore).
+npm run data:import -- --file imports/<BỘ_MẪU>/sample-data.json --apply
+```
+
+Importer không dùng admin hoặc service-role key; từ chối connection không phải `expense_api`, đặt owner trong transaction như backend và vẫn chịu RLS. Database FK xác nhận owner tồn tại. Các file SQL admin vẫn dùng được độc lập; không cần chạy SQL seed lại sau khi CLI import thành công.
+
+## Nội dung mẫu
+
+- **18 hũ** lấy tên/phương thức/mức tham khảo từ ảnh Notion và ảnh Expenses bổ sung: Thúy đại học, tiền nhà cho thuê, ăn uống & cà phê, mượn bác Thịnh, sinh hoạt, quan hệ, mua sắm, điện/nước, đồ gia dụng, du lịch, lãi dì hai, bỏ bóp, YouTube, thu rác, cắt tóc, Internet, iCloud.
+- **5 phương thức**: MoMo, Timo, Cash, HSBC, ShopeePay. Nhóm mục đích: Gia đình/Bản thân. Nhãn `Saving` ở các dòng học phí, mượn, đồ gia dụng, du lịch, lãi được dùng để chọn hũ tích lũy trong **bộ mẫu**; chưa xác nhận đây là phân loại nghiệp vụ thật của từng khoản.
+- **Thu nhập**: Lương FSOFT, tiền nhà cố định; Freelance / Thưởng là phát sinh một lần. Dùng mức quý I nhìn thấy trong ảnh, thêm số liệu minh họa đến tháng hiện tại. Tháng 1–2 lương bằng 0, tháng 3 trở đi 19 triệu; tiền nhà 2,6 triệu/tháng. Đều là dữ liệu review, không xác nhận các khoản đã thực nhận.
+- Số liệu từ tháng 1 đến hôm nay theo giờ Việt Nam của năm hiện tại; tháng còn lại chỉ có kế hoạch. Có số dư chuyển tháng, bổ sung tiền, mua sắm vượt mức, sử dụng tích lũy và lịch sử nhập thu để xem bảng, báo cáo tháng/quý/năm và biểu đồ.
+
+Ảnh có tổng **21 dòng**, nhưng một số dòng/tên bị cắt. Bộ mẫu chỉ dùng 18 tên đọc được qua các ảnh; không suy diễn ba dòng thiếu. Không ép tổng mẫu bằng 19,7 triệu vì ảnh ở các thời điểm khác nhau và có cả tiền dành riêng. Số dư `Hiện tại`, ngân sách, `Month`, `Vượt` trong ảnh không tự động trở thành số dư khởi tạo thật. Số dư đầu mẫu là 0; lịch sử phát sinh và số dư trong app là minh họa có thể tính lại bằng domain engine.
+
+Hai dòng mượn/trả lãi là hũ dành tiền để review; chưa tạo dư nợ hoặc giao dịch vay. Mô tả/ghi chú có nhãn **DỮ LIỆU MẪU UI/UX**. Đây vẫn là record trong database, đồng bộ theo tài khoản và có thể sửa/xuất như record bình thường.
+
+Bộ mẫu 16/10 gồm `/income`, `/budgets` và phần `/overview` đang đọc Chi tiêu. Bộ bổ sung 17/10 bên dưới thêm `/savings`, giữ nguyên bộ Thu nhập/Chi tiêu trước đó. Đầu tư, Quỹ, Mục tiêu và Phân bổ chưa có persistence nghiệp vụ.
+
+## Review rồi bắt đầu từ đầu
+
+Kiểm tra bảng desktop, thẻ mobile, lọc tháng/phương thức/nhóm, báo cáo tháng/quý/năm, đổi emoji, nhập số dư, sử dụng tích lũy, chỉnh mức có hiệu lực và Privacy Mode. Có thể sửa mẫu bình thường. CSV/backup chứa số đầy đủ kể cả khi bật Privacy Mode.
+
+Sau khi bạn xác nhận UI/UX xong:
+
+1. Dừng nhập trên mọi thiết bị. Chạy `02-backup.sql`, xuất ô JSON trong kết quả và lưu thành file riêng. Backup là snapshot thô của 14 bảng cho owner, có audit/command/năm chốt; chưa có công cụ tự restore, không thay thế backup của Supabase.
+2. Trong `03-reset.sql`, thay chuỗi `NOT_CONFIRMED` trong biến `confirmation` bằng `RESET REVIEW <USER_UID>` như README của bộ đã ghi.
+3. Chạy nguyên file bằng role `postgres`/chủ bảng. Script xác nhận UID và mã dataset trong audit của **cả hai module**, rồi xóa toàn bộ Thu nhập/Chi tiêu của owner đó, gồm record thêm/sửa khi review, lịch sử lệnh, nhãn và backup năm đã chốt trong DB. Chỉ dùng khi owner còn dành cho giai đoạn review; chưa nhập dữ liệu thực cần giữ.
+4. Reset cũng trả JSON snapshot ngay trước khi xóa. Xuất kết quả này để giữ bản mới nhất. Chạy lại inspect: cả 14 bảng count 0. Refresh app; Chi tiêu yêu cầu chọn tháng bắt đầu mới.
+
+Reset **giữ tài khoản Auth, email, hồ sơ và các owner khác**. Tùy chọn riêng tư trên thiết bị vẫn theo lựa chọn của bạn. Không reset tài khoản Supabase hoặc cấu trúc DB.
+
+Database khóa lịch sử bằng 5 trigger. Reset cần quyền admin/chủ bảng để tạm tắt **đúng các trigger này** trong transaction sau khi khóa bảng; xóa theo owner rồi bật lại trước commit. Không tắt RLS, không dùng `TRUNCATE`, không đổi role runtime. Lỗi/xung đột/timeout rollback cả dữ liệu và trạng thái trigger. Khóa bảng có thể làm phiên khác chờ trong thời gian reset; chạy khi ngừng thao tác. Mặc định file reset không xóa.
+
+## Xác minh
+
+`npm test` kiểm tra mẫu qua domain engine; `npm run test:db` chạy seed/backup/reset trong PostgreSQL local biệt lập, kiểm tra cách ly owner, marker, rollback và khóa lịch sử. Kiểm tra local không xác nhận import, đăng nhập, đồng bộ hoặc reset đã chạy trên Supabase thật. Sinh bộ file cũng chưa nạp dữ liệu vào cloud.
+
+Ngày 16/10/2026 đã nạp bộ mẫu vào tài khoản do người dùng chỉ định bằng kết nối Supabase có sẵn của app, dùng đúng role `expense_api` và RLS. Trước khi nạp đã kiểm tra sổ chỉ có khởi tạo, lưu backup owner trong `backups/`, giữ nguyên audit/command ban đầu. Đọc lại sau commit xác nhận 18 hũ, 180 dòng tháng, 20 lần dùng tích lũy, 7 nhãn, 2 danh mục thu, 20 số thu tháng và 3 phát sinh. UID, mã dataset và backup cụ thể nằm trong bộ file private `imports/` và `backups/`, không đưa lên Git. **Chưa chạy reset trên Supabase; chưa xác minh đăng nhập hoặc đồng bộ trên thiết bị thật trong lượt này.**
+
+Kết quả local: 71 unit test, 23 PostgreSQL integration test, 2 browser smoke của bộ mẫu (desktop và iPhone 13 giả lập), typecheck/build đều qua. 38 browser hồi quy hiện có cũng qua trong lượt chạy đầy đủ; sau khi sửa việc đọc response trước điều hướng và selector trong test mới, chỉ chạy lại 2 smoke mới. Ảnh: `artifacts/browser/review-{budgets,income,overview}-{desktop,mobile}.png`. Dùng `npm run test:e2e -- review-data.spec.ts` để chạy lại riêng bộ mẫu; runner vẫn tạo PostgreSQL/Auth double biệt lập, không dùng cloud.
+
+
+## Bổ sung Tiết kiệm — 17/10/2026
+
+Dữ liệu gồm **6 danh mục**: Ví thần tài MoMo, VIB, Techcombank, Vàng/Vàng tích lũy, Sổ tiết kiệm cũ (đã tất toán và lưu trữ), Vàng nhẫn dự phòng. Tham khảo gốc Techcombank 100 triệu và sáu giá vốn vàng cộng 62,2 triệu trong `Notion/saving.png`. Các số lượng/đơn vị vàng, ngày giao dịch, lãi, đóng góp và giá định giá được tạo để review, không xác nhận là giao dịch hoặc tài sản thật. Tất cả ghi chú có nhãn DỮ LIỆU MẪU UI/UX.
+
+Có 9 đợt vàng mở/mua (ở tháng 7 trở đi), bán 0,5 từ đợt cũ, phí bán, chuyển MoMo → VIB, rút ngoài, lãi nhập gốc/nhận tiền, tái tục và sổ sắp đáo hạn. Dữ liệu bắt đầu tháng 12 năm trước để xem báo cáo xuyên năm. Một danh mục vàng mang giá từ kỳ trước để hiện cảnh báo; danh mục chính có giá từng tháng. Không tạo giao dịch thực tế sau ngày sinh mẫu.
+
+### Review ngay trên local
+
+```bash
+nvm use 22
+npm run data:preview
+```
+
+Chờ dòng `REVIEW READY`, mở URL in ra, dùng **review@example.test**, mã **123456**. Bản preview chạy production build với PostgreSQL và Auth double local riêng, chứa đủ Thu nhập/Chi tiêu/Tiết kiệm. Chỉ bind 127.0.0.1; không dùng tài khoản/email/OTP thật, không dùng `.env.local`, không ghi dữ liệu cloud, không dừng server đang chạy ở cổng 3000. Ctrl+C dừng preview. Mỗi lần chạy tạo một bộ mới; chỉnh sửa review local không chuyển vào cloud. Thông tin mở phiên nằm trong `artifacts/review-preview.json` (gitignore).
+
+### Chuẩn bị cùng tài khoản Supabase đang review
+
+```bash
+npm run data:savings:sample -- --base imports/<BỘ_MẪU_16_10>/sample-data.json
+```
+
+Lệnh giữ owner và mã dataset cũ, sinh thư mục `imports/savings-review-<ngày>-<mã>/` có quyền riêng tư. Không nạp đè Thu nhập/Chi tiêu và không reset. Các trường hợp seed vào tài khoản thông thường hoặc Tiết kiệm đã có dữ liệu không khớp marker đều bị từ chối.
+
+| File mới | Công dụng |
+|---|---|
+| `01-enable-and-seed.sql` | Chạy trong Supabase SQL Editor bằng role migration/admin. Tạo đủ 8 bảng Tiết kiệm nếu chưa có và seed trong cùng transaction; nếu schema dở dang thì từ chối. Yêu cầu marker Thu nhập/Chi tiêu trùng bộ cũ. Nếu đã seed đúng bộ, giữ các chỉnh sửa review. |
+| `00-inspect.sql` | Sau khi bật Tiết kiệm, kiểm tra counts và marker cả ba module. |
+| `04-seed-savings-only.sql` | Chỉ seed sau khi migration đã áp dụng; không thay đổi schema. |
+| `02-backup.sql` | Snapshot tất cả **22 bảng** theo owner. |
+| `03-reset.sql` | Reset **cả ba module** sau xác nhận riêng; mặc định NOT_CONFIRMED, giữ Auth/hồ sơ/owner khác. |
+
+Khi schema đã có, `npm run data:import -- --file imports/<BỘ_MẪU_TIẾT_KIỆM>/sample-data.json --apply` dùng runtime `expense_api`, backup trước và kiểm tra marker/counts sau commit. Không có quyền tạo bảng trong kết nối runtime; dùng SQL Editor cho migration. Không cấp quyền admin cho ứng dụng để nạp mẫu.
+
+**Dùng script reset 22 bảng mới sau khi hoàn tất review Tiết kiệm**, thay cho script cũ chỉ gồm 14 bảng. Reset yêu cầu marker cùng dataset ở cả Thu nhập, Chi tiêu, Tiết kiệm; xuất backup trước, nhập đúng `RESET REVIEW <UID>`. Nó khóa bảng, chụp snapshot mới nhất, tạm tắt 11 trigger lịch sử được chỉ định trong transaction, xóa theo owner/đúng thứ tự FK rồi bật lại, kiểm tra counts bằng 0. Mọi lỗi rollback dữ liệu và trạng thái trigger. Không chạy tự động trên cloud.
+
+Lần kiểm tra cloud ngày 17/10: vẫn có 18 hũ và 2 danh mục thu thuộc bộ mẫu trước; chưa có schema Tiết kiệm, role runtime không có quyền CREATE. Đã lưu snapshot owner hiện tại vào `backups/` và trạng thái vào `cloud-state-before.json` trong bộ private mới. **Chưa nạp Tiết kiệm trên cloud, chưa chạy reset cloud.** File `01-enable-and-seed.sql` là bước cần thực hiện trong SQL Editor để review tại kết nối Supabase hiện tại.

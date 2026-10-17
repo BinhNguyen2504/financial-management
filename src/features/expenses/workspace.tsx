@@ -12,7 +12,6 @@ import {
 import type { ExpenseRow, ExpenseView } from "@/domain/expenses/types";
 import { vietnamClock } from "@/domain/expenses/engine";
 import { summarize } from "@/domain/expenses/reports";
-import { browserAuth } from "@/lib/supabase/browser";
 import { ExpenseEditor, type EditorMode } from "./editor";
 import { apiJSON } from "./api";
 import { ExpenseReports } from "./report-panel";
@@ -21,6 +20,7 @@ import { monthName, sum, ratio } from "./format";
 import { useMoney } from "@/components/privacy";
 import { Garden } from "@/components/garden";
 import { DailyNote } from "@/components/daily-note";
+import { focusPointerControl } from "@/components/pointer-focus";
 import { jarEmoji } from "@/domain/expenses/emoji";
 
 export function ExpenseWorkspace({ configured }: { configured: boolean }) {
@@ -114,31 +114,18 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
     return () => window.clearTimeout(timer);
   }, [configured, view, reload]);
   function openEditor(next: EditorMode) {
-    setDetail(null);
-    setLabelsOpen(false);
     setEditor(next);
     setEditorKey((k) => k + 1);
   }
   async function saved() {
     setEditor(null);
+    setDetail(null);
+    setLabelsOpen(false);
     setNotice("Đã lưu thay đổi.");
     try {
       await reload();
     } catch {
       setNotice("Đã lưu thay đổi. Chưa tải lại được dữ liệu; hãy thử tải lại.");
-    }
-  }
-  async function signOut() {
-    try {
-      const { error: authError } = await browserAuth().auth.signOut();
-      if (authError) throw authError;
-      setView(null);
-      setEditor(null);
-      setDetail(null);
-      setLabelsOpen(false);
-      window.location.replace("/login");
-    } catch {
-      setError("Chưa thể đăng xuất. Kiểm tra kết nối và thử lại.");
     }
   }
   const currentYear =
@@ -176,7 +163,10 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
     rows.map((r) => (BigInt(r.funding) + BigInt(r.extra)).toString()),
   );
   return (
-    <div className="expenses-workspace">
+    <div
+      className="expenses-workspace"
+      onMouseDownCapture={focusPointerControl}
+    >
       <div className="expense-page-heading">
         <div>
           <p className="eyebrow">MỖI KHOẢN TIỀN, MỘT MỤC ĐÍCH</p>
@@ -192,9 +182,6 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
               onClick={() => setLabelsOpen(true)}
             >
               <Settings2 size={17} /> Phân loại
-            </button>
-            <button className="expense-secondary" onClick={signOut}>
-              Đăng xuất
             </button>
             {!readonly && (
               <button
@@ -229,7 +216,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
             {loading ? "Đang tải dữ liệu chi tiêu…" : notice}
           </p>
           {error && (
-            <div className="expense-notice" role="alert">
+            <div className="expense-notice expense-feedback" role="alert">
               <p>{error}</p>
               {needsLogin ? (
                 <Link className="expense-primary" href="/login">

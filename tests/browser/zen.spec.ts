@@ -7,7 +7,7 @@ const current = vietnamClock().today.slice(0, 7);
 const amount = "1234567";
 const formatted = "1.234.567 ₫";
 async function login(page: Page, address: string) {
-  await page.goto("/login");
+  await page.goto("/login?next=/budgets");
   await page.getByLabel("Email", { exact: true }).fill(address);
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
@@ -93,6 +93,11 @@ test("privacy persists without flashing and scopes form disclosure, charts and i
   await expect(
     page.getByRole("button", { name: "Xác nhận lưu" }),
   ).toBeDisabled();
+  await page.keyboard.press("Escape");
+  // Canceling the editor returns to its detail dialog.
+  await expect(
+    page.getByRole("dialog", { name: "Ăn uống riêng tư", exact: true }),
+  ).toBeVisible();
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Báo cáo năm", exact: true }).click();
   await expect(

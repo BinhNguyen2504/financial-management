@@ -1,6 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "tests/browser",
+  // This suite needs a separately compiled build with public Auth env vars empty.
+  testIgnore: process.env.TEST_AUTH_UNCONFIGURED === "1" ? undefined : "**/unconfigured.spec.ts",
   workers: 1,
   timeout: 60000,
   fullyParallel: false,
@@ -11,6 +13,8 @@ export default defineConfig({
     actionTimeout: 15000,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
+    // API failure injection must reach page.route; service workers bypass it in WebKit.
+    serviceWorkers: "block",
     launchOptions: { channel: "chrome" },
   },
   projects: [
@@ -23,5 +27,17 @@ export default defineConfig({
         browserName: "chromium",
       },
     },
+    ...(process.env.TEST_WEBKIT === "1"
+      ? [
+          {
+            name: "webkit",
+            use: {
+              ...devices["iPhone 13"],
+              browserName: "webkit" as const,
+              launchOptions: {},
+            },
+          },
+        ]
+      : []),
   ],
 });
