@@ -2,7 +2,10 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "tests/browser",
   // This suite needs a separately compiled build with public Auth env vars empty.
-  testIgnore: process.env.TEST_AUTH_UNCONFIGURED === "1" ? undefined : "**/unconfigured.spec.ts",
+  testIgnore:
+    process.env.TEST_AUTH_UNCONFIGURED === "1"
+      ? undefined
+      : "**/unconfigured.spec.ts",
   workers: 1,
   timeout: 60000,
   fullyParallel: false,
@@ -27,6 +30,18 @@ export default defineConfig({
         browserName: "chromium",
       },
     },
+    ...(process.env.TEST_FIREFOX === "1"
+      ? [
+          {
+            name: "firefox",
+            use: {
+              browserName: "firefox" as const,
+              viewport: { width: 1440, height: 1000 },
+              launchOptions: {},
+            },
+          },
+        ]
+      : []),
     ...(process.env.TEST_WEBKIT === "1"
       ? [
           {

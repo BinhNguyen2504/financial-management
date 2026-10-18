@@ -9,7 +9,7 @@ import { summarize } from "@/domain/expenses/reports";
 import { ExpenseEditor, type EditorMode } from "./editor";
 import { apiJSON } from "./api";
 import { ExpenseReports } from "./report-panel";
-import { ExpenseModal } from "./modal";
+import { ExpenseDetails, ExpenseLabels } from "./details";
 import { monthName, sum, ratio } from "./format";
 import { useMoney } from "@/components/privacy";
 import { Garden } from "@/components/garden";
@@ -29,7 +29,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
   const [tab, setTab] = useState("month");
   const [editor, setEditor] = useState<EditorMode | null>(null);
   const [editorKey, setEditorKey] = useState(0);
-  const [detail, setDetail] = useState<ExpenseRow | null>(null);
+  const [detailSelection, setDetail] = useState<ExpenseRow | null>(null);
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -114,8 +114,6 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
   }
   async function saved() {
     setEditor(null);
-    setDetail(null);
-    setLabelsOpen(false);
     setNotice("Đã lưu thay đổi.");
     try {
       await reload();
@@ -143,6 +141,13 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
     ) ?? [];
   const yearRows =
     view?.rows.filter((r) => r.month.startsWith(String(selectedYear))) ?? [];
+  const detail = detailSelection
+    ? (view?.rows.find(
+        (r) =>
+          r.jarId === detailSelection.jarId &&
+          r.month === detailSelection.month,
+      ) ?? detailSelection)
+    : null;
   const archivedTotals =
     selectedYear < currentYear ? summarize(yearRows, () => "year")[0] : null;
   const archivedMonths =
@@ -711,219 +716,23 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
         />
       )}
       {detail && view?.book && (
-        <ExpenseModal title={detail.name} onClose={() => setDetail(null)}>
-          <p>{detail.description || "Chưa có mô tả."}</p>
-          <p className="expense-muted">
-            {detail.method}
-            {detail.group ? ` · ${detail.group}` : ""} ·{" "}
-            {detail.kind === "monthly" ? "Chi trong tháng" : "Tích lũy"}
-          </p>
-          {!readonly && (
-            <div className="expense-actions">
-              <button
-                className="expense-secondary"
-                onClick={() => openEditor({ mode: "emoji", row: detail })}
-              >
-                Đổi biểu tượng
-              </button>
-              <button
-                className="expense-secondary"
-                onClick={() => openEditor({ mode: "configure", row: detail })}
-              >
-                Sửa hũ / mức mặc định
-              </button>
-              <button
-                className="expense-secondary"
-                onClick={() => openEditor({ mode: "stop", row: detail })}
-              >
-                Ngừng cấp tiền
-              </button>
-            </div>
-          )}
-          <h3 className="expense-subheading">
-            Các tháng trong năm {selectedYear}
-          </h3>
-          <div className="expense-table-scroll">
-            <table>
-              <caption className="sr-only">
-                Lịch sử từng tháng của {detail.name}
-              </caption>
-              <thead>
-                <tr>
-                  <th>Tháng</th>
-                  <th>Mức tháng</th>
-                  <th>Bỏ hũ</th>
-                  <th>Thực chi</th>
-                  <th>Còn lại</th>
-                </tr>
-              </thead>
-              <tbody>
-                {yearRows
-                  .filter((r) => r.jarId === detail.jarId)
-                  .map((r) => (
-                    <tr key={r.month}>
-                      <th>
-                        {Number(r.month.slice(5))}
-                        {r.status === "planned"
-                          ? " · kế hoạch"
-                          : r.status === "provisional"
-                            ? " · tạm tính"
-                            : ""}
-                      </th>
-                      <td>{money(r.target)}</td>
-                      <td>
-                        {money(
-                          (BigInt(r.funding) + BigInt(r.extra)).toString(),
-                        )}
-                      </td>
-                      <td>{money(r.spent)}</td>
-                      <td>{money(r.closing)}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-          {detail.kind === "accumulation" && (
-            <>
-              <h3 className="expense-subheading">Các lần sử dụng</h3>
-              {view.book.spends
-                .filter(
-                  (s) =>
-                    s.jarId === detail.jarId &&
-                    s.date.startsWith(String(selectedYear)),
-                )
-                .map((s) => (
-                  <div key={s.id} className="expense-history-item">
-                    <div>
-                      <strong>
-                        {money(s.amount)}
-                        {s.deleted ? " · Đã xóa" : ""}
-                      </strong>
-                      <p>
-                        {s.date} · {s.note || "Không có ghi chú"}
-                      </p>
-                    </div>
-                    {!readonly && !s.deleted && (
-                      <div className="expense-actions">
-                        <button
-                          className="expense-secondary"
-                          onClick={() =>
-                            openEditor({ mode: "spend", row: detail, spend: s })
-                          }
-                        >
-                          Sửa
-                        </button>
-                        <button
-                          className="expense-secondary"
-                          onClick={() =>
-                            openEditor({ mode: "deleteSpend", spend: s })
-                          }
-                        >
-                          Xóa
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              {!view.book.spends.some(
-                (s) =>
-                  s.jarId === detail.jarId &&
-                  s.date.startsWith(String(selectedYear)),
-              ) && <p className="expense-muted">Chưa có lần sử dụng.</p>}
-            </>
-          )}
-          <h3 className="expense-subheading">Lịch sử thay đổi</h3>
-          {view.book.audit
-            .filter((a) => {
-              const d = a.detail as Record<string, unknown>;
-              return (
-                d.jarId === detail.jarId ||
-                d.id === detail.jarId ||
-                view.book!.spends.some(
-                  (s) => s.jarId === detail.jarId && s.id === d.id,
-                )
-              );
-            })
-            .slice(-20)
-            .reverse()
-            .map((a) => (
-              <div className="expense-history-item" key={a.version}>
-                <p>
-                  {new Date(a.at).toLocaleString("vi-VN", {
-                    timeZone: "Asia/Ho_Chi_Minh",
-                  })}
-                  <br />
-                  <strong>
-                    {(
-                      {
-                        createJar: "Tạo hũ",
-                        setJarEmoji: "Đổi biểu tượng",
-                        configureJar: "Đổi cấu hình",
-                        editMonth: "Điều chỉnh tháng",
-                        stopJar: "Ngừng cấp tiền",
-                        upsertSpend: "Ghi / sửa lần sử dụng",
-                        deleteSpend: "Xóa lần sử dụng",
-                      } as Record<string, string>
-                    )[a.action] ?? a.action}
-                  </strong>
-                </p>
-                <span>#{a.version}</span>
-              </div>
-            ))}
-        </ExpenseModal>
+        <ExpenseDetails
+          key={detail.jarId}
+          row={detail}
+          yearRows={yearRows}
+          book={view.book}
+          year={selectedYear}
+          readonly={readonly}
+          onClose={() => setDetail(null)}
+          onEdit={openEditor}
+        />
       )}
       {labelsOpen && view?.book && (
-        <ExpenseModal
-          title="Phương thức và nhóm"
+        <ExpenseLabels
+          book={view.book}
           onClose={() => setLabelsOpen(false)}
-        >
-          <p className="expense-muted">
-            Gợi ý giúp nhập nhanh. Các hũ giữ thông tin phân loại theo tháng.
-          </p>
-          <div className="expense-actions">
-            <button
-              className="expense-primary"
-              onClick={() => openEditor({ mode: "label" })}
-            >
-              <Plus size={16} /> Thêm phân loại
-            </button>
-          </div>
-          {["method", "group"].map((type) => (
-            <section key={type}>
-              <h3 className="expense-subheading">
-                {type === "method" ? "Phương thức" : "Nhóm mục đích"}
-              </h3>
-              {view
-                .book!.labels.filter((l) => l.kind === type)
-                .map((l) => (
-                  <div key={l.id} className="expense-history-item">
-                    <span>{l.name}</span>
-                    <div className="expense-actions">
-                      <button
-                        className="expense-secondary"
-                        onClick={() => openEditor({ mode: "label", label: l })}
-                      >
-                        Sửa
-                      </button>
-                      <button
-                        className="expense-secondary"
-                        onClick={() =>
-                          openEditor({ mode: "deleteLabel", label: l })
-                        }
-                      >
-                        Xóa
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              {!view.book!.labels.some((l) => l.kind === type) && (
-                <p className="expense-muted">
-                  Chưa có gợi ý. Bạn cũng có thể nhập trực tiếp khi tạo hũ.
-                </p>
-              )}
-            </section>
-          ))}
-        </ExpenseModal>
+          onEdit={openEditor}
+        />
       )}
     </div>
   );

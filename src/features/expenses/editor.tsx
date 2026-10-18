@@ -1,5 +1,6 @@
 "use client";
 import { LoadingSpinner } from "@/components/loading";
+import { DialogChanges } from "@/components/dialog-content";
 import { useId, useRef, useState, type FormEvent } from "react";
 import type { ExpenseAction, ExpenseCommand } from "@/domain/expenses/schema";
 import type {
@@ -153,7 +154,6 @@ function ExpenseEditorForm({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [conflict, setConflict] = useState(false);
-  const [showAll, setShowAll] = useState(false);
   const command = useRef<ExpenseCommand | null>(null);
   const errorRef = useRef<HTMLParagraphElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -286,9 +286,61 @@ function ExpenseEditorForm({
       setBusy(false);
     }
   }
+  const formId = useId();
   return (
-    <ExpenseModal title={titles[editor.mode]} onClose={onClose} busy={busy}>
+    <ExpenseModal
+      title={titles[editor.mode]}
+      onClose={onClose}
+      busy={busy}
+      size={
+        ["deleteSpend", "deleteLabel", "closeYear"].includes(editor.mode)
+          ? "confirm"
+          : "form"
+      }
+      footer={
+        <div className="expense-actions">
+          <button
+            form={formId}
+            className="expense-secondary"
+            type="button"
+            disabled={busy}
+            onClick={onClose}
+          >
+            Hủy
+          </button>
+          {preview && (
+            <button
+              form={formId}
+              aria-busy={busy}
+              type="button"
+              className="expense-primary"
+              disabled={busy || conflict || (moneyForm && hidden)}
+              onClick={commit}
+            >
+              {busy && <LoadingSpinner />}
+              {busy
+                ? "Đang lưu…"
+                : editor.mode === "closeYear"
+                  ? "Xác nhận chốt năm"
+                  : "Xác nhận lưu"}
+            </button>
+          )}
+          {!preview && (
+            <button
+              form={formId}
+              aria-busy={busy}
+              className="expense-primary"
+              disabled={busy || (moneyForm && hidden)}
+            >
+              {busy && <LoadingSpinner />}
+              {busy ? "Đang kiểm tra…" : "Xem trước thay đổi"}
+            </button>
+          )}
+        </div>
+      }
+    >
       <form
+        id={formId}
         className="expense-form"
         onSubmit={prepare}
         onChange={() => {
@@ -297,296 +349,304 @@ function ExpenseEditorForm({
         }}
       >
         <PrivacyReveal />
-        {row && (
-          <p className="expense-muted">
-            <strong>{row.name}</strong> · {monthName(row.month)}
-          </p>
-        )}
-        {editor.mode === "initialize" && (
-          <p>
-            Chọn tháng bắt đầu. Những tháng trước đó sẽ không được tự tạo thực
-            chi. Bạn nhập số dư đầu kỳ khi thêm từng hũ.
-          </p>
-        )}
-        {["initialize", "create", "configure", "stop", "emoji"].includes(
-          editor.mode,
-        ) && (
-          <label>
-            {editor.mode === "initialize" || editor.mode === "create"
-              ? "Tháng bắt đầu"
-              : "Áp dụng từ tháng"}
-            <input
-              type="month"
-              value={period}
-              required
-              min={
-                editor.mode === "initialize"
-                  ? "2000-01"
-                  : (jar?.start ?? view.book?.start)
-              }
-              max={
-                editor.mode === "initialize"
-                  ? view.today.slice(0, 7)
-                  : `${view.currentYear}-12`
-              }
-              onChange={(e) => setPeriod(e.target.value)}
-            />
-          </label>
-        )}
-        {(editor.mode === "create" || editor.mode === "emoji") && (
-          <EmojiPicker
-            value={emoji}
-            onChange={(value) => {
-              setEmoji(value);
-              setPreview(null);
-              command.current = null;
-            }}
-            name={name}
-            kind={row?.kind ?? kind}
-          />
-        )}
-        {(editor.mode === "create" || editor.mode === "configure") && (
-          <>
+        <fieldset className="dialog-form-section" disabled={busy}>
+          <legend>Thông tin cần nhập</legend>
+          {row && (
+            <p className="expense-muted">
+              <strong>{row.name}</strong> · {monthName(row.month)}
+            </p>
+          )}
+          {editor.mode === "initialize" && (
+            <p>
+              Chọn tháng bắt đầu. Những tháng trước đó sẽ không được tự tạo thực
+              chi. Bạn nhập số dư đầu kỳ khi thêm từng hũ.
+            </p>
+          )}
+          {["initialize", "create", "configure", "stop", "emoji"].includes(
+            editor.mode,
+          ) && (
             <label>
-              Tên hũ
+              {editor.mode === "initialize" || editor.mode === "create"
+                ? "Tháng bắt đầu"
+                : "Áp dụng từ tháng"}
               <input
+                type="month"
+                value={period}
                 required
-                maxLength={100}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                min={
+                  editor.mode === "initialize"
+                    ? "2000-01"
+                    : (jar?.start ?? view.book?.start)
+                }
+                max={
+                  editor.mode === "initialize"
+                    ? view.today.slice(0, 7)
+                    : `${view.currentYear}-12`
+                }
+                onChange={(e) => setPeriod(e.target.value)}
               />
             </label>
-            <label>
-              Mô tả
-              <textarea
-                rows={2}
-                maxLength={1000}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </label>
-            {editor.mode === "create" ? (
+          )}
+          {(editor.mode === "create" || editor.mode === "emoji") && (
+            <EmojiPicker
+              value={emoji}
+              onChange={(value) => {
+                setEmoji(value);
+                setPreview(null);
+                command.current = null;
+              }}
+              name={name}
+              kind={row?.kind ?? kind}
+            />
+          )}
+          {(editor.mode === "create" || editor.mode === "configure") && (
+            <>
               <label>
-                Loại hũ
-                <select
-                  value={kind}
-                  onChange={(e) => setKind(e.target.value as typeof kind)}
-                >
-                  <option value="monthly">Chi trong tháng</option>
-                  <option value="accumulation">Tích lũy</option>
-                </select>
-              </label>
-            ) : (
-              <p className="expense-muted">
-                Loại hũ được giữ nguyên để bảo toàn lịch sử.
-              </p>
-            )}
-            <div className="expense-form-grid">
-              <label>
-                Phương thức
+                Tên hũ
                 <input
                   required
-                  list="expense-methods"
                   maxLength={100}
-                  value={method}
-                  onChange={(e) => setMethod(e.target.value)}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </label>
               <label>
-                Nhóm mục đích (tùy chọn)
-                <input
-                  list="expense-groups"
-                  maxLength={100}
-                  value={group}
-                  onChange={(e) => setGroup(e.target.value)}
+                Mô tả
+                <textarea
+                  rows={2}
+                  maxLength={1000}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </label>
-            </div>
-            <datalist id="expense-methods">
-              {view.book?.labels
-                .filter((l) => l.kind === "method")
-                .map((l) => (
-                  <option key={l.id} value={l.name} />
-                ))}
-            </datalist>
-            <datalist id="expense-groups">
-              {view.book?.labels
-                .filter((l) => l.kind === "group")
-                .map((l) => (
-                  <option key={l.id} value={l.name} />
-                ))}
-            </datalist>
-            <Amount
-              label="Mức mặc định mỗi tháng"
-              value={amount}
-              onChange={setAmount}
-            />
-            {editor.mode === "create" && (
-              <Amount
-                label="Số dư đầu kỳ"
-                value={opening}
-                onChange={setOpening}
-                hint="Tiền đã có, không tính là góp mới hoặc thực chi."
-              />
-            )}
-            {editor.mode === "configure" && (
-              <p className="expense-notice">
-                Cấu hình mới có hiệu lực từ tháng đã chọn. Các ngoại lệ riêng
-                của tháng khác vẫn được giữ.
-              </p>
-            )}
-          </>
-        )}
-        {editor.mode === "month" && (
-          <>
-            <p>
-              Mức mặc định: {money(rule?.amount ?? "0")}. Cần thêm theo số dư
-              chuyển tiếp: {money(row!.required)}.
-            </p>
-            <Amount
-              label="Mức riêng tháng này (để trống = mặc định)"
-              optional
-              value={target}
-              onChange={setTarget}
-            />
-            {!future && (
-              <>
-                <Amount
-                  label="Tiền thêm theo tháng (để trống = tự tính)"
-                  optional
-                  value={funding}
-                  onChange={setFunding}
-                />
-                <Amount
-                  label="Tiền bổ sung ngoài mức tháng"
-                  value={extra}
-                  onChange={setExtra}
-                />
-                {row?.kind === "monthly" && (
-                  <Amount
-                    label="Số dư cuối tháng"
-                    optional
-                    value={closing}
-                    onChange={setClosing}
-                    hint={
-                      row.active
-                        ? "Để trống mặc định là 0."
-                        : "Hũ đã ngừng: để trống giữ nguyên tiền còn lại."
-                    }
+              {editor.mode === "create" ? (
+                <label>
+                  Loại hũ
+                  <select
+                    value={kind}
+                    onChange={(e) => setKind(e.target.value as typeof kind)}
+                  >
+                    <option value="monthly">Chi trong tháng</option>
+                    <option value="accumulation">Tích lũy</option>
+                  </select>
+                </label>
+              ) : (
+                <p className="expense-muted">
+                  Loại hũ được giữ nguyên để bảo toàn lịch sử.
+                </p>
+              )}
+              <div className="expense-form-grid">
+                <label>
+                  Phương thức
+                  <input
+                    required
+                    list="expense-methods"
+                    maxLength={100}
+                    value={method}
+                    onChange={(e) => setMethod(e.target.value)}
                   />
-                )}
-              </>
-            )}
-            {future && (
-              <p className="expense-notice">
-                Đây là tháng tương lai. Chỉ mức kế hoạch được thay đổi.
+                </label>
+                <label>
+                  Nhóm mục đích (tùy chọn)
+                  <input
+                    list="expense-groups"
+                    maxLength={100}
+                    value={group}
+                    onChange={(e) => setGroup(e.target.value)}
+                  />
+                </label>
+              </div>
+              <datalist id="expense-methods">
+                {view.book?.labels
+                  .filter((l) => l.kind === "method")
+                  .map((l) => (
+                    <option key={l.id} value={l.name} />
+                  ))}
+              </datalist>
+              <datalist id="expense-groups">
+                {view.book?.labels
+                  .filter((l) => l.kind === "group")
+                  .map((l) => (
+                    <option key={l.id} value={l.name} />
+                  ))}
+              </datalist>
+              <Amount
+                label="Mức mặc định mỗi tháng"
+                value={amount}
+                onChange={setAmount}
+              />
+              {editor.mode === "create" && (
+                <Amount
+                  label="Số dư đầu kỳ"
+                  value={opening}
+                  onChange={setOpening}
+                  hint="Tiền đã có, không tính là góp mới hoặc thực chi."
+                />
+              )}
+              {editor.mode === "configure" && (
+                <p className="expense-notice">
+                  Cấu hình mới có hiệu lực từ tháng đã chọn. Các ngoại lệ riêng
+                  của tháng khác vẫn được giữ.
+                </p>
+              )}
+            </>
+          )}
+          {editor.mode === "month" && (
+            <>
+              <p>
+                Mức mặc định: {money(rule?.amount ?? "0")}. Cần thêm theo số dư
+                chuyển tiếp: {money(row!.required)}.
               </p>
-            )}
-          </>
-        )}
-        {editor.mode === "spend" && (
-          <>
+              <Amount
+                label="Mức riêng tháng này (để trống = mặc định)"
+                optional
+                value={target}
+                onChange={setTarget}
+              />
+              {!future && (
+                <>
+                  <Amount
+                    label="Tiền thêm theo tháng (để trống = tự tính)"
+                    optional
+                    value={funding}
+                    onChange={setFunding}
+                  />
+                  <Amount
+                    label="Tiền bổ sung ngoài mức tháng"
+                    value={extra}
+                    onChange={setExtra}
+                  />
+                  {row?.kind === "monthly" && (
+                    <Amount
+                      label="Số dư cuối tháng"
+                      optional
+                      value={closing}
+                      onChange={setClosing}
+                      hint={
+                        row.active
+                          ? "Để trống mặc định là 0."
+                          : "Hũ đã ngừng: để trống giữ nguyên tiền còn lại."
+                      }
+                    />
+                  )}
+                </>
+              )}
+              {future && (
+                <p className="expense-notice">
+                  Đây là tháng tương lai. Chỉ mức kế hoạch được thay đổi.
+                </p>
+              )}
+            </>
+          )}
+          {editor.mode === "spend" && (
+            <>
+              <p>
+                Góp vào đầu tháng; mỗi lần sử dụng sẽ được kiểm tra theo thứ tự
+                ngày phát sinh.
+              </p>
+              <label>
+                Ngày sử dụng
+                <input
+                  type="date"
+                  required
+                  min={`${jar?.start}-01`}
+                  max={view.today}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </label>
+              <Amount
+                label="Số tiền sử dụng"
+                value={amount}
+                onChange={setAmount}
+              />
+              <label>
+                Ghi chú
+                <textarea
+                  rows={2}
+                  maxLength={1000}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
+              </label>
+            </>
+          )}
+          {editor.mode === "label" && (
+            <>
+              <label>
+                Loại
+                <select
+                  value={labelKind}
+                  disabled={Boolean(label)}
+                  onChange={(e) =>
+                    setLabelKind(e.target.value as typeof labelKind)
+                  }
+                >
+                  <option value="method">Phương thức</option>
+                  <option value="group">Nhóm mục đích</option>
+                </select>
+              </label>
+              <label>
+                Tên
+                <input
+                  required
+                  maxLength={100}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
+              <p className="expense-muted">
+                Đây là danh sách gợi ý khi nhập. Sửa tên không đổi phân loại đã
+                lưu của những tháng trước.
+              </p>
+            </>
+          )}
+          {editor.mode === "stop" && (
             <p>
-              Góp vào đầu tháng; mỗi lần sử dụng sẽ được kiểm tra theo thứ tự
-              ngày phát sinh.
+              Ngừng tự cấp tiền từ tháng đã chọn. Số dư, lịch sử và các lần sử
+              dụng vẫn được giữ; có thể khôi phục bằng cách sửa cấu hình từ một
+              tháng chưa chốt.
             </p>
-            <label>
-              Ngày sử dụng
-              <input
-                type="date"
-                required
-                min={`${jar?.start}-01`}
-                max={view.today}
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </label>
-            <Amount
-              label="Số tiền sử dụng"
-              value={amount}
-              onChange={setAmount}
-            />
-            <label>
-              Ghi chú
-              <textarea
-                rows={2}
-                maxLength={1000}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-              />
-            </label>
-          </>
-        )}
-        {editor.mode === "label" && (
-          <>
-            <label>
-              Loại
-              <select
-                value={labelKind}
-                disabled={Boolean(label)}
-                onChange={(e) =>
-                  setLabelKind(e.target.value as typeof labelKind)
-                }
-              >
-                <option value="method">Phương thức</option>
-                <option value="group">Nhóm mục đích</option>
-              </select>
-            </label>
-            <label>
-              Tên
-              <input
-                required
-                maxLength={100}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </label>
-            <p className="expense-muted">
-              Đây là danh sách gợi ý khi nhập. Sửa tên không đổi phân loại đã
-              lưu của những tháng trước.
+          )}
+          {editor.mode === "deleteSpend" && (
+            <p>
+              Xóa lần sử dụng {money(editor.spend.amount)} ngày{" "}
+              {editor.spend.date}. Số dư từ ngày này sẽ được tính lại; lịch sử
+              xóa vẫn được giữ.
             </p>
-          </>
-        )}
-        {editor.mode === "stop" && (
-          <p>
-            Ngừng tự cấp tiền từ tháng đã chọn. Số dư, lịch sử và các lần sử
-            dụng vẫn được giữ; có thể khôi phục bằng cách sửa cấu hình từ một
-            tháng chưa chốt.
-          </p>
-        )}
-        {editor.mode === "deleteSpend" && (
-          <p>
-            Xóa lần sử dụng {money(editor.spend.amount)} ngày{" "}
-            {editor.spend.date}. Số dư từ ngày này sẽ được tính lại; lịch sử xóa
-            vẫn được giữ.
-          </p>
-        )}
-        {editor.mode === "deleteLabel" && (
-          <p>
-            Xóa gợi ý “{editor.label.name}”. Phân loại trong lịch sử các hũ
-            không bị xóa.
-          </p>
-        )}
-        {editor.mode === "closeYear" && (
-          <p>
-            Năm {editor.year} sẽ được khóa để lưu trữ. Số dư đã chuyển tiếp được
-            giữ; sau chốt chỉ có thể xem và xuất backup. Hãy hoàn tất số dư
-            tháng 12 và các lần sử dụng trước khi chốt.
-          </p>
-        )}
-        <p role="alert" ref={errorRef} tabIndex={-1} className="expense-error">
-          {error}
-        </p>
-        {conflict && (
-          <button
-            type="button"
-            className="expense-secondary"
-            disabled={busy}
-            onClick={updateVersion}
+          )}
+          {editor.mode === "deleteLabel" && (
+            <p>
+              Xóa gợi ý “{editor.label.name}”. Phân loại trong lịch sử các hũ
+              không bị xóa.
+            </p>
+          )}
+          {editor.mode === "closeYear" && (
+            <p>
+              Năm {editor.year} sẽ được khóa để lưu trữ. Số dư đã chuyển tiếp
+              được giữ; sau chốt chỉ có thể xem và xuất backup. Hãy hoàn tất số
+              dư tháng 12 và các lần sử dụng trước khi chốt.
+            </p>
+          )}
+          <p
+            role="alert"
+            ref={errorRef}
+            tabIndex={-1}
+            className="expense-error"
           >
-            Tải dữ liệu mới, giữ nội dung đang nhập
-          </button>
-        )}
+            {error}
+          </p>
+          {conflict && (
+            <button
+              type="button"
+              className="expense-secondary"
+              disabled={busy}
+              onClick={updateVersion}
+            >
+              Tải dữ liệu mới, giữ nội dung đang nhập
+            </button>
+          )}
+        </fieldset>
         {preview && (
           <div
             className="expense-preview"
@@ -603,86 +663,26 @@ function ExpenseEditorForm({
                   : "Thay đổi hợp lệ. Không có số tiền tháng nào bị thay đổi."}
             </p>
             {preview.changes.length > 0 && editor.mode !== "emoji" && (
-              <div className="expense-table-scroll">
-                <table>
-                  <caption className="sr-only">Ảnh hưởng đến số tiền</caption>
-                  <thead>
-                    <tr>
-                      <th>Hũ / tháng</th>
-                      <th>Tiền thêm</th>
-                      <th>Thực chi</th>
-                      <th>Số dư</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(showAll
-                      ? preview.changes
-                      : preview.changes.slice(0, 8)
-                    ).map((c) => (
-                      <tr key={`${c.jarId}/${c.month}`}>
-                        <th>
-                          {c.name}
-                          <small>{monthName(c.month)}</small>
-                        </th>
-                        {(["funding", "spent", "closing"] as const).map(
-                          (field) => (
-                            <td key={field}>
-                              {c.before && <del>{money(c.before[field])}</del>}
-                              <span>{money(c.after?.[field] ?? "0")}</span>
-                            </td>
-                          ),
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <DialogChanges
+                rows={preview.changes
+                  .slice()
+                  .sort((a, b) => b.month.localeCompare(a.month))
+                  .flatMap((change) =>
+                    (["funding", "spent", "closing"] as const).map((field) => ({
+                      key: `${change.jarId}/${change.month}/${field}`,
+                      label: `${change.name} · ${monthName(change.month)} · ${{ funding: "Tiền thêm", spent: "Thực chi", closing: "Số dư" }[field]}`,
+                      before: change.before
+                        ? money(change.before[field])
+                        : "Chưa có",
+                      after: change.after
+                        ? money(change.after[field])
+                        : "Đã bỏ dòng",
+                    })),
+                  )}
+              />
             )}
-            {preview.changes.length > 8 && editor.mode !== "emoji" && (
-              <button
-                type="button"
-                className="expense-secondary"
-                onClick={() => setShowAll(!showAll)}
-              >
-                {showAll ? "Thu gọn" : "Xem toàn bộ tháng bị ảnh hưởng"}
-              </button>
-            )}
-            <button
-              aria-busy={busy}
-              type="button"
-              className="expense-primary"
-              disabled={busy || conflict || (moneyForm && hidden)}
-              onClick={commit}
-            >
-              {busy && <LoadingSpinner />}
-              {busy
-                ? "Đang lưu…"
-                : editor.mode === "closeYear"
-                  ? "Xác nhận chốt năm"
-                  : "Xác nhận lưu"}
-            </button>
           </div>
         )}
-        <div className="expense-actions">
-          <button
-            className="expense-secondary"
-            type="button"
-            disabled={busy}
-            onClick={onClose}
-          >
-            Hủy
-          </button>
-          {!preview && (
-            <button
-              aria-busy={busy}
-              className="expense-primary"
-              disabled={busy || (moneyForm && hidden)}
-            >
-              {busy && <LoadingSpinner />}
-              {busy ? "Đang kiểm tra…" : "Xem trước thay đổi"}
-            </button>
-          )}
-        </div>
       </form>
     </ExpenseModal>
   );

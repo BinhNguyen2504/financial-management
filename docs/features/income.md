@@ -47,3 +47,8 @@ Command: `{id: UUID, expectedVersion: number, action}`. Các action: createCateg
 Áp dụng `202610150001_expenses.sql` trước, rồi `202610150002_income.sql`. Tiếp tục dùng role runtime expense_api; không đổi kết nối admin thành runtime. Migration mới thêm bảng income_* và policy RLS, không sửa dữ liệu Chi tiêu. Xem hướng dẫn cloud chung.
 
 Chạy npm test, npm run test:db, npm run test:e2e, npm run typecheck, npm run build với Node 22. Runner DB/e2e nạp tất cả migration theo thứ tự vào cluster PostgreSQL local riêng. Browser dùng Auth contract double local, không phải xác nhận Supabase production. Chưa bao gồm deploy, dự báo, khóa năm, import hoặc ghi offline.
+
+
+## Giao diện chi tiết — 18/10/2026
+
+Chi tiết thu phát sinh có tổng kỳ, số khoản, tìm kiếm và 20 dòng/trang. Sửa/xóa qua dialog con quay lại danh sách đã cập nhật, giữ bộ lọc. Xem trước đổi cấu hình hiển thị đầy đủ thay đổi có nhãn Trước/Sau và phân trang, thay cho giới hạn 24 dòng. Xem [quy chuẩn dialog](ui-feedback.md).

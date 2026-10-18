@@ -1,6 +1,11 @@
 "use client";
 import { LoadingSpinner } from "@/components/loading";
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  DialogChanges,
+  DialogPreview,
+  decimalLabel,
+} from "@/components/dialog-content";
+import { useRef, useId, useState, type FormEvent, type ReactNode } from "react";
 import { ZodError } from "zod";
 import {
   actionSchema,
@@ -49,7 +54,12 @@ export const kindNames = {
 export type EditorMode =
   | { type: "create" }
   | { type: "configure" | "archive" | "restore"; category: SavingsCategory }
-  | { type: "transaction"; transaction?: SavingsTransaction }
+  | {
+      type: "transaction";
+      transaction?: SavingsTransaction;
+      categoryId?: string;
+      kind?: SavingsTransaction["kind"];
+    }
   | { type: "void"; transaction: SavingsTransaction }
   | { type: "price"; categoryId?: string }
   | { type: "close" | "reopen" };
@@ -106,6 +116,7 @@ function EditorForm({
     unit: category?.unit ?? "",
     transactionKind:
       old?.kind ??
+      (mode.type === "transaction" ? mode.kind : undefined) ??
       (first?.kind === "gold"
         ? "buyGold"
         : first?.kind === "deposit"
@@ -113,6 +124,7 @@ function EditorForm({
           : "deposit"),
     categoryId:
       old?.categoryId ??
+      (mode.type === "transaction" ? mode.categoryId : undefined) ??
       (mode.type === "price" ? mode.categoryId : undefined) ??
       first?.id ??
       "",
@@ -537,6 +549,7 @@ function EditorForm({
       </label>
     );
   }
+  const formId = useId();
   return (
     <ExpenseModal
       title={
@@ -546,8 +559,35 @@ function EditorForm({
       }
       onClose={onClose}
       busy={busy}
+      size={mode.type === "void" ? "confirm" : "form"}
+      footer={
+        <div className="expense-actions">
+          <button
+            form={formId}
+            aria-busy={busy}
+            className="expense-primary"
+            disabled={busy || conflict || (sensitive && hidden)}
+          >
+            {busy && <LoadingSpinner />}
+            {busy
+              ? "Đang xử lý…"
+              : preview
+                ? "Xác nhận lưu"
+                : "Xem trước thay đổi"}
+          </button>
+          <button
+            form={formId}
+            type="button"
+            className="expense-secondary"
+            onClick={onClose}
+            disabled={busy}
+          >
+            Hủy
+          </button>
+        </div>
+      }
     >
-      <form className="expense-form savings-form" onSubmit={submit}>
+      <form id={formId} className="expense-form savings-form" onSubmit={submit}>
         <PrivacyReveal />
         {error && (
           <div
@@ -584,214 +624,125 @@ function EditorForm({
             Tải dữ liệu mới, giữ nội dung nhập
           </button>
         )}
-        {["create", "configure"].includes(mode.type) && (
-          <>
-            {input("name", "Tên danh mục")}
-            {input("description", "Mô tả", "text", false, false)}
-            {select(
-              "emoji",
-              "Biểu tượng",
-              ["🌱", "💰", "🏦", "🪙", "💛", "🏡", "✈️", "🎯"].map((v) => (
-                <option key={v}>{v}</option>
-              )),
-            )}
-            {mode.type === "create" && (
-              <>
-                {select(
-                  "kind",
-                  "Loại tài sản",
-                  Object.entries(kindNames).map(([k, v]) => (
-                    <option key={k} value={k}>
-                      {v}
-                    </option>
-                  )),
-                )}
-                {f.kind === "gold" &&
-                  select(
-                    "unit",
-                    "Đơn vị vàng",
-                    <>
-                      <option value="">Chọn đơn vị</option>
-                      {["chỉ", "lượng/cây", "gram"].map((v) => (
-                        <option key={v}>{v}</option>
-                      ))}
-                    </>,
-                  )}
-              </>
-            )}
-          </>
-        )}
-        {[
-          "create",
-          "configure",
-          "archive",
-          "restore",
-          "close",
-          "reopen",
-        ].includes(mode.type) &&
-          input(
-            "month",
-            mode.type === "create" ? "Tháng bắt đầu" : "Tháng hiệu lực",
-            "month",
-          )}
-        {mode.type === "archive" && (
-          <p className="expense-notice">
-            Chỉ lưu trữ sau khi xử lý hết tiền, vàng và sổ tiền gửi. Chọn tháng
-            sau lần giao dịch cuối; lịch sử và báo cáo vẫn được giữ.
-          </p>
-        )}
-        {mode.type === "reopen" && (
-          <p className="expense-notice">
-            Tháng được chọn và các tháng đã chốt sau đó sẽ cần chốt lại.
-            Snapshot cũ vẫn được giữ.
-          </p>
-        )}
-        {mode.type === "close" && (
-          <label className="savings-check">
-            <input
-              type="checkbox"
-              checked={f.acceptStalePrices === "true"}
-              onChange={(e) =>
-                set("acceptStalePrices", String(e.target.checked))
-              }
-            />
-            Chấp nhận giá vàng mang từ tháng trước
-          </label>
-        )}
-        {mode.type === "price" && (
-          <>
-            {select(
-              "categoryId",
-              "Danh mục vàng",
-              <>
-                <option value="">Chọn danh mục</option>
-                {categories
-                  .filter((c) => c.kind === "gold")
-                  .map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {names(c)} · {c.unit}
-                    </option>
-                  ))}
-              </>,
-            )}
-            {input("date", "Ngày giá", "date")}
-            {input(
-              "unitPrice",
-              `Giá bán lại dự kiến (VND/${selectedCategory?.unit ?? "đơn vị"})`,
-              "text",
-              true,
-            )}
-          </>
-        )}
-        {mode.type === "transaction" && (
-          <>
-            {select(
-              "transactionKind",
-              "Loại giao dịch",
-              Object.entries(transactionNames).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              )),
-            )}
-            {select(
-              "categoryId",
-              "Danh mục",
-              <>
-                <option value="">Chọn danh mục</option>
-                {categories
-                  .filter((c) => c.kind === txAsset)
-                  .map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {names(c)}
-                    </option>
-                  ))}
-              </>,
-            )}
-            {input("date", "Ngày giao dịch", "date")}
-            {txKind.startsWith("opening") && (
-              <p className="expense-notice">
-                Tài sản có sẵn tại ngày bắt đầu theo dõi, không tính là tiền nạp
-                mới.
-              </p>
-            )}
-            {hasAmount &&
-              input(
-                "amount",
-                txKind === "openingGold"
-                  ? "Giá vốn mở đầu (VND)"
-                  : txKind === "withdrawDeposit"
-                    ? "Gốc rút (VND)"
-                    : "Số tiền (VND)",
-                "text",
-                true,
+        <fieldset className="dialog-form-section" disabled={busy}>
+          <legend>Thông tin giao dịch / danh mục</legend>
+          {["create", "configure"].includes(mode.type) && (
+            <>
+              {input("name", "Tên danh mục")}
+              {input("description", "Mô tả", "text", false, false)}
+              {select(
+                "emoji",
+                "Biểu tượng",
+                ["🌱", "💰", "🏦", "🪙", "💛", "🏡", "✈️", "🎯"].map((v) => (
+                  <option key={v}>{v}</option>
+                )),
               )}
-            {["openingGold", "buyGold"].includes(txKind) &&
-              input(
-                "quantity",
-                `Số lượng (${selectedCategory?.unit ?? "đơn vị"})`,
-                "text",
-                true,
-              )}
-            {["openingGold", "buyGold", "sellGold"].includes(txKind) &&
-              input(
-                "unitPrice",
-                txKind === "buyGold"
-                  ? "Giá mua mỗi đơn vị (VND)"
-                  : "Giá bán lại mỗi đơn vị (VND)",
-                "text",
-                true,
-              )}
-            {hasContract &&
-              select(
-                "contractId",
-                "Sổ tiền gửi",
+              {mode.type === "create" && (
                 <>
-                  <option value="">Chọn sổ</option>
-                  {inventory.contracts
-                    .filter((c) => c.categoryId === f.categoryId)
+                  {select(
+                    "kind",
+                    "Loại tài sản",
+                    Object.entries(kindNames).map(([k, v]) => (
+                      <option key={k} value={k}>
+                        {v}
+                      </option>
+                    )),
+                  )}
+                  {f.kind === "gold" &&
+                    select(
+                      "unit",
+                      "Đơn vị vàng",
+                      <>
+                        <option value="">Chọn đơn vị</option>
+                        {["chỉ", "lượng/cây", "gram"].map((v) => (
+                          <option key={v}>{v}</option>
+                        ))}
+                      </>,
+                    )}
+                </>
+              )}
+            </>
+          )}
+          {[
+            "create",
+            "configure",
+            "archive",
+            "restore",
+            "close",
+            "reopen",
+          ].includes(mode.type) &&
+            input(
+              "month",
+              mode.type === "create" ? "Tháng bắt đầu" : "Tháng hiệu lực",
+              "month",
+            )}
+          {mode.type === "archive" && (
+            <p className="expense-notice">
+              Chỉ lưu trữ sau khi xử lý hết tiền, vàng và sổ tiền gửi. Chọn
+              tháng sau lần giao dịch cuối; lịch sử và báo cáo vẫn được giữ.
+            </p>
+          )}
+          {mode.type === "reopen" && (
+            <p className="expense-notice">
+              Tháng được chọn và các tháng đã chốt sau đó sẽ cần chốt lại.
+              Snapshot cũ vẫn được giữ.
+            </p>
+          )}
+          {mode.type === "close" && (
+            <label className="savings-check">
+              <input
+                type="checkbox"
+                checked={f.acceptStalePrices === "true"}
+                onChange={(e) =>
+                  set("acceptStalePrices", String(e.target.checked))
+                }
+              />
+              Chấp nhận giá vàng mang từ tháng trước
+            </label>
+          )}
+          {mode.type === "price" && (
+            <>
+              {select(
+                "categoryId",
+                "Danh mục vàng",
+                <>
+                  <option value="">Chọn danh mục</option>
+                  {categories
+                    .filter((c) => c.kind === "gold")
                     .map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.name} · {c.opened}
+                        {names(c)} · {c.unit}
                       </option>
                     ))}
                 </>,
               )}
-            {opensContract && (
-              <>
-                {input("name", "Tên sổ")}
-                {input("maturity", "Ngày đáo hạn", "date")}
-                {input("term", "Kỳ hạn / ghi chú sổ", "text", false, false)}
-              </>
-            )}
-            {["withdrawDeposit", "rollover"].includes(txKind) &&
-              input("interest", "Lãi thực nhận (VND)", "text", true)}
-            {txKind === "rollover" &&
-              input("reinvestInterest", "Lãi nhập sổ mới (VND)", "text", true)}
-            {txKind === "interest" &&
-              select(
-                "capitalize",
-                "Cách nhận lãi",
-                <>
-                  <option value="true">Nhập gốc sổ hiện tại</option>
-                  <option value="false">Nhận tiền</option>
-                </>,
+              {input("date", "Ngày giá", "date")}
+              {input(
+                "unitPrice",
+                `Giá bán lại dự kiến (VND/${selectedCategory?.unit ?? "đơn vị"})`,
+                "text",
+                true,
               )}
-            {hasWallet &&
-              !(txKind === "interest" && f.capitalize === "true") &&
-              select(
-                "cashCategoryId",
-                ["buyGold", "openDeposit"].includes(txKind)
-                  ? "Nguồn tiền"
-                  : "Ví nhận tiền",
-                <>
-                  <option value="">
-                    {txKind === "transfer"
-                      ? "Chọn ví nhận"
-                      : "Bên ngoài Tiết kiệm"}
+            </>
+          )}
+          {mode.type === "transaction" && (
+            <>
+              {select(
+                "transactionKind",
+                "Loại giao dịch",
+                Object.entries(transactionNames).map(([k, v]) => (
+                  <option key={k} value={k}>
+                    {v}
                   </option>
+                )),
+              )}
+              {select(
+                "categoryId",
+                "Danh mục",
+                <>
+                  <option value="">Chọn danh mục</option>
                   {categories
-                    .filter((c) => c.kind === "cash" && c.id !== f.categoryId)
+                    .filter((c) => c.kind === txAsset)
                     .map((c) => (
                       <option key={c.id} value={c.id}>
                         {names(c)}
@@ -799,132 +750,215 @@ function EditorForm({
                     ))}
                 </>,
               )}
-            {hasCharges && (
-              <div className="savings-form-grid">
-                {input("fee", "Phí (VND)", "text", true)}
-                {input("tax", "Thuế (VND)", "text", true)}
-              </div>
-            )}
-            {txKind === "sellGold" && (
-              <fieldset>
-                <legend>Chọn đợt mua để bán · ưu tiên đợt cũ nhất</legend>
-                <label>
-                  Tổng lượng muốn bán (để gợi ý)
-                  <input
-                    type={hidden ? "password" : "text"}
-                    inputMode="decimal"
-                    disabled={hidden || busy}
-                    value={hidden ? "••••••" : saleQuantity}
-                    onChange={(e) => setSaleQuantity(e.target.value)}
-                  />
-                </label>
-                <button
-                  type="button"
-                  className="expense-secondary"
-                  disabled={hidden || busy || !saleQuantity}
-                  onClick={suggestLots}
-                >
-                  Gợi ý theo đợt cũ nhất
-                </button>
-                {saleLots.map((l) => (
-                  <label key={l.id}>
-                    Đợt {l.date} · còn {hidden ? "••••••" : l.quantity}{" "}
-                    {selectedCategory?.unit}
+              {input("date", "Ngày giao dịch", "date")}
+              {txKind.startsWith("opening") && (
+                <p className="expense-notice">
+                  Tài sản có sẵn tại ngày bắt đầu theo dõi, không tính là tiền
+                  nạp mới.
+                </p>
+              )}
+              {hasAmount &&
+                input(
+                  "amount",
+                  txKind === "openingGold"
+                    ? "Giá vốn mở đầu (VND)"
+                    : txKind === "withdrawDeposit"
+                      ? "Gốc rút (VND)"
+                      : "Số tiền (VND)",
+                  "text",
+                  true,
+                )}
+              {["openingGold", "buyGold"].includes(txKind) &&
+                input(
+                  "quantity",
+                  `Số lượng (${selectedCategory?.unit ?? "đơn vị"})`,
+                  "text",
+                  true,
+                )}
+              {["openingGold", "buyGold", "sellGold"].includes(txKind) &&
+                input(
+                  "unitPrice",
+                  txKind === "buyGold"
+                    ? "Giá mua mỗi đơn vị (VND)"
+                    : "Giá bán lại mỗi đơn vị (VND)",
+                  "text",
+                  true,
+                )}
+              {hasContract &&
+                select(
+                  "contractId",
+                  "Sổ tiền gửi",
+                  <>
+                    <option value="">Chọn sổ</option>
+                    {inventory.contracts
+                      .filter((c) => c.categoryId === f.categoryId)
+                      .map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} · {c.opened}
+                        </option>
+                      ))}
+                  </>,
+                )}
+              {opensContract && (
+                <>
+                  {input("name", "Tên sổ")}
+                  {input("maturity", "Ngày đáo hạn", "date")}
+                  {input("term", "Kỳ hạn / ghi chú sổ", "text", false, false)}
+                </>
+              )}
+              {["withdrawDeposit", "rollover"].includes(txKind) &&
+                input("interest", "Lãi thực nhận (VND)", "text", true)}
+              {txKind === "rollover" &&
+                input(
+                  "reinvestInterest",
+                  "Lãi nhập sổ mới (VND)",
+                  "text",
+                  true,
+                )}
+              {txKind === "interest" &&
+                select(
+                  "capitalize",
+                  "Cách nhận lãi",
+                  <>
+                    <option value="true">Nhập gốc sổ hiện tại</option>
+                    <option value="false">Nhận tiền</option>
+                  </>,
+                )}
+              {hasWallet &&
+                !(txKind === "interest" && f.capitalize === "true") &&
+                select(
+                  "cashCategoryId",
+                  ["buyGold", "openDeposit"].includes(txKind)
+                    ? "Nguồn tiền"
+                    : "Ví nhận tiền",
+                  <>
+                    <option value="">
+                      {txKind === "transfer"
+                        ? "Chọn ví nhận"
+                        : "Bên ngoài Tiết kiệm"}
+                    </option>
+                    {categories
+                      .filter((c) => c.kind === "cash" && c.id !== f.categoryId)
+                      .map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {names(c)}
+                        </option>
+                      ))}
+                  </>,
+                )}
+              {hasCharges && (
+                <fieldset className="dialog-form-section">
+                  <legend>Phí và thuế</legend>
+                  <div className="savings-form-grid">
+                    {input("fee", "Phí (VND)", "text", true)}
+                    {input("tax", "Thuế (VND)", "text", true)}
+                  </div>
+                </fieldset>
+              )}
+              {txKind === "sellGold" && (
+                <fieldset>
+                  <legend>Chọn đợt mua để bán · ưu tiên đợt cũ nhất</legend>
+                  <label>
+                    Tổng lượng muốn bán (để gợi ý)
                     <input
-                      aria-label={`Lượng bán đợt ${l.date} ${l.id.slice(0, 4)}`}
                       type={hidden ? "password" : "text"}
                       inputMode="decimal"
-                      disabled={busy || hidden}
-                      value={hidden ? "••••••" : (allocations[l.id] ?? "")}
-                      placeholder="0"
-                      onChange={(e) => {
-                        setAllocations((a) => ({
-                          ...a,
-                          [l.id]: e.target.value,
-                        }));
-                        setPreview(null);
-                      }}
+                      disabled={hidden || busy}
+                      value={hidden ? "••••••" : saleQuantity}
+                      onChange={(e) => setSaleQuantity(e.target.value)}
                     />
                   </label>
-                ))}
-                <p className="expense-muted">
-                  Nhập lượng bán vào một hoặc nhiều đợt; để trống những đợt
-                  không bán.
-                </p>
-              </fieldset>
-            )}
-            {input("note", "Ghi chú", "text", false, false)}
-          </>
-        )}
-        {(mode.type === "reopen" ||
-          mode.type === "void" ||
-          (old && mode.type === "transaction")) &&
-          input("reason", "Lý do thay đổi")}
+                  <button
+                    type="button"
+                    className="expense-secondary"
+                    disabled={hidden || busy || !saleQuantity}
+                    onClick={suggestLots}
+                  >
+                    Gợi ý theo đợt cũ nhất
+                  </button>
+                  {saleLots.map((l) => (
+                    <label key={l.id}>
+                      Đợt {l.date} · còn {hidden ? "••••••" : l.quantity}{" "}
+                      {selectedCategory?.unit}
+                      <input
+                        aria-label={`Lượng bán đợt ${l.date} ${l.id.slice(0, 4)}`}
+                        type={hidden ? "password" : "text"}
+                        inputMode="decimal"
+                        disabled={busy || hidden}
+                        value={hidden ? "••••••" : (allocations[l.id] ?? "")}
+                        placeholder="0"
+                        onChange={(e) => {
+                          setAllocations((a) => ({
+                            ...a,
+                            [l.id]: e.target.value,
+                          }));
+                          setPreview(null);
+                        }}
+                      />
+                    </label>
+                  ))}
+                  <p className="expense-muted">
+                    Nhập lượng bán vào một hoặc nhiều đợt; để trống những đợt
+                    không bán.
+                  </p>
+                </fieldset>
+              )}
+              {input("note", "Ghi chú", "text", false, false)}
+            </>
+          )}
+          {(mode.type === "reopen" ||
+            mode.type === "void" ||
+            (old && mode.type === "transaction")) &&
+            input("reason", "Lý do thay đổi")}
+        </fieldset>
         {preview && (
-          <section
-            className="savings-preview"
-            role="region"
-            aria-label="Xem trước thay đổi"
-          >
+          <DialogPreview className="savings-preview">
             <h3>Xem trước thay đổi</h3>
-            <p>
-              Tài sản tiết kiệm:{" "}
-              {preview.result.before.total === null
-                ? "Thiếu định giá"
-                : money(preview.result.before.total)}{" "}
-              →{" "}
-              {preview.result.after.total === null
-                ? "Thiếu định giá"
-                : money(preview.result.after.total)}
-            </p>
-            {preview.result.after.positions.map((p) => {
-              const before = preview.result.before.positions.find(
-                (b) => b.id === p.id,
-              );
-              return before &&
-                before.value === p.value &&
-                before.quantity === p.quantity &&
-                before.cost === p.cost ? null : (
-                <p key={p.id}>
-                  {p.name}: {p.value === null ? "Thiếu giá" : money(p.value)}
-                  {p.kind === "gold"
-                    ? ` · ${hidden ? "••••••" : p.quantity} ${p.unit} · giá vốn ${money(p.cost)}`
-                    : ""}
-                </p>
-              );
-            })}
-            {preview.result.after.effects
-              .filter((e) => e.id === transactionId.current)
-              .map((e) => (
-                <p key={e.id}>
-                  Tiền giao dịch: {money(e.net)} · giá vốn bán:{" "}
-                  {money(e.costSold)} · lãi/lỗ đã chốt: {money(e.realized)}
-                </p>
-              ))}
-          </section>
+            <DialogChanges
+              rows={[
+                {
+                  key: "total",
+                  label: "Tài sản tiết kiệm",
+                  before:
+                    preview.result.before.total === null
+                      ? "Thiếu định giá"
+                      : money(preview.result.before.total),
+                  after:
+                    preview.result.after.total === null
+                      ? "Thiếu định giá"
+                      : money(preview.result.after.total),
+                },
+                ...preview.result.after.positions.flatMap((p) => {
+                  const before = preview.result.before.positions.find(
+                    (b) => b.id === p.id,
+                  );
+                  const fields =
+                    p.kind === "gold"
+                      ? (["value", "cost", "quantity"] as const)
+                      : (["value"] as const);
+                  return fields
+                    .filter((field) => before?.[field] !== p[field])
+                    .map((field) => ({
+                      key: `${p.id}/${field}`,
+                      label: `${p.name} · ${{ value: "Giá trị", cost: "Giá vốn", quantity: "Khối lượng" }[field]}`,
+                      before:
+                        field === "quantity"
+                          ? `${hidden ? "••••••" : decimalLabel(before?.quantity ?? "0")} ${p.unit}`
+                          : before?.[field] === null
+                            ? "Thiếu định giá"
+                            : money(before?.[field] ?? "0"),
+                      after:
+                        field === "quantity"
+                          ? `${hidden ? "••••••" : decimalLabel(p.quantity)} ${p.unit}`
+                          : p[field] === null
+                            ? "Thiếu định giá"
+                            : money(p[field]),
+                    }));
+                }),
+              ]}
+            />
+          </DialogPreview>
         )}
-        <div className="expense-actions">
-          <button
-            aria-busy={busy}
-            className="expense-primary"
-            disabled={busy || conflict || (sensitive && hidden)}
-          >
-            {busy && <LoadingSpinner />}
-            {busy
-              ? "Đang xử lý…"
-              : preview
-                ? "Xác nhận lưu"
-                : "Xem trước thay đổi"}
-          </button>
-          <button
-            type="button"
-            className="expense-secondary"
-            onClick={onClose}
-            disabled={busy}
-          >
-            Hủy
-          </button>
-        </div>
       </form>
     </ExpenseModal>
   );

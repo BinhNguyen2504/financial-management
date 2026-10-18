@@ -60,7 +60,9 @@ test("stacked dialogs return to details and labels with focus and scroll intact"
   });
   for (const dismiss of ["cancel", "outside", "escape"] as const) {
     await (isMobile ? edit.tap() : edit.click());
-    const scroll = await parent.evaluate((el) => el.scrollTop);
+    const scroll = await parent
+      .locator(".dialog-body")
+      .evaluate((el) => el.scrollTop);
     const ids = await page
       .locator("dialog[open]")
       .evaluateAll((ds) => ds.map((d) => d.getAttribute("aria-labelledby")));
@@ -82,7 +84,9 @@ test("stacked dialogs return to details and labels with focus and scroll intact"
     if (dismiss === "escape") await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toHaveAccessibleName("Du lịch");
     await expect(edit).toBeFocused();
-    expect(await parent.evaluate((el) => el.scrollTop)).toBe(scroll);
+    expect(
+      await parent.locator(".dialog-body").evaluate((el) => el.scrollTop),
+    ).toBe(scroll);
     expect(await page.evaluate(() => document.body.style.overflow)).toBe(
       "hidden",
     );

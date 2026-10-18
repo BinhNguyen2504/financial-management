@@ -3,6 +3,7 @@ import { LoadingStatus } from "@/components/loading";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Garden } from "@/components/garden";
+import { focusPointerControl } from "@/components/pointer-focus";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
 import { activeTransactions, ruleAt } from "@/domain/investments/engine";
 import { buildReport, type ReportFilter } from "@/domain/investments/reports";
@@ -14,7 +15,7 @@ import type {
 import { InvestmentEditor, type EditorMode, transactionNames } from "./editor";
 import { InvestmentReports } from "./report-panel";
 import { investmentsJSON, downloadInvestment, InvestmentAPIError } from "./api";
-import { ExpenseModal } from "@/features/expenses/modal";
+import { InvestmentDetails, InvestmentTransactionDetails } from "./details";
 import { formatROI } from "./format";
 const tabs = [
   ["portfolio", "Danh mục"],
@@ -134,16 +135,7 @@ export function InvestmentWorkspace({
         (book?.revisions.find((r) => r.id === b.t.id)?.sequence ?? 0) -
           (book?.revisions.find((r) => r.id === a.t.id)?.sequence ?? 0),
     );
-  const selected = state?.positions.find((p) => p.id === details),
-    selectedT = transaction
-      ? book?.revisions
-          .slice()
-          .reverse()
-          .find((r) => r.rootId === transaction && r.transaction)?.transaction
-      : null;
-  const currentT = transaction
-    ? live.find((r) => r.transaction.id === transaction)?.transaction
-    : null;
+  const selected = state?.positions.find((p) => p.id === details);
   async function download(path: string, filename: string) {
     try {
       await downloadInvestment(path, filename);
@@ -157,8 +149,6 @@ export function InvestmentWorkspace({
     void load().catch(() => {});
   }
   function open(mode: EditorMode) {
-    setDetails(null);
-    setTransaction(null);
     setNotice("");
     setEditor(mode);
   }
@@ -231,7 +221,10 @@ export function InvestmentWorkspace({
     );
   }
   return (
-    <div className="investment-workspace">
+    <div
+      className="investment-workspace"
+      onMouseDownCapture={focusPointerControl}
+    >
       <header className="investment-heading">
         <div>
           <p className="eyebrow">Vốn và giá trị hiện tại</p>
@@ -670,190 +663,24 @@ export function InvestmentWorkspace({
           )}
         </>
       )}
-      {selected && (
-        <ExpenseModal title={selected.name} onClose={() => setDetails(null)}>
-          <div className="investment-details">
-            <p>{selected.description}</p>
-            <dl>
-              <div>
-                <dt>Giá trị</dt>
-                <dd>{display(selected.value)}</dd>
-              </div>
-              <div>
-                <dt>Giá vốn còn lại</dt>
-                <dd>{money(selected.cost)}</dd>
-              </div>
-              <div>
-                <dt>Lãi/lỗ đã chốt</dt>
-                <dd>{money(selected.realized)}</dd>
-              </div>
-              <div>
-                <dt>Lãi/lỗ chưa chốt</dt>
-                <dd>{display(selected.unrealized)}</dd>
-              </div>
-            </dl>
-            <p>
-              {selected.kind === "cash"
-                ? "Số dư tính từ giao dịch"
-                : `Định giá ${selected.valueDate ?? "chưa có"}${selected.stale ? " · từ kỳ trước" : ""}`}
-            </p>
-            <div className="expense-actions">
-              {selected.active && (
-                <>
-                  {(selected.kind === "cash"
-                    ? ["deposit", "withdraw", "transfer"]
-                    : ["buy", "sell", "valuation"]
-                  ).map((k) => (
-                    <button
-                      key={k}
-                      className="expense-secondary"
-                      onClick={() =>
-                        open({
-                          type: "transaction",
-                          kind: k as InvestmentTransaction["kind"],
-                          categoryId: selected.id,
-                        })
-                      }
-                    >
-                      {transactionNames[k as InvestmentTransaction["kind"]]}
-                    </button>
-                  ))}
-                </>
-              )}
-            </div>
-            <h3>Giao dịch liên quan</h3>
-            {state?.effects
-              .filter(
-                (e) =>
-                  e.categoryId === selected.id ||
-                  e.cashCategoryId === selected.id,
-              )
-              .map((e) => (
-                <button
-                  key={e.id}
-                  className="investment-history-button"
-                  onClick={() => {
-                    setDetails(null);
-                    setTransaction(e.id);
-                  }}
-                >
-                  {e.date} · {transactionNames[e.kind]} · {money(e.net)}
-                </button>
-              ))}
-          </div>
-        </ExpenseModal>
+      {selected && view && (
+        <InvestmentDetails
+          key={selected.id}
+          view={view}
+          position={selected}
+          onClose={() => setDetails(null)}
+          onEdit={open}
+          onTransaction={setTransaction}
+        />
       )}
-      {selectedT && (
-        <ExpenseModal
-          title="Chi tiết giao dịch"
+      {transaction && view && (
+        <InvestmentTransactionDetails
+          key={transaction}
+          view={view}
+          id={transaction}
           onClose={() => setTransaction(null)}
-        >
-          <div className="investment-details">
-            <p>
-              {transactionNames[selectedT.kind]} · {name(selectedT.categoryId)}
-            </p>
-            {!currentT && <p>Giao dịch đã hủy.</p>}
-            {(
-              book?.revisions.filter((r) => r.rootId === selectedT.id) ?? []
-            ).map((r) => (
-              <section className="investment-revision" key={r.id}>
-                <h3>
-                  Phiên bản {r.sequence} ·{" "}
-                  {r.transaction ? "Có hiệu lực tại lần ghi" : "Hủy"}
-                </h3>
-                <p>
-                  {r.at}
-                  {r.reason ? ` · ${r.reason}` : ""}
-                </p>
-                {r.transaction && (
-                  <>
-                    <p>
-                      Ngày {r.transaction.date} ·{" "}
-                      {name(r.transaction.categoryId)}
-                    </p>
-                    {"cashCategoryId" in r.transaction && (
-                      <p>
-                        Ví:{" "}
-                        {r.transaction.cashCategoryId
-                          ? name(r.transaction.cashCategoryId)
-                          : "Bên ngoài"}
-                      </p>
-                    )}
-                    {[...Object.entries(r.transaction)]
-                      .filter(([k]) =>
-                        ["amount", "cost", "value", "fee", "tax"].includes(k),
-                      )
-                      .map(([k, v]) => (
-                        <p key={k}>
-                          {
-                            {
-                              amount: "Số tiền trước phí/thuế",
-                              cost: "Giá vốn",
-                              value: "Giá trị sau giao dịch",
-                              fee: "Phí",
-                              tax: "Thuế",
-                            }[k]
-                          }
-                          : {money(String(v))}
-                        </p>
-                      ))}
-                    <p>
-                      {r.transaction.counterparty} {r.transaction.note}
-                    </p>
-                  </>
-                )}
-              </section>
-            ))}
-            {state?.effects
-              .filter((e) => e.id === selectedT.id)
-              .map((e) => (
-                <section key={e.id}>
-                  <h3>Ảnh hưởng đang có hiệu lực</h3>
-                  <p>
-                    Tiền ròng {money(e.net)} · Lãi/lỗ đã chốt{" "}
-                    {money(e.realized)}
-                  </p>
-                  {Object.keys(e.before).map((id) => (
-                    <div key={id}>
-                      <h4>{name(id)}</h4>
-                      <p>
-                        Tiền: {money(e.before[id].cash)} →{" "}
-                        {money(e.after[id].cash)}
-                      </p>
-                      <p>
-                        Vốn: {money(e.before[id].cost)} →{" "}
-                        {money(e.after[id].cost)}
-                      </p>
-                      <p>
-                        Giá trị: {display(e.before[id].value)} →{" "}
-                        {display(e.after[id].value)}
-                      </p>
-                    </div>
-                  ))}
-                </section>
-              ))}
-            {currentT && (
-              <div className="expense-actions">
-                <button
-                  className="expense-secondary"
-                  onClick={() =>
-                    open({ type: "revise", transaction: currentT })
-                  }
-                >
-                  Sửa giao dịch
-                </button>
-                <button
-                  className="expense-secondary"
-                  onClick={() =>
-                    open({ type: "cancel", transaction: currentT })
-                  }
-                >
-                  Hủy giao dịch
-                </button>
-              </div>
-            )}
-          </div>
-        </ExpenseModal>
+          onEdit={open}
+        />
       )}
       {editor && view && (
         <InvestmentEditor

@@ -30,7 +30,7 @@ Catalog dùng chung cho trạng thái module; quy tắc trong `AGENTS.md` yêu c
 
 ## Giao diện Zen
 
-Tổng quan và các màn hình dùng nền kem/xanh xô thơm, Nunito tiếng Việt, minh họa SVG và dark mode theo hệ thống. Tổng quan đọc dữ liệu hũ tháng hiện tại; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Nút mắt ở header che số tiền trong Chi tiêu, Thu nhập, Tiết kiệm (kể cả giá/lượng vàng) và Đầu tư; form có nút hiện riêng. Chỉ tùy chọn riêng tư lưu trên thiết bị, backup/CSV vẫn chứa số đầy đủ. Xem [hướng UI/UX](docs/04-ux-direction.md).
+Tổng quan và các màn hình dùng nền kem/xanh xô thơm, Nunito tiếng Việt, minh họa SVG và dark mode theo hệ thống. Tổng quan đọc dữ liệu hũ tháng hiện tại; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Biểu đồ Tiết kiệm có tooltip cho điểm, cột nạp/rút, lát donut và chú giải khi rê chuột, chạm hoặc dùng Tab. Nút mắt ở header che số tiền trong Chi tiêu, Thu nhập, Tiết kiệm (kể cả giá/lượng vàng) và Đầu tư; form có nút hiện riêng. Chỉ tùy chọn riêng tư lưu trên thiết bị, backup/CSV vẫn chứa số đầy đủ. Dialog bốn module có tóm tắt số liệu, tab theo nội dung, tìm kiếm/lọc và danh sách 20 dòng mỗi trang; mở form con rồi quay lại giữ vị trí. Xem [hướng UI/UX](docs/04-ux-direction.md).
 
 Các trạng thái tải dữ liệu có vòng xoay kèm thông báo; nút gửi/lưu/khôi phục hiển thị tiến trình trong lúc chờ server. Hiệu ứng theo màu sáng/tối và dừng khi bật giảm chuyển động. Xem [phản hồi giao diện](docs/features/ui-feedback.md). Nếu gặp hydration diff `cz-shortcut-listen`, xem [cách xử lý extension](docs/08-troubleshooting.md).
 

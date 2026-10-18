@@ -1,6 +1,7 @@
 "use client";
 import { LoadingSpinner } from "@/components/loading";
-import { useRef, useState, type FormEvent } from "react";
+import { DialogChanges, DialogPreview } from "@/components/dialog-content";
+import { useRef, useId, useState, type FormEvent } from "react";
 import { ZodError } from "zod";
 import type { IncomeCategory, IncomeRow } from "@/domain/income/types";
 import {
@@ -204,9 +205,50 @@ function IncomeEditorForm({
         {fieldErrors[key]}
       </span>
     ) : null;
+  const formId = useId();
   return (
-    <ExpenseModal title={titles[mode.type]} onClose={onClose} busy={busy}>
-      <form className="expense-form" onSubmit={submit} onChange={changed}>
+    <ExpenseModal
+      title={titles[mode.type]}
+      onClose={onClose}
+      busy={busy}
+      size={deleting ? "confirm" : "form"}
+      footer={
+        <div className="expense-actions">
+          <button
+            form={formId}
+            type="button"
+            className="expense-secondary"
+            onClick={onClose}
+            disabled={busy}
+          >
+            Hủy
+          </button>
+          <button
+            form={formId}
+            aria-busy={busy}
+            className="expense-primary"
+            disabled={busy || conflict || (hasAmount && hidden)}
+          >
+            {busy && <LoadingSpinner />}
+            {busy
+              ? "Đang xử lý…"
+              : needsPreview && !preview
+                ? "Xem trước thay đổi"
+                : deleting
+                  ? "Xác nhận xóa"
+                  : needsPreview
+                    ? "Xác nhận lưu"
+                    : "Lưu"}
+          </button>
+        </div>
+      }
+    >
+      <form
+        id={formId}
+        className="expense-form"
+        onSubmit={submit}
+        onChange={changed}
+      >
         <PrivacyReveal />
         {error && (
           <div
@@ -252,171 +294,142 @@ function IncomeEditorForm({
             Tải dữ liệu mới, giữ nội dung nhập
           </button>
         )}
-        {initialRow && (
-          <p>
-            <strong>{initialRow.name}</strong> · {monthName(initialRow.month)}
-          </p>
-        )}
-        {deleting ? (
-          <p className="expense-notice">
-            {mode.type === "deleteCategory"
-              ? `Xóa danh mục “${config?.name}” chưa có số thu.`
-              : `Xóa số thu ${money(initialRow!.amount!)} của ${monthName(initialRow!.month)}? Tổng đã ghi nhận sẽ được tính lại. Lịch sử thay đổi vẫn được giữ.`}
-          </p>
-        ) : (
-          <>
-            {hasName && (
-              <label>
-                Tên
-                <input
-                  id="income-field-name"
-                  required
-                  maxLength={100}
-                  value={name}
-                  disabled={busy}
-                  aria-invalid={!!fieldErrors.name}
-                  aria-describedby={
-                    fieldErrors.name ? "income-error-name" : undefined
-                  }
-                  onChange={(e) => setName(e.target.value)}
-                />
-                {fieldError("name")}
-              </label>
-            )}
-            {hasName && (
-              <label>
-                Mô tả (tùy chọn)
-                <textarea
-                  maxLength={1000}
-                  value={description}
-                  disabled={busy}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </label>
-            )}
-            <label>
-              {mode.type === "create"
-                ? "Tháng bắt đầu"
-                : needsPreview
-                  ? "Tháng hiệu lực"
-                  : "Tháng"}
-              <input
-                id="income-field-month"
-                type="month"
-                required
-                min={"category" in mode ? mode.category.start : "2000-01"}
-                max={hasAmount ? today.slice(0, 7) : "2099-12"}
-                value={period}
-                disabled={busy || mode.type === "monthly"}
-                onChange={(e) => setPeriod(e.target.value)}
-              />
-              {fieldError("month")}
-              {fieldError("start")}
-            </label>
-            {hasAmount && (
-              <label>
-                Số tiền thực nhận (VND)
-                {hidden ? (
+        <fieldset className="dialog-form-section" disabled={busy}>
+          <legend>Thông tin thu nhập</legend>
+          {initialRow && (
+            <p>
+              <strong>{initialRow.name}</strong> · {monthName(initialRow.month)}
+            </p>
+          )}
+          {deleting ? (
+            <p className="expense-notice">
+              {mode.type === "deleteCategory"
+                ? `Xóa danh mục “${config?.name}” chưa có số thu.`
+                : `Xóa số thu ${money(initialRow!.amount!)} của ${monthName(initialRow!.month)}? Tổng đã ghi nhận sẽ được tính lại. Lịch sử thay đổi vẫn được giữ.`}
+            </p>
+          ) : (
+            <>
+              {hasName && (
+                <label>
+                  Tên
                   <input
-                    id="income-field-amount"
-                    value="••••••"
-                    readOnly
-                    autoComplete="off"
-                  />
-                ) : (
-                  <input
-                    id="income-field-amount"
+                    id="income-field-name"
                     required
-                    inputMode="numeric"
-                    pattern="[0-9]+"
-                    maxLength={24}
-                    value={amount}
+                    maxLength={100}
+                    value={name}
                     disabled={busy}
-                    aria-invalid={!!fieldErrors.amount}
+                    aria-invalid={!!fieldErrors.name}
                     aria-describedby={
-                      fieldErrors.amount ? "income-error-amount" : undefined
+                      fieldErrors.name ? "income-error-name" : undefined
                     }
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={(e) => setName(e.target.value)}
                   />
-                )}
-                {fieldError("amount")}
-                {/^\d{1,24}$/.test(amount) && (
-                  <span className="expense-muted">{money(amount)}</span>
-                )}
-              </label>
-            )}
-            {mode.type === "monthly" && (
+                  {fieldError("name")}
+                </label>
+              )}
+              {hasName && (
+                <label>
+                  Mô tả (tùy chọn)
+                  <textarea
+                    maxLength={1000}
+                    value={description}
+                    disabled={busy}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </label>
+              )}
               <label>
-                Ghi chú (tùy chọn)
-                <textarea
-                  maxLength={1000}
-                  value={note}
-                  disabled={busy}
-                  onChange={(e) => setNote(e.target.value)}
+                {mode.type === "create"
+                  ? "Tháng bắt đầu"
+                  : needsPreview
+                    ? "Tháng hiệu lực"
+                    : "Tháng"}
+                <input
+                  id="income-field-month"
+                  type="month"
+                  required
+                  min={"category" in mode ? mode.category.start : "2000-01"}
+                  max={hasAmount ? today.slice(0, 7) : "2099-12"}
+                  value={period}
+                  disabled={busy || mode.type === "monthly"}
+                  onChange={(e) => setPeriod(e.target.value)}
                 />
+                {fieldError("month")}
+                {fieldError("start")}
               </label>
-            )}
-            {mode.type === "stop" && (
-              <p className="expense-notice">
-                Ngừng “{config?.name}” từ tháng hiệu lực, gồm các năm sau. Số
-                thu đã ghi vẫn được giữ và có thể sửa.
-              </p>
-            )}
-          </>
-        )}
+              {hasAmount && (
+                <label>
+                  Số tiền thực nhận (VND)
+                  {hidden ? (
+                    <input
+                      id="income-field-amount"
+                      value="••••••"
+                      readOnly
+                      autoComplete="off"
+                    />
+                  ) : (
+                    <input
+                      id="income-field-amount"
+                      required
+                      inputMode="numeric"
+                      pattern="[0-9]+"
+                      maxLength={24}
+                      value={amount}
+                      disabled={busy}
+                      aria-invalid={!!fieldErrors.amount}
+                      aria-describedby={
+                        fieldErrors.amount ? "income-error-amount" : undefined
+                      }
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
+                  )}
+                  {fieldError("amount")}
+                  {/^\d{1,24}$/.test(amount) && (
+                    <span className="expense-muted">{money(amount)}</span>
+                  )}
+                </label>
+              )}
+              {mode.type === "monthly" && (
+                <label>
+                  Ghi chú (tùy chọn)
+                  <textarea
+                    maxLength={1000}
+                    value={note}
+                    disabled={busy}
+                    onChange={(e) => setNote(e.target.value)}
+                  />
+                </label>
+              )}
+              {mode.type === "stop" && (
+                <p className="expense-notice">
+                  Ngừng “{config?.name}” từ tháng hiệu lực, gồm các năm sau. Số
+                  thu đã ghi vẫn được giữ và có thể sửa.
+                </p>
+              )}
+            </>
+          )}
+        </fieldset>
         {preview && (
-          <section className="income-preview" aria-label="Xem trước thay đổi">
+          <DialogPreview className="income-preview">
             <h3>Ảnh hưởng từ {monthName(preview.result.effectiveFrom!)}</h3>
             <p>
               {preview.result.changes.length} dòng thay đổi trong các năm đang
               có cấu hình hoặc dữ liệu; cấu hình tiếp tục áp dụng cho những năm
               sau. Tổng tiền đã ghi không thay đổi.
             </p>
-            <ul>
-              {preview.result.changes.slice(0, 24).map((r) => (
-                <li key={`${r.kind}/${r.key}/${r.month}`}>
-                  {monthName(r.month)}: {r.beforeName ?? "—"} →{" "}
-                  {r.afterName ?? "—"}
-                  {r.afterActive === false || r.afterName === null
-                    ? " · ngừng dòng trống; giữ số đã ghi"
-                    : ""}
-                </li>
-              ))}
-            </ul>
-            {preview.result.changes.length > 24 && (
-              <p>
-                Còn {preview.result.changes.length - 24} dòng cùng phạm vi hiệu
-                lực.
-              </p>
-            )}
-          </section>
+            <DialogChanges
+              rows={preview.result.changes
+                .slice()
+                .sort((a, b) => b.month.localeCompare(a.month))
+                .map((r) => ({
+                  key: `${r.kind}/${r.key}/${r.month}`,
+                  label: monthName(r.month),
+                  before: r.beforeName ?? "Chưa có",
+                  after: `${r.afterName ?? "Không còn dòng trống"}${r.afterActive === false ? " · Đã ngừng; giữ số đã ghi" : ""}`,
+                }))}
+            />
+          </DialogPreview>
         )}
-        <div className="expense-actions">
-          <button
-            type="button"
-            className="expense-secondary"
-            onClick={onClose}
-            disabled={busy}
-          >
-            Hủy
-          </button>
-          <button
-            aria-busy={busy}
-            className="expense-primary"
-            disabled={busy || conflict || (hasAmount && hidden)}
-          >
-            {busy && <LoadingSpinner />}
-            {busy
-              ? "Đang xử lý…"
-              : needsPreview && !preview
-                ? "Xem trước thay đổi"
-                : deleting
-                  ? "Xác nhận xóa"
-                  : needsPreview
-                    ? "Xác nhận lưu"
-                    : "Lưu"}
-          </button>
-        </div>
       </form>
     </ExpenseModal>
   );

@@ -146,6 +146,72 @@
 .savings-chart {
   min-width: 0;
 }
+.savings-chart-interactive {
+  position: relative;
+  min-width: 0;
+}
+.savings-chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  display: grid;
+  gap: 5px;
+  width: min(260px, calc(100% - 16px));
+  padding: 12px 14px;
+  transform: translateY(calc(-100% - 12px));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 6px 20px #0002;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.savings-chart-tooltip span {
+  color: var(--muted);
+}
+.savings-chart-mark,
+.savings-chart-slice,
+.savings-chart-legend-item {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.savings-chart-mark:focus,
+.savings-chart-slice:focus {
+  outline: none;
+}
+.savings-point-focus,
+.savings-bar-focus {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2;
+  opacity: 0;
+  pointer-events: none;
+}
+.savings-chart-mark:focus-visible .savings-point-focus,
+.savings-chart-mark:focus-visible .savings-bar-focus {
+  opacity: 1;
+}
+.savings-chart-mark[data-active] .savings-point {
+  fill: var(--text);
+}
+.savings-chart-slice {
+  pointer-events: visiblePainted;
+}
+.savings-chart-slice[data-active],
+.savings-chart-slice:focus-visible {
+  stroke-width: 25;
+}
+.savings-chart-slice:focus-visible {
+  filter: drop-shadow(0 0 2px var(--text));
+}
+.savings-chart-legend-item {
+  border-radius: 6px;
+}
+.savings-chart-legend-item[data-active] {
+  background: var(--primary-soft);
+}
 .savings-chart .expense-section-heading {
   align-items: start;
   gap: 12px;

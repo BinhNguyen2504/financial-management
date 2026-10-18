@@ -5,6 +5,7 @@ import { useMoney, useMoneyHidden } from "@/components/privacy";
 import { donutSlices } from "@/features/expenses/chart-data";
 import { ratio } from "@/features/expenses/format";
 import { kindNames } from "./editor";
+import { useChartTooltip } from "./chart-tooltip";
 export function SavingsReports({
   report: r,
   compact = false,
@@ -16,6 +17,8 @@ export function SavingsReports({
     hidden = useMoneyHidden();
   const [chart, setChart] = useState("assets"),
     [composition, setComposition] = useState("category");
+  const timeline = useChartTooltip(),
+    allocation = useChartTooltip();
   const display = (v: string | null) =>
     v === null ? "Thiếu dữ liệu" : money(v);
   const groups =
@@ -46,6 +49,38 @@ export function SavingsReports({
     .toString();
   const x = (i: number) => 48 + (i * 620) / Math.max(1, r.months.length - 1),
     y = (v: string) => 210 - ratio(v, max) * 1.8;
+  const marks = r.months.flatMap((m, i) =>
+      (chart === "assets"
+        ? ["value" as const]
+        : ["inflow" as const, "outflow" as const]
+      ).map((series) => {
+        const label =
+          series === "value"
+            ? "Tài sản cuối tháng"
+            : series === "inflow"
+              ? "Nạp bên ngoài"
+              : "Rút bên ngoài";
+        const value = m[series];
+        const amount =
+          value === null
+            ? m.month > r.asOf.slice(0, 7)
+              ? "Chưa phát sinh"
+              : "Thiếu dữ liệu"
+            : money(value);
+        return {
+          key: `${m.month}-${series}`,
+          month: m.month,
+          provisional: m.provisional,
+          series,
+          label,
+          amount,
+          value,
+          i,
+        };
+      }),
+    ),
+    selectedMark = marks.find((m) => m.key === timeline.active),
+    selectedSlice = slices.find((s) => s.key === allocation.active);
   let offset = 0;
   return (
     <>
@@ -104,95 +139,163 @@ export function SavingsReports({
               <select
                 aria-label="Biểu đồ"
                 value={chart}
-                onChange={(e) => setChart(e.target.value)}
+                onChange={(e) => {
+                  timeline.close();
+                  setChart(e.target.value);
+                }}
               >
                 <option value="assets">Tài sản cuối tháng</option>
                 <option value="flow">Tiền nạp / rút bên ngoài</option>
               </select>
             </label>
           </div>
-          <div className="savings-chart-scroll">
-            <svg
-              viewBox="0 0 720 265"
-              role="img"
-              aria-label={
-                chart === "assets"
-                  ? "Tài sản cuối từng tháng; bảng dữ liệu phía dưới"
-                  : "Tiền nạp và rút từng tháng; bảng dữ liệu phía dưới"
-              }
-            >
-              <line
-                x1="25"
-                x2="700"
-                y1="210"
-                y2="210"
-                className="savings-axis"
-              />
-              <text x="15" y="20">
-                {money(max)}
-              </text>
-              {chart === "assets" &&
-                r.months
-                  .slice(1)
-                  .map((m, i) =>
-                    m.value !== null && r.months[i].value !== null ? (
-                      <line
-                        key={m.month}
-                        x1={x(i)}
-                        y1={y(r.months[i].value!)}
-                        x2={x(i + 1)}
-                        y2={y(m.value)}
-                        className="savings-line"
-                      />
-                    ) : null,
-                  )}
-              {r.months.map((m, i) => (
-                <g
-                  key={m.month}
-                  tabIndex={0}
-                  role="img"
-                  aria-label={`${m.month}: ${chart === "assets" ? display(m.value) : `nạp ${m.inflow === null ? "chưa phát sinh" : money(m.inflow)}, rút ${m.outflow === null ? "chưa phát sinh" : money(m.outflow)}`}${m.provisional ? ", tạm tính" : ""}`}
-                >
-                  <title>
-                    {m.month}: {display(m.value)}
-                  </title>
-                  {chart === "assets" ? (
-                    m.value !== null ? (
-                      <circle
-                        cx={x(i)}
-                        cy={y(m.value)}
-                        r="5"
-                        className="savings-point"
-                      />
-                    ) : (
-                      <text x={x(i)} y="195">
-                        —
-                      </text>
-                    )
-                  ) : m.inflow !== null && m.outflow !== null ? (
-                    <>
-                      <rect
-                        x={x(i) - 12}
-                        y={y(m.inflow)}
-                        width="10"
-                        height={Math.max(1, 210 - y(m.inflow))}
-                        className="savings-point"
-                      />
-                      <rect
-                        x={x(i) + 1}
-                        y={y(m.outflow)}
-                        width="10"
-                        height={Math.max(1, 210 - y(m.outflow))}
-                        className="savings-outflow"
-                      />
-                    </>
-                  ) : null}
-                  <text x={x(i)} y="239" textAnchor="middle">
+          <div {...timeline.container}>
+            <div className="savings-chart-scroll" onScroll={timeline.onScroll}>
+              <svg
+                viewBox="0 0 720 265"
+                role="group"
+                aria-label={
+                  chart === "assets"
+                    ? "Tài sản cuối từng tháng; bảng dữ liệu phía dưới"
+                    : "Tiền nạp và rút từng tháng; bảng dữ liệu phía dưới"
+                }
+              >
+                <line
+                  x1="25"
+                  x2="700"
+                  y1="210"
+                  y2="210"
+                  className="savings-axis"
+                />
+                <text x="15" y="20">
+                  {money(max)}
+                </text>
+                {chart === "assets" &&
+                  r.months
+                    .slice(1)
+                    .map((m, i) =>
+                      m.value !== null && r.months[i].value !== null ? (
+                        <line
+                          key={m.month}
+                          x1={x(i)}
+                          y1={y(r.months[i].value!)}
+                          x2={x(i + 1)}
+                          y2={y(m.value)}
+                          className="savings-line"
+                        />
+                      ) : null,
+                    )}
+                {marks.map((m) => {
+                  const cx =
+                      x(m.i) +
+                      (m.series === "inflow"
+                        ? -7
+                        : m.series === "outflow"
+                          ? 6
+                          : 0),
+                    cy = m.value === null ? 195 : y(m.value);
+                  return (
+                    <g
+                      key={m.key}
+                      className="savings-chart-mark"
+                      {...timeline.trigger(
+                        m.key,
+                        `${m.month}: ${m.label}, ${m.amount}${m.provisional ? ", tạm tính" : ""}`,
+                      )}
+                    >
+                      {m.series === "value" ? (
+                        m.value !== null ? (
+                          <>
+                            <circle cx={cx} cy={cy} r="16" fill="transparent" />
+                            <circle
+                              cx={cx}
+                              cy={cy}
+                              r="5"
+                              className="savings-point"
+                            />
+                            <circle
+                              cx={cx}
+                              cy={cy}
+                              r="10"
+                              className="savings-point-focus"
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <circle cx={cx} cy={cy} r="16" fill="transparent" />
+                            <text x={cx} y="195" textAnchor="middle">
+                              —
+                            </text>
+                            <circle
+                              cx={cx}
+                              cy={cy}
+                              r="10"
+                              className="savings-point-focus"
+                            />
+                          </>
+                        )
+                      ) : m.value !== null ? (
+                        <>
+                          <rect
+                            x={cx - 6}
+                            y={Math.min(cy, 188)}
+                            width="12"
+                            height={Math.max(22, 210 - cy)}
+                            fill="transparent"
+                          />
+                          <rect
+                            x={cx - 5}
+                            y={cy}
+                            width="10"
+                            height={Math.max(1, 210 - cy)}
+                            className={
+                              m.series === "inflow"
+                                ? "savings-point"
+                                : "savings-outflow"
+                            }
+                          />
+                          <rect
+                            x={cx - 7}
+                            y={cy - 2}
+                            width="14"
+                            height={Math.max(5, 214 - cy)}
+                            className="savings-bar-focus"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <circle cx={cx} cy={cy} r="6" fill="transparent" />
+                          <circle
+                            cx={cx}
+                            cy={cy}
+                            r="6"
+                            className="savings-point-focus"
+                          />
+                        </>
+                      )}
+                    </g>
+                  );
+                })}
+                {r.months.map((m, i) => (
+                  <text key={m.month} x={x(i)} y="239" textAnchor="middle">
                     {m.month.slice(2)}
                   </text>
-                </g>
-              ))}
-            </svg>
+                ))}
+              </svg>
+            </div>
+            {timeline.tooltip(
+              selectedMark && (
+                <>
+                  <strong>
+                    Tháng {selectedMark.month.slice(5)}/
+                    {selectedMark.month.slice(0, 4)}
+                    {selectedMark.provisional ? " · tạm tính" : ""}
+                  </strong>
+                  <span>{selectedMark.label}</span>
+                  <b>{selectedMark.amount}</b>
+                </>
+              ),
+            )}
           </div>
           {compact && (
             <details>
@@ -223,8 +326,8 @@ export function SavingsReports({
           )}
           <p className="expense-muted">
             {chart === "flow" ? "Cột trái: nạp · cột phải: rút. " : ""}Không nối
-            đường qua tháng thiếu giá hoặc tháng tương lai. Dùng Tab để đọc từng
-            điểm.
+            đường qua tháng thiếu giá hoặc tháng tương lai. Rê chuột, chạm hoặc
+            dùng Tab để xem số liệu; Escape để đóng chú thích.
           </p>
         </section>
         <section className="panel savings-chart">
@@ -235,7 +338,10 @@ export function SavingsReports({
               <select
                 aria-label="Phân bố theo"
                 value={composition}
-                onChange={(e) => setComposition(e.target.value)}
+                onChange={(e) => {
+                  allocation.close();
+                  setComposition(e.target.value);
+                }}
               >
                 <option value="category">Danh mục</option>
                 <option value="kind">Loại tài sản</option>
@@ -249,54 +355,80 @@ export function SavingsReports({
               Chưa có tài sản để thể hiện tỷ trọng.
             </p>
           ) : (
-            <div className="savings-composition">
-              <svg
-                viewBox="0 0 220 220"
-                role="img"
-                aria-label="Tỷ trọng tài sản cuối kỳ, chi tiết trong chú giải"
-              >
-                <circle
-                  cx="110"
-                  cy="110"
-                  r="80"
-                  fill="none"
-                  stroke="var(--surface-alt)"
-                  strokeWidth="20"
-                />
-                {slices.map((s, i) => {
-                  const start = offset;
-                  offset += s.percent;
-                  return (
-                    <circle
+            <div {...allocation.container}>
+              <div className="savings-composition">
+                <svg
+                  viewBox="0 0 220 220"
+                  role="group"
+                  aria-label="Tỷ trọng tài sản cuối kỳ, chi tiết trong chú giải"
+                >
+                  <circle
+                    cx="110"
+                    cy="110"
+                    r="80"
+                    fill="none"
+                    stroke="var(--surface-alt)"
+                    strokeWidth="20"
+                  />
+                  {slices.map((s, i) => {
+                    const start = offset;
+                    offset += s.percent;
+                    return (
+                      <circle
+                        key={s.key}
+                        cx="110"
+                        cy="110"
+                        r="80"
+                        pathLength="100"
+                        fill="none"
+                        stroke={`var(--chart-${i + 1})`}
+                        strokeWidth="20"
+                        strokeDasharray={`${s.percent} ${100 - s.percent}`}
+                        strokeDashoffset={-start}
+                        transform="rotate(-90 110 110)"
+                        className="savings-chart-slice"
+                        {...allocation.trigger(
+                          s.key,
+                          `${s.label}: ${money(s.value)}, ${s.percent.toLocaleString("vi-VN")}%`,
+                        )}
+                      />
+                    );
+                  })}
+                </svg>
+                <ul>
+                  {slices.map((s, i) => (
+                    <li
                       key={s.key}
-                      cx="110"
-                      cy="110"
-                      r="80"
-                      pathLength="100"
-                      fill="none"
-                      stroke={`var(--chart-${i + 1})`}
-                      strokeWidth="20"
-                      strokeDasharray={`${s.percent} ${100 - s.percent}`}
-                      strokeDashoffset={-start}
-                      transform="rotate(-90 110 110)"
-                    />
-                  );
-                })}
-              </svg>
-              <ul>
-                {slices.map((s, i) => (
-                  <li key={s.key}>
-                    <span
-                      className="savings-legend"
-                      style={{ background: `var(--chart-${i + 1})` }}
-                      aria-hidden="true"
-                    />
-                    {s.label}
-                    <strong>{s.percent.toLocaleString("vi-VN")}%</strong>
-                    <span>{money(s.value)}</span>
-                  </li>
-                ))}
-              </ul>
+                      className="savings-chart-legend-item"
+                      {...allocation.trigger(
+                        s.key,
+                        `${s.label}: ${money(s.value)}, ${s.percent.toLocaleString("vi-VN")}%`,
+                      )}
+                    >
+                      <span
+                        className="savings-legend"
+                        style={{ background: `var(--chart-${i + 1})` }}
+                        aria-hidden="true"
+                      />
+                      {s.label}
+                      <strong>{s.percent.toLocaleString("vi-VN")}%</strong>
+                      <span>{money(s.value)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {allocation.tooltip(
+                selectedSlice && (
+                  <>
+                    <strong>{selectedSlice.label}</strong>
+                    <b>{money(selectedSlice.value)}</b>
+                    <span>
+                      {selectedSlice.percent.toLocaleString("vi-VN")}% tài sản
+                      cuối kỳ · {r.asOf}
+                    </span>
+                  </>
+                ),
+              )}
             </div>
           )}
         </section>

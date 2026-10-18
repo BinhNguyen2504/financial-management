@@ -30,3 +30,17 @@ Runner dùng production build Next riêng, PostgreSQL và Auth double local. Ki�
 Kiểm chứng loading trong `tests/browser/loading.spec.ts`: giữ request để quan sát trạng thái chờ, trả kết quả thật, lỗi/thử lại, disabled/aria-busy, sáng/tối, giảm chuyển động, điện thoại 375px và xoay ngang. Xem kết quả theo ngày tại [validation](../07-validation.md).
 
 Đã rà soát catalog, landing copy và preview: trạng thái module và khả năng tài chính không đổi; preview public vẫn là dữ liệu cố định, chuyển tab ngay không cần giả lập loading. Avatar của landing dùng cùng vòng xoay xác minh tài khoản. README và tài liệu UX đã cập nhật cùng source.
+
+
+## Dialog có nhiều dữ liệu — 18/10/2026
+
+- Bốn module dùng chung khung native dialog: header luôn hiện, một vùng `.dialog-body` cuộn, footer thao tác nằm ngoài vùng cuộn và vẫn liên kết với form qua ID. Detail tối đa 960px, form 760px, xác nhận 480px; điện thoại dưới 640px gần toàn màn hình, có safe area.
+- Tóm tắt số liệu đặt trước danh sách; nhãn, ngày dữ liệu, tiền và đề mục có cấp độ riêng. Bảng có tiêu đề cột/căn tiền trên desktop, chuyển thành thẻ có nhãn trên mobile. Ghi chú dài có disclosure để đọc đầy đủ.
+- Tab có số lượng và điều hướng phím mũi tên/Home/End, giữ trạng thái các panel. Danh sách tối đa 20 dòng/trang, mới trước; tìm tên/nội dung/ghi chú không dấu, bộ lọc loại/trạng thái/ngày khi phù hợp, đếm kết quả và thông báo không khớp. Không cắt bỏ lịch sử cũ. Preview cũng phân trang, nhãn Trước/Sau và giữ quyền xác nhận khi đổi trang.
+- Tiết kiệm: tiền/ví có lịch sử; vàng có Đợt vàng/Giao dịch, tiền gửi có Sổ tiền gửi/Giao dịch. Mặc định còn nắm giữ/đang gửi, có xem tất cả và đã bán/tất toán. Chỉ lấy giao dịch đến ngày số dư đang xem. Biến động tiền theo phía tài khoản gồm phí/thuế, không suy dấu từ tiền ròng toàn giao dịch. Lãi trả ra ngoài sổ và lãi nhập gốc/tái tục có nhãn riêng.
+- Đầu tư: tổng hợp danh mục trước lịch sử; chi tiết giao dịch hiện trạng thái hiện hành và ảnh hưởng trước/sau, revision nằm trong tab riêng, mới nhất trước. Giao dịch hủy có trạng thái và không hiển thị tác động như đang có hiệu lực.
+- Chi tiêu: tab Theo tháng/Các lần sử dụng/Lịch sử thay đổi, tab sử dụng chỉ cho hũ tích lũy; quản lý hũ nằm ở phần riêng. Phương thức/nhóm có tab, tìm kiếm và phân trang. Thu nhập phát sinh có tổng kỳ và danh sách có tìm kiếm, không thêm tab rỗng.
+- Mở màn hình con giữ parent inert/aria-hidden và trạng thái đọc. Hủy/đóng hoặc lưu thành công quay lại màn hình cha, cập nhật số liệu, giữ tab/bộ lọc/trang/vị trí. Khi nút cũ bị xóa, focus trở về điều khiển còn tồn tại trong parent. Hành vi lưu này thay thế việc kết thúc cả luồng đã ghi ở ngày 17/10.
+- Chế độ riêng tư che giá trị và khối lượng trong summary, bảng, preview và nội dung hỗ trợ đọc; không thêm số thô vào aria-label/title. Preview public vẫn dùng hằng số, không đọc tài khoản.
+
+Kiểm thử chuyên biệt: `tests/browser/dialogs.spec.ts`; hồi quy bốn module, loading, tooltip và dialog stack. Bằng chứng chạy và giới hạn môi trường được ghi thêm tại `docs/07-validation.md` sau kiểm chứng.

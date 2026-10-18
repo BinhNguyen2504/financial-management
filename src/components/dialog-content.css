@@ -1,0 +1,440 @@
+.expense-dialog.dialog-shell {
+  width: min(760px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  color: var(--text);
+  background: var(--surface);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.expense-dialog.dialog-shell[open] {
+  display: flex;
+  flex-direction: column;
+}
+.expense-dialog.dialog-detail {
+  width: min(960px, calc(100vw - 32px));
+}
+.expense-dialog.dialog-confirm {
+  width: min(480px, calc(100vw - 32px));
+}
+.dialog-shell > .expense-dialog-heading {
+  flex: none;
+  margin: 0;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.dialog-shell .expense-dialog-heading > div {
+  min-width: 0;
+}
+.dialog-shell .expense-dialog-heading h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+.dialog-shell .expense-dialog-heading > button {
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+.dialog-description {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 6px 0 0;
+}
+.dialog-body {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 24px;
+  scroll-padding-block: 72px 24px;
+}
+.dialog-footer {
+  flex: none;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.dialog-footer .expense-actions {
+  margin: 0;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.dialog-shell h3 {
+  font-size: 16px;
+  font-weight: 750;
+  line-height: 1.4;
+  margin: 0 0 12px;
+}
+.dialog-shell h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 16px 0 8px;
+}
+.dialog-shell p {
+  overflow-wrap: anywhere;
+}
+.dialog-shell button,
+.dialog-shell input,
+.dialog-shell select,
+.dialog-shell textarea {
+  max-width: 100%;
+}
+.dialog-shell button {
+  min-height: 44px;
+}
+.dialog-shell :where(input, select, textarea) {
+  scroll-margin-block: 80px 24px;
+}
+.dialog-shell :focus-visible {
+  outline: 3px solid var(--accent, var(--text));
+  outline-offset: 3px;
+}
+.dialog-summary {
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--canvas);
+}
+.dialog-summary-label {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 4px;
+}
+.dialog-summary-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 750;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.dialog-summary > p:last-child {
+  margin-bottom: 0;
+}
+.dialog-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 16px 24px;
+  margin: 20px 0 0;
+}
+.dialog-facts > div {
+  min-width: 0;
+}
+.dialog-facts dt {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.dialog-facts dd {
+  font-weight: 650;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.dialog-note {
+  color: var(--muted);
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 8px 0;
+}
+.dialog-note summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: list-item;
+  padding-block: 10px;
+}
+.dialog-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: sticky;
+  top: -24px;
+  z-index: 2;
+  background: var(--surface);
+  padding: 12px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.dialog-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 650;
+}
+.dialog-tabs button[aria-selected="true"] {
+  color: var(--text);
+  background: var(--canvas);
+  border-color: var(--border);
+}
+.dialog-count {
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.dialog-tabs-content > [hidden] {
+  display: none;
+}
+.dialog-collection {
+  margin-block: 20px;
+}
+.dialog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+.dialog-filters label {
+  display: grid;
+  gap: 5px;
+  flex: 1 1 145px;
+  color: var(--muted);
+  font-size: 13px;
+  min-width: 0;
+}
+.dialog-filters label:has(input[type="search"]) {
+  flex-basis: 230px;
+}
+.dialog-filters :is(input, select) {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 10px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+  font-size: 14px;
+}
+.dialog-result-count {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 12px 0;
+}
+.dialog-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 14px;
+}
+.dialog-data-table :is(th, td) {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+.dialog-data-table th {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--canvas);
+}
+.dialog-data-table .is-numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.dialog-data-table strong {
+  font-weight: 700;
+}
+.dialog-data-table p {
+  margin: 5px 0 0;
+}
+.dialog-data-table .expense-actions {
+  gap: 8px;
+  margin: 0;
+  flex-wrap: wrap;
+}
+.dialog-data-table .expense-actions button {
+  font-size: 13px;
+  padding: 7px 10px;
+}
+.dialog-cell-label {
+  display: none;
+}
+.dialog-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+.dialog-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 13px;
+}
+.dialog-list-start {
+  scroll-margin-top: 100px;
+}
+.dialog-secondary-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.dialog-secondary-section > summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 650;
+}
+.dialog-shell :is(.expense-form, .investment-form, .savings-form) {
+  gap: 20px;
+}
+.dialog-shell fieldset {
+  min-width: 0;
+}
+.dialog-shell fieldset > legend {
+  font-size: 16px;
+  font-weight: 750;
+  padding-bottom: 12px;
+}
+.dialog-shell
+  :is(
+    .income-preview,
+    .savings-preview,
+    .investment-preview,
+    .expense-preview
+  ) {
+  margin-top: 8px;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--canvas);
+}
+.dialog-shell
+  :is(.income-preview, .savings-preview, .investment-preview, .expense-preview)
+  h3 {
+  margin-top: 0;
+}
+.dialog-shell .expense-form-columns {
+  align-items: start;
+}
+.dialog-shell .dialog-form-section {
+  display: grid;
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .expense-dialog.dialog-shell {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    border-radius: 16px;
+  }
+  .expense-dialog.dialog-detail,
+  .expense-dialog.dialog-form {
+    height: calc(100dvh - 16px);
+  }
+  .dialog-shell > .expense-dialog-heading {
+    padding: max(14px, env(safe-area-inset-top)) 16px 14px;
+  }
+  .dialog-shell .expense-dialog-heading h2 {
+    font-size: 20px;
+  }
+  .dialog-body {
+    padding: 16px;
+    flex: 1 1 auto;
+  }
+  .dialog-footer {
+    padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+  }
+  .dialog-footer .expense-actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .dialog-footer .expense-actions > button {
+    flex: 1 1 auto;
+  }
+  .dialog-summary {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .dialog-summary-value {
+    font-size: 24px;
+  }
+  .dialog-tabs {
+    top: -16px;
+  }
+  .dialog-tabs button {
+    padding-inline: 8px;
+    font-size: 13px;
+  }
+  .dialog-filters label {
+    flex-basis: calc(50% - 6px);
+  }
+  .dialog-filters label:has(input[type="search"]) {
+    flex-basis: 100%;
+  }
+  .dialog-shell :is(input, select, textarea) {
+    font-size: 16px;
+  }
+  .dialog-data-table,
+  .dialog-data-table tbody,
+  .dialog-data-table tr,
+  .dialog-data-table td {
+    display: block;
+    width: auto;
+  }
+  .dialog-data-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .dialog-data-table tr {
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .dialog-data-table td {
+    display: grid;
+    grid-template-columns: minmax(80px, 30%) minmax(0, 1fr);
+    gap: 12px;
+    border: 0;
+    padding: 6px 0;
+  }
+  .dialog-data-table .is-numeric {
+    text-align: right;
+  }
+  .dialog-cell-label {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: left;
+  }
+  .dialog-data-table .expense-actions {
+    justify-content: flex-end;
+  }
+  .dialog-shell
+    :is(
+      .income-preview,
+      .savings-preview,
+      .investment-preview,
+      .expense-preview
+    ) {
+    padding: 14px;
+  }
+}

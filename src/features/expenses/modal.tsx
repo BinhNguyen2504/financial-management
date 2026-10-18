@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
+import "@/components/dialog-content.css";
 
 const openDialogs = new Set<HTMLDialogElement>();
 let previousOverflow = "";
@@ -20,11 +21,17 @@ export function ExpenseModal({
   children,
   onClose,
   busy = false,
+  size = "form",
+  description,
+  footer,
 }: {
   title: string;
   children: ReactNode;
   onClose: () => void;
   busy?: boolean;
+  size?: "form" | "detail" | "confirm";
+  description?: ReactNode;
+  footer?: ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -55,15 +62,23 @@ export function ExpenseModal({
         trigger !== document.body &&
         !trigger.classList.contains("skip-link")
       )
-        trigger.focus();
-      else document.querySelector<HTMLElement>("main")?.focus();
+        trigger.focus({ preventScroll: true });
+      else {
+        const parent = [...openDialogs].at(-1);
+        if (parent)
+          parent
+            .querySelector<HTMLElement>("button:not([disabled])")
+            ?.focus({ preventScroll: true });
+        else document.querySelector<HTMLElement>("main")?.focus();
+      }
     };
   }, []);
   return (
     <dialog
       ref={dialog}
-      className="expense-dialog"
+      className={`expense-dialog dialog-shell dialog-${size}`}
       aria-labelledby={titleId}
+      aria-describedby={description ? `${titleId}-description` : undefined}
       onPointerDown={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         outsidePointer.current =
@@ -90,7 +105,14 @@ export function ExpenseModal({
       }}
     >
       <div className="expense-dialog-heading">
-        <h2 id={titleId}>{title}</h2>
+        <div>
+          <h2 id={titleId}>{title}</h2>
+          {description && (
+            <p id={`${titleId}-description`} className="dialog-description">
+              {description}
+            </p>
+          )}
+        </div>
         <button
           type="button"
           className="expense-icon-button"
@@ -101,7 +123,8 @@ export function ExpenseModal({
           <X size={20} />
         </button>
       </div>
-      {children}
+      <div className="dialog-body">{children}</div>
+      {footer && <div className="dialog-footer">{footer}</div>}
     </dialog>
   );
 }

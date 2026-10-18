@@ -96,6 +96,221 @@ async function openTx(page: Page, kind: string) {
   await page.getByLabel("Loại giao dịch", { exact: true }).selectOption(kind);
   await page.getByLabel("Ngày giao dịch", { exact: true }).fill(day);
 }
+test("savings chart tooltips show hovered data, preserve keyboard focus and mask money", async ({
+  page,
+}, info) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await login(page);
+  let cash = "";
+  for (const [i, amount] of [
+    "6000000",
+    "2000000",
+    "1000000",
+    "500000",
+    "300000",
+    "200000",
+  ].entries()) {
+    const id = randomUUID();
+    if (!i) cash = id;
+    expect(
+      (
+        await command(page, {
+          type: "createCategory",
+          id,
+          name: `Ví ${i + 1}`,
+          kind: "cash",
+          start: month,
+        })
+      ).ok(),
+    ).toBe(true);
+    expect(
+      (
+        await command(page, {
+          type: "postTransaction",
+          transaction: {
+            id: randomUUID(),
+            kind: "openingCash",
+            categoryId: id,
+            date: day,
+            amount,
+          },
+        })
+      ).ok(),
+    ).toBe(true);
+  }
+  for (const [kind, amount] of [
+    ["deposit", "2000000"],
+    ["withdraw", "1000000"],
+  ]) {
+    expect(
+      (
+        await command(page, {
+          type: "postTransaction",
+          transaction: {
+            id: randomUUID(),
+            kind,
+            categoryId: cash,
+            date: day,
+            amount,
+          },
+        })
+      ).ok(),
+    ).toBe(true);
+  }
+  await page.reload();
+  await page.getByLabel("Tháng đang xem").fill(month);
+  const point = page
+    .locator(".savings-chart-mark")
+    .filter({ has: page.locator(".savings-point") })
+    .last();
+  const tooltip = page.getByRole("tooltip");
+  await expect(point).toHaveAttribute(
+    "aria-label",
+    new RegExp(`${month}.*11.000.000`),
+  );
+  if (info.project.use.hasTouch) await point.tap();
+  else await point.click();
+  await expect(tooltip).toContainText("Tài sản cuối tháng");
+  await expect(tooltip).toContainText("11.000.000 ₫");
+  await page.locator(".savings-chart-grid").screenshot({
+    path: `artifacts/savings-point-tooltip-${info.project.name}.png`,
+  });
+  expect(await point.evaluate((el) => getComputedStyle(el).outlineStyle)).toBe(
+    "none",
+  );
+  expect(await point.boundingBox().then((box) => box!.height)).toBeLessThan(50);
+  await page.keyboard.press("Escape");
+  await expect(tooltip).toHaveCount(0);
+
+  // Real keyboard entry retains a small focus ring around the point.
+  await page.getByLabel("Biểu đồ", { exact: true }).focus();
+  await page.keyboard.press("Tab");
+  await expect(page.locator(".savings-chart-mark").first()).toBeFocused();
+  await expect(tooltip).toBeVisible();
+  expect(
+    await page
+      .locator(".savings-chart-mark")
+      .first()
+      .locator(".savings-point-focus")
+      .evaluate((el) => getComputedStyle(el).opacity),
+  ).toBe("1");
+  await page.keyboard.press("Escape");
+
+  await page.getByLabel("Biểu đồ", { exact: true }).selectOption("flow");
+  const inflow = page
+    .locator(".savings-chart-mark")
+    .filter({ has: page.locator(".savings-point") })
+    .last();
+  const outflow = page
+    .locator(".savings-chart-mark")
+    .filter({ has: page.locator(".savings-outflow") })
+    .last();
+  if (info.project.use.hasTouch) await inflow.tap();
+  else await inflow.hover();
+  await expect(tooltip).toContainText("Nạp bên ngoài");
+  await expect(tooltip).toContainText("2.000.000 ₫");
+  await outflow.click();
+  await expect(tooltip).toContainText("Rút bên ngoài");
+  await expect(tooltip).toContainText("1.000.000 ₫");
+  await page.getByLabel("Biểu đồ", { exact: true }).selectOption("assets");
+  await expect(tooltip).toHaveCount(0);
+
+  // Hover actual painted arcs; checking every slice also catches SVG hit-test overlap.
+  const ring = page.locator(".savings-composition svg");
+  await ring.scrollIntoViewIfNeeded();
+  const box = (await ring.boundingBox())!;
+  const slices = page.locator(".savings-chart-slice");
+  let startPercent = 0;
+  for (let i = 0; i < (await slices.count()); i++) {
+    const slice = slices.nth(i);
+    const percent = Number(
+      (await slice.getAttribute("stroke-dasharray"))!.split(" ")[0],
+    );
+    const angle = ((startPercent + percent / 2) * Math.PI) / 50 - Math.PI / 2;
+    await page.mouse.move(
+      box.x + (box.width * (110 + 80 * Math.cos(angle))) / 220,
+      box.y + (box.height * (110 + 80 * Math.sin(angle))) / 220,
+    );
+    await expect(tooltip).toContainText(
+      (await slice.getAttribute("aria-label"))!.split(":")[0],
+    );
+    startPercent += percent;
+  }
+  await expect(tooltip).toContainText("Khác");
+  await expect(tooltip).toContainText("500.000 ₫");
+  await page.locator(".savings-chart-grid").screenshot({
+    path: `artifacts/savings-allocation-tooltip-${info.project.name}.png`,
+  });
+  await page.keyboard.press("Escape");
+  // Escape also works after a mouse hover when focus remains elsewhere.
+  await expect(tooltip).toHaveCount(0);
+
+  const legend = page.locator(".savings-chart-legend-item").first();
+  await legend.click();
+  await expect(tooltip).toContainText("Ví 1");
+  await expect(tooltip).toContainText("7.000.000 ₫");
+  await page.getByRole("button", { name: "Ẩn số tiền", exact: true }).click();
+  await legend.click();
+  await expect(tooltip).toContainText("•••••• ₫");
+  await expect(tooltip).not.toContainText("7.000.000");
+  await expect(slices.first()).not.toHaveAttribute("aria-label", /7\.000\.000/);
+  await expect(tooltip).toContainText("%");
+  await page.getByLabel("Phân bố theo", { exact: true }).selectOption("kind");
+  await expect(tooltip).toHaveCount(0);
+  await page.locator(".savings-chart-legend-item").first().click();
+  await expect(tooltip).toContainText("Tiền / ví");
+  await expect(tooltip).toContainText("100%");
+
+  await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
+  await page.screenshot({
+    path: `artifacts/savings-chart-tooltip-${info.project.name}.png`,
+    fullPage: true,
+  });
+  // A full-page Chromium screenshot can resize the viewport and dismiss the tooltip.
+  await page.locator(".savings-chart-legend-item").first().click();
+  await expect(tooltip).toContainText("100%");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  const tooltipBox = (await tooltip.boundingBox())!;
+  expect(tooltipBox.x).toBeGreaterThanOrEqual(0);
+  expect(tooltipBox.x + tooltipBox.width).toBeLessThanOrEqual(
+    page.viewportSize()!.width,
+  );
+  for (const width of [320, 844]) {
+    await page.setViewportSize({ width, height: width === 320 ? 740 : 390 });
+    const item = page.locator(".savings-chart-legend-item").first();
+    if (info.project.use.hasTouch) await item.tap();
+    else await item.click();
+    await expect(tooltip).toContainText("100%");
+    const bounds = (await tooltip.boundingBox())!;
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    if (width === 320)
+      await page.screenshot({
+        path: `artifacts/savings-chart-320-${info.project.name}.png`,
+        fullPage: true,
+      });
+  }
+
+  // Full Reports uses the same interactions, including a future-month placeholder.
+  await page.getByRole("tab", { name: "Báo cáo", exact: true }).click();
+  await page.getByLabel("Từ ngày", { exact: true }).fill(day);
+  await page.getByLabel("Đến ngày", { exact: true }).fill(`${year + 2}-01-31`);
+  const future = page.locator(".savings-chart-mark").last();
+  await future.focus();
+  await expect(tooltip).toContainText("Chưa phát sinh");
+  await expect(tooltip).not.toContainText("0 ₫");
+  expect(errors).toEqual([]);
+});
 test("savings UI CRUD, gold sale, reports, exports and responsive privacy", async ({
   page,
 }, info) => {
@@ -152,8 +367,12 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
   const csv = await readFile((await (await csvPromise).path())!, "utf8");
   expect(csv).toContain("64000000");
   expect(csv).toContain("50000000");
-  await expect(page.getByRole("button", { name: "Sao lưu JSON", exact: true })).toHaveCount(0);
-  const backup = await (await page.request.get("/api/v1/savings/backup")).json();
+  await expect(
+    page.getByRole("button", { name: "Sao lưu JSON", exact: true }),
+  ).toHaveCount(0);
+  const backup = await (
+    await page.request.get("/api/v1/savings/backup")
+  ).json();
   expect(backup.book.revisions).toHaveLength(2);
   await page
     .getByRole("button", { name: "Cập nhật giá vàng", exact: true })

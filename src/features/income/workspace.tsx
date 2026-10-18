@@ -11,7 +11,7 @@ import type { IncomeRow, IncomeView } from "@/domain/income/types";
 import { ruleAt, hasRecordedIncome } from "@/domain/income/engine";
 import { buildReport, type ReportFilter } from "@/domain/income/reports";
 import { monthName } from "@/features/expenses/format";
-import { ExpenseModal } from "@/features/expenses/modal";
+import { IncomeDetails } from "./details";
 import { incomeJSON, IncomeAPIError } from "./api";
 import { IncomeEditor, type EditorMode } from "./editor";
 import { useDisplayMoney, IncomeReports } from "./report-panel";
@@ -125,7 +125,6 @@ export function IncomeWorkspace({
   }
   async function saved() {
     setEditor(null);
-    setDetails(null);
     setNotice("Đã lưu thay đổi.");
     try {
       await reload();
@@ -651,20 +650,13 @@ export function IncomeWorkspace({
         />
       )}
       {details && report && (
-        <ExpenseModal
-          title={
-            details.month
-              ? `Thu phát sinh · ${monthName(details.month)}`
-              : "Thu phát sinh trong kỳ"
-          }
+        <IncomeDetails
+          key={details.month ?? "period"}
+          rows={report.oneOffs}
+          month={details.month}
           onClose={() => setDetails(null)}
-        >
-          {oneOffList(
-            report.oneOffs.filter(
-              (r) => !details.month || r.month === details.month,
-            ),
-          )}
-        </ExpenseModal>
+          onEdit={open}
+        />
       )}
     </div>
   );

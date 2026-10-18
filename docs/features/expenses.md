@@ -65,3 +65,8 @@ Theo tháng/khoản/phương thức/nhóm: mức kế hoạch, tiền bỏ hũ v
 ## Kiểm tra
 
 `npm test`, `npm run test:db`, `npm run test:e2e`, `npm run typecheck`, `npm run build`. DB/e2e tạo một PostgreSQL cluster local riêng trong artifacts; không sử dụng DATABASE_URL thật. Bộ e2e dùng Auth contract double local và PostgreSQL thật, Chromium desktop/điện thoại, dữ liệu giả. Cấu hình cloud và các bước nghiệm thu thật nằm trong [Cloud cho Chi tiêu](../09-expenses-cloud.md).
+
+
+## Giao diện chi tiết — 18/10/2026
+
+Chi tiết hũ ưu tiên còn lại, mức tháng, bỏ hũ và thực chi; tab Theo tháng, Các lần sử dụng (hũ tích lũy), Lịch sử thay đổi. Lịch sử không còn bị cắt ở 20 dòng; danh sách dài có tìm kiếm/lọc/phân trang. Phương thức/nhóm tách tab. Xem trước có Trước/Sau; lưu trong dialog con giữ chi tiết và vị trí. Xem [quy chuẩn dialog](ui-feedback.md).

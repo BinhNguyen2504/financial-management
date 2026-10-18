@@ -16,7 +16,7 @@ export const modules = [
   {
     slug: "income", status: "implemented", title: "Thu nhập", icon: "income", label: "Thực nhận theo tháng",
     description: "Theo dõi danh mục cố định, thu phát sinh và báo cáo tháng, quý, năm.",
-    scope: ["Tổng thực nhận mỗi tháng theo danh mục", "Khoản thu phát sinh một lần", "Bảng, biểu đồ và xuất CSV"],
+    scope: ["Tổng thực nhận mỗi tháng theo danh mục", "Khoản thu phát sinh một lần", "Bảng, biểu đồ và xuất CSV", "Chi tiết khoản phát sinh có tìm kiếm và phân trang"],
     questions: [],
   },
   {
@@ -28,7 +28,7 @@ export const modules = [
   {
     slug: "budgets", status: "implemented", title: "Chi tiêu", icon: "budgets", label: "Hũ chi tiêu theo tháng",
     description: "Quản lý hũ chi tháng và tích lũy, tự tính tiền cần thêm và báo cáo trong năm.",
-    scope: ["Kế hoạch theo danh mục và tháng hiệu lực", "Thực chi, số còn lại và phần chuyển tiếp kỳ sau", "Phân biệt chi phí, trả nợ và tiền dành để tiết kiệm", "Tổng hợp nhu cầu tiền theo ví/ngân hàng"],
+    scope: ["Kế hoạch theo danh mục và tháng hiệu lực", "Thực chi, số còn lại và phần chuyển tiếp kỳ sau", "Phân biệt chi phí, trả nợ và tiền dành để tiết kiệm", "Tổng hợp nhu cầu tiền theo ví/ngân hàng", "Chi tiết hũ theo tab tháng, sử dụng và lịch sử"],
     questions: ["Tiền chưa chi có được cộng dồn sang tháng tiếp theo?", "Thay đổi ngân sách giữa tháng áp dụng từ thời điểm nào?"],
   },
   {
@@ -40,13 +40,13 @@ export const modules = [
   {
     slug: "savings", status: "implemented", title: "Tiết kiệm", icon: "savings", label: "Tích lũy có lịch sử",
     description: "Tiền, sổ tiết kiệm và vàng cùng lịch sử giao dịch, định giá và báo cáo nhiều năm.",
-    scope: ["Danh mục, sổ tiền gửi và từng đợt mua vàng", "Rút, bán, nhận lãi và tái tục có lịch sử", "Tài sản, tỷ trọng, dòng tiền và lãi/lỗ", "Chốt tháng, mở lại có lý do và sao lưu"],
+    scope: ["Chi tiết danh mục, sổ tiền gửi và đợt vàng có lọc, phân trang", "Rút, bán, nhận lãi và tái tục có lịch sử", "Tài sản, tỷ trọng, dòng tiền và lãi/lỗ; chú thích biểu đồ khi rê chuột, chạm hoặc dùng Tab", "Chốt tháng, mở lại có lý do và sao lưu"],
     questions: [],
   },
   {
     slug: "investments", status: "implemented", title: "Đầu tư", icon: "investments", label: "Vốn và giá trị hiện tại",
     description: "Theo dõi tổng danh mục, ví tiền chờ, mua bán, định giá và lãi/lỗ có lịch sử.",
-    scope: ["Danh mục tổng tiền và nhiều ví tiền chờ, VND", "Mua/bán cập nhật tài sản và tiền chờ trong một lần lưu", "Giá vốn bán nhập tay; phí, thuế, lãi/lỗ đã chốt và chưa chốt", "Định giá có ngày; báo cáo xuyên năm, CSV và backup JSON"],
+    scope: ["Danh mục tổng tiền và nhiều ví tiền chờ, VND", "Mua/bán cập nhật tài sản và tiền chờ trong một lần lưu", "Giá vốn bán nhập tay; phí, thuế, lãi/lỗ đã chốt và chưa chốt", "Định giá có ngày; báo cáo xuyên năm, CSV và backup JSON", "Chi tiết giao dịch trước/sau, phiên bản sửa và giữ vị trí khi quay lại"],
     questions: [],
   },
   {

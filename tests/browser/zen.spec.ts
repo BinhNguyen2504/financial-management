@@ -58,11 +58,15 @@ async function setup(page: Page) {
   return { address, id };
 }
 async function confirm(page: Page) {
+  const titleId = await page
+    .getByRole("dialog")
+    .getAttribute("aria-labelledby");
+  const editor = page.locator(`dialog[aria-labelledby="${titleId}"]`);
   await page
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
   await page.getByRole("button", { name: "Xác nhận lưu", exact: true }).click();
-  await expect(page.getByRole("dialog")).toBeHidden();
+  await expect(editor).toBeHidden();
 }
 
 test("privacy persists without flashing and scopes form disclosure, charts and income", async ({
@@ -196,6 +200,10 @@ test("emoji picker saves through commands and a separate session without changin
     .click();
   await page.getByRole("button", { name: "Quà tặng", exact: true }).click();
   await confirm(page);
+  await expect(page.getByRole("dialog")).toHaveAccessibleName(
+    "Ăn uống riêng tư",
+  );
+  await page.keyboard.press("Escape");
   const after = await view(page);
   expect(after.book?.inputs).toEqual(before.book?.inputs);
   expect(after.rows.map(({ emoji, ...r }) => r)).toEqual(

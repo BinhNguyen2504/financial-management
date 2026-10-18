@@ -14,7 +14,6 @@ import {
 import { monthSchema } from "@/domain/savings/schema";
 import type { SavingsView, CategoryPosition } from "@/domain/savings/types";
 import { buildReport, type ReportFilter } from "@/domain/savings/reports";
-import { ExpenseModal } from "@/features/expenses/modal";
 import { savingsJSON, SavingsAPIError, downloadSavings } from "./api";
 import {
   SavingsEditor,
@@ -23,6 +22,7 @@ import {
   type EditorMode,
 } from "./editor";
 import { SavingsReports } from "./report-panel";
+import { SavingsDetails } from "./details";
 export function SavingsWorkspace({
   configured,
   initialToday,
@@ -791,70 +791,13 @@ export function SavingsWorkspace({
                 )}
               </div>
               {selected && (
-                <ExpenseModal
-                  title={`Chi tiết ${selected.name}`}
+                <SavingsDetails
+                  key={selected.id}
+                  view={view}
+                  position={selected}
                   onClose={() => setDetails(null)}
-                >
-                  <p>
-                    {display(selected.value)} · {kindNames[selected.kind]}
-                  </p>
-                  {selected.kind === "gold" && (
-                    <>
-                      <p>
-                        Giá bán lại{" "}
-                        {selected.price ? money(selected.price) : "chưa có"} /{" "}
-                        {selected.unit} · {selected.priceDate ?? ""}
-                      </p>
-                      <h3>Các đợt mua</h3>
-                      {view.state.lots
-                        .filter((l) => l.categoryId === selected.id)
-                        .map((l) => (
-                          <article className="savings-activity" key={l.id}>
-                            <span>{l.date}</span>
-                            <span>
-                              {hidden ? "••••••" : l.quantity} {selected.unit}
-                            </span>
-                            <span>Giá vốn {money(l.cost)}</span>
-                          </article>
-                        ))}
-                    </>
-                  )}
-                  {selected.kind === "deposit" && (
-                    <>
-                      <h3>Sổ tiền gửi</h3>
-                      {view.state.contracts
-                        .filter((c) => c.categoryId === selected.id)
-                        .map((c) => (
-                          <article className="savings-activity" key={c.id}>
-                            <div>
-                              <h3>{c.name}</h3>
-                              <p>
-                                {c.opened} → {c.maturity} · {c.term}
-                              </p>
-                              {c.previousId && <p>Tái tục từ sổ trước</p>}
-                            </div>
-                            <span>
-                              {money(c.principal)}
-                              {c.principal === "0" ? " · đã tất toán" : ""}
-                            </span>
-                          </article>
-                        ))}
-                    </>
-                  )}
-                  <h3>Lịch sử giao dịch</h3>
-                  {transactions
-                    .filter(
-                      (t) =>
-                        t.categoryId === selected.id ||
-                        ("cashCategoryId" in t &&
-                          t.cashCategoryId === selected.id),
-                    )
-                    .map((t) => (
-                      <p key={t.id}>
-                        {t.date} · {transactionNames[t.kind]}
-                      </p>
-                    ))}
-                </ExpenseModal>
+                  onEdit={setEditor}
+                />
               )}
               {editor && (
                 <SavingsEditor

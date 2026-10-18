@@ -1,6 +1,7 @@
 "use client";
 import { LoadingSpinner } from "@/components/loading";
-import { useRef, useState } from "react";
+import { DialogChanges, DialogPreview } from "@/components/dialog-content";
+import { useRef, useId, useState } from "react";
 import { ExpenseModal } from "@/features/expenses/modal";
 import {
   PrivacyScope,
@@ -370,9 +371,45 @@ function Editor({
       );
     }
   }
+  const formId = useId();
   return (
-    <ExpenseModal title={title} onClose={close} busy={busy || uncertain}>
+    <ExpenseModal
+      title={title}
+      onClose={close}
+      busy={busy || uncertain}
+      size={
+        mode.type === "cancel" || mode.type === "archive" ? "confirm" : "form"
+      }
+      footer={
+        <div className="expense-actions">
+          <button
+            form={formId}
+            aria-busy={busy}
+            type="submit"
+            className="expense-primary"
+            disabled={busy || hidden || conflict}
+          >
+            {busy && <LoadingSpinner />}
+            {busy
+              ? "Đang kiểm tra…"
+              : preview
+                ? "Xác nhận lưu"
+                : "Xem trước thay đổi"}
+          </button>
+          <button
+            form={formId}
+            type="button"
+            className="expense-secondary"
+            onClick={close}
+            disabled={busy || uncertain}
+          >
+            Đóng form
+          </button>
+        </div>
+      }
+    >
       <form
+        id={formId}
         className="investment-form"
         noValidate
         onSubmit={(e) => {
@@ -403,6 +440,7 @@ function Editor({
           </p>
         )}
         <fieldset disabled={busy || uncertain} className="investment-fields">
+          <legend>Thông tin giao dịch / danh mục</legend>
           {(mode.type === "create" || mode.type === "configure") && (
             <>
               {mode.type === "create" ? (
@@ -523,8 +561,11 @@ function Editor({
               )}
               {(kind === "buy" || kind === "sell") && (
                 <>
-                  {input("fee", "Phí (VND)", "money")}
-                  {input("tax", "Thuế (VND)", "money")}
+                  <fieldset className="dialog-form-section">
+                    <legend>Phí và thuế</legend>
+                    {input("fee", "Phí (VND)", "money")}
+                    {input("tax", "Thuế (VND)", "money")}
+                  </fieldset>
                 </>
               )}
               {["buy", "sell", "transfer"].includes(kind) && (
@@ -602,37 +643,42 @@ function Editor({
           )}
         </fieldset>
         {preview && (
-          <section
-            className="investment-preview"
-            role="region"
-            aria-label="Xem trước thay đổi"
-          >
+          <DialogPreview className="investment-preview">
             <h3>Xem trước thay đổi</h3>
-            <p>
-              Tổng tài sản:{" "}
-              {preview.result.before.total === null
-                ? "Thiếu định giá"
-                : money(preview.result.before.total)}{" "}
-              →{" "}
-              {preview.result.after.total === null
-                ? "Thiếu định giá"
-                : money(preview.result.after.total)}
-            </p>
-            {preview.result.after.positions
-              .filter(
-                (p) =>
-                  p.id === f.categoryId ||
-                  p.id === f.cashCategoryId ||
-                  p.id === mode.categoryId,
-              )
-              .map((p) => (
-                <p key={p.id}>
-                  {p.name}: vốn {money(p.cost)}, giá trị{" "}
-                  {p.value === null ? "Thiếu định giá" : money(p.value)}, đã
-                  chốt {money(p.realized)}
-                </p>
-              ))}
-          </section>
+            <DialogChanges
+              rows={[
+                {
+                  key: "total",
+                  label: "Tổng tài sản",
+                  before:
+                    preview.result.before.total === null
+                      ? "Thiếu định giá"
+                      : money(preview.result.before.total),
+                  after:
+                    preview.result.after.total === null
+                      ? "Thiếu định giá"
+                      : money(preview.result.after.total),
+                },
+                ...preview.result.after.positions.flatMap((p) => {
+                  const before = preview.result.before.positions.find(
+                    (b) => b.id === p.id,
+                  );
+                  return (["cost", "value", "realized"] as const)
+                    .filter((field) => before?.[field] !== p[field])
+                    .map((field) => ({
+                      key: `${p.id}/${field}`,
+                      label: `${p.name} · ${{ cost: "Giá vốn", value: "Giá trị", realized: "Lãi / lỗ đã chốt" }[field]}`,
+                      before:
+                        before?.[field] === null
+                          ? "Thiếu định giá"
+                          : money(before?.[field] ?? "0"),
+                      after:
+                        p[field] === null ? "Thiếu định giá" : money(p[field]),
+                    }));
+                }),
+              ]}
+            />
+          </DialogPreview>
         )}
         {conflict && (
           <button
@@ -659,29 +705,6 @@ function Editor({
             Tải dữ liệu mới, giữ nội dung nhập
           </button>
         )}
-        <div className="expense-actions">
-          <button
-            aria-busy={busy}
-            type="submit"
-            className="expense-primary"
-            disabled={busy || hidden || conflict}
-          >
-            {busy && <LoadingSpinner />}
-            {busy
-              ? "Đang kiểm tra…"
-              : preview
-                ? "Xác nhận lưu"
-                : "Xem trước thay đổi"}
-          </button>
-          <button
-            type="button"
-            className="expense-secondary"
-            onClick={close}
-            disabled={busy || uncertain}
-          >
-            Đóng form
-          </button>
-        </div>
       </form>
     </ExpenseModal>
   );

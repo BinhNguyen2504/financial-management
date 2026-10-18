@@ -36,7 +36,10 @@ async function command(page: Page, action: unknown) {
   return r;
 }
 async function save(page: Page) {
-  const d = page.getByRole("dialog");
+  const titleId = await page
+    .getByRole("dialog")
+    .getAttribute("aria-labelledby");
+  const d = page.locator(`dialog[aria-labelledby="${titleId}"]`);
   await d
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
@@ -180,8 +183,12 @@ test("complete aggregate investing flow, reports, downloads and responsive light
   const csv = await csvPromise;
   expect(await readFile((await csv.path())!, "utf8")).toContain("4800000");
   await page.getByRole("tab", { name: "Quản lý", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Tải backup JSON", exact: true })).toHaveCount(0);
-  const data = await (await page.request.get("/api/v1/investments/backup")).json();
+  await expect(
+    page.getByRole("button", { name: "Tải backup JSON", exact: true }),
+  ).toHaveCount(0);
+  const data = await (
+    await page.request.get("/api/v1/investments/backup")
+  ).json();
   expect(data.schemaVersion).toBe(1);
   expect(data.book.revisions).toHaveLength(4);
   expect(errors).toEqual([]);
@@ -254,7 +261,10 @@ test("archive guard, sell all, restore and valuation correction history", async 
     .getByLabel("Lý do sửa / hủy", { exact: true })
     .fill("Đối soát giá trị");
   await save(page);
-  await page.getByRole("button", { name: /Xem giao dịch/ }).click();
+  await expect(page.getByRole("dialog")).toHaveAccessibleName(
+    "Chi tiết giao dịch",
+  );
+  await page.getByRole("tab", { name: /Lịch sử chỉnh sửa/ }).click();
   await expect(page.getByRole("dialog")).toContainText("Đối soát giá trị");
   expect(
     (await view(page)).book!.revisions.filter(
@@ -381,8 +391,12 @@ test("sample portfolio, privacy scope, cross-year reports and full exports", asy
   await expect(
     page.getByRole("tab", { name: "Quản lý", exact: true }),
   ).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("button", { name: "Tải backup JSON", exact: true })).toHaveCount(0);
-  const data = await (await page.request.get("/api/v1/investments/backup")).json();
+  await expect(
+    page.getByRole("button", { name: "Tải backup JSON", exact: true }),
+  ).toHaveCount(0);
+  const data = await (
+    await page.request.get("/api/v1/investments/backup")
+  ).json();
   expect(data.book.categories).toHaveLength(7);
   expect(
     data.book.revisions.find(

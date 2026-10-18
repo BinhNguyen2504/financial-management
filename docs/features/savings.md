@@ -32,6 +32,8 @@ Bộ lọc loại giao dịch chọn các chỉ số hoạt động, cột nạp
 
 Tháng hiện tại ghi tạm tính; tháng tương lai không có số thực tế/đường nối. Báo cáo gồm giá vốn, realized/unrealized, lãi thực nhận, phí/thuế, dòng tiền ngoài, chuyển nội bộ, cơ cấu và diễn biến tháng. Donut tối đa 5 lát, phần dư gộp Khác có key riêng. Có bảng thay thế và điểm SVG dùng bàn phím.
 
+Tooltip mở khi rê chuột, chạm hoặc dùng Tab ở điểm tháng, từng cột nạp/rút, lát donut và hàng chú giải; Escape hoặc bấm ngoài để đóng. Điểm/cột ghi tháng, chỉ số, số tiền và trạng thái tạm tính; donut ghi tên, giá trị, tỷ trọng và ngày cuối kỳ. Thiếu dữ liệu hoặc tháng tương lai có thông báo riêng, không giả số 0. Bấm chuột không tạo viền quanh cả nhóm SVG/nhãn tháng; Tab giữ chỉ báo focus quanh điểm/cột/lát đang đọc. Áp dụng cả biểu đồ trong Danh mục và Báo cáo, tooltip dùng định dạng Privacy Mode hiện tại.
+
 Privacy Mode che tiền, giá và lượng vàng trong bảng/form/tooltip/nhãn trợ năng; vẫn giữ tỷ lệ. Form có nút hiện riêng. CSV và JSON backup luôn chứa đầy đủ dữ liệu; sao lưu/khôi phục toàn tài khoản thực hiện trong [Cài đặt](backup.md). API xuất riêng Tiết kiệm vẫn tương thích nhưng file đó không dùng để import toàn tài khoản.
 
 ## API và lưu trữ
@@ -64,3 +66,8 @@ Cloud cần kiểm riêng: đăng nhập thật từ `/savings`, lưu/đọc l�
 ## Đọc lại bộ review cloud — 18/10/2026
 
 Trong lúc chuẩn bị bộ mẫu Đầu tư cho cùng tài khoản, đọc qua runtime RLS xác nhận schema Tiết kiệm đã tồn tại, có 6 danh mục, 46 revisions giao dịch, 10 giá và 1 allocation thuộc bộ review cũ. Mốc này bổ sung cho trạng thái chưa áp dụng cloud ở các ghi nhận ngày 17/10; không xác nhận thời điểm migration thực tế, Auth/PKCE hoặc thiết bị thật. Dữ liệu được giữ nguyên, có backup trước khi chuẩn bị phần Đầu tư.
+
+
+## Giao diện chi tiết — 18/10/2026
+
+Chi tiết tiền/ví ưu tiên số dư và lịch sử có tiền, chiều biến động, nguồn/đích. Vàng tách Đợt vàng/Giao dịch, tiền gửi tách Sổ tiền gửi/Giao dịch; có lọc hiện tại/tất cả và 20 dòng/trang. Lịch sử cùng ngày chốt số dư đang xem; xem/sửa/hủy giao dịch qua dialog con giữ vị trí. Lãi tái tục và giá vốn vàng được ghi đúng nhãn, không suy dấu thu/chi từ effect.net. Xem [quy chuẩn dialog](ui-feedback.md).

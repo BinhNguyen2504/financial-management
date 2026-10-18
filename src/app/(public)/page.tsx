@@ -47,7 +47,7 @@ const benefits: Record<string, { heading: string; detail: string }> = {
   },
   savings: {
     heading: "Nhìn thấy hành trình tích lũy.",
-    detail: "Tiền · Sổ tiền gửi · Vàng",
+    detail: "Tiền · Sổ tiền gửi · Vàng · Biểu đồ có chú thích",
   },
 };
 
@@ -99,8 +99,8 @@ export default function Home() {
         <div className="preview-caption">
           <span>01 / MỘT GÓC KHÔNG GIAN CỦA BẠN</span>
           <p>
-            Chuyển giữa các mục để khám phá. Dữ liệu minh họa, không cần đăng
-            nhập.
+            Chuyển giữa các mục để khám phá số liệu chính và bảng có nhãn rõ ràng.
+            Dữ liệu minh họa, không cần đăng nhập.
           </p>
         </div>
       </section>

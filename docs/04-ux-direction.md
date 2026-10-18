@@ -119,3 +119,17 @@ Dùng vòng xoay CSS nhỏ màu theo token và giữ nguyên thông báo tiếng
 ### Rà soát tải backup và Cài đặt — 18/10/2026
 
 Cài đặt dùng hai thẻ thao tác, ưu tiên nút xuất; chọn file/xem trước/xác nhận chỉ mở khi có thể khôi phục. Lỗi nằm cạnh hành động, URL file được giữ để có liên kết Lưu file JSON, hướng dẫn cài PWA thu gọn. Giữ Zen và token hiện tại; mobile 320px xếp dọc.
+
+
+### Căn đều thẻ Cài đặt — 18/10/2026
+
+Hai thẻ Sao lưu/Khôi phục trong cùng hàng dùng grid stretch, tự bằng chiều cao của thẻ dài hơn cả khi xuất hiện thông báo tải file hoặc preview import. Không đặt chiều cao cố định. Dưới breakpoint 1000px, các thẻ xếp dọc và giữ chiều cao theo nội dung.
+
+### Chú thích biểu đồ Tiết kiệm — 18/10/2026
+
+Điểm và nhãn tháng không dùng chung vùng focus SVG, tránh viền kéo dài từ điểm xuống trục khi bấm chuột. Tab có vòng quanh điểm hoặc viền quanh cột/lát đang đọc. Tooltip theo màu giao diện hiện tại, cho điểm tháng, từng cột nạp/rút, lát donut và hàng chú giải; hỗ trợ hover, chạm, Tab và Escape. Nội dung ghi đúng tháng/chỉ số, giá trị, tỷ trọng và trạng thái tạm tính; số thiếu/tương lai không thay bằng 0. Tooltip che số tiền theo Privacy Mode, vẫn giữ phần trăm; nằm ngoài vùng cuộn SVG để tránh bị cắt trên điện thoại.
+
+
+## Dialog và dữ liệu dài — 18/10/2026
+
+Tóm tắt số liệu quan trọng trước, tab theo nội dung sau; giữ header và thao tác lưu/đóng tiếp cận được khi cuộn. Bảng desktop chuyển thành thẻ có nhãn trên mobile. Danh sách dài có tìm kiếm, bộ lọc theo ngữ cảnh và 20 dòng/trang. Xem trước có nhãn Trước/Sau, đọc được toàn bộ thay đổi. Dialog con quay lại parent cùng vị trí kể cả khi lưu; không làm người dùng tìm lại nội dung vừa đọc. Xem [quy chuẩn và phạm vi](features/ui-feedback.md#dialog-có-nhiều-dữ-liệu--18102026).

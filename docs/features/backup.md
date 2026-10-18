@@ -50,3 +50,8 @@ Kiểm thử tự động dùng PostgreSQL cô lập và Auth double local; khô
 Giao diện hiện dùng hai thẻ Sao lưu/Khôi phục cạnh nhau trên desktop và xếp dọc trên mobile. Nút chọn file tiếng Việt, preview theo bước và hướng dẫn cài PWA thu gọn. Lỗi xuất/nhập và trạng thái chờ hiển thị tại đúng thao tác. Khi file đã tạo, URL blob được giữ đến khi thay file/rời trang; liên kết **Lưu file JSON** cho phép thao tác lưu trực tiếp nếu trình duyệt không bắt đầu tải tự động. Không thông báo đã lưu file khi chưa thể kiểm chứng thao tác lưu của trình duyệt.
 
 Export không phụ thuộc request status thành công; lỗi Auth hoặc dữ liệu khi xuất vẫn phải báo ngay trong thẻ sao lưu. File phản hồi không hợp lệ (ví dụ trang HTML của proxy) không được đưa cho người dùng như một bản backup.
+
+
+### Căn đều bố cục — 18/10/2026
+
+Thẻ Sao lưu và Khôi phục cùng hàng được stretch theo nội dung cao nhất, giữ cùng mép trên/dưới ở trạng thái ban đầu, sau tạo file và xem trước import. Mobile vẫn xếp dọc, không ép bằng chiều cao hoặc chồng nội dung. Catalog, README, landing copy và preview đã rà soát; phạm vi và mô tả tính năng không đổi nên không cần sửa copy.

@@ -18,7 +18,7 @@ const tabs = modules.filter((item) =>
 const data = {
   income: {
     title: "Những điều bạn đã làm được.",
-    subtitle: "Ghi nhận từng nguồn thu, nhìn rõ thực nhận trong tháng.",
+    subtitle: "Tổng thực nhận ở đầu, từng nguồn thu và số tiền dễ đối chiếu.",
     label: "Tổng thực nhận",
     value: "28.500.000",
     secondary: "Nguồn thu trong tháng",
@@ -72,7 +72,7 @@ const data = {
   },
   investments: {
     title: "Nhìn rõ những khoản đang đầu tư.",
-    subtitle: "Tổng danh mục và tiền chờ, cùng ngày định giá rõ ràng.",
+    subtitle: "Giá trị chính ở đầu, từng danh mục và ngày định giá rõ ràng.",
     label: "Tài sản trong Đầu tư",
     value: "72.000.000",
     secondary: "Danh mục và ví",
@@ -99,7 +99,7 @@ const data = {
   },
   savings: {
     title: "Những điều đang lớn lên.",
-    subtitle: "Nhìn lại phần tích lũy và những bước tiến của riêng bạn.",
+    subtitle: "Nhìn lại tích lũy, giá trị và tỷ trọng từng danh mục.",
     label: "Tài sản trong Tiết kiệm",
     value: "85.000.000",
     secondary: "Danh mục đang theo dõi",

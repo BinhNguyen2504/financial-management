@@ -55,3 +55,6 @@ Avatar public dùng vòng xoay chung khi xác minh hồ sơ; landing vẫn đọ
 ### Rà soát tải backup và Cài đặt — 18/10/2026
 
 Rà soát copy/preview cùng sửa Cài đặt: FAQ nhắc liên kết lưu trực tiếp, preview giữ ghi chú thao tác ở Cài đặt. Không có trigger tải/nhập hoặc API tài khoản trong preview.
+
+
+Ngày 18/10/2026 rà soát cùng thay đổi dialog: catalog bổ sung khả năng đọc chi tiết/lịch sử; copy landing và preview nhấn mạnh số liệu chính, nhãn bảng và ngày định giá. Preview vẫn chỉ minh họa cố định, chuyển tab/che tiền; không mô phỏng đầy đủ dialog và không gọi API tài chính.

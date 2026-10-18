@@ -94,3 +94,8 @@ Chưa có từng mã/lô, ngoại tệ/tỷ giá, giá trực tuyến, cổ tứ
 `data:investments:sample -- --base <bộ mẫu Tiết kiệm>/sample-data.json` tạo phần bổ sung Đầu tư có marker cùng bộ review, các số vốn/định giá tham khảo ảnh và nhiều tình huống tự tạo. Không ghi đè ba module trước. Có SQL migration+seed nguyên tử cho admin, seed qua runtime sau khi có schema, backup và reset đủ 28 bảng. Reset mặc định chưa xác nhận, chỉ được dùng sau review.
 
 Lần kiểm tra tài khoản mục tiêu: đã có Tiết kiệm trên cloud, chưa có schema Đầu tư; runtime không có quyền tạo bảng. Đã lưu backup các module trước và chuẩn bị file 01-enable-and-seed.sql, **chưa nạp Đầu tư cloud**. Xem [hướng dẫn dữ liệu review](../10-sample-data.md#bộ-review-đầu-tư-cùng-tài-khoản-và-reset-28-bảng--18102026).
+
+
+## Giao diện chi tiết — 18/10/2026
+
+Chi tiết danh mục ưu tiên giá trị/vốn/lãi lỗ, lịch sử có lọc và phân trang. Chi tiết giao dịch ưu tiên phiên bản hiện hành, ảnh hưởng Trước/Sau, tách tab lịch sử sửa/hủy. Mở form không đóng parent; lưu thành công cập nhật và quay về đúng nơi. Preview dùng nhãn Trước/Sau và footer luôn tiếp cận được. Xem [quy chuẩn dialog](ui-feedback.md).

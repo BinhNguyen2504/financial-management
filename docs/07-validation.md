@@ -244,3 +244,16 @@ Catalog, landing và preview minh họa đã rà soát: dữ liệu public tiế
 - Playwright MCP Firefox sạch và iPhone WebKit giả lập đều nhận sự kiện download, `failure: null` và liên kết lưu trực tiếp còn dùng được. Đã xem ảnh desktop, iPhone và 320px dark/reduced-motion; không tràn ngang. Ảnh `artifacts/settings-after-desktop.png`, `artifacts/settings-after-iphone.png`, `artifacts/settings-after-320-dark.png`. Không thay cho thiết bị thật.
 - `npm run check` bản cuối: **133/133 unit tests**, typecheck và production build qua. `git diff --check` qua. Đã rà soát/cập nhật README, catalog, landing/preview, đặc tả backup, kiến trúc, UX và deployment; giữ các mốc cũ.
 - Khởi động source hiện tại tại `http://127.0.0.1:3000`; `/settings` trả 307 đến login khi chưa có phiên, giữ nguyên boundary xác thực. Bản preview sao chép cũ không tự nhận thay đổi của source hiện tại.
+
+
+### Căn đều hai thẻ Cài đặt — 18/10/2026
+
+Trình duyệt Firefox local tái hiện lệch đáy 28,9px ban đầu và 152px sau tải tại 1440px, do `align-items: start`. Sau đổi grid sang `stretch`, hai thẻ cùng mép trên/dưới tại 1440/1100px, trước và sau tải; preview import mở rộng thẻ bên phải vẫn giữ cùng chiều cao. Kiểm thêm 768/375/320px: xếp dọc, không chồng nội dung hoặc tràn ngang. WebKit iPhone giả lập kiểm 1440/375/320px qua. Kiểm cả light/dark; download trả `failure: null`. Đã xem ảnh `artifacts/settings-aligned-1440.png`, có thêm ảnh 320px. Dùng PostgreSQL/Auth double local cô lập, không ghi/reset cloud; không đại diện thiết bị thật. Thay đổi chỉ CSS nên không thêm unit test hoặc chạy lại kiểm thử nghiệp vụ.
+
+### Focus và tooltip biểu đồ Tiết kiệm — 18/10/2026
+
+- Bỏ focus khỏi nhóm chứa cả điểm và nhãn tháng, dùng vòng nhỏ quanh điểm hoặc viền quanh cột/lát khi Tab. Click/tap không còn khung dài xuống trục. Tooltip cho điểm, từng cột nạp/rút, từng lát donut và chú giải; Escape/bấm ngoài đóng, đổi loại biểu đồ/phân bố bỏ lựa chọn cũ. Cuộn ngang do Tab giữ tooltip ở đúng điểm mới.
+- `npm test`: **133/133** unit tests qua; `npm run typecheck` và `git diff --check` qua. Production build `next build --webpack` trong runner cô lập qua; Google Fonts IPv6 bị treo nên lần chạy cuối dùng CSS/font Nunito thật tải sẵn bằng IPv4 qua biến môi trường kiểm thử, không sửa cấu hình font ứng dụng.
+- `TEST_WEBKIT=1 npm run test:e2e -- savings.spec.ts`: **18/18** qua trên Chrome desktop, Chrome mobile và WebKit mô phỏng iPhone. Thêm **2/2** bài tooltip trên Firefox desktop và WebKit desktop với config tạm trong artifacts, cùng production app local. Không có page errors trong bài tooltip.
+- Bài mới kiểm click/tap, hover từng lát thật theo tọa độ để phát hiện tooltip chặn phần bên dưới, số tiền từng cột, nhóm Khác, Tab/focus ring, Escape cả khi hover, Privacy Mode, đổi phân bố, tháng tương lai và hai nơi Tổng quan/Báo cáo. Kiểm không tràn ngang và tooltip nằm trong viewport ở 320px/844px ngang, light/dark và reduced motion; có ảnh `artifacts/savings-point-tooltip-desktop.png`, `artifacts/savings-allocation-tooltip-firefox.png`, `artifacts/savings-chart-320-mobile.png`.
+- Đã rà/cập nhật catalog, landing copy, preview cố định, README, đặc tả Tiết kiệm và UX; preview public tiếp tục không đọc API tài chính. Toàn bộ kiểm chứng dùng PostgreSQL/Auth double local cô lập, không ghi dữ liệu cloud; chưa deploy hoặc kiểm trên thiết bị vật lý. Giữ nguyên các mốc kiểm chứng trước đó.
