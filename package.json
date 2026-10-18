@@ -16,6 +16,7 @@
     "test:e2e": "node scripts/test-postgres.mjs --browser",
     "data:sample": "node scripts/sample-data.mjs",
     "data:savings:sample": "node scripts/sample-savings.mjs",
+    "data:investments:sample": "node scripts/sample-investments.mjs",
     "data:preview": "node scripts/preview-sample-data.mjs",
     "data:import": "node --env-file=.env.local scripts/import-sample-data.mjs",
     "check": "npm test && npm run typecheck && npm run build"

@@ -4,21 +4,25 @@
 
 ## Trạng thái hiện tại
 
-**Thu nhập, Chi tiêu và Tiết kiệm đã được triển khai trong source**. Có Auth email, HTTP API v1 và migration PostgreSQL/RLS. Các khu vực khác vẫn là bộ khung P0.
+**Thu nhập, Chi tiêu, Tiết kiệm và Đầu tư đã được triển khai trong source**. Có Auth email, HTTP API v1 và migration PostgreSQL/RLS. Cài đặt có sao lưu/khôi phục toàn tài khoản; các khu vực dự kiến còn lại vẫn là bộ khung P0.
 
-**Chi tiêu:** hũ chi tháng/tích lũy, tự tính tiền bỏ hũ, nhập số dư, sử dụng tích lũy, cấu hình có hiệu lực, báo cáo bảng/biểu đồ và chốt/xuất backup từng năm.
+**Chi tiêu:** hũ chi tháng/tích lũy, tự tính tiền bỏ hũ, nhập số dư, sử dụng tích lũy, cấu hình có hiệu lực, báo cáo bảng/biểu đồ và chốt từng năm. Sao lưu toàn tài khoản trong Cài đặt.
+
+**Sao lưu và khôi phục:** Cài đặt cho phép xuất JSON đầy đủ bốn module cùng lịch sử và hồ sơ, nhập sang tài khoản trống với tùy chọn khôi phục hồ sơ. File không mật khẩu, không chứa thông tin đăng nhập. Xuất file không phụ thuộc migration biên nhận import; khôi phục cần migration này. Cấu hình giới hạn truyền file phù hợp hosting; xem [đặc tả backup](docs/features/backup.md). Chưa áp dụng migration mới lên cloud.
 
 **Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, báo cáo bảng/biểu đồ và xuất CSV. Xem [đặc tả Thu nhập](docs/features/income.md).
 
-**Tiết kiệm:** tiền/ví, từng sổ tiền gửi và đợt mua vàng; rút/bán, lãi thực nhận, tái tục, giá lịch sử, báo cáo xuyên năm, chốt/mở lại tháng và CSV/JSON. Xem [đặc tả và migration Tiết kiệm](docs/features/savings.md). Chưa tự đồng bộ số dư với Thu nhập/Chi tiêu; chưa áp dụng migration Tiết kiệm lên cloud.
+**Đầu tư:** tổng tiền từng danh mục và nhiều ví tiền chờ; mở đầu, nạp/rút/chuyển, mua/bán với giá vốn bán nhập tay, phí/thuế, định giá, lãi/lỗ, sửa/hủy có lịch sử, báo cáo xuyên năm và CSV/JSON. Xóa/lưu trữ chỉ khi hết vốn và giá trị. Xem [đặc tả và migration Đầu tư](docs/features/investments.md). Độc lập với các module khác; chưa áp dụng migration Đầu tư lên cloud.
+
+**Tiết kiệm:** tiền/ví, từng sổ tiền gửi và đợt mua vàng; rút/bán, lãi thực nhận, tái tục, giá lịch sử, báo cáo xuyên năm, chốt/mở lại tháng và CSV/JSON. Xem [đặc tả và migration Tiết kiệm](docs/features/savings.md). Chưa tự đồng bộ số dư với Thu nhập/Chi tiêu. Đọc lại cloud ngày 18/10 xác nhận đã có schema và bộ mẫu Tiết kiệm; chưa dùng bằng chứng này để khẳng định đăng nhập/thiết bị thật.
 
 Trang `/` là landing công khai với preview tương tác bằng dữ liệu minh họa. Mọi trang ứng dụng yêu cầu đăng nhập; khi chưa cấu hình Auth, chuyển đến trang đăng nhập có hướng dẫn trạng thái thiết lập. Không lưu tài chính trong trình duyệt. Dấu `—` trên tổng quan vẫn là chưa có dữ liệu. Có thể sinh **bộ dữ liệu mẫu tham khảo Notion** bằng `npm run data:sample -- --owner <USER_UID>`, rồi nạp qua Supabase SQL Editor. Bộ có inspect, seed, backup và reset sau khi chốt UI/UX; không tự kết nối hoặc ghi cloud. Xem [hướng dẫn dữ liệu mẫu](docs/10-sample-data.md), [đặc tả Chi tiêu](docs/features/expenses.md) và [hướng dẫn kết nối cloud](docs/09-expenses-cloud.md).
 
-Để xem ngay cả Tiết kiệm với dữ liệu mẫu local: `npm run data:preview`, dùng URL in ra với `review@example.test` / mã `123456`. Bản preview dùng database/Auth local riêng. Bộ bổ sung và reset đủ 22 bảng: [hướng dẫn dữ liệu review](docs/10-sample-data.md#bổ-sung-tiết-kiệm--17102026).
+Để xem Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư với dữ liệu mẫu local: `npm run data:preview`, dùng URL in ra với `review@example.test` / mã `123456`. Bản preview dùng database/Auth local riêng. Xem [hướng dẫn dữ liệu review](docs/10-sample-data.md). Có thể bổ sung Đầu tư vào bộ review cùng tài khoản bằng `npm run data:investments:sample -- --base imports/<BỘ_MẪU_TIẾT_KIỆM>/sample-data.json`; bộ mới có reset 28 bảng, chỉ dùng sau khi chốt UI/UX.
 
 ## Landing và truy cập ứng dụng
 
-Landing giới thiệu sản phẩm theo tinh thần “công cụ từ nhu cầu thật”: màu Zen, câu chuyện ngắn và preview Thu nhập / Chi tiêu / Tiết kiệm. Preview dùng dữ liệu cố định, chỉ chuyển tab và che/hiện tiền, không gọi API tài chính. Người đã đăng nhập vẫn xem được landing, với avatar/hồ sơ và nút Vào ứng dụng.
+Landing giới thiệu sản phẩm theo tinh thần “công cụ từ nhu cầu thật”: màu Zen, câu chuyện ngắn và preview Thu nhập / Chi tiêu / Tiết kiệm / Đầu tư. Preview dùng dữ liệu cố định, chỉ chuyển tab và che/hiện tiền, không gọi API tài chính. Người đã đăng nhập vẫn xem được landing, với avatar/hồ sơ và nút Vào ứng dụng.
 
 `/login` dùng email + OTP hoặc liên kết email. Sau đăng nhập mặc định mở `/overview`; `next` chỉ chấp nhận đường dẫn ứng dụng trong danh sách cho phép. Các trang kiểm tra phiên phía server trước khi render, kể cả module còn đang xây dựng. Đăng xuất trở về `/`; PWA vẫn khởi đầu tại `/overview` và yêu cầu đăng nhập. Lỗi Auth tạm thời có trạng thái thử lại, khác với phiên hết hạn.
 
@@ -26,7 +30,9 @@ Catalog dùng chung cho trạng thái module; quy tắc trong `AGENTS.md` yêu c
 
 ## Giao diện Zen
 
-Tổng quan và các màn hình dùng nền kem/xanh xô thơm, Nunito tiếng Việt, minh họa SVG và dark mode theo hệ thống. Tổng quan đọc dữ liệu hũ tháng hiện tại; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Nút mắt ở header che số tiền trong Chi tiêu, Thu nhập và Tiết kiệm (kể cả giá/lượng vàng); form có nút hiện riêng. Chỉ tùy chọn riêng tư lưu trên thiết bị, backup/CSV vẫn chứa số đầy đủ. Xem [hướng UI/UX](docs/04-ux-direction.md).
+Tổng quan và các màn hình dùng nền kem/xanh xô thơm, Nunito tiếng Việt, minh họa SVG và dark mode theo hệ thống. Tổng quan đọc dữ liệu hũ tháng hiện tại; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Nút mắt ở header che số tiền trong Chi tiêu, Thu nhập, Tiết kiệm (kể cả giá/lượng vàng) và Đầu tư; form có nút hiện riêng. Chỉ tùy chọn riêng tư lưu trên thiết bị, backup/CSV vẫn chứa số đầy đủ. Xem [hướng UI/UX](docs/04-ux-direction.md).
+
+Các trạng thái tải dữ liệu có vòng xoay kèm thông báo; nút gửi/lưu/khôi phục hiển thị tiến trình trong lúc chờ server. Hiệu ứng theo màu sáng/tối và dừng khi bật giảm chuyển động. Xem [phản hồi giao diện](docs/features/ui-feedback.md). Nếu gặp hydration diff `cz-shortcut-listen`, xem [cách xử lý extension](docs/08-troubleshooting.md).
 
 ## Đọc bản kế hoạch
 

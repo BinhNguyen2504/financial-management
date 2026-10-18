@@ -69,7 +69,7 @@ Trang `[module]` giữ bản đồ phạm vi cho module chưa triển khai; vẫ
 
 ## Ghi dữ liệu và API cho iOS
 
-Đề xuất `/api/v1/accounts`, `/transactions`, `/budgets`, `/funds`, `/goals`, `/trades`, `/valuations`, `/reports` và `/imports`. Đây là các hợp đồng mở rộng dự kiến. Hiện đã có `/api/v1/income`, `/api/v1/expenses` và `/api/v1/savings`, gồm preview/commands/reports theo module. Viết OpenAPI/schema request-response trước khi app iOS dùng API.
+Đề xuất `/api/v1/accounts`, `/transactions`, `/budgets`, `/funds`, `/goals`, `/trades`, `/valuations`, `/reports` và `/imports`. Đây là các hợp đồng mở rộng dự kiến. Hiện đã có `/api/v1/income`, `/api/v1/expenses`, `/api/v1/savings` và `/api/v1/investments`, gồm preview/commands/reports theo module. Viết OpenAPI/schema request-response trước khi app iOS dùng API.
 
 Web dùng session cookie được xác minh phía server; native về sau dùng bearer access token đã kiểm chứng issuer/audience/expiry. Không tin `owner_id` từ request. Mọi use case lấy chủ sở hữu từ danh tính đã xác thực, kiểm quan hệ tài khoản/tài sản thuộc cùng chủ.
 
@@ -111,3 +111,19 @@ Khi bắt đầu native mới cân nhắc cấu trúc `apps/web`, `apps/mobile` 
 - [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security): kiểm soát truy cập trong PostgreSQL, cần kết hợp grants/policies và kiểm thử.
 - [PostgreSQL numeric types](https://www.postgresql.org/docs/current/datatype-numeric.html): dùng kiểu số chính xác cho tiền/số lượng theo schema.
 - [shadcn/ui với Next.js](https://ui.shadcn.com/docs/installation/next): hướng tích hợp component khi bắt đầu form/dialog.
+
+## Đầu tư — 18/10/2026
+
+Đầu tư có domain/application/repository/API/UI riêng, theo tổng danh mục VND và nhiều ví tiền chờ. Dùng lại cơ chế Auth, RLS, preview, advisory lock, version và idempotency của các module hiện có; không dùng engine vàng/sổ tiền gửi cho danh mục tổng tiền. Mua/bán là một command cập nhật vốn, định giá và ví trong cùng transaction. Sáu bảng mới giữ metadata có ngày, revisions giao dịch/định giá, audit và command; không có tháng chốt. Trang await kiểm tra truy cập server. Chi tiết [Đầu tư](features/investments.md).
+
+Không tự nối số dư với các module khác hoặc tạo báo cáo tài sản ròng toàn ứng dụng. Migration cloud và kiểm chứng thiết bị thật là bước riêng.
+
+
+## Bổ sung backup toàn tài khoản — 18/10/2026
+
+API `/api/v1/data` và repository riêng đọc snapshot nhất quán, dùng runtime RLS hiện có. Import khóa bốn module theo thứ tự cố định, kiểm tra tài khoản trống sau khóa, ghi và đối soát trong một transaction kèm biên nhận idempotency. Hồ sơ Auth cập nhật riêng sau commit; xem [backup](features/backup.md).
+
+
+### Rà soát tải backup và Cài đặt — 18/10/2026
+
+Tách readiness của dữ liệu tài chính khỏi readiness của biên nhận import: export/status không đòi `data_imports`, status thêm `importReady`; chỉ import đòi migration biên nhận. Không giảm kiểm tra đầy đủ 28 bảng hoặc RLS. Xem đặc tả backup.

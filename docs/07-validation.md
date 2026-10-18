@@ -176,3 +176,71 @@ Bằng chứng local: [desktop](../artifacts/savings-desktop.png), [mobile](../a
 - `npm run data:preview` mở production app/Auth/PostgreSQL local riêng, tài khoản demo `review@example.test` / mã `123456`. Đã đăng nhập thật vào phiên preview và đọc lại 6 danh mục/9 đợt/46 giao dịch/3 sổ; không có lỗi JavaScript hoặc tràn ngang ở 390px. Ảnh: [desktop đang review](../artifacts/review-savings-ready-desktop.png), [mobile đang review](../artifacts/review-savings-ready-mobile.png). URL phiên được lưu trong `artifacts/review-preview.json`.
 - Cloud đọc lại xác nhận bộ Thu nhập/Chi tiêu hiện tại còn nguyên; runtime `expense_api` không có quyền CREATE và schema Tiết kiệm chưa tồn tại. Đã lưu backup owner 14 bảng trước khi chuẩn bị import, cùng `cloud-state-before.json` trong bộ private mới. File `01-enable-and-seed.sql` đã được kiểm trên PostgreSQL local, cần chạy bằng Supabase SQL Editor/admin để bật và seed trên cloud. **Chưa ghi dữ liệu Tiết kiệm lên cloud, chưa chạy reset cloud.**
 - Script reset mới `03-reset.sql` nằm trong bộ private `imports/savings-review-*/`, mặc định NOT_CONFIRMED. Chỉ dùng sau khi người dùng xác nhận UI/UX xong; xuất backup 22 bảng trước. Script bảo toàn Auth/hồ sơ/owner khác, từ chối marker sai, không tắt RLS hoặc TRUNCATE, bật lại toàn bộ trigger trong transaction.
+
+## Đầu tư theo tổng danh mục — 18/10/2026
+
+Môi trường: Node 22.12.0, PostgreSQL local cô lập, Next.js 16.4.1. Unit/persistence dùng nghiệp vụ thực và role `expense_api`/RLS; browser dùng production build cùng Auth contract double local. Không dùng kết quả này để khẳng định Supabase cloud hoặc iPhone vật lý đã sẵn sàng.
+
+| Kiểm tra | Kết quả |
+|---|---|
+| `npm run check` | **124/124 unit tests**, typecheck và production build qua |
+| `npm run test:db` | **39/39 tests** trên 7 file qua; có ledger Đầu tư, định giá/revision và seed preview đọc lại qua runtime RLS |
+| `TEST_WEBKIT=1 npm run test:e2e -- investments.spec.ts landing.spec.ts` | **39/39 browser tests** qua: 13 ca mỗi cấu hình desktop Chromium, Chromium mô phỏng điện thoại và WebKit mô phỏng iPhone |
+| Source | `git diff --check` qua |
+
+Đã kiểm tra mở đầu, mua cộng phí vào vốn, bán một phần và toàn bộ, mất toàn bộ vốn, vốn 0/ROI không có, tiền chờ không ROI, sửa/hủy/định giá có lịch sử, thứ tự gốc cùng ngày, chặn số dư âm và kiểm lại mốc lưu trữ sau khi sửa quá khứ. Ví dụ bán 30 triệu, vốn bán 25 triệu, phí/thuế 200 nghìn cho tiền ròng 29,8 triệu và lãi đã chốt 4,8 triệu.
+
+Persistence kiểm tra preview không ghi, retry cùng ID không ghi trùng, xung đột hai phiên, rollback khi lỗi sau bước save, FK cùng owner và RLS hai owner. Fixture local được chạy qua domain thật ở các mốc đầu năm/cuối năm, rồi seed SQL và đọc lại bằng repository runtime để đối chiếu số tiền/lịch sử.
+
+Browser kiểm tra CRUD/lưu trữ/khôi phục, mua/bán từ form, định giá và sửa có lý do, hai phía trước/sau, báo cáo xuyên năm, CSV/JSON, lỗi mạng giữ nháp, nạp đồng thời gây version conflict, mất phản hồi **sau commit** rồi retry chỉ có một bản ghi. Privacy Mode che cả lịch sử/form, nút hiện riêng không mở toàn trang; xuất file vẫn đầy đủ. Landing có tab Đầu tư cố định, không gọi API tài chính; kiểm tra Auth cho mọi trang và cookie Origin cho API.
+
+Ảnh dữ liệu giả: [desktop](../artifacts/investments-desktop.png), [điện thoại](../artifacts/investments-mobile.png), [WebKit tối](../artifacts/investments-webkit-dark.png), [báo cáo](../artifacts/investments-reports-desktop.png), [portfolio mẫu](../artifacts/investments-sample-desktop.png). Đã xem ảnh desktop sáng, báo cáo tối, điện thoại sáng và WebKit tối. Logs local: `artifacts/investments-check.log`, `artifacts/investments-postgres.log`, `artifacts/investments-browser.log`.
+
+Đã rà/cập nhật catalog, landing copy và preview, README, đặc tả Đầu tư, kiến trúc, dữ liệu, UX, discovery, deployment và hướng dẫn sample; giữ các kết quả kiểm chứng có ngày trước đó. Migration Đầu tư mới **chưa áp dụng cloud**, chưa deploy, chưa email/PKCE thật hoặc kiểm tra iPhone vật lý. Không chạy import/reset cloud; script reset 22 bảng cũ không bao gồm Đầu tư.
+
+Preview review 18/10: đã mở phiên production local riêng bằng `npm run data:preview`, đăng nhập bằng tài khoản demo và đọc lại **7 danh mục/ví, 16 giao dịch/định giá**, tổng tài sản minh họa **176.140.000 VND**. Không có lỗi JavaScript hoặc tràn ngang ở 390px. Bằng chứng: `artifacts/investments-review-readback.json`, [desktop đang review](../artifacts/investments-review-ready-desktop.png), [mobile đang review](../artifacts/investments-review-ready-mobile.png). Thông tin phiên hiện tại ở `artifacts/review-preview.json`; URL/cổng chỉ có hiệu lực khi phiên local còn chạy, không phải URL deploy.
+
+## Bộ mẫu Đầu tư theo Notion và reset đủ bốn module — 18/10/2026
+
+- `npm test`: **129/129 unit tests** qua, gồm 5 mốc đầu/cuối năm để đối chiếu từng action của fixture Đầu tư với domain thật, sửa/hủy và ngày định giá.
+- `npm run test:db`: **44/44 tests** qua. Bổ sung seed qua runtime RLS không thay đổi module trước, seed lại giữ chỉnh sửa, chặn dữ liệu không có marker, backup/reset 28 bảng với xác nhận/marker bốn module, giữ Auth/owner khác, rollback lỗi muộn và khôi phục trigger. Migration+seed được thử trong database local mới thiếu toàn bộ bảng Đầu tư và tình huống schema dở dang.
+- `npm run typecheck`: qua. Không đổi giao diện/API nghiệp vụ trong lượt bổ sung scripts này; bằng chứng browser/source trước đó được giữ nguyên.
+- Cloud đọc lại xác nhận đúng bộ mẫu ở Thu nhập/Chi tiêu/Tiết kiệm; schema Đầu tư còn thiếu. Role `expense_api` không có quyền CREATE. Đã lưu backup 22 bảng owner và bộ SQL migration+seed/reset 28 bảng vào thư mục private. Lệnh import dừng ở preflight thiếu migration, **chưa nạp Đầu tư trên cloud, chưa chạy reset**. File 01-enable-and-seed.sql cần chạy bằng SQL Editor/admin.
+
+Catalog, landing và preview minh họa đã rà soát: dữ liệu public tiếp tục cố định, không lấy bộ tài khoản này. README, hướng dẫn sample và đặc tả module cập nhật trạng thái/cách nạp; không coi chuẩn bị file hoặc kiểm thử local là cloud apply/deploy.
+
+
+## Backup toàn tài khoản và chuyển sang tài khoản mới — 18/10/2026
+
+- `npm run check` trên Node 22.12.0: **133/133 unit tests**, typecheck và production build qua. Typecheck được chạy lại sau cập nhật test cuối.
+- `npm run test:db`: **51/51 PostgreSQL tests** qua trên cluster local cô lập, dùng runtime `expense_api` và RLS. Vòng A → JSON → B → JSON giữ nguyên cả 28 bảng và kết quả đọc bốn module; bao gồm năm đã chốt, sửa/hủy, số tiền 24 chữ số. Kiểm thêm tranh chấp import, ghi thường đồng thời, retry sau commit, sai fingerprint, lỗi ghi muộn, sai read-back, schema thiếu, audit/tham chiếu hỏng và truy cập chéo. Rollback giữ tài khoản đích trống và không lưu biên nhận.
+- `npm run test:e2e -- backup.spec.ts savings.spec.ts investments.spec.ts expenses.spec.ts profile.spec.ts landing.spec.ts`: **64/64 browser tests** qua trên Chromium desktop và mobile giả lập. Kiểm hồi quy module, CSV/legacy JSON API, profile, landing công khai và xác thực server. Các test module đã chuyển khỏi nút backup riêng; download toàn tài khoản được kiểm tại Cài đặt.
+- `TEST_WEBKIT=1 npm run test:e2e -- backup.spec.ts`: **12/12 tests** qua (desktop, mobile Chromium, iPhone WebKit giả lập), chạy trên mã cuối của luồng backup. Kiểm file download, khôi phục bốn module, opt-in hồ sơ và lỗi/retry Auth riêng, mất phản hồi sau commit, gợi ý/đóng gợi ý, trạng thái chưa biết/lỗi, tài khoản đổi, CSRF, file sai/phiên bản mới và request vượt 20 MiB.
+- Luồng xác nhận được kích hoạt bằng bàn phím; đã kiểm không tràn ngang, light/dark, reduced motion và 320px. Đã xem ảnh `artifacts/backup-preview-mobile.png` và `artifacts/backup-dark-320-webkit.png`; ảnh/trace ở local, không đưa dữ liệu backup vào Git.
+- Bộ browser dùng production build trong thư mục cô lập và Auth double; không có tài khoản/ghi dữ liệu cloud. Không chạy reset, không áp dụng migration mới trên cloud và không deploy. Chưa xác minh thiết bị iPhone thật hoặc giới hạn file của hosting; cần đủ migration bốn module và `202610180002_data_imports.sql`, rồi kiểm `DATA_BACKUP_MAX_BYTES` theo môi trường trước phát hành.
+
+Đã rà soát/cập nhật module catalog, landing copy và preview minh họa, README, đặc tả backup và các tài liệu tính năng/kiến trúc/dữ liệu/UX/triển khai liên quan. Các mốc kiểm chứng cũ được giữ nguyên.
+
+
+## Hydration và loading trực quan — 18/10/2026
+
+- Dev server hiện có `http://127.0.0.1:3000/login`, Chrome context tách biệt: sạch **0** lỗi hydration → chèn `cz-shortcut-listen="true"` trước React **1** lỗi với đúng thuộc tính trong diff → sạch **0** lỗi. Source không tạo thuộc tính này. Bằng chứng: `artifacts/hydration-extension-2026-10-18.json`; hướng dẫn tắt quyền extension/reload trong [troubleshooting](08-troubleshooting.md). Chưa truy cập danh sách extension/profile của người dùng.
+- `npm run typecheck`, `tsc --noEmit` trên mã cuối và production build Webpack trong thư mục browser cô lập: qua trên Node 22.12.0.
+- Hồi quy `landing.spec.ts` và `ui-feedback.spec.ts`: **36/36** ca qua trên Chromium desktop, Chromium mobile và WebKit mô phỏng iPhone. Landing/preview độc lập API tài chính; kiểm xác thực server, dialog lồng nhau, pending save, focus và căn bố cục.
+- Nhóm `loading.spec.ts` chạy lại riêng: **12/12** ca qua trên ba profile trên. Giữ request thật để kiểm vòng xoay/nút bị khóa/aria-busy, hoàn tất thì dừng, lỗi và thử lại ở Tổng quan/Chi tiêu/Thu nhập; kiểm loading cả bảy workspace, sáng/tối, reduced motion, 375px và xoay ngang. Không ghi nhận hydration error trong nhóm tải workspace.
+- Nhóm kiểm đăng nhập ban đầu sửa matcher để bao gồm query của URL OTP; helper đăng nhập chờ request Tổng quan kết thúc trước khi giả lập request điều hướng tiếp theo, tránh race trên WebKit. Sau chỉnh bài kiểm thử, cả 12 ca loading đều qua.
+- Production build đầu tải font Google bình thường; lượt kiểm lại gặp kết nối IPv6 bị treo, nên nhóm loading cuối dùng CSS và năm file Nunito thật đã tải từ build thành công qua biến môi trường test `NEXT_FONT_GOOGLE_MOCKED_RESPONSES`. Fixture ở `artifacts/loading-cached-fonts.cjs`, không thay source hoặc cấu hình build sản phẩm.
+- Đã xem ảnh desktop sáng và mobile tối; ảnh/trace cuối ở `artifacts/browser/`, gồm `loading-light.png` và `loading-dark.png` cho từng profile. Cơ sở dữ liệu PostgreSQL và Auth double local cô lập; không ghi cloud, không deploy hoặc nghiệm thu iPhone vật lý.
+
+Đã rà soát catalog, landing copy và preview: tên/trạng thái module, khả năng tài chính và dữ liệu minh họa cố định phù hợp; không thêm loading giả cho thao tác preview. README, tài liệu UX, đặc tả phản hồi giao diện, landing và troubleshooting cập nhật cùng source; giữ các mốc kiểm chứng trước.
+
+
+## Sửa lỗi tải backup và UI/UX Cài đặt — 18/10/2026
+
+- Đọc chỉ schema trên database đang cấu hình xác nhận đủ phần Đầu tư nhưng thiếu `data_imports`. Regression ban đầu tái hiện lỗi `SCHEMA_NOT_READY` khi chỉ thiếu bảng biên nhận; sau sửa, export/status không phụ thuộc bảng này, import vẫn trả `IMPORT_NOT_READY`. `npm run test:db`: **52/52 tests** qua, gồm export đủ 28 bảng trong trạng thái thiếu migration import; kiểm tra dữ liệu tài chính thiếu vẫn fail đóng.
+- Đọc qua runtime RLS trên database đang cấu hình: **560 bản ghi tài chính**, xuất và validate đủ **28 bảng**, **198830 byte**. Tất cả nằm trong transaction read-only; không lưu file dữ liệu thật ra ổ đĩa, không áp dụng migration, ghi hoặc reset dữ liệu của người dùng. Hồ sơ trong lượt chẩn đoán dùng ba trường trống; đây là bằng chứng đọc/xuất backend, không phải kiểm tra phiên Auth thật của người dùng trên trình duyệt.
+- `TEST_WEBKIT=1 npm run test:e2e -- backup.spec.ts loading.spec.ts`: **33/33 browser tests** qua trên Chromium desktop/mobile và iPhone WebKit giả lập, dùng production build, PostgreSQL/Auth double cô lập. Có ca import chưa sẵn sàng nhưng export vẫn tải, status lỗi không làm nút tải im lặng, lỗi tại thẻ tương ứng, phản hồi HTML giả lập, loading/retry và mô phỏng chặn tải tự động nhưng liên kết Lưu file JSON tải được file đúng định dạng.
+- Sau điều chỉnh câu lỗi cuối và trợ năng, chạy riêng ba ca `status failure` trên desktop/mobile/WebKit: **3/3** qua với bản dev cô lập.
+- Playwright MCP Firefox sạch và iPhone WebKit giả lập đều nhận sự kiện download, `failure: null` và liên kết lưu trực tiếp còn dùng được. Đã xem ảnh desktop, iPhone và 320px dark/reduced-motion; không tràn ngang. Ảnh `artifacts/settings-after-desktop.png`, `artifacts/settings-after-iphone.png`, `artifacts/settings-after-320-dark.png`. Không thay cho thiết bị thật.
+- `npm run check` bản cuối: **133/133 unit tests**, typecheck và production build qua. `git diff --check` qua. Đã rà soát/cập nhật README, catalog, landing/preview, đặc tả backup, kiến trúc, UX và deployment; giữ các mốc cũ.
+- Khởi động source hiện tại tại `http://127.0.0.1:3000`; `/settings` trả 307 đến login khi chưa có phiên, giữ nguyên boundary xác thực. Bản preview sao chép cũ không tự nhận thay đổi của source hiện tại.

@@ -32,7 +32,7 @@ Bộ lọc loại giao dịch chọn các chỉ số hoạt động, cột nạp
 
 Tháng hiện tại ghi tạm tính; tháng tương lai không có số thực tế/đường nối. Báo cáo gồm giá vốn, realized/unrealized, lãi thực nhận, phí/thuế, dòng tiền ngoài, chuyển nội bộ, cơ cấu và diễn biến tháng. Donut tối đa 5 lát, phần dư gộp Khác có key riêng. Có bảng thay thế và điểm SVG dùng bàn phím.
 
-Privacy Mode che tiền, giá và lượng vàng trong bảng/form/tooltip/nhãn trợ năng; vẫn giữ tỷ lệ. Form có nút hiện riêng. CSV và JSON backup luôn chứa đầy đủ dữ liệu; bản đầu chỉ xuất, chưa có chức năng nhập/khôi phục JSON.
+Privacy Mode che tiền, giá và lượng vàng trong bảng/form/tooltip/nhãn trợ năng; vẫn giữ tỷ lệ. Form có nút hiện riêng. CSV và JSON backup luôn chứa đầy đủ dữ liệu; sao lưu/khôi phục toàn tài khoản thực hiện trong [Cài đặt](backup.md). API xuất riêng Tiết kiệm vẫn tương thích nhưng file đó không dùng để import toàn tài khoản.
 
 ## API và lưu trữ
 
@@ -60,3 +60,7 @@ Runtime `expense_api`, Auth cookie/bearer được kiểm phía server, RLS từ
 Cloud cần kiểm riêng: đăng nhập thật từ `/savings`, lưu/đọc lại trên hai phiên, bán vàng theo ví dụ 64 triệu/14 triệu lãi, RLS hai owner, đóng/mở tháng, tải CSV/JSON rồi đối chiếu. Chưa thực hiện migration cloud/deploy hay xác minh thiết bị thật trong triển khai source này.
 
 Để giai đoạn sau: mục tiêu/kế hoạch góp, giá trực tuyến, thông báo đẩy, liên kết Tài khoản chung và tích hợp module Đầu tư mà không nhân đôi tài sản vàng.
+
+## Đọc lại bộ review cloud — 18/10/2026
+
+Trong lúc chuẩn bị bộ mẫu Đầu tư cho cùng tài khoản, đọc qua runtime RLS xác nhận schema Tiết kiệm đã tồn tại, có 6 danh mục, 46 revisions giao dịch, 10 giá và 1 allocation thuộc bộ review cũ. Mốc này bổ sung cho trạng thái chưa áp dụng cloud ở các ghi nhận ngày 17/10; không xác nhận thời điểm migration thực tế, Auth/PKCE hoặc thiết bị thật. Dữ liệu được giữ nguyên, có backup trước khi chuẩn bị phần Đầu tư.

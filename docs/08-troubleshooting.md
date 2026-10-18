@@ -34,3 +34,23 @@ Không thêm `suppressHydrationWarning` hoặc tắt SSR để che cảnh báo d
 Nếu browser sạch vẫn lỗi với diff khác, lấy diff mới và kiểm tra phần tương ứng: giá trị thời gian/random, locale, dữ liệu SSR/client và HTML nesting. Không mặc định mọi hydration error đều do cùng nguyên nhân.
 
 Tham khảo: [Next.js hydration error — browser extensions modifying HTML](https://nextjs.org/docs/messages/react-hydration-error).
+
+
+## Kiểm chứng lại ảnh lỗi — 18/10/2026
+
+Đã kiểm tra source hiện tại và tái hiện trên dev server `http://127.0.0.1:3000/login` bằng Chrome/Playwright với ba context tách biệt, service worker bị chặn:
+
+| Điều kiện | Thuộc tính trên body | Hydration error |
+| --- | --- | --- |
+| Context sạch | Không có | 0 |
+| Chèn thuộc tính trước hydration | `cz-shortcut-listen="true"` | 1, diff chứa đúng thuộc tính |
+| Context sạch kiểm lại | Không có | 0 |
+
+Bằng chứng local: `artifacts/hydration-extension-2026-10-18.json`. Điều này xác nhận việc chèn thuộc tính có thể gây đúng lỗi trong ảnh; không xác định trực tiếp extension đã cài trong profile người dùng. Cần tắt quyền extension trên origin đang dùng (localhost, 127.0.0.1 hoặc site tương ứng), rồi Cmd+Shift+R; ưu tiên kiểm tra ColorZilla nếu có. Không sửa thiết lập profile người dùng hoặc thêm suppressHydrationWarning.
+
+
+## Nhấn tải backup nhưng không có file — 18/10/2026
+
+Nếu database đủ 28 bảng tài chính nhưng chưa có migration biên nhận import, trước đây API status/export dùng chung preflight khiến nút tải bị khóa. Đã tách readiness: thiếu `data_imports` chỉ khóa import; không cần chạy migration này để tải backup. Không bỏ qua module tài chính còn thiếu.
+
+Trang Cài đặt báo lỗi ngay trong thẻ Sao lưu dữ liệu. Khi file đã sẵn sàng mà trình duyệt chưa bắt đầu tải, dùng **Lưu file JSON**. Blob không bị thu hồi sau một giây nữa; URL được giữ đến khi thay file hoặc rời trang. Với preview local được sao chép sang `artifacts/browser-app-*`, cần mở source hiện tại hoặc khởi tạo lại preview để thấy bản sửa; reload một bản preview cũ không cập nhật source sao chép.

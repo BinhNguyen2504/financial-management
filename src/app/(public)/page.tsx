@@ -15,7 +15,7 @@ import { ProductPreview } from "@/features/landing/product-preview";
 
 const title = "Financial Manager — Một nơi rõ ràng hơn cho tài chính của bạn";
 const description =
-  "Từ nhu cầu thật đến một không gian quản lý thu nhập, hũ chi tiêu và tiết kiệm. Khám phá Financial Manager, theo nhịp của bạn.";
+  "Từ nhu cầu thật đến một không gian quản lý thu nhập, hũ chi tiêu, tiết kiệm và đầu tư. Khám phá Financial Manager, theo nhịp của bạn.";
 export const metadata: Metadata = {
   title: { absolute: title },
   description,
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 };
 
 const features = modules.filter((item) =>
-  ["income", "budgets", "savings"].includes(item.slug),
+  ["income", "budgets", "savings", "investments"].includes(item.slug),
 );
 const benefits: Record<string, { heading: string; detail: string }> = {
   income: {
@@ -40,6 +40,10 @@ const benefits: Record<string, { heading: string; detail: string }> = {
   budgets: {
     heading: "Mỗi hũ, một mục đích.",
     detail: "Hũ chi tháng · Hũ tích lũy",
+  },
+  investments: {
+    heading: "Hiểu rõ vốn và giá trị hiện tại.",
+    detail: "Danh mục · Tiền chờ · Lãi/lỗ",
   },
   savings: {
     heading: "Nhìn thấy hành trình tích lũy.",
@@ -64,16 +68,13 @@ export default function Home() {
         <div className="hero-copy">
           <h1 id="landing-title">
             Một nơi rõ ràng hơn
-            <br />
-            {" "}cho <span>tài chính của bạn.</span>
+            <br /> cho <span>tài chính của bạn.</span>
           </h1>
           <div className="hero-aside">
             <p>
               Hiểu tiền mình kiếm được.
-              <br />
-              {" "}Chủ động với những khoản chi.
-              <br />
-              {" "}Vun đắp điều mình muốn giữ lại.
+              <br /> Chủ động với những khoản chi.
+              <br /> Vun đắp điều mình muốn giữ lại.
             </p>
             <span>Một công cụ từ nhu cầu thật, cho cuộc sống hàng ngày.</span>
           </div>
@@ -264,11 +265,16 @@ export default function Home() {
             </p>
           </details>
           <details>
+            <summary>Nếu mất tài khoản, tôi có thể lấy lại dữ liệu không?</summary>
+            <p>Trong Cài đặt, bạn có thể chủ động tải bản sao lưu JSON toàn bộ dữ liệu và nhập lại vào tài khoản mới chưa có dữ liệu. File không mật khẩu; hãy tự giữ một bản ở nơi an toàn. Trang Cài đặt có liên kết lưu file trực tiếp nếu trình duyệt chưa bắt đầu tải. Hồ sơ cá nhân được khôi phục nếu bạn chọn.</p>
+          </details>
+          <details>
             <summary>Ứng dụng đã hoàn thiện chưa?</summary>
             <p>
-              Chưa. Thu nhập, Chi tiêu và Tiết kiệm đã có trong phiên bản hiện
-              tại; các phần còn lại tiếp tục được xây dựng. Trang giới thiệu sẽ
-              được rà soát và cập nhật cùng những thay đổi của sản phẩm.
+              Chưa. Thu nhập, Chi tiêu, Tiết kiệm và Đầu tư đã có trong phiên
+              bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới
+              thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản
+              phẩm.
             </p>
           </details>
         </div>

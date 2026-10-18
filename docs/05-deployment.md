@@ -98,3 +98,17 @@ Nguồn: [Apple Personal Team](https://developer.apple.com/help/account/basics/a
 Khi làm native, kiểm tra chế độ build để dùng độc lập sau khi rút cáp/dừng debugger; không dùng kết quả debug qua máy tính để tuyên bố app đã chạy độc lập. Không gửi chứng chỉ/khoá ký riêng lên repository. Dữ liệu thật vẫn đồng bộ cloud; cài lại bản app không được đồng nghĩa xóa dữ liệu cloud.
 
 Đề xuất hiện tại: dùng PWA cho nhu cầu hằng ngày, làm Flutter sau; thử bằng Personal Team trước khi cân nhắc phí membership. Chưa cài toolchain, mua membership, upload App Store Connect hay triển khai mobile trong giai đoạn này.
+
+## Migration Đầu tư — 18/10/2026
+
+Source `/investments` cần migration mới `202610180001_investments.sql` sau các migration hiện có. Chạy bằng kết nối migration/admin trên staging trước; runtime tiếp tục là `expense_api` với RLS. Sáu bảng mới không sửa dữ liệu module trước. Kiểm chứng cloud riêng: Auth thật, lưu/đọc lại trên hai phiên, mua/bán đối chiếu vốn và tiền ví, RLS hai owner, retry command ID và CSV/JSON. Bản triển khai này chỉ chuẩn bị migration và kiểm chứng local; không tự migrate/seed/reset cloud hoặc deploy.
+
+
+## Bổ sung backup toàn tài khoản — 18/10/2026
+
+Backup/import toàn tài khoản đã có trong source. Áp dụng migration biên nhận import sau các migration bốn module. `DATA_BACKUP_MAX_BYTES` mặc định 20 MiB; trước phát hành phải kiểm tra hosting/proxy nhận được mức này cộng 1 KiB envelope, hoặc hạ biến cấu hình theo giới hạn hạ tầng. Chưa xác minh truyền file trên cloud hoặc áp dụng migration mới trong lượt này. Xem [vận hành backup](features/backup.md#giới-hạn-và-triển-khai).
+
+
+### Rà soát tải backup và Cài đặt — 18/10/2026
+
+Thiếu migration `202610180002_data_imports.sql` chỉ khóa khôi phục, không khóa xuất khi đủ 28 bảng tài chính. Status trả `importReady:false`; giao diện báo rõ. Chưa áp dụng migration này trên database đang cấu hình trong lượt sửa lỗi; không tự đổi cấu hình hosting.

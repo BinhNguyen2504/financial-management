@@ -1,4 +1,5 @@
 "use client";
+import { LoadingSpinner } from "@/components/loading";
 import { useRef, useState, type FormEvent } from "react";
 import { ZodError } from "zod";
 import type { IncomeCategory, IncomeRow } from "@/domain/income/types";
@@ -400,9 +401,11 @@ function IncomeEditorForm({
             Hủy
           </button>
           <button
+            aria-busy={busy}
             className="expense-primary"
             disabled={busy || conflict || (hasAmount && hidden)}
           >
+            {busy && <LoadingSpinner />}
             {busy
               ? "Đang xử lý…"
               : needsPreview && !preview

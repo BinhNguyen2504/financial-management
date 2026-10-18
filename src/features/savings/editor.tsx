@@ -1,4 +1,5 @@
 "use client";
+import { LoadingSpinner } from "@/components/loading";
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ZodError } from "zod";
 import {
@@ -904,9 +905,11 @@ function EditorForm({
         )}
         <div className="expense-actions">
           <button
+            aria-busy={busy}
             className="expense-primary"
             disabled={busy || conflict || (sensitive && hidden)}
           >
+            {busy && <LoadingSpinner />}
             {busy
               ? "Đang xử lý…"
               : preview

@@ -1,0 +1,300 @@
+.settings-workspace {
+  display: grid;
+  gap: 2rem;
+  max-width: 68rem;
+}
+.settings-heading h1 {
+  margin: 0 0 0.6rem;
+}
+.settings-heading .lead {
+  margin: 0;
+  font-size: 1rem;
+}
+.settings-section-heading {
+  margin-bottom: 1.25rem;
+}
+.settings-section-heading h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+}
+.settings-section-heading p {
+  color: var(--muted);
+  margin: 0;
+  max-width: 48rem;
+}
+.settings-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+.settings-workspace .panel {
+  min-width: 0;
+  scroll-margin-top: 6rem;
+}
+.settings-workspace button,
+.settings-workspace a.expense-secondary {
+  min-height: 44px;
+}
+.settings-card {
+  padding: 1.5rem;
+}
+.settings-card > p {
+  margin: 1rem 0;
+}
+.settings-card-heading {
+  display: flex;
+  gap: 0.875rem;
+  align-items: center;
+}
+.settings-card-heading h3 {
+  font-size: 1.125rem;
+  margin: 0 0 0.25rem;
+}
+.settings-card-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.settings-card-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--primary);
+}
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+.settings-hint {
+  display: flex;
+  gap: 0.5rem;
+  align-items: start;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.settings-hint > svg {
+  margin-top: 0.2rem;
+}
+.settings-workspace .settings-feedback {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-top: 1rem;
+  overflow-wrap: anywhere;
+}
+.settings-feedback p {
+  margin: 0 0 0.6rem;
+}
+.settings-feedback p:last-child {
+  margin-bottom: 0;
+}
+.settings-feedback-error {
+  border-color: var(--accent) !important;
+}
+.settings-feedback-error [role="alert"] {
+  color: var(--accent);
+}
+.settings-download-ready [role="status"],
+.settings-import-result [role="status"],
+.settings-state-label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: start;
+  font-weight: 700;
+}
+.settings-file-name {
+  display: block;
+  margin-top: 0.75rem;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+.settings-import-steps {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.settings-import-steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.settings-import-steps li > span {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 0.75rem;
+}
+.settings-import-steps [aria-current] {
+  color: var(--primary);
+  font-weight: 700;
+}
+.settings-import-steps [aria-current] > span {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+.settings-selected-file {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.settings-selected-file > span {
+  overflow-wrap: anywhere;
+  min-width: 0;
+  flex: 1;
+  font-size: 0.875rem;
+}
+.settings-icon-button {
+  padding: 0 !important;
+  min-width: 44px;
+  flex: 0 0 44px;
+}
+.backup-summary {
+  border-top: 1px solid var(--border);
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+}
+.backup-summary h4 {
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+.backup-metadata {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  font-size: 0.875rem;
+}
+.backup-metadata dt {
+  color: var(--muted);
+}
+.backup-metadata dd {
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+}
+.backup-counts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 1rem 0 0.5rem;
+}
+.backup-counts > div {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.backup-counts dt {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.backup-counts dd {
+  margin: 0.25rem 0 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.backup-profile-option {
+  display: flex;
+  gap: 0.75rem;
+  align-items: start;
+  min-height: 44px;
+  margin: 1.25rem 0;
+  font-size: 0.9rem;
+}
+.backup-profile-option input {
+  flex: 0 0 auto;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.15rem;
+  accent-color: var(--primary);
+}
+.backup-profile-option small {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.35rem;
+}
+.settings-install {
+  padding: 0;
+}
+.settings-install summary {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  gap: 0.875rem;
+  align-items: center;
+  cursor: pointer;
+  min-height: 64px;
+}
+.settings-install summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 1.4rem;
+  color: var(--muted);
+}
+.settings-install[open] summary::after {
+  content: "−";
+}
+.settings-install summary small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin-top: 0.25rem;
+}
+.settings-install > div {
+  padding: 0 1.5rem 1rem;
+}
+.import-suggestion {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.import-suggestion > div {
+  flex: 1 1 15rem;
+}
+.import-suggestion button {
+  min-width: 44px;
+  min-height: 44px;
+}
+@media (max-width: 1000px) {
+  .settings-data-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .settings-workspace {
+    gap: 1.5rem;
+  }
+  .settings-card {
+    padding: 1.125rem;
+  }
+  .settings-section-heading p {
+    font-size: 0.9rem;
+  }
+  .settings-install summary {
+    padding: 1.125rem;
+  }
+  .settings-install > div {
+    padding: 0 1.125rem 1rem;
+  }
+}

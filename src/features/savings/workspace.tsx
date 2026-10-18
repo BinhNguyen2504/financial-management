@@ -1,4 +1,5 @@
 "use client";
+import { LoadingStatus } from "@/components/loading";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Download, Plus, RefreshCw } from "lucide-react";
@@ -214,10 +215,7 @@ export function SavingsWorkspace({
       });
   }
   return (
-    <div
-      className="savings-workspace"
-      onMouseDownCapture={focusPointerControl}
-    >
+    <div className="savings-workspace" onMouseDownCapture={focusPointerControl}>
       <div className="expense-page-heading">
         <div>
           <p className="eyebrow">TÍCH LŨY CÓ LỊCH SỬ</p>
@@ -256,7 +254,11 @@ export function SavingsWorkspace({
               )}
             </div>
           )}
-          {!view && loading && <p role="status">Đang mở sổ tiết kiệm…</p>}
+          {loading && (
+            <LoadingStatus>
+              {view ? "Đang cập nhật sổ tiết kiệm…" : "Đang mở sổ tiết kiệm…"}
+            </LoadingStatus>
+          )}
           {view && (
             <>
               <div className="savings-toolbar">
@@ -303,15 +305,6 @@ export function SavingsWorkspace({
                     {view.closed.includes(month)
                       ? "Mở lại tháng"
                       : "Chốt tháng"}
-                  </button>
-                  <button
-                    className="expense-secondary"
-                    onClick={() =>
-                      void download("/backup", `savings-backup-${today}.json`)
-                    }
-                  >
-                    <Download size={16} aria-hidden="true" />
-                    Sao lưu JSON
                   </button>
                 </div>
               </div>

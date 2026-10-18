@@ -12,6 +12,8 @@ import {
   buildSavingsReviewSQL,
 } from "./lib/savings-review-data.mjs";
 
+import { buildInvestmentReviewData, buildInvestmentReviewSQL } from "./lib/investment-review-data.mjs";
+
 // A local Auth contract double. No test identity or bypass is compiled into production code.
 const db = postgres(process.env.TEST_DATABASE_ADMIN_URL, { max: 1 });
 const identities = new Map();
@@ -154,6 +156,7 @@ if (reviewPreview) {
   const sample = addSavingsReviewData(buildReviewData({ ownerId: user.id }));
   await db.unsafe(buildReviewSQL(sample).seed);
   await db.unsafe(buildSavingsReviewSQL(sample).seed);
+  await db.unsafe(buildInvestmentReviewSQL(buildInvestmentReviewData({ ownerId: user.id })).seed);
 }
 const port = await new Promise((resolve) => {
   const socket = net.createServer();
@@ -247,7 +250,7 @@ try {
   if (process.env.TEST_BROWSER_MCP === "1" || reviewPreview) {
     if (reviewPreview) {
       const info = {
-        url: `${baseURL}/login?next=/savings`,
+        url: `${baseURL}/login?next=/investments`,
         email: "review@example.test",
         otp: "123456",
         scope: "Isolated local UI review only; no cloud writes",

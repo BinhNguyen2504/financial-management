@@ -1,4 +1,5 @@
 "use client";
+import { LoadingSpinner } from "@/components/loading";
 import { useId, useRef, useState, type FormEvent } from "react";
 import type { ExpenseAction, ExpenseCommand } from "@/domain/expenses/schema";
 import type {
@@ -647,11 +648,13 @@ function ExpenseEditorForm({
               </button>
             )}
             <button
+              aria-busy={busy}
               type="button"
               className="expense-primary"
               disabled={busy || conflict || (moneyForm && hidden)}
               onClick={commit}
             >
+              {busy && <LoadingSpinner />}
               {busy
                 ? "Đang lưu…"
                 : editor.mode === "closeYear"
@@ -671,9 +674,11 @@ function ExpenseEditorForm({
           </button>
           {!preview && (
             <button
+              aria-busy={busy}
               className="expense-primary"
               disabled={busy || (moneyForm && hidden)}
             >
+              {busy && <LoadingSpinner />}
               {busy ? "Đang kiểm tra…" : "Xem trước thay đổi"}
             </button>
           )}

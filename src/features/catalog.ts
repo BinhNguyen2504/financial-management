@@ -44,10 +44,10 @@ export const modules = [
     questions: [],
   },
   {
-    slug: "investments", status: "planned", title: "Đầu tư", icon: "investments", label: "Vốn và giá trị hiện tại",
-    description: "Danh mục tài sản cùng lịch sử mua bán, dòng tiền và định giá.",
-    scope: ["Cổ phiếu, quỹ cổ phiếu, quỹ trái phiếu, crypto và vàng", "Một thao tác mua/bán cập nhật cả tài sản và tiền chờ", "Giá vốn, phí, thuế, lãi/lỗ đã chốt và chưa chốt", "Tỷ trọng thực tế so với mục tiêu; giá kèm thời điểm cập nhật"],
-    questions: ["Giá vốn dùng bình quân hay theo lô?", "Cần theo dõi từng mã tài sản hay trước mắt chỉ từng nhóm?", "Giá thị trường sẽ nhập tay, nhập file hay lấy từ nguồn nào?"],
+    slug: "investments", status: "implemented", title: "Đầu tư", icon: "investments", label: "Vốn và giá trị hiện tại",
+    description: "Theo dõi tổng danh mục, ví tiền chờ, mua bán, định giá và lãi/lỗ có lịch sử.",
+    scope: ["Danh mục tổng tiền và nhiều ví tiền chờ, VND", "Mua/bán cập nhật tài sản và tiền chờ trong một lần lưu", "Giá vốn bán nhập tay; phí, thuế, lãi/lỗ đã chốt và chưa chốt", "Định giá có ngày; báo cáo xuyên năm, CSV và backup JSON"],
+    questions: [],
   },
   {
     slug: "funds", status: "planned", title: "Quỹ an toàn", icon: "funds", label: "Mỗi khoản tiền có mục đích",
@@ -68,9 +68,9 @@ export const modules = [
     questions: ["Những báo cáo nào quan trọng nhất khi tổng kết tháng?"],
   },
   {
-    slug: "settings", status: "partial", title: "Thiết lập", icon: "settings", label: "Không gian của bạn",
-    description: "Đăng nhập, tùy chọn cá nhân, dữ liệu và đồng bộ nhiều thiết bị.",
-    scope: ["Cloud riêng với tài khoản đăng nhập; mặc định tiền VND", "Múi giờ Asia/Ho_Chi_Minh và định dạng Việt Nam", "Nhập, xuất, sao lưu và khôi phục dữ liệu", "PWA trên điện thoại/máy tính; chuẩn bị API cho app iOS"],
+    slug: "settings", status: "partial", title: "Cài đặt", icon: "settings", label: "Không gian của bạn",
+    description: "Tải bản sao JSON của dữ liệu, khôi phục vào tài khoản trống khi hệ thống sẵn sàng và hướng dẫn cài PWA.",
+    scope: ["Cloud riêng với tài khoản đăng nhập; mặc định tiền VND", "Múi giờ Asia/Ho_Chi_Minh và định dạng Việt Nam", "Backup toàn tài khoản và khôi phục vào tài khoản trống; hồ sơ tùy chọn", "PWA trên điện thoại/máy tính; chuẩn bị API cho app iOS"],
     questions: ["Bạn ưu tiên đăng nhập bằng email hay tài khoản Google?"],
   },
 ] as const;

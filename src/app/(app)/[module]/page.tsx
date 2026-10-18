@@ -10,7 +10,7 @@ import { ModuleIcon } from "@/components/module-icon";
 export function generateStaticParams() {
   return modules
     .filter(
-      (m) => !["overview", "budgets", "income", "savings"].includes(m.slug),
+      (m) => !["overview", "budgets", "income", "savings", "investments", "settings"].includes(m.slug),
     )
     .map((m) => ({ module: m.slug }));
 }
@@ -89,20 +89,6 @@ export default async function ModulePage({
           </p>
         </section>
       </div>
-      {slug === "settings" && (
-        <section className="panel install-guide">
-          <h2>Cài lên màn hình chính</h2>
-          <p>
-            Sau khi ứng dụng được triển khai qua HTTPS: trên iPhone/iPad, mở
-            bằng Safari → Chia sẻ → Thêm vào Màn hình chính. Trên trình duyệt hỗ
-            trợ, chọn cài đặt ứng dụng trong menu trình duyệt.
-          </p>
-          <p>
-            Nền PWA hiện có manifest, biểu tượng và trang báo mất mạng. Ghi giao
-            dịch ngoại tuyến sẽ được xây ở giai đoạn đồng bộ.
-          </p>
-        </section>
-      )}
     </>
   );
 }

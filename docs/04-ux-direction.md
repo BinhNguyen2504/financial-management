@@ -8,7 +8,7 @@ Skill `ui-ux-pro-max` được dùng để tra hướng dashboard dữ liệu, a
 
 ## Landing và đăng nhập — 17/10/2026
 
-Landing theo hướng sản phẩm tinh tế: hero “Một nơi rõ ràng hơn cho tài chính của bạn”, preview có tab, lợi ích ba module, câu chuyện từ nhu cầu thật, trạng thái phát triển/FAQ và CTA cuối. Giữ Zen/Nunito, cây chỉ là điểm nhấn; không thêm thành tích hay lời chứng thực chưa có.
+Landing theo hướng sản phẩm tinh tế: hero “Một nơi rõ ràng hơn cho tài chính của bạn”, preview có tab, lợi ích các module đã triển khai, câu chuyện từ nhu cầu thật, trạng thái phát triển/FAQ và CTA cuối. Giữ Zen/Nunito, cây chỉ là điểm nhấn; không thêm thành tích hay lời chứng thực chưa có.
 
 Trang công khai có header riêng, không sidebar hoặc Privacy Mode của dữ liệu tài khoản. Avatar thay nút đăng nhập sau khi xác minh phiên, có trạng thái chờ và thử lại. Đăng nhập riêng ở `/login`, quay về đúng trang được yêu cầu; người đã đăng nhập vẫn xem được landing. Logo trong ứng dụng dẫn về landing, mục Tổng quan vẫn có trong điều hướng.
 
@@ -94,3 +94,28 @@ P0 có manifest, icon thường/maskable, Apple touch icon, đăng ký service w
 PWA production cần HTTPS; iPhone/iPad có hướng cài qua Safari → Chia sẻ → Thêm vào Màn hình chính. Kiểm tra khả năng cài và lifecycle thực tế trên iOS trước khi tuyên bố hỗ trợ hoàn chỉnh. Web Push trên iOS có điều kiện phiên bản và cài lên màn hình chính; chỉ triển khai khi đã cần nhắc việc, theo [hướng dẫn Next.js PWA](https://nextjs.org/docs/app/guides/progressive-web-apps).
 
 App iOS tương lai dùng Flutter/Dart, giữ mô hình nghiệp vụ/API nhưng có navigation, input, secure token storage và lifecycle riêng. Không mặc định giữ y nguyên bố cục web. Mục tiêu là cài trên iPhone cá nhân; cách ký/cài và hạn sử dụng profile được nêu trong tài liệu deploy.
+
+## Đầu tư — 18/10/2026
+
+Bốn tab đã được người dùng chọn: Danh mục, Giao dịch, Báo cáo, Quản lý. Danh mục tổng tiền; bảng desktop và thẻ mobile, ví tiền chờ tách thành khu vực riêng. Sáu chỉ số đầu trang phân biệt tài sản/vốn/tiền chờ và lãi đã/chưa chốt/tổng. Không tính ROI cho tiền chờ.
+
+Form mua/bán nhập giá trị còn giữ sau giao dịch và nguồn/đích ví hoặc Bên ngoài; có xem trước và xác nhận, giữ nháp khi lỗi/xung đột, khóa nội dung khi kết quả lưu chưa xác định. Chi tiết giao dịch thể hiện hai phía trước/sau và revision. “Xóa / lưu trữ” chỉ thực hiện khi hết tài sản, có thể khôi phục.
+
+Biểu đồ đường tài sản, cột nạp/rút hoặc kết quả, thanh cơ cấu cùng bảng số liệu thay thế. Giá trị mang tiếp có ngày/cảnh báo cũ, tháng hiện tại tạm tính. Privacy Mode áp dụng cả form, lịch sử, tooltip và trợ năng; xuất file vẫn đầy đủ. Landing bổ sung preview Đầu tư cố định, không đọc API tài chính.
+
+
+## Bổ sung backup toàn tài khoản — 18/10/2026
+
+Sao lưu và khôi phục tập trung tại Cài đặt, thay các nút JSON rải trong module; CSV báo cáo giữ nguyên. Luồng chọn file → xem trước → xác nhận, checkbox hồ sơ mặc định tắt. Tổng quan chỉ gợi ý tài khoản trống và dẫn đến Cài đặt. Lỗi hồ sơ sau commit tài chính có nút thử lại riêng; xem [đặc tả](features/backup.md).
+
+
+## Loading trực quan — 18/10/2026
+
+Dùng vòng xoay CSS nhỏ màu theo token và giữ nguyên thông báo tiếng Việt bên cạnh khi tải Tổng quan, Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, hồ sơ và kiểm tra dữ liệu Cài đặt. Khi tải lại, giữ nội dung đã có và hiển thị trạng thái đang cập nhật. Các nút đăng nhập, đăng xuất, xem trước/lưu và backup hiển thị vòng xoay khi chờ server, có disabled/aria-busy. Không thêm thời gian chờ hoặc phần trăm tiến độ giả.
+
+`LoadingStatus` là vùng `role="status"` với nội dung nguyên câu; vòng xoay trang trí có `aria-hidden`. Chỉ dùng CSS transform, không timer/animation JavaScript; `prefers-reduced-motion: reduce` giữ vòng tĩnh và chữ. Dừng trạng thái tải khi có kết quả hoặc lỗi; thử lại bật trạng thái tải mới.
+
+
+### Rà soát tải backup và Cài đặt — 18/10/2026
+
+Cài đặt dùng hai thẻ thao tác, ưu tiên nút xuất; chọn file/xem trước/xác nhận chỉ mở khi có thể khôi phục. Lỗi nằm cạnh hành động, URL file được giữ để có liên kết Lưu file JSON, hướng dẫn cài PWA thu gọn. Giữ Zen và token hiện tại; mobile 320px xếp dọc.

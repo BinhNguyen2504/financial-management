@@ -51,7 +51,7 @@ export default function OpenGraphImage() {
           color: "#716859",
         }}
       >
-        Thu nhập · Hũ chi tiêu · Tiết kiệm
+        Thu nhập · Chi tiêu · Tiết kiệm · Đầu tư
       </div>
     </div>,
     size,

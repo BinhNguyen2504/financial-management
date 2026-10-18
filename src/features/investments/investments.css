@@ -1,0 +1,406 @@
+.investment-workspace {
+  min-width: 0;
+}
+.investment-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.investment-heading > .garden-art {
+  width: 180px;
+  flex-shrink: 0;
+}
+.investment-heading h1 {
+  margin: 8px 0;
+}
+.investment-heading .lead {
+  font-size: 16px;
+  max-width: 640px;
+}
+.investment-toolbar,
+.investment-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.investment-toolbar > .expense-actions {
+  margin-left: auto;
+}
+.investment-workspace label,
+.investment-form label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 0;
+}
+.investment-workspace input,
+.investment-workspace select,
+.investment-form input,
+.investment-form select {
+  min-height: 44px;
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+}
+.investment-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin: 0 0 24px;
+}
+.investment-tabs button {
+  font: inherit;
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.investment-tabs [aria-selected="true"] {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 700;
+}
+.investment-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.investment-metrics .metric {
+  min-width: 0;
+  padding: 22px;
+}
+.investment-metrics strong {
+  display: block;
+  font-size: clamp(19px, 1.8vw, 25px);
+  overflow-wrap: anywhere;
+  margin-top: 10px;
+}
+.investment-metrics p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+.investment-workspace [role="tabpanel"] > .panel,
+.investment-workspace [role="tabpanel"] > .investment-card-grid {
+  margin: 24px 0;
+}
+.investment-workspace h2 {
+  font-size: 20px;
+  margin-bottom: 18px;
+}
+.investment-workspace h3,
+.investment-form h3 {
+  font-size: 15px;
+}
+.investment-table-scroll {
+  max-width: 100%;
+  overflow: auto;
+}
+.investment-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+.investment-table th,
+.investment-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.investment-table thead {
+  color: var(--muted);
+}
+.investment-table td {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.investment-table small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.investment-table .expense-actions {
+  flex-wrap: nowrap;
+}
+.investment-table .expense-secondary {
+  padding: 9px 12px;
+}
+.investment-wallet,
+.investment-activity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.investment-wallet:last-child,
+.investment-activity:last-child {
+  border-bottom: 0;
+}
+.investment-wallet strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.investment-activity p {
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.investment-activity strong {
+  font-variant-numeric: tabular-nums;
+}
+.investment-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.investment-card-value {
+  display: block;
+  font-size: 24px;
+  margin: 14px 0;
+  overflow-wrap: anywhere;
+}
+.investment-card dl,
+.investment-details dl {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+.investment-card dl > div,
+.investment-details dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.investment-card dt,
+.investment-details dt {
+  color: var(--muted);
+  font-size: 13px;
+}
+.investment-card dd,
+.investment-details dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.investment-mobile {
+  display: none;
+}
+.investment-empty {
+  text-align: center;
+}
+.investment-empty > .garden-art {
+  max-width: 160px;
+  margin: 0 auto;
+}
+.investment-empty p {
+  max-width: 540px;
+  margin: 16px auto;
+  line-height: 1.8;
+}
+.investment-chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 24px;
+  margin: 24px 0;
+}
+.investment-chart {
+  min-width: 0;
+}
+.investment-chart svg {
+  display: block;
+  width: 100%;
+  margin: 20px 0;
+  overflow: visible;
+}
+.investment-chart svg rect:focus {
+  outline: 2px solid var(--primary);
+}
+.investment-allocation {
+  margin: 22px 0;
+}
+.investment-allocation > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+}
+.investment-allocation small {
+  color: var(--muted);
+}
+.investment-track {
+  height: 10px;
+  border-radius: 8px;
+  background: var(--primary-soft);
+  overflow: hidden;
+  margin: 10px 0;
+}
+.investment-track i {
+  display: block;
+  height: 100%;
+  border-radius: 8px;
+}
+.investment-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  border: 0;
+  padding: 0;
+  margin: 0 0 24px;
+  min-width: 0;
+}
+.investment-fields > p,
+.investment-fields > .investment-suggestions {
+  grid-column: 1/-1;
+}
+.investment-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.investment-form {
+  display: grid;
+  gap: 16px;
+}
+.investment-form fieldset:disabled {
+  opacity: 0.7;
+}
+.investment-preview {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--primary-soft);
+}
+.investment-preview p,
+.investment-details p {
+  font-size: 14px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.investment-preview p {
+  margin: 10px 0;
+}
+.investment-revision {
+  margin: 20px 0;
+  padding: 18px;
+  background: var(--surface-2, var(--primary-soft));
+  border-radius: 14px;
+}
+.investment-history-button {
+  display: block;
+  text-align: left;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.investment-checkbox {
+  display: flex !important;
+  align-items: center;
+  gap: 8px !important;
+}
+.investment-checkbox input {
+  width: 20px;
+  min-height: 20px;
+}
+.investment-details h3,
+.investment-details h4 {
+  margin-top: 20px;
+}
+.investment-details > .expense-actions {
+  margin-top: 24px;
+}
+@media (max-width: 1100px) {
+  .investment-desktop {
+    display: none;
+  }
+  .investment-mobile {
+    display: grid;
+  }
+  .investment-chart-grid {
+    grid-template-columns: 1fr;
+  }
+  .investment-heading > .garden-art {
+    width: 120px;
+  }
+}
+@media (max-width: 639px) {
+  .investment-heading > .garden-art {
+    display: none;
+  }
+  .investment-heading {
+    margin-bottom: 20px;
+  }
+  .investment-toolbar > .expense-actions {
+    margin-left: 0;
+  }
+  .investment-toolbar label {
+    width: 100%;
+  }
+  .investment-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .investment-metrics .metric {
+    padding: 16px;
+  }
+  .investment-metrics strong {
+    font-size: 18px;
+  }
+  .investment-tabs {
+    gap: 2px;
+  }
+  .investment-tabs button {
+    padding: 10px 11px;
+    font-size: 13px;
+  }
+  .investment-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .investment-wallet,
+  .investment-activity {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .investment-activity .expense-actions {
+    width: 100%;
+  }
+  .investment-fields {
+    grid-template-columns: 1fr;
+  }
+  .investment-filters > label {
+    flex: 1 1 140px;
+  }
+  .investment-card .expense-actions {
+    margin-top: 16px;
+  }
+}

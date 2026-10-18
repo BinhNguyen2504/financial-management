@@ -1,4 +1,5 @@
 "use client";
+import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { Garden } from "@/components/garden";
@@ -114,7 +115,12 @@ export function Login({
                 />
               </label>
             )}
-            <button className="expense-primary" disabled={!ready || busy}>
+            <button
+              aria-busy={busy}
+              className="expense-primary"
+              disabled={!ready || busy}
+            >
+              {busy && <LoadingSpinner />}
               {busy ? "Đang xử lý…" : sent ? "Đăng nhập" : "Gửi mã đăng nhập"}
             </button>
             {sent && (
@@ -130,9 +136,11 @@ export function Login({
                 Đổi email / gửi lại mã
               </button>
             )}
-            <p role="status">
-              {ready ? message : "Đang mở biểu mẫu đăng nhập…"}
-            </p>
+            {ready ? (
+              <p role="status">{message}</p>
+            ) : (
+              <LoadingStatus>Đang mở biểu mẫu đăng nhập…</LoadingStatus>
+            )}
             <p role="alert" className="expense-error">
               {error}
             </p>

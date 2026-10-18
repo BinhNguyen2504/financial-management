@@ -15,7 +15,7 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_ORIGIN || "http://localhost:3000"),
   title: { default: "Financial Manager", template: "%s · Financial Manager" },
-  description: "Quản lý thu nhập, hũ chi tiêu và tiết kiệm, theo nhịp của bạn.",
+  description: "Quản lý thu nhập, hũ chi tiêu, tiết kiệm và đầu tư, theo nhịp của bạn.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

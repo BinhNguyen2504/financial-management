@@ -43,3 +43,12 @@ Các nhánh savings/quỹ/đầu tư có thể được đổi thứ tự theo �
 5. OCR hoặc tích hợp ngân hàng nếu thực sự cần và có điều kiện kỹ thuật phù hợp.
 
 Chưa xây ở P0: AI tư vấn đầu tư, kết nối tài khoản ngân hàng, giao dịch chứng khoán tự động, scraping web, blockchain wallet hoặc hệ thống nhiều tổ chức. Các tỷ trọng/mục tiêu trong ảnh là cấu hình tham khảo của người dùng, không phải khuyến nghị đầu tư.
+
+## Cập nhật Đầu tư — 18/10/2026
+
+Đã triển khai source bản theo tổng danh mục: nhiều ví tiền chờ, mua/bán nguyên tử, phí/thuế, giá vốn bán nhập tay, định giá có lịch sử, lưu trữ khi hết tài sản, báo cáo nhiều năm và CSV/JSON. Chưa có mã/lô, DCA, giá trực tuyến, chốt tháng hoặc kết nối số dư giữa module. Migration cloud/deploy và iPhone vật lý chưa được xác minh. Xem [Đầu tư](features/investments.md).
+
+
+## Bổ sung backup toàn tài khoản — 18/10/2026
+
+Cài đặt đã có backup JSON toàn bộ bốn module và import vào tài khoản trống, hồ sơ tùy chọn. Gợi ý nhập chỉ có trên Tổng quan khi server xác nhận chưa có dữ liệu. Không gộp/ghi đè hoặc tự chạy nền; xem [đặc tả](features/backup.md).

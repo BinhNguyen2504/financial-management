@@ -1,4 +1,5 @@
 "use client";
+import { LoadingStatus } from "@/components/loading";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMoney } from "@/components/privacy";
@@ -42,6 +43,7 @@ export function IncomeWorkspace({
   const requestId = useRef(0);
   const reload = useCallback(async () => {
     const id = ++requestId.current;
+    setLoading(true);
     try {
       const next = await incomeJSON<IncomeView>(`?year=${year}`);
       if (id === requestId.current) {
@@ -262,7 +264,7 @@ export function IncomeWorkspace({
               </Link>
             </section>
           )}
-          {loading && <p role="status">Đang tải thu nhập…</p>}
+          {loading && <LoadingStatus>Đang tải thu nhập…</LoadingStatus>}
           <p className="expense-status" role="status">
             {notice}
           </p>

@@ -152,11 +152,8 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
   const csv = await readFile((await (await csvPromise).path())!, "utf8");
   expect(csv).toContain("64000000");
   expect(csv).toContain("50000000");
-  const backupPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Sao lưu JSON", exact: true }).click();
-  const backup = JSON.parse(
-    await readFile((await (await backupPromise).path())!, "utf8"),
-  );
+  await expect(page.getByRole("button", { name: "Sao lưu JSON", exact: true })).toHaveCount(0);
+  const backup = await (await page.request.get("/api/v1/savings/backup")).json();
   expect(backup.book.revisions).toHaveLength(2);
   await page
     .getByRole("button", { name: "Cập nhật giá vàng", exact: true })

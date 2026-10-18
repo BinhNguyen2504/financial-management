@@ -1,3 +1,5 @@
+**Đầu tư đã triển khai source ngày 18/10/2026:** tổng danh mục VND và ví tiền chờ, mở đầu tách dòng vốn mới, giá vốn bán nhập tay, định giá có revision. Sáu bảng `investments_*`, lưu chuỗi tiền chính xác, RLS cùng owner và lịch sử append-only. Xem [Đầu tư](features/investments.md); không dùng các thực thể mã/lô dự kiến bên dưới cho bản tổng danh mục.
+
 # Mô hình dữ liệu sơ bộ
 
 **Tiết kiệm đã triển khai:** sổ giao dịch riêng liên tục nhiều năm, từng sổ gửi/đợt vàng, giá có ngày hiệu lực, revision và snapshot chốt tháng. Chưa nối ledger/tài khoản chung. Xem [đặc tả Tiết kiệm](features/savings.md); các thực thể tổng quát bên dưới vẫn là mô hình dự kiến cho module khác.
@@ -103,3 +105,8 @@ Nếu nhiều mục tiêu cùng tham chiếu một quỹ để xem tiến độ,
 7. Đối soát theo tài khoản/tháng/tài sản, thử nhập lại và hoàn tác batch. Có chênh lệch phải giải thích, không tự điều chỉnh để ép khớp.
 
 Vàng là holding duy nhất có số lượng/đơn vị và valuation; hiển thị trong trang Tiết kiệm theo sở thích không tạo bản sao danh tính.
+
+
+## Bổ sung backup toàn tài khoản — 18/10/2026
+
+`data_imports(owner_id,id,fingerprint,result,imported_at)` là biên nhận kỹ thuật append-only, RLS theo owner, thêm bởi migration `202610180002_data_imports.sql`. FullBackupV1 mang 28 bảng tài chính hiện tại, bỏ owner khỏi file và gán owner phiên đích khi nhập; giữ ID/tham chiếu nội bộ. Không xuất Auth secrets hoặc biên nhận import.

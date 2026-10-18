@@ -62,8 +62,9 @@ test("public landing and preview stay independent of financial APIs and account 
   ).toBeFocused();
   await page.keyboard.press("End");
   await expect(
-    preview.getByRole("tab", { name: "Tiết kiệm", exact: true }),
+    preview.getByRole("tab", { name: "Đầu tư", exact: true }),
   ).toBeFocused();
+  await expect(preview.getByRole("tabpanel")).toContainText("72.000.000 ₫");
   await expect(page.locator("#dang-phat-trien")).toContainText(
     "chưa có tổng tài sản ròng",
   );

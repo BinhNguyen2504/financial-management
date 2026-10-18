@@ -109,3 +109,31 @@ Khi schema đã có, `npm run data:import -- --file imports/<BỘ_MẪU_TIẾT_K
 **Dùng script reset 22 bảng mới sau khi hoàn tất review Tiết kiệm**, thay cho script cũ chỉ gồm 14 bảng. Reset yêu cầu marker cùng dataset ở cả Thu nhập, Chi tiêu, Tiết kiệm; xuất backup trước, nhập đúng `RESET REVIEW <UID>`. Nó khóa bảng, chụp snapshot mới nhất, tạm tắt 11 trigger lịch sử được chỉ định trong transaction, xóa theo owner/đúng thứ tự FK rồi bật lại, kiểm tra counts bằng 0. Mọi lỗi rollback dữ liệu và trạng thái trigger. Không chạy tự động trên cloud.
 
 Lần kiểm tra cloud ngày 17/10: vẫn có 18 hũ và 2 danh mục thu thuộc bộ mẫu trước; chưa có schema Tiết kiệm, role runtime không có quyền CREATE. Đã lưu snapshot owner hiện tại vào `backups/` và trạng thái vào `cloud-state-before.json` trong bộ private mới. **Chưa nạp Tiết kiệm trên cloud, chưa chạy reset cloud.** File `01-enable-and-seed.sql` là bước cần thực hiện trong SQL Editor để review tại kết nối Supabase hiện tại.
+
+## Bổ sung preview Đầu tư — 18/10/2026
+
+`npm run data:preview` vẫn dùng database/Auth local riêng, không `.env.local` hoặc kết nối cloud; mở mặc định `/investments` với `review@example.test` / mã `123456`. Giữ dữ liệu mẫu Thu nhập/Chi tiêu/Tiết kiệm và thêm bộ Đầu tư tổng danh mục từ `scripts/lib/investment-review-data.mjs`: 2 ví, 4 danh mục đang giữ và 1 danh mục đã bán hết/lưu trữ; số dư đầu, mua, bán lãi/lỗ, nạp/rút/chuyển, định giá mới và cũ. Bộ mẫu tính ngày theo hôm nay tại Việt Nam, có lịch sử tháng 12 năm trước và năm hiện tại. Không lấy tiền thật từ ảnh Notion.
+
+Bộ fixture được đối chiếu bằng cách chạy từng action qua domain thật; seed vào PostgreSQL local trong preview. Thao tác sửa dữ liệu preview không chuyển sang cloud. Các file import/reset cloud 22 bảng từ 17/10 ở phần trên **không bao gồm sáu bảng Đầu tư mới**; không coi chúng là reset toàn ứng dụng sau khi đã có Đầu tư. Bản thay đổi này không chạy migration, import hoặc reset cloud.
+
+Đã kiểm tra phiên review 18/10: đăng nhập demo, read-back 7 danh mục/ví và 16 giao dịch/định giá; tổng minh họa 176.140.000 VND, không lỗi JavaScript/tràn ngang tại 390px. Metadata phiên ở `artifacts/review-preview.json`, bằng chứng ở `artifacts/investments-review-readback.json`. Phiên này chỉ nằm trên máy local; URL không phải bản cloud/deploy.
+
+## Bộ review Đầu tư cùng tài khoản và reset 28 bảng — 18/10/2026
+
+Đã kiểm tra cloud của UID người dùng chỉ định: có bộ Thu nhập/Chi tiêu/Tiết kiệm cùng dataset, gồm 18 hũ, 2 danh mục thu và 6 danh mục Tiết kiệm. Chưa có cả sáu bảng Đầu tư. Kết nối `expense_api` không có quyền CREATE trên schema public hoặc database. Đã sao lưu toàn bộ record của owner tại 22 bảng hiện có vào file private `backups/before-investments-review-*.json`; metadata và counts ở `cloud-state-before.json` trong bộ mới. Không thay đổi ba module cũ.
+
+Tạo phần bổ sung, giữ nguyên owner và dataset cũ:
+
+```bash
+npm run data:investments:sample -- --base imports/<BỘ_MẪU_TIẾT_KIỆM>/sample-data.json
+```
+
+Đầu ra `imports/investments-review-<ngày>-<mã>/` có 00-inspect, 01-enable-and-seed, 02-backup, 03-reset, 04-seed-investments-only, JSON và README. 01-enable-and-seed chạy bằng Supabase SQL Editor/admin, tạo schema nếu cả sáu bảng đều thiếu và nạp Đầu tư trong cùng transaction; từ chối schema dở dang. Các module cũ phải có đúng marker bộ review. Chạy lại đúng bộ giữ nguyên các chỉnh sửa review. Không dùng quyền admin trong runtime ứng dụng.
+
+Bộ Đầu tư có **8 danh mục/ví, 44 bản ghi giao dịch và 22 bản ghi định giá (gồm revision), 76 audit** tại ngày 18/10. Giá vốn/định giá mở đầu tham khảo ảnh `investment-1.png`: Cổ phiếu 46.293.098/44.491.500; Quỹ cổ phiếu 11.196.750/11.509.468; Quỹ trái phiếu 5.005.620/5.017.437; Crypto 7.500.000/5.667.000 VND. Tiền chờ mở đầu 12.349 VND, không sao chép giá trị 0/ROI −100% của Notion. Toàn bộ ngày mở đầu và các giao dịch phát sinh là dữ liệu minh họa, có nhãn DỮ LIỆU MẪU UI/UX.
+
+Các ca bổ sung: nạp theo tháng, mua TCBS/ghi chú HPG, hai ví, chuyển/rút tiền, mua/bán trực tiếp Bên ngoài, bán lãi/lỗ sau phí/thuế, mất toàn bộ vốn thu 0, hai danh mục tất toán/lưu trữ, định giá cũ/mới, sửa định giá và hủy một khoản nạp ghi trùng. Đây vẫn là tổng danh mục, không tạo mã hoặc khối lượng cổ phiếu/crypto.
+
+**Trạng thái cloud trong lượt chuẩn bị này:** importer đã dừng ở kiểm tra thiếu migration; **chưa nạp Đầu tư lên cloud**. Cần chạy 01-enable-and-seed.sql bằng SQL Editor trước; không cần gửi mật khẩu, OTP hoặc secret. Sau đó có thể dùng 00-inspect.sql hoặc chạy lại `npm run data:import -- --file <BỘ_MỚI>/sample-data.json --apply` để backup/read-back qua runtime RLS.
+
+**Reset mới đủ 28 bảng của cả bốn module**, thay cho bản 14/22 bảng cũ. Chỉ dùng sau khi người dùng xác nhận hoàn tất UI/UX, dừng nhập ở mọi thiết bị và xuất backup mới nhất. Mặc định `NOT_CONFIRMED` nên không xóa. Nó kiểm UID/dataset ở cả bốn module, giữ Auth/hồ sơ và owner khác, khóa bảng, chụp snapshot, tạm tắt đúng 15 trigger lịch sử, xóa theo FK rồi bật lại và kiểm counts bằng 0. Lỗi rollback cả dữ liệu lẫn trigger. Chưa chạy reset cloud.

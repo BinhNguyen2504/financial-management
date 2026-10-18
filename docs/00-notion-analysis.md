@@ -45,3 +45,7 @@ Ngày phân tích: 15/10/2026. Nguồn: 13 ảnh trong `Notion/`, đã đọc t�
 | Không rõ số liệu cũ/mới | Hiển thị ngày giao dịch và ngày định giá | Giá cũ có nhãn; không giả là giá trực tiếp |
 
 Ứng dụng sẽ giải quyết các điểm yếu đã xác định theo từng giai đoạn. Tự động kết nối ngân hàng, giá thị trường và OCR cần nguồn dữ liệu, quyền truy cập và thử nghiệm riêng; chưa thể cam kết loại bỏ mọi thao tác nhập tay chỉ từ ảnh.
+
+## Đối chiếu Đầu tư đã xác nhận — 18/10/2026
+
+Giữ tổng danh mục như ảnh, không thêm mã/lô. “Nạp/Rút” tài sản được thống nhất thành Mua/Bán với nguồn/đích Bên ngoài; nạp/rút ví riêng. Mua/bán tự cập nhật hai phía; tiền bán ròng và giá vốn phần bán là hai đại lượng khác nhau. Bắt buộc nhập định giá sau giao dịch. Ví tiền chờ không có ROI; không sao chép ROI −100% trong ảnh. Có sửa/hủy có lịch sử, định giá theo ngày, báo cáo xuyên năm và lưu trữ danh mục hết tài sản. Chi tiết [đặc tả Đầu tư](features/investments.md).

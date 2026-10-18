@@ -1,4 +1,5 @@
 "use client";
+import { LoadingStatus } from "@/components/loading";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, Leaf, Sprout, Wallet } from "lucide-react";
@@ -7,6 +8,7 @@ import { summarize, buildReport } from "@/domain/expenses/reports";
 import { jarEmoji } from "@/domain/expenses/emoji";
 import { useMoney } from "@/components/privacy";
 import { Garden } from "@/components/garden";
+import { ImportSuggestion } from "@/features/settings/import-suggestion";
 import { DailyNote } from "@/components/daily-note";
 import { DonutChart } from "./charts";
 import { apiJSON, RequestError } from "./api";
@@ -21,6 +23,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
   const request = useRef(0);
   const reload = useCallback(async () => {
     const id = ++request.current;
+    setLoading(true);
     try {
       const next = await apiJSON<ExpenseView>("");
       if (id !== request.current) return;
@@ -107,6 +110,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
         <Garden />
       </section>
       <DailyNote />
+      {configured && <ImportSuggestion />}
       <section aria-labelledby="month-overview-title">
         <div className="section-title">
           <div>
@@ -125,9 +129,9 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
           )}
         </div>
         {loading && (
-          <p role="status" className="overview-loading">
+          <LoadingStatus className="overview-loading">
             Đang chăm chút bức tranh tháng này…
-          </p>
+          </LoadingStatus>
         )}
         {error && (
           <div className="expense-notice expense-feedback" role="alert">

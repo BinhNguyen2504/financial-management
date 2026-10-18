@@ -37,7 +37,7 @@ export async function serverAuth() {
     },
   );
 }
-export async function authenticatedOwner(request?: Request): Promise<string> {
+export async function authenticatedUser(request?: Request) {
   if (!authConfigured())
     throw new ExpenseError(
       "Chưa kết nối dịch vụ đăng nhập và lưu trữ. Xem hướng dẫn cấu hình cloud.",
@@ -75,5 +75,8 @@ export async function authenticatedOwner(request?: Request): Promise<string> {
       401,
       "UNAUTHENTICATED",
     );
-  return data.user.id;
+  return data.user;
+}
+export async function authenticatedOwner(request?: Request): Promise<string> {
+  return (await authenticatedUser(request)).id;
 }

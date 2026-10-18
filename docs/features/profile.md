@@ -21,3 +21,8 @@ TEST_BROWSER_MCP=1 npm run test:e2e
 Runner in địa chỉ local của ứng dụng. Dùng email bất kỳ kết thúc bằng `@example.test` và OTP `123456`. Dừng process `scripts/test-browser.mjs` bằng SIGTERM để đóng app và cho runner dọn cluster local. Không dùng thông tin đăng nhập cloud.
 
 Các bài kiểm tra tự động trong `tests/browser/profile.spec.ts` bao phủ lưu và tải lại, phiên đăng nhập khác, xác thực ngày sinh, lỗi lưu/thử lại, đăng xuất, menu dùng chung, căn hàng bộ chọn tháng và giới hạn năm. Các kiểm tra local không xác nhận Supabase cloud hoặc bản deploy.
+
+
+## Bổ sung backup toàn tài khoản — 18/10/2026
+
+Full backup kèm ba trường hồ sơ được hỗ trợ; import hồ sơ tùy chọn, mặc định tắt, không thay email/token/tài khoản đăng nhập. Auth được cập nhật sau commit tài chính; lỗi cho retry riêng. Validator hồ sơ dùng chung ở domain, đường import/export hiện có của feature được giữ tương thích. Xem [backup](backup.md).

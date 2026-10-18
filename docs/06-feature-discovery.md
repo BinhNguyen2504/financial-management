@@ -52,3 +52,12 @@ Ví dụ nên dùng số giả. Khi chuyển dữ liệu thật, import local/st
 ## Sau khi nhận chi tiết
 
 Viết đặc tả ngắn trong `docs/features/<feature>.md`, ghi trạng thái draft/confirmed và ví dụ đã thống nhất. Với thay đổi lớn (giá vốn, currency, budget rollover), ghi một quyết định kiến trúc kèm lý do. Chỉ sau đó mới cập nhật schema, xây UI thật và kiểm thử tương ứng. Không lấy bảng phạm vi P0 thay cho đặc tả được xác nhận.
+
+## Quyết định Đầu tư — 18/10/2026
+
+Đã xác nhận: tổng danh mục, nhiều ví, VND, mở đầu rồi ghi mới; mua/bán trực tiếp với Bên ngoài được phép. Giá vốn bán và giá trị sau mỗi mua/bán nhập tay; phí/thuế đi cùng giao dịch. Nạp/rút chỉ dành cho ví. Sửa/hủy có lý do và lịch sử; xóa là lưu trữ khi hết vốn lẫn giá trị. Có định giá riêng, lấy mốc gần nhất với nhãn cũ; báo cáo đầy đủ kỳ/biểu đồ/CSV/JSON. Bốn tab, không chốt tháng, không DCA/tỷ trọng mục tiêu, cổ tức hoặc liên kết tiền module khác. Các câu hỏi về FIFO/mã/tỷ giá trong bảng phía trên dành cho mở rộng sau, không còn là blocker của bản tổng danh mục.
+
+
+## Bổ sung backup toàn tài khoản — 18/10/2026
+
+Đã chốt và triển khai trong source: JSON không mật khẩu, chỉ nhập vào tài khoản trống; kèm hồ sơ và tùy chọn áp dụng mặc định tắt. Toàn bộ thao tác trong Cài đặt, gợi ý duy nhất trên Tổng quan. Chi tiết và giới hạn: [backup](features/backup.md).

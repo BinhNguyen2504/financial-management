@@ -281,7 +281,7 @@ test("archives are read-only, export versioned backups and reject old-year repor
     .selectOption("12");
   await expect(
     page.getByText(
-      `Năm ${year - 1} đã chốt. Bạn có thể xem lịch sử và xuất backup.`,
+      `Năm ${year - 1} đã chốt. Bạn có thể xem lịch sử. Sao lưu toàn bộ dữ liệu trong Cài đặt.`,
     ),
   ).toBeVisible();
   await expect(

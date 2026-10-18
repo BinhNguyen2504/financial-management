@@ -17,3 +17,16 @@ TEST_WEBKIT=1 npm run test:e2e
 ```
 
 Runner dùng production build Next riêng, PostgreSQL và Auth double local. Kiểm tra gồm desktop Chromium, Chromium mô phỏng điện thoại và WebKit mô phỏng iPhone; sáng/tối, reduced motion, viewport 320/768/1024/1440/1920, đo tọa độ căn cột/nút, lỗi mạng/thử lại và dialog lồng nhau. Kết quả này không thay thế nghiệm thu cloud hoặc thiết bị vật lý.
+
+
+## Loading trực quan — 18/10/2026
+
+- Component dùng chung `src/components/loading.tsx`: vòng xoay CSS nhỏ và thông báo tải có `role="status"`, `aria-atomic`. Vòng xoay trang trí không được đọc thêm bởi screen reader.
+- Dùng cho Tổng quan, Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, hồ sơ, kiểm tra trạng thái và xem trước backup trong Cài đặt; avatar có vòng xoay khi xác minh tài khoản. Tiết kiệm hiện trạng thái khi cập nhật lại cả khi đã có dữ liệu.
+- Các nút đăng nhập/đăng xuất, xem trước/lưu bốn module, lưu hồ sơ, xuất/nhập backup hiện vòng xoay cạnh nhãn khi chờ server; giữ khóa thao tác cũ và thêm `aria-busy`. Chỉ báo thành công sau phản hồi thật.
+- Tải lại Tổng quan/Thu nhập/Chi tiêu bật lại loading; lỗi kết thúc vòng xoay và giữ nút thử lại. Không đặt timeout giả hoặc che nội dung đã tải bằng overlay.
+- Màu theo token sáng/tối; vòng xoay không co lại khi chữ xuống dòng. Reduced motion tắt quay, vẫn giữ biểu tượng và lời nhắn dễ đọc.
+
+Kiểm chứng loading trong `tests/browser/loading.spec.ts`: giữ request để quan sát trạng thái chờ, trả kết quả thật, lỗi/thử lại, disabled/aria-busy, sáng/tối, giảm chuyển động, điện thoại 375px và xoay ngang. Xem kết quả theo ngày tại [validation](../07-validation.md).
+
+Đã rà soát catalog, landing copy và preview: trạng thái module và khả năng tài chính không đổi; preview public vẫn là dữ liệu cố định, chuyển tab ngay không cần giả lập loading. Avatar của landing dùng cùng vòng xoay xác minh tài khoản. README và tài liệu UX đã cập nhật cùng source.

@@ -1,14 +1,8 @@
 "use client";
+import { LoadingStatus } from "@/components/loading";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Plus,
-  Download,
-  Settings2,
-  ArrowUpRight,
-  Pencil,
-  Archive,
-} from "lucide-react";
+import { Plus, Settings2, ArrowUpRight, Pencil, Archive } from "lucide-react";
 import type { ExpenseRow, ExpenseView } from "@/domain/expenses/types";
 import { vietnamClock } from "@/domain/expenses/engine";
 import { summarize } from "@/domain/expenses/reports";
@@ -47,6 +41,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
   selectedYearRef.current = year;
   const reload = useCallback(async () => {
     const id = ++requestId.current;
+    setLoading(true);
     try {
       const next = await apiJSON<ExpenseView>("");
       if (id === requestId.current) {
@@ -212,9 +207,13 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
         </section>
       ) : (
         <>
-          <p role="status" className="expense-status">
-            {loading ? "Đang tải dữ liệu chi tiêu…" : notice}
-          </p>
+          {loading ? (
+            <LoadingStatus>Đang tải dữ liệu chi tiêu…</LoadingStatus>
+          ) : (
+            <p role="status" className="expense-status">
+              {notice}
+            </p>
+          )}
           {error && (
             <div className="expense-notice expense-feedback" role="alert">
               <p>{error}</p>
@@ -327,15 +326,9 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   <Archive size={20} aria-hidden="true" />
                   <p>
                     {readonly
-                      ? `Năm ${selectedYear} đã chốt. Bạn có thể xem lịch sử và xuất backup.`
+                      ? `Năm ${selectedYear} đã chốt. Bạn có thể xem lịch sử. Sao lưu toàn bộ dữ liệu trong Cài đặt.`
                       : `Năm ${selectedYear} chưa chốt. Hoàn tất dữ liệu trước khi lưu trữ; số dư năm mới sẽ được cập nhật theo.`}
                   </p>
-                  <a
-                    className="expense-secondary"
-                    href={`/api/v1/expenses/years/${selectedYear}/backup`}
-                  >
-                    <Download size={16} /> Xuất backup
-                  </a>
                   {!readonly && (
                     <button
                       className="expense-primary"

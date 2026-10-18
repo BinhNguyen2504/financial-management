@@ -13,7 +13,7 @@ import { modules } from "@/features/catalog";
 import { ModuleIcon } from "@/components/module-icon";
 
 const tabs = modules.filter((item) =>
-  ["income", "budgets", "savings"].includes(item.slug),
+  ["income", "budgets", "savings", "investments"].includes(item.slug),
 );
 const data = {
   income: {
@@ -69,6 +69,33 @@ const data = {
     ],
     chartLabel: "THỰC CHI THEO THÁNG",
     bars: [60, 48, 72, 55, 68, 52],
+  },
+  investments: {
+    title: "Nhìn rõ những khoản đang đầu tư.",
+    subtitle: "Tổng danh mục và tiền chờ, cùng ngày định giá rõ ràng.",
+    label: "Tài sản trong Đầu tư",
+    value: "72.000.000",
+    secondary: "Danh mục và ví",
+    secondaryValue: "1 danh mục · 1 ví",
+    columns: ["Danh mục / ví", "Giá trị"],
+    rows: [
+      {
+        name: "Cổ phiếu",
+        note: "Định giá 30/06/2026",
+        emoji: "📈",
+        amount: "65.000.000",
+        percent: 90,
+      },
+      {
+        name: "Tiền chờ TCBS",
+        note: "Tiền chờ · Không tính ROI",
+        emoji: "💼",
+        amount: "7.000.000",
+        percent: 10,
+      },
+    ],
+    chartLabel: "TÀI SẢN ĐẦU TƯ CUỐI THÁNG",
+    bars: [45, 55, 52, 68, 80, 85],
   },
   savings: {
     title: "Những điều đang lớn lên.",
@@ -166,7 +193,7 @@ export function ProductPreview() {
           <div className="preview-sidebar-note">
             <span className="status-dot" />
             Từng bước vun đắp.
-            <small>Một chút mỗi ngày, theo nhịp của bạn.</small>
+            <small>Tải bản sao dữ liệu của bạn trong Cài đặt.</small>
           </div>
         </aside>
         <div className="preview-workspace">

@@ -30,7 +30,7 @@ Kỳ năm mới tự xuất hiện khi đọc dữ liệu sau 1/1, không cần 
 
 Năm trước còn mở được sửa để hoàn tất tháng 12; các tháng sau được tính lại. Chốt năm phải theo thứ tự từ cũ đến mới, chỉ chốt năm đã kết thúc. Snapshot được ghi cùng version, audit và idempotency record trong một transaction. Năm chốt chỉ xem; snapshot có trigger PostgreSQL ngăn sửa/xóa. Không có chức năng mở khóa năm đã chốt.
 
-Backup JSON theo năm có `schemaVersion: 1`, trạng thái draft/closed, kỳ, tiền tệ, timezone, thời điểm xuất, rows, cấu hình, dữ liệu nhập, lần sử dụng và audit liên quan. Rows chứa số dư đầu/cuối kỳ để đọc độc lập. Đây là bản xuất dữ liệu năm; chưa có công cụ tự động restore/import JSON. Backup vận hành toàn DB cần cấu hình riêng trên hạ tầng.
+Backup JSON theo năm có `schemaVersion: 1`, trạng thái draft/closed, kỳ, tiền tệ, timezone, thời điểm xuất, rows, cấu hình, dữ liệu nhập, lần sử dụng và audit liên quan. Rows chứa số dư đầu/cuối kỳ để đọc độc lập. Đây là API xuất dữ liệu năm được giữ để tương thích. Sao lưu/khôi phục toàn tài khoản thực hiện trong [Cài đặt](backup.md); file năm không dùng cho luồng import toàn tài khoản. Backup vận hành toàn DB cần cấu hình riêng trên hạ tầng.
 
 ## Lưu trữ và API
 

@@ -1,4 +1,5 @@
 "use client";
+import { LoadingSpinner } from "@/components/loading";
 
 import Link from "next/link";
 import { useId, useEffect, useRef, useState } from "react";
@@ -65,7 +66,7 @@ export function UserMenu({
         role="status"
         aria-label="Đang tải thông tin cá nhân"
       >
-        <UserRound size={19} aria-hidden="true" />
+        <LoadingSpinner />
       </span>
     );
   if (error)
@@ -139,8 +140,16 @@ export function UserMenu({
             Thông tin cá nhân
           </Link>
           <div className="user-logout">
-            <button disabled={busy} onClick={() => void signOut()}>
-              <LogOut size={18} aria-hidden="true" />
+            <button
+              aria-busy={busy}
+              disabled={busy}
+              onClick={() => void signOut()}
+            >
+              {busy ? (
+                <LoadingSpinner />
+              ) : (
+                <LogOut size={18} aria-hidden="true" />
+              )}
               {busy ? "Đang đăng xuất…" : "Đăng xuất"}
             </button>
           </div>

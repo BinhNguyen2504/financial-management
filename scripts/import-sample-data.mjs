@@ -12,6 +12,13 @@ import {
   allReviewTables,
 } from "./lib/savings-review-data.mjs";
 
+import {
+  buildInvestmentCloudReviewSQL,
+  completeReviewTables,
+  investmentTables,
+  investmentReviewDescription,
+} from "./lib/investment-cloud-review.mjs";
+
 const { values } = parseArgs({
   options: {
     file: { type: "string" },
@@ -24,10 +31,16 @@ if (!values.file || !process.env.DATABASE_URL)
   );
 const data = JSON.parse(await readFile(values.file, "utf8"));
 if (data.format !== REVIEW_FORMAT) throw new Error("Sai định dạng bộ mẫu.");
-const seed = data.savings
-  ? buildSavingsReviewSQL(data, { runtime: true }).seed
-  : buildReviewSQL(data, { runtime: true }).seed;
-const tablesToRead = data.savings ? allReviewTables : reviewTables;
+const seed = data.investments
+  ? buildInvestmentCloudReviewSQL(data, { runtime: true }).seed
+  : data.savings
+    ? buildSavingsReviewSQL(data, { runtime: true }).seed
+    : buildReviewSQL(data, { runtime: true }).seed;
+const tablesToRead = data.investments
+  ? completeReviewTables
+  : data.savings
+    ? allReviewTables
+    : reviewTables;
 const db = postgres(process.env.DATABASE_URL, {
   max: 1,
   prepare: false,
@@ -36,6 +49,19 @@ const db = postgres(process.env.DATABASE_URL, {
   onnotice: () => {},
 });
 try {
+  if (data.investments) {
+    const schemas = await db.unsafe(
+      "select count(*)::int as n from unnest($1::text[]) as names(name) where to_regclass('public.'||name) is not null",
+      [investmentTables],
+    );
+    if (schemas[0].n !== investmentTables.length)
+      throw Object.assign(
+        new Error(
+          "Cần chạy 01-enable-and-seed.sql bằng Supabase SQL Editor để bật Đầu tư; kết nối runtime không có quyền tạo bảng.",
+        ),
+        { code: "INVESTMENTS_MIGRATION_REQUIRED" },
+      );
+  }
   if (data.savings) {
     const missing = await db.unsafe(
       "select to_regclass('public.savings_books') is null as missing",
@@ -112,6 +138,13 @@ try {
         );
         counts[table] = r.count;
       }
+      if (data.investments) {
+        const [marker] = await tx.unsafe(
+          "select count(*)::int as count from public.investments_audit where owner_id=$1 and action->>'type'='createCategory' and action->>'description'=$2",
+          [data.ownerId, investmentReviewDescription(data.datasetId)],
+        );
+        if (!marker.count) throw new Error("INVESTMENTS_READ_BACK_FAILED");
+      }
       if (data.savings) {
         const [marker] = await tx.unsafe(
           "select count(*)::int as count from public.savings_audit where owner_id=$1 and action->>'type'='createCategory' and action->>'description'=$2",
@@ -123,7 +156,7 @@ try {
     });
     console.log(JSON.stringify({ countsAfter: verified }, null, 2));
     console.log(
-      `Đã nạp bộ mẫu ${data.datasetId}. Backup trước khi nạp: ${backupPath}\nTải lại ${data.savings ? "/savings" : "/overview, /budgets, /income"}. Chưa reset dữ liệu.`,
+      `Đã nạp bộ mẫu ${data.datasetId}. Backup trước khi nạp: ${backupPath}\nTải lại ${data.investments ? "/investments" : data.savings ? "/savings" : "/overview, /budgets, /income"}. Chưa reset dữ liệu.`,
     );
   } else
     console.log(
@@ -133,7 +166,10 @@ try {
   await db.unsafe("rollback").catch(() => {});
   console.error(
     "Import không hoàn tất:",
-    error.code === "P0001" || error.code === "SAVINGS_MIGRATION_REQUIRED"
+    error.code === "P0001" ||
+      ["SAVINGS_MIGRATION_REQUIRED", "INVESTMENTS_MIGRATION_REQUIRED"].includes(
+        error.code,
+      )
       ? error.message
       : (error.code ?? "CONNECTION_OR_PERMISSION_ERROR"),
   );

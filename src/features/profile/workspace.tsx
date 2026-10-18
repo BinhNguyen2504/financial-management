@@ -1,4 +1,5 @@
 "use client";
+import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 
 import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
@@ -27,7 +28,7 @@ export function ProfileWorkspace() {
         </div>
       </div>
       {loading ? (
-        <p role="status">Đang tải thông tin cá nhân…</p>
+        <LoadingStatus>Đang tải thông tin cá nhân…</LoadingStatus>
       ) : error ? (
         <div className="panel">
           <p className="expense-error" role="alert">
@@ -209,8 +210,8 @@ function ProfileForm({ user }: { user: User }) {
           Ngày sinh và giới tính là thông tin tùy chọn.
         </p>
         <div className="expense-actions">
-          <button className="expense-primary" disabled={busy}>
-            <Save size={18} aria-hidden="true" />
+          <button aria-busy={busy} className="expense-primary" disabled={busy}>
+            {busy ? <LoadingSpinner /> : <Save size={18} aria-hidden="true" />}
             {busy ? "Đang lưu…" : "Lưu thông tin"}
           </button>
         </div>
