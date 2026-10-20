@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { ExpenseError } from "../domain/expenses/engine";
 import type {
   ExpenseBook,
   Jar,
@@ -17,7 +18,7 @@ import type {
 type DB = Pick<postgres.Sql, "unsafe">;
 type Params = (string | number | boolean | null)[];
 const json = (value: unknown) => JSON.stringify(value);
-function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
+export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
   const query = <T extends postgres.Row>(sql: string, params: Params = []) =>
     db.unsafe<T[]>(sql, params);
   return {
@@ -44,7 +45,8 @@ function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
         [owner],
       );
       const labels = await query<Label>(
-        "select id,kind,name from public.expense_labels where owner_id=$1 order by kind,name",
+        // Optional presentation columns may not have been migrated yet.
+        `select id,kind,name,to_jsonb(l)->>'brand_key' as "brandKey",to_jsonb(l)->>'icon_key' as "iconKey" from public.expense_labels l where owner_id=$1 order by kind,name`,
         [owner],
       );
       const audit = await query<Audit>(
@@ -72,6 +74,26 @@ function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
       return row ?? null;
     },
     async save(book) {
+      let hasLabelVisuals = false;
+      if (book.labels.length) {
+        const [schema] = await query<{ ready: boolean }>(
+          `select count(*) = 2 as ready from information_schema.columns
+          where table_schema='public' and table_name='expense_labels'
+          and column_name in ('brand_key','icon_key')`,
+        );
+        hasLabelVisuals = schema.ready;
+        if (
+          !hasLabelVisuals &&
+          book.labels.some(
+            (label) => label.brandKey != null || label.iconKey != null,
+          )
+        )
+          throw new ExpenseError(
+            "Cần áp dụng migration 202610190002_label_visuals.sql để lưu logo hoặc biểu tượng phân loại. Dữ liệu chưa được lưu; nội dung đang nhập vẫn được giữ.",
+            503,
+            "LABEL_VISUALS_MIGRATION_REQUIRED",
+          );
+      }
       await query(
         `insert into public.expense_books(owner_id,start_month,version) values($1,$2,$3)
         on conflict(owner_id) do update set version=excluded.version`,
@@ -114,12 +136,27 @@ function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
         "delete from public.expense_labels where owner_id=$1 and not (id=any($2::uuid[]))",
         [owner, `{${book.labels.map((l) => l.id).join(",")}}`],
       );
-      for (const l of book.labels)
-        await query(
-          `insert into public.expense_labels(owner_id,id,kind,name) values($1,$2,$3,$4)
-        on conflict(owner_id,id) do update set name=excluded.name where expense_labels.name is distinct from excluded.name`,
-          [owner, l.id, l.kind, l.name],
-        );
+      for (const l of book.labels) {
+        if (hasLabelVisuals)
+          await query(
+            `insert into public.expense_labels(owner_id,id,kind,name,brand_key,icon_key) values($1,$2,$3,$4,$5,$6)
+        on conflict(owner_id,id) do update set name=excluded.name,brand_key=excluded.brand_key,icon_key=excluded.icon_key where (expense_labels.name,expense_labels.brand_key,expense_labels.icon_key) is distinct from (excluded.name,excluded.brand_key,excluded.icon_key)`,
+            [
+              owner,
+              l.id,
+              l.kind,
+              l.name,
+              l.brandKey ?? null,
+              l.iconKey ?? null,
+            ],
+          );
+        else
+          await query(
+            `insert into public.expense_labels(owner_id,id,kind,name) values($1,$2,$3,$4)
+          on conflict(owner_id,id) do update set name=excluded.name where expense_labels.name is distinct from excluded.name`,
+            [owner, l.id, l.kind, l.name],
+          );
+      }
       for (const a of book.audit)
         await query(
           `insert into public.expense_audit(owner_id,version,at,action,detail) values($1,$2,$3,$4,$5::text::jsonb) on conflict do nothing`,

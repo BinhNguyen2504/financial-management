@@ -1,3 +1,4 @@
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { authenticatedOwner } from "@/server/auth";
@@ -37,10 +38,9 @@ function failure(error: unknown) {
   if (error instanceof ZodError)
     return NextResponse.json(
       {
-        error: error.issues
-          .map((i) => `${i.path.join(".")}: ${i.message}`)
-          .join("; "),
+        error: Object.values(fieldErrorsFromIssues(error.issues)).join("; "),
         code: "INVALID_INPUT",
+        fieldErrors: fieldErrorsFromIssues(error.issues),
       },
       { status: 422, headers },
     );

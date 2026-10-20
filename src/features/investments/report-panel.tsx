@@ -1,4 +1,5 @@
 "use client";
+import { ColumnTable } from "@/components/column-table";
 import { useState } from "react";
 import type {
   InvestmentReport,
@@ -352,7 +353,10 @@ export function InvestmentReports({
           <section className="panel">
             <h2>Số liệu theo danh mục</h2>
             <div className="investment-table-scroll">
-              <table className="investment-table">
+              <ColumnTable
+                tableId="investments-report-panel-1"
+                className="investment-table"
+              >
                 <thead>
                   <tr>
                     <th>Danh mục</th>
@@ -383,13 +387,16 @@ export function InvestmentReports({
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </ColumnTable>
             </div>
           </section>
           <section className="panel">
             <h2>Bảng diễn biến</h2>
             <div className="investment-table-scroll">
-              <table className="investment-table">
+              <ColumnTable
+                tableId="investments-report-panel-2"
+                className="investment-table"
+              >
                 <thead>
                   <tr>
                     <th>Tháng</th>
@@ -422,7 +429,7 @@ export function InvestmentReports({
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </ColumnTable>
             </div>
           </section>
         </>

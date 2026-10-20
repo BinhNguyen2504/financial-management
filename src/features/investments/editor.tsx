@@ -1,4 +1,13 @@
 "use client";
+import { HelpButton } from "@/features/help/provider";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import { Save, X, ScanEye } from "lucide-react";
+import {
+  comparable,
+  normalizedMoneyFields,
+  normalizeInteger,
+  integerInput,
+} from "@/lib/form-values";
 import { LoadingSpinner } from "@/components/loading";
 import { DialogChanges, DialogPreview } from "@/components/dialog-content";
 import { useRef, useId, useState } from "react";
@@ -115,7 +124,6 @@ function Editor({
       : {}),
   });
   const [busy, setBusy] = useState(false),
-    [dirty, setDirty] = useState(false),
     [error, setError] = useState(""),
     [fieldErrors, setFieldErrors] = useState<Record<string, string>>({}),
     [conflict, setConflict] = useState(false),
@@ -126,12 +134,20 @@ function Editor({
   } | null>(null);
   const pending = useRef<InvestmentCommand | null>(null),
     errorRef = useRef<HTMLDivElement>(null);
+  const draft = comparable({ ...normalizedMoneyFields(f), reason: undefined });
+  const originalDraft = useRef(draft);
+  const unchanged =
+    (mode.type === "configure" || mode.type === "revise") &&
+    draft === originalDraft.current;
   const set = (key: string, value: string) => {
     setF((s) => ({ ...s, [key]: value }));
-    setDirty(true);
     setPreview(null);
     setError("");
-    setFieldErrors({});
+    setFieldErrors((previous) => {
+      const next = { ...previous };
+      delete next[key];
+      return next;
+    });
   };
   const categories = view.book?.categories ?? [],
     kind = f.transactionKind as InvestmentTransaction["kind"];
@@ -149,7 +165,10 @@ function Editor({
               ? "Hủy giao dịch"
               : "Ghi giao dịch";
   function close() {
-    if (!dirty || window.confirm("Đóng form và bỏ nội dung chưa lưu?"))
+    if (
+      (draft === originalDraft.current && !f.reason) ||
+      window.confirm("Đóng form và bỏ nội dung chưa lưu?")
+    )
       onClose();
   }
   function input(key: string, label: string, type = "text") {
@@ -158,12 +177,23 @@ function Editor({
       <label key={key} htmlFor={`investment-${key}`}>
         {label}
         <input
+          aria-label={label}
           id={`investment-${key}`}
           type={masked ? "password" : type === "money" ? "text" : type}
           inputMode={type === "money" ? "numeric" : undefined}
           autoComplete="off"
           value={f[key] ?? ""}
-          onChange={(e) => set(key, e.target.value)}
+          required={
+            !["description", "note", "counterparty", "fee", "tax"].includes(key)
+          }
+          onChange={(e) => {
+            const value =
+              type === "money" ? integerInput(e.target.value) : e.target.value;
+            if (value !== null) set(key, value);
+          }}
+          onBlur={() => {
+            if (type === "money") set(key, normalizeInteger(f[key]));
+          }}
           max={type === "date" ? view.today : undefined}
           aria-invalid={!!fieldErrors[key]}
           aria-describedby={
@@ -191,6 +221,8 @@ function Editor({
       <label>
         Danh mục / ví
         <select
+          required
+          aria-label="Danh mục / ví"
           id="investment-categoryId"
           aria-invalid={!!fieldErrors.categoryId}
           aria-describedby={
@@ -266,13 +298,14 @@ function Editor({
         "sell",
       ].includes(kind)
     )
-      t.amount = f.amount;
-    if (["openingInvestment", "sell"].includes(kind)) t.cost = f.cost;
+      t.amount = normalizeInteger(f.amount);
+    if (["openingInvestment", "sell"].includes(kind))
+      t.cost = normalizeInteger(f.cost);
     if (["openingInvestment", "buy", "sell", "valuation"].includes(kind))
-      t.value = f.value;
+      t.value = normalizeInteger(f.value);
     if (kind === "buy" || kind === "sell") {
-      t.fee = f.fee;
-      t.tax = f.tax;
+      t.fee = normalizeInteger(f.fee);
+      t.tax = normalizeInteger(f.tax);
       t.cashCategoryId = f.cashCategoryId || null;
     }
     if (kind === "transfer") t.cashCategoryId = f.cashCategoryId;
@@ -288,6 +321,7 @@ function Editor({
     );
   }
   async function submit() {
+    if (unchanged) return;
     if (hidden) {
       setError("Hãy hiện tiền trong form để kiểm tra trước khi lưu.");
       return;
@@ -319,12 +353,12 @@ function Editor({
       }
     } catch (e) {
       if (e && typeof e === "object" && "issues" in e) {
-        const errors: Record<string, string> = {};
-        for (const issue of (
-          e as { issues: { path: (string | number)[]; message: string }[] }
-        ).issues)
-          errors[String(issue.path.at(-1))] = issue.message;
-        setFieldErrors(errors);
+        setFieldErrors(
+          fieldErrorsFromIssues(
+            (e as { issues: { path: (string | number)[]; message: string }[] })
+              .issues,
+          ),
+        );
         setError("Kiểm tra các trường được đánh dấu.");
       } else {
         setError(e instanceof Error ? e.message : "Không thể lưu.");
@@ -386,10 +420,16 @@ function Editor({
             form={formId}
             aria-busy={busy}
             type="submit"
-            className="expense-primary"
-            disabled={busy || hidden || conflict}
+            className={`expense-primary ${mode.type === "cancel" ? "expense-danger" : ""}`}
+            disabled={busy || hidden || conflict || unchanged}
           >
-            {busy && <LoadingSpinner />}
+            {busy ? (
+              <LoadingSpinner />
+            ) : preview ? (
+              <Save size={17} aria-hidden="true" />
+            ) : (
+              <ScanEye size={17} aria-hidden="true" />
+            )}
             {busy
               ? "Đang kiểm tra…"
               : preview
@@ -403,6 +443,7 @@ function Editor({
             onClick={close}
             disabled={busy || uncertain}
           >
+            <X size={17} aria-hidden="true" />
             Đóng form
           </button>
         </div>
@@ -418,6 +459,25 @@ function Editor({
         }}
       >
         <PrivacyReveal />
+        <HelpButton
+          pageId="investments"
+          sectionId={
+            mode.type === "transaction" || mode.type === "revise"
+              ? kind === "valuation"
+                ? "valuation"
+                : kind === "buy" || kind === "sell"
+                  ? "sale-cost"
+                  : kind === "deposit" ||
+                      kind === "withdraw" ||
+                      kind === "transfer"
+                    ? "cash"
+                    : "opening"
+              : mode.type === "cancel"
+                ? "history"
+                : "portfolio"
+          }
+          label="Hiểu vốn, giá trị và tiền chờ"
+        />
         {error && (
           <div
             role="alert"
@@ -576,6 +636,7 @@ function Editor({
                       ? "Nơi nhận tiền"
                       : "Ví nhận"}
                   <select
+                    required={kind === "transfer"}
                     id="investment-cashCategoryId"
                     aria-invalid={!!fieldErrors.cashCategoryId}
                     aria-describedby={
@@ -646,6 +707,7 @@ function Editor({
           <DialogPreview className="investment-preview">
             <h3>Xem trước thay đổi</h3>
             <DialogChanges
+              numeric
               rows={[
                 {
                   key: "total",

@@ -19,7 +19,9 @@
     "data:investments:sample": "node scripts/sample-investments.mjs",
     "data:preview": "node scripts/preview-sample-data.mjs",
     "data:import": "node --env-file=.env.local scripts/import-sample-data.mjs",
-    "check": "npm test && npm run typecheck && npm run build"
+    "check": "npm test && npm run typecheck && npm run build",
+    "data:funds:sample": "node scripts/run-typescript.mjs scripts/sample-funds.ts",
+    "data:funds:import": "node --env-file=.env.local scripts/run-typescript.mjs scripts/import-funds.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

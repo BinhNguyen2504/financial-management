@@ -13,4 +13,6 @@ Module `investments/` quản lý tổng danh mục VND và nhiều ví tiền ch
 
 ## Bổ sung backup toàn tài khoản — 18/10/2026
 
-Module `backup/` định nghĩa FullBackupV1, allowlist 28 bảng, schema nghiêm ngặt và kiểm tra liên kết/replay trước khôi phục. Domain không đọc DB/Auth; `profile.ts` giữ validator hồ sơ dùng chung. Xem `docs/features/backup.md`.
+Module `backup/` định nghĩa FullBackup V2, allowlist 35 bảng (nhận cả V1), schema nghiêm ngặt và kiểm tra liên kết/replay trước khôi phục. Domain không đọc DB/Auth; `profile.ts` giữ validator hồ sơ dùng chung. Xem `docs/features/backup.md`.
+
+Module `funds/` tính living expense, mục tiêu, số dư theo quỹ/nơi giữ và replay phiên bản giao dịch bằng BigInt; source Chi tiêu chỉ đọc. Validate dựng lại audit trước restore.

@@ -1,5 +1,15 @@
 # Xử lý lỗi phát triển local
 
+## Chi tiêu báo STORAGE_UNAVAILABLE khi thiếu migration logo — 20/10/2026
+
+Trên cấu hình local được kiểm tra ngày 20/10, kết nối PostgreSQL thành công nhưng bảng `expense_labels` thiếu `brand_key` và `icon_key`. Truy vấn dùng trực tiếp cột mới trả PostgreSQL `42703` (undefined column), được API chuyển thành `STORAGE_UNAVAILABLE`. Đây là kết quả kiểm tra schema và truy vấn chỉ đọc, không phải suy đoán từ ảnh lỗi mạng.
+
+Source đã sửa để đọc metadata tùy chọn qua JSON của hàng và lưu theo schema thực tế: hũ và phân loại không có logo/icon tùy chọn vẫn sử dụng được. Tải lại `/budgets` hoặc nhấn **Thử tải lại** trên dev server đang chạy source hiện tại. Nếu đang chạy `npm start`, cần build lại bản source mới trước khi khởi động lại.
+
+Để lưu logo/icon tùy chọn, áp dụng **một lần** file `supabase/migrations/202610190002_label_visuals.sql` bằng kết nối migration/admin hoặc Supabase SQL Editor, sau các migration trước đó. File chỉ thêm hai cột nullable và ràng buộc độ dài, không seed/reset dữ liệu. App không tự thực thi migration và không cần cấp CREATE cho `expense_api`. Nếu chưa áp dụng, thao tác lưu metadata báo `LABEL_VISUALS_MIGRATION_REQUIRED` và giữ bản nháp thay vì âm thầm bỏ logo/icon.
+
+Không mặc định mọi `STORAGE_UNAVAILABLE` đều do migration này: nếu lỗi vẫn còn với source mới, tiếp tục kiểm tra kết nối/schema tương ứng. Local có thể dùng database cloud qua `.env.local`; vị trí chạy app không chứng minh database cũng là local. Lượt sửa này không ghi dữ liệu hoặc migrate database đang cấu hình, không deploy và không kiểm tra phiên trình duyệt thật của người dùng.
+
 ## Hydration mismatch với `cz-shortcut-listen="true"`
 
 Ảnh lỗi ngày 15/10/2026 chỉ ra thuộc tính ngoài dự kiến trên `<body>`:

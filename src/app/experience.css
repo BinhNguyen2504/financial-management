@@ -1,0 +1,685 @@
+/* Shared interaction rules: keep this last so component shorthands cannot erase select clearance. */
+:root {
+  --warning: #805414;
+  --warning-soft: #fff3d7;
+  --danger: #a33e36;
+  --danger-soft: #fff0ed;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --warning: #efc67b;
+    --warning-soft: #40351f;
+    --danger: #f5a39a;
+    --danger-soft: #422c29;
+  }
+}
+:root[data-theme="dark"] {
+  --warning: #efc67b;
+  --warning-soft: #40351f;
+  --danger: #f5a39a;
+  --danger-soft: #422c29;
+}
+.app-shell .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.desktop-label {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  margin-right: auto;
+  color: var(--text);
+  font-weight: 850;
+  font-size: 19px;
+  letter-spacing: -0.5px;
+}
+.desktop-label svg {
+  color: var(--primary);
+}
+.navigation a {
+  position: relative;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-content: center;
+}
+.navigation .navigation-name {
+  flex: 1;
+}
+.development-tag {
+  margin-left: 30px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 750;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.icon-action {
+  display: inline-flex;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--primary);
+  vertical-align: middle;
+}
+.icon-action:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+}
+.action-delete,
+.expense-danger {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--border));
+  background: var(--danger-soft);
+}
+.action-stop,
+.expense-warning {
+  color: var(--warning);
+  background: var(--warning-soft);
+  border-color: color-mix(in srgb, var(--warning) 40%, var(--border));
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.theme-picker {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.theme-picker legend {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.theme-picker > p {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.theme-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.theme-options label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  min-height: 56px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.theme-options label:has(:checked) {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+.theme-options input {
+  accent-color: var(--primary);
+  width: 18px;
+  height: 18px;
+}
+.settings-appearance {
+  margin-block: 24px;
+}
+.expense-form label,
+.investment-form label,
+.savings-form label,
+.profile-field {
+  position: relative;
+}
+.required-mark {
+  color: var(--danger);
+  font-weight: 900;
+}
+label:has(> :is(input, select, textarea)[required]) {
+  padding-top: 0;
+}
+label:has(> :is(input, select, textarea)[required])::after {
+  content: "Bắt buộc";
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 10px;
+  line-height: 20px;
+  font-weight: 750;
+  color: var(--danger);
+  background: var(--surface);
+  padding-left: 8px;
+}
+label:has(> :is(input, select, textarea)[required]) {
+  padding-right: 0;
+}
+.field-error,
+.form-field-error {
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 650;
+  display: block;
+  margin-top: 6px;
+}
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"],
+[data-invalid="true"] input {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 1px var(--danger);
+  background-color: var(--danger-soft) !important;
+}
+.form-error-summary {
+  padding: 16px;
+  border: 1px solid var(--danger);
+  border-radius: 12px;
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+.form-error-summary strong {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.form-error-summary ul {
+  padding-left: 22px;
+  margin: 8px 0 0;
+}
+.form-error-summary a {
+  text-decoration: underline;
+}
+.expense-notice,
+.data-warning {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--warning) 40%, var(--border));
+  border-radius: 12px;
+  color: var(--warning);
+  background: var(--warning-soft);
+  font-weight: 650;
+}
+.data-warning a,
+.data-warning button {
+  text-decoration: underline;
+  font-weight: 800;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
+}
+.status-missing {
+  color: var(--warning);
+  background: var(--warning-soft);
+  border-color: color-mix(in srgb, var(--warning) 40%, var(--border));
+}
+.status-inactive {
+  color: var(--muted);
+  background: var(--surface-alt);
+}
+.income-item.is-inactive {
+  background: var(--surface-alt);
+  border-style: dashed;
+}
+.income-item.is-missing {
+  border-left: 4px solid var(--warning);
+  background: color-mix(in srgb, var(--warning-soft) 45%, var(--surface));
+}
+.income-item.is-oneoff {
+  border-left: 4px solid var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 50%, var(--surface));
+}
+.income-configuration-note {
+  margin: 0 0 24px;
+  max-width: 75ch;
+}
+.income-list + .expense-section-heading {
+  margin-top: 32px;
+}
+.income-filters {
+  align-items: end;
+}
+.income-select:has(select option[value="custom"]) {
+  min-width: min(100%, 230px);
+}
+.income-select:has(select:disabled),
+.income-select:has(select option[value="columns"]) {
+  min-width: min(100%, 220px);
+}
+:is(
+    .expense-form,
+    .expense-filters,
+    .income-select,
+    .income-filters,
+    .dialog-filters,
+    .savings-workspace,
+    .investment-workspace,
+    .profile-form,
+    .funds-workspace
+  )
+  select:not([multiple]) {
+  padding-right: 38px;
+  min-width: 0;
+  min-height: 44px;
+  width: 100%;
+  text-overflow: ellipsis;
+}
+.income-select select {
+  max-width: none;
+}
+.income-missing-list {
+  display: grid;
+  gap: 8px;
+  margin-block: 16px 24px;
+}
+.income-missing-list button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  text-align: left;
+}
+.income-missing-cell {
+  width: 100%;
+  min-height: 44px;
+  color: var(--warning);
+  border: 1px dashed var(--warning);
+  border-radius: 8px;
+  background: var(--warning-soft);
+  font: inherit;
+  font-weight: 800;
+}
+.income-missing-cell:hover {
+  background: color-mix(in srgb, var(--warning) 15%, var(--warning-soft));
+}
+.dialog-data-table :is(th, td) {
+  vertical-align: middle;
+}
+.dialog-data-table .is-numeric {
+  white-space: nowrap;
+}
+.dialog-data-table .is-actions {
+  width: 112px;
+  text-align: center;
+}
+.dialog-data-table .is-actions .expense-actions {
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+.dialog-data-table .is-date {
+  width: 132px;
+  white-space: nowrap;
+}
+.dialog-tabs button {
+  color: var(--text);
+  font-weight: 750;
+  border-color: var(--border);
+}
+.dialog-tabs button[aria-selected="true"] {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: inset 0 -2px var(--primary);
+}
+.dialog-tabs-content {
+  min-height: min(460px, 50dvh);
+}
+.dialog-stable-tabs {
+  height: min(720px, calc(100dvh - 32px));
+}
+.dialog-stable-tabs .dialog-body {
+  flex: 1;
+}
+.column-table {
+  min-width: 0;
+}
+.column-picker {
+  width: fit-content;
+  margin: 0 0 12px auto;
+  font-size: 13px;
+}
+.column-picker summary {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 12px;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--primary);
+  font-weight: 750;
+  list-style: none;
+}
+.column-picker-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 16px;
+  max-width: 700px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 12px;
+  margin-top: 8px;
+}
+.column-picker-options p {
+  width: 100%;
+  color: var(--muted);
+}
+.column-picker-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--text);
+  font-weight: 650;
+}
+.column-picker-options input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+.column-picker-options small {
+  color: var(--muted);
+}
+.install-platforms {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-block: 16px 24px;
+}
+.install-platforms button[aria-pressed="true"] {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.install-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 0;
+  list-style: none;
+  counter-reset: steps;
+}
+.install-steps li {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  counter-increment: steps;
+}
+.install-steps h3::before {
+  content: counter(steps);
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 14px;
+}
+.install-steps svg {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  margin: 16px auto 0;
+}
+.install-steps p {
+  margin-top: 8px;
+  color: var(--muted);
+}
+@media (min-width: 960px) {
+  html[data-sidebar="collapsed"] {
+    --sidebar-width: 80px;
+  }
+  html[data-sidebar="collapsed"] .sidebar {
+    padding-inline: 12px;
+  }
+  html[data-sidebar="collapsed"]
+    .sidebar
+    :is(.navigation-name, .development-tag, .nav-label, .sidebar-note),
+  html[data-sidebar="collapsed"] .brand > span:last-child {
+    display: none;
+  }
+  html[data-sidebar="collapsed"] .brand {
+    padding-inline: 0;
+    justify-content: center;
+  }
+  html[data-sidebar="collapsed"] .navigation a {
+    justify-content: center;
+    padding-inline: 10px;
+  }
+  html[data-sidebar="collapsed"] .navigation a:has(.development-tag)::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    position: absolute;
+    right: 7px;
+    top: 8px;
+  }
+}
+@media (max-width: 959px) {
+  .sidebar-toggle,
+  .desktop-label {
+    display: none;
+  }
+  .app-shell .topbar {
+    flex-wrap: nowrap;
+  }
+  .app-shell .mobile-brand {
+    margin-right: auto;
+    font-size: 15px;
+  }
+}
+@media (max-width: 640px) {
+  .install-steps {
+    grid-template-columns: 1fr;
+  }
+  .theme-options label {
+    flex: 1 1 100%;
+  }
+  .income-select {
+    width: 100%;
+  }
+  .income-filters {
+    gap: 16px;
+  }
+  .income-item > .expense-actions {
+    min-width: 0;
+  }
+  .dialog-data-table .is-date {
+    width: auto;
+  }
+  .dialog-data-table .is-numeric {
+    white-space: normal;
+  }
+  .column-picker {
+    margin-right: 0;
+  }
+  .footer {
+    gap: 8px;
+  }
+}
+
+.savings-chart-interactive {
+  position: relative;
+  min-width: 0;
+}
+.savings-chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  display: grid;
+  gap: 5px;
+  width: min(260px, calc(100% - 16px));
+  padding: 12px 14px;
+  transform: translateY(calc(-100% - 12px));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 6px 20px #0002;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.savings-chart-tooltip span {
+  color: var(--muted);
+}
+
+.income-chart [data-tooltip-key] {
+  cursor: pointer;
+}
+.income-chart [data-active] .income-bar {
+  fill: var(--accent);
+}
+.income-missing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.label-visual {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--primary);
+}
+.label-visual:has(img) {
+  background: #fff;
+}
+.label-visual img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.label-name {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.label-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.label-select select {
+  flex: 1;
+}
+.form-field > label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.column-table table :is(th, td)[data-column-kind="money"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.column-table table :is(th, td)[data-column-kind="text"]:not(.is-numeric) {
+  text-align: left;
+}
+.column-table table :is(th, td)[data-column-kind="actions"] {
+  text-align: center;
+}
+.column-table table td[data-column-kind="actions"] .expense-actions {
+  justify-content: center;
+}
+.expense-desktop-table .column-table table {
+  min-width: calc(200px + var(--visible-columns) * 115px);
+}
+.emoji-search {
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.emoji-search input {
+  width: 100%;
+}
+
+.income-table-wrap {
+  scroll-padding-inline: 170px 16px;
+}
+.income-table :is(button, a) {
+  scroll-margin-block: 110px 24px;
+  scroll-margin-inline: 170px 24px;
+}
+@media (max-width: 650px) {
+  .income-table-wrap {
+    scroll-padding-inline-start: 150px;
+  }
+}
+
+.expense-section-heading {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.income-chart .expense-section-heading {
+  align-items: end;
+}
+@media (max-width: 400px) {
+  .income-workspace .income-period-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .income-period-controls > button {
+    grid-row: 2;
+    width: 44px;
+  }
+  .income-period-controls > button:nth-last-child(2) {
+    justify-self: end;
+  }
+}
+
+.income-table small.status-missing {
+  color: var(--warning);
+  font-weight: 800;
+  padding: 4px 8px;
+  margin-top: 6px;
+}
+
+.column-table,
+.income-missing-cell {
+  position: relative;
+}
+
+.income-item h3:has(svg) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

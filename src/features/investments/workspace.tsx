@@ -1,4 +1,7 @@
 "use client";
+import { HelpButton, HelpPageTitle } from "@/features/help/provider";
+import { Pencil as EditCommandGlyph } from "lucide-react";
+import { ColumnTable } from "@/components/column-table";
 import { LoadingStatus } from "@/components/loading";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -228,7 +231,7 @@ export function InvestmentWorkspace({
       <header className="investment-heading">
         <div>
           <p className="eyebrow">Vốn và giá trị hiện tại</p>
-          <h1>Đầu tư</h1>
+          <HelpPageTitle>Đầu tư</HelpPageTitle>
           <p className="lead">
             Theo dõi từng danh mục, giữ rõ dòng tiền và những thay đổi theo thời
             gian.
@@ -388,8 +391,16 @@ export function InvestmentWorkspace({
                       <>
                         <section className="panel investment-desktop">
                           <h2>Danh mục đầu tư</h2>
+                          <HelpButton
+                            pageId="investments"
+                            sectionId="profit"
+                            label="Hiểu kết quả đầu tư"
+                          />
                           <div className="investment-table-scroll">
-                            <table className="investment-table">
+                            <ColumnTable
+                              tableId="investments-workspace-1"
+                              className="investment-table"
+                            >
                               <thead>
                                 <tr>
                                   <th>Danh mục</th>
@@ -424,7 +435,7 @@ export function InvestmentWorkspace({
                                     </tr>
                                   ))}
                               </tbody>
-                            </table>
+                            </ColumnTable>
                           </div>
                         </section>
                         <div className="investment-mobile investment-card-grid">
@@ -434,6 +445,11 @@ export function InvestmentWorkspace({
                         </div>
                         <section className="panel">
                           <h2>Ví tiền chờ</h2>
+                          <HelpButton
+                            pageId="investments"
+                            sectionId="portfolio"
+                            label="Tiền chờ là gì?"
+                          />
                           {wallets.filter((p) => p.active).length ? (
                             wallets
                               .filter((p) => p.active)
@@ -614,6 +630,10 @@ export function InvestmentWorkspace({
                                   open({ type: "configure", categoryId: c.id })
                                 }
                               >
+                                <EditCommandGlyph
+                                  size={17}
+                                  aria-hidden="true"
+                                />
                                 Sửa
                                 <span className="sr-only"> {name(c.id)}</span>
                               </button>

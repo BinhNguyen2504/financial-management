@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { brandKeys, labelIconKeys } from "./label-visuals";
 import { EMOJI_VALUES } from "./emoji";
 
 export const moneySchema = z
@@ -89,6 +90,8 @@ export const expenseActionSchema = z.discriminatedUnion("type", [
       id,
       kind: z.enum(["method", "group"]),
       name,
+      brandKey: z.enum(brandKeys).nullable().optional(),
+      iconKey: z.enum(labelIconKeys).nullable().optional(),
     })
     .strict(),
   z.object({ type: z.literal("deleteLabel"), id }).strict(),

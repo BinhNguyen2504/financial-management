@@ -1,3 +1,4 @@
+import { postgresFundRepository } from "./fund-repository";
 import "server-only";
 import postgres from "postgres";
 import { postgresDataRepository } from "./data-repository";
@@ -34,4 +35,8 @@ export function savingsRepository() {
 
 export function investmentRepository() {
   return postgresInvestmentRepository(databaseConnection());
+}
+
+export function fundRepository() {
+  return postgresFundRepository(databaseConnection());
 }

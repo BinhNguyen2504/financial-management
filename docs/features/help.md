@@ -1,0 +1,42 @@
+# Help theo từng trang
+
+Triển khai trong source ngày 20/10/2026. Help phục vụ người quản lý tài chính cá nhân, kể cả người mới; nội dung tiếng Việt, theo định hướng sản phẩm đã duyệt. Phạm vi 12 trang trong app: Tổng quan, Chi tiêu, Thu nhập, Tiết kiệm, Đầu tư, Quỹ an toàn, Cài đặt, Hồ sơ, Thu & chi, Tài khoản, Mục tiêu và Báo cáo.
+
+## Cách dùng
+
+Mở **Hướng dẫn** cạnh tiêu đề trang để đọc bài của trang hiện tại. Bảng nằm bên phải trên desktop (tối đa 640px), toàn màn hình dưới 768px. Mục lục đưa đến mục cần đọc; nút đóng luôn nhìn thấy. Các nút **Giải thích** cạnh tiêu đề hoặc trong form mở đúng thuật ngữ/tác vụ. Đóng Help bằng nút, Escape hoặc nền quay lại form với bản nháp, bộ lọc, vị trí cuộn còn nguyên. Không tự bật khi vào trang. Đổi route đóng Help và đặt lại mục đọc.
+
+Mỗi bài gồm: mục đích/đối tượng, tư duy sử dụng, thuật ngữ, hướng dẫn theo tác vụ, ví dụ minh họa và điểm dễ hiểu nhầm. Tác vụ gồm khi nào dùng, bước thao tác và kết quả/lưu ý. Các trang đang phát triển giới thiệu phạm vi dự kiến và chỉ đến chức năng hiện có, không giả thao tác chưa triển khai.
+
+## Phân cấp nội dung và chuyển động
+
+Cập nhật theo phản hồi ngày 20/10/2026: nút Hướng dẫn dùng biểu tượng sách và chữ nhẹ cạnh tiêu đề, giữ đầy đủ nhãn trên điện thoại. Sáu mục lớn có số 01–06, mục con dùng 3.1/4.1… và đường phân cách. Tư duy sử dụng có khối xanh dịu, ví dụ có nền riêng, điểm dễ nhầm có biểu tượng và nền màu đất. Từ khóa, quy tắc và số tiền minh họa được nhấn đậm hoặc màu theo theme; không dùng màu làm dấu hiệu duy nhất.
+
+Bảng trượt vào từ phải trong 280ms, thu về trong 220ms; nền mờ chuyển cùng nhịp. Đóng khi đang mở tiếp tục từ vị trí hiện tại. Help giữ lớp modal và khóa cuộn đến hết hiệu ứng, rồi mới trả focus; có timeout dự phòng 300ms nếu không nhận animationend. Reduced motion bỏ hiệu ứng và đóng ngay. Đổi route gỡ bảng ngay, không giữ animation cũ.
+
+Nội dung source hỗ trợ hai dấu nhấn có chủ đích: `**ý quan trọng**` và `==số liệu/quy tắc nổi bật==`. Renderer chỉ tạo strong/span bằng React, không diễn giải HTML hoặc link. Giữ nguyên định nghĩa quỹ dùng chung.
+
+## Nội dung và phạm vi
+
+- **Tổng quan:** đọc chỉ số tháng, hiện chỉ tổng hợp Chi tiêu.
+- **Chi tiêu:** chia trước, chi sau; hũ là mục đích, phương thức là nơi/kênh giữ và chi, nhóm gom mục đích. Ghi rõ quy ước ngân hàng/ví/tiền mặt do người dùng tuân thủ, app không chuyển tiền thật. Đủ khởi tạo, phân loại, cấu hình, điều chỉnh, sử dụng, ngừng cấp, lịch sử, báo cáo và chốt năm.
+- **Thu nhập:** thực nhận, nguồn cố định khác số tiền cố định, phát sinh một lần, chưa nhập khác 0, số tháng lưu thay thế; quản lý, nhập bổ sung và báo cáo.
+- **Tiết kiệm/Đầu tư:** tách mở đầu, tiền góp và lãi/lỗ; chuyển nội bộ không sinh lợi nhuận, định giá có ngày. Mô tả đúng loại tài sản/giao dịch hiện có, sửa/hủy, lưu trữ và báo cáo; chốt/mở lại thuộc Tiết kiệm.
+- **Quỹ an toàn:** dùng chung định nghĩa với `funds/content.ts`, hệ số người dùng chọn, nguồn sinh hoạt xác nhận trước khi áp dụng, số dư độc lập và nơi giữ.
+- **Cài đặt/Hồ sơ:** sao lưu/khôi phục vào tài khoản trống, hồ sơ tùy chọn, file đầy đủ số liệu, giao diện, cài màn hình chính và trường hồ sơ có thể chỉnh.
+
+Ví dụ có nhãn Minh họa, dùng số liệu cố định, không truy cập dữ liệu người dùng. Nội dung không nâng trạng thái module, không hứa kết nối ngân hàng, ghi offline hay tài sản ròng. Không lưu phiên Help hoặc bản nháp vào storage.
+
+## Cấu trúc kỹ thuật
+
+`src/features/help/` có `types.ts`, `registry.ts`, `content.ts`, `provider.tsx`, `text.tsx` và stylesheet. `HelpPageId` lấy slug catalog cộng profile; registry lấy tên/trạng thái từ catalog. Section/item có ID ổn định; `openHelp(pageId, sectionId?)` dùng chung với `HelpButton`. Nội dung tải bằng dynamic import khi mở, có trạng thái tải/lỗi/thử lại, không phụ thuộc API tài chính. Mục lục không thay URL.
+
+Controller nằm trong SessionBoundary. Help mở bằng biến thể của ExpenseModal để dùng cùng stack, inert, khóa cuộn và phục hồi focus. Nội dung giữ trong bundle source, không thêm API, database hay CMS. Mỗi trang private vẫn await pageAccess.
+
+Public landing có FAQ dùng mô tả chung trong catalog; preview dùng phần giải thích rút gọn cố định cho năm tab, không mount controller của app hoặc gọi API tài chính.
+
+## Duy trì và kiểm chứng
+
+Khi thêm trang hoặc đổi nghiệp vụ, cập nhật bài tương ứng, ID tại điểm tra cứu và catalog nếu phạm vi thay đổi. Đối chiếu tên nút với UI, đặc biệt Lưu trực tiếp so với Xem trước/Xác nhận. Kiểm thử contract phát hiện thiếu bài/mục, trùng ID và khác biệt định nghĩa quỹ.
+
+Browser tests trong `tests/browser/help.spec.ts` bao phủ đủ trang, không gọi API khi mở Help, dialog lồng nhau, định tuyến, lỗi API và tải chunk, theme, viewport, bàn phím, chữ lớn và preview công khai. Kết quả chạy thực tế, môi trường và giới hạn được bổ sung tại [validation](../07-validation.md).

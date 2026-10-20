@@ -71,3 +71,11 @@ Trong lúc chuẩn bị bộ mẫu Đầu tư cho cùng tài khoản, đọc qua
 ## Giao diện chi tiết — 18/10/2026
 
 Chi tiết tiền/ví ưu tiên số dư và lịch sử có tiền, chiều biến động, nguồn/đích. Vàng tách Đợt vàng/Giao dịch, tiền gửi tách Sổ tiền gửi/Giao dịch; có lọc hiện tại/tất cả và 20 dòng/trang. Lịch sử cùng ngày chốt số dư đang xem; xem/sửa/hủy giao dịch qua dialog con giữ vị trí. Lãi tái tục và giá vốn vàng được ghi đúng nhãn, không suy dấu thu/chi từ effect.net. Xem [quy chuẩn dialog](ui-feedback.md).
+
+## Help theo ngữ cảnh — 20/10/2026
+
+Hướng dẫn tiền/ví, sổ gửi, vàng, mở đầu, chuyển nội bộ, định giá, sửa/hủy, chốt/mở lại và báo cáo. Không coi tổng Tiết kiệm là tài sản ròng. Xem [Help theo từng trang](help.md).
+
+## Quy chuẩn giao diện dùng chung — 20/10/2026
+
+Bảng rộng có lựa chọn cột lưu trên trình duyệt. Form có dấu bắt buộc, lỗi tại trường và tổng hợp lỗi có thể đưa focus về trường cần sửa; Hủy/Lưu có icon. Form sửa chưa thay đổi hoặc đã hoàn tác về ban đầu vô hiệu thao tác lưu/xem trước. Tiền nguyên được chuẩn hóa khi blur/submit, không áp dụng quy tắc số nguyên cho lượng vàng. Tooltip dùng thành phần chung, hỗ trợ hover, bàn phím, chạm và cập nhật theo Privacy Mode. Xem [đối chiếu phản hồi toàn ứng dụng](interface-feedback-2026-10-19.md).

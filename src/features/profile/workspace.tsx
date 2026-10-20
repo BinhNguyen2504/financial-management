@@ -1,9 +1,12 @@
 "use client";
+import { HelpPageTitle } from "@/features/help/provider";
 import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 
 import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
 import type { User } from "@supabase/supabase-js";
+import { BackButton } from "@/components/back-button";
+import { comparable } from "@/lib/form-values";
 import { Save } from "lucide-react";
 import { browserAuth } from "@/lib/supabase/browser";
 import { useUser } from "./user-provider";
@@ -18,10 +21,11 @@ export function ProfileWorkspace() {
   const { user, configured, loading, error, reload } = useUser();
   return (
     <div className="profile-workspace">
+      <BackButton />
       <div className="expense-page-heading">
         <div>
           <p className="eyebrow">KHÔNG GIAN CỦA BẠN</p>
-          <h1>Thông tin cá nhân</h1>
+          <HelpPageTitle>Thông tin cá nhân</HelpPageTitle>
           <p className="lead">
             Một vài thông tin cơ bản để làm quen và giữ liên lạc.
           </p>
@@ -131,9 +135,16 @@ function ProfileForm({ user }: { user: User }) {
       >
         <fieldset disabled={busy}>
           <div className="profile-field">
-            <label htmlFor="profile-name">Họ và tên</label>
+            <label htmlFor="profile-name">
+              Họ và tên
+              <span className="required-mark" aria-hidden="true">
+                {" "}
+                *
+              </span>
+            </label>
             <input
               id="profile-name"
+              aria-label="Họ và tên"
               name="full_name"
               autoComplete="name"
               maxLength={100}
@@ -210,7 +221,15 @@ function ProfileForm({ user }: { user: User }) {
           Ngày sinh và giới tính là thông tin tùy chọn.
         </p>
         <div className="expense-actions">
-          <button aria-busy={busy} className="expense-primary" disabled={busy}>
+          <button
+            aria-busy={busy}
+            className="expense-primary"
+            disabled={
+              busy ||
+              comparable(fields) ===
+                comparable(profileFields(user.user_metadata))
+            }
+          >
             {busy ? <LoadingSpinner /> : <Save size={18} aria-hidden="true" />}
             {busy ? "Đang lưu…" : "Lưu thông tin"}
           </button>

@@ -45,13 +45,14 @@ export default function PublicLayout({
             Financial Manager
           </Link>
           <p>Từ nhu cầu thật. Cho từng ngày rõ ràng hơn.</p>
+          <p>Quản lý tài chính trên web và thiết bị di động.</p>
         </div>
         <div>
           <a href="/#dang-phat-trien">Đang phát triển</a>
           <Link href="/overview" prefetch={false}>
             Mở không gian của bạn <ArrowUpRight size={15} aria-hidden="true" />
           </Link>
-          <span>Tiếng Việt · VND</span>
+          <span>© 2026 Bình Nguyễn · Tiếng Việt · VND</span>
         </div>
       </footer>
     </div>

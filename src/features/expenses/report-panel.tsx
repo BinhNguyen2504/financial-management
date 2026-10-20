@@ -1,4 +1,5 @@
 "use client";
+import { ColumnTable } from "@/components/column-table";
 import { useState } from "react";
 import type { ExpenseView } from "@/domain/expenses/types";
 import { buildReport } from "@/domain/expenses/reports";
@@ -186,7 +187,7 @@ export function ExpenseReports({
         />
       ) : (
         <div className="expense-table-scroll">
-          <table>
+          <ColumnTable tableId="expenses-report-panel-1">
             <caption className="sr-only">
               Báo cáo chi tiêu năm {view.currentYear}, tháng {from} đến {to},
               đơn vị VND
@@ -229,7 +230,7 @@ export function ExpenseReports({
                 </tr>
               ))}
             </tbody>
-          </table>
+          </ColumnTable>
           {!items.length && (
             <p className="expense-empty">Chưa có dữ liệu cho bộ lọc này.</p>
           )}

@@ -314,6 +314,9 @@ test("investment edit saves back into the transaction and category without losin
     .getAttribute("aria-labelledby");
   const editor = page.locator(`dialog[aria-labelledby="${editorId}"]`);
   await editor
+    .getByLabel("Ghi chú giao dịch", { exact: true })
+    .fill("Ghi chú mẫu cập nhật để kiểm thử giữ ngữ cảnh");
+  await editor
     .getByLabel("Lý do sửa / hủy", { exact: true })
     .fill("Kiểm thử giữ ngữ cảnh");
   await editor

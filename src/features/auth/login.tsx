@@ -1,4 +1,5 @@
 "use client";
+import { FormErrorSummary, nativeErrors } from "@/components/form-feedback";
 import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
@@ -14,6 +15,7 @@ export function Login({
   confirmationError?: boolean;
   returnTo?: string;
 }) {
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
   const [sent, setSent] = useState(false);
@@ -27,8 +29,17 @@ export function Login({
       ? "Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Hãy yêu cầu email mới."
       : "",
   );
-  async function submit(event: FormEvent) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
+    const invalid = nativeErrors(form);
+    setFieldErrors(invalid);
+    if (Object.keys(invalid).length) {
+      requestAnimationFrame(() =>
+        form.querySelector<HTMLElement>(".form-error-summary")?.focus(),
+      );
+      return;
+    }
     setBusy(true);
     setError("");
     setMessage("");
@@ -89,22 +100,43 @@ export function Login({
             bắt đầu sử dụng.
           </p>
         ) : (
-          <form onSubmit={submit} className="expense-form">
+          <form onSubmit={submit} className="expense-form" noValidate>
+            <FormErrorSummary errors={fieldErrors} prefix="login-field-" />
             <label>
               Email
               <input
+                id="login-field-email"
+                name="email"
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={
+                  fieldErrors.email ? "login-error-email" : undefined
+                }
                 type="email"
                 required
                 autoComplete="email"
                 value={email}
                 disabled={!ready || sent || busy}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setFieldErrors((previous) => ({ ...previous, email: "" }));
+                }}
               />
+              {fieldErrors.email && (
+                <small id="login-error-email" className="field-error">
+                  {fieldErrors.email}
+                </small>
+              )}
             </label>
             {sent && (
               <label>
                 Mã xác nhận
                 <input
+                  id="login-field-token"
+                  name="token"
+                  aria-invalid={!!fieldErrors.token}
+                  aria-describedby={
+                    fieldErrors.token ? "login-error-token" : undefined
+                  }
                   type="text"
                   required
                   autoComplete="one-time-code"
@@ -113,6 +145,11 @@ export function Login({
                   disabled={!ready || busy}
                   onChange={(e) => setToken(e.target.value)}
                 />
+                {fieldErrors.token && (
+                  <small id="login-error-token" className="field-error">
+                    {fieldErrors.token}
+                  </small>
+                )}
               </label>
             )}
             <button

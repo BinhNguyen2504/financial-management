@@ -1,16 +1,16 @@
 # Landing và xác thực truy cập
 
-Cập nhật 17/10/2026. Landing tiếng Việt ở `/`, dành cho mọi người; tên Financial Manager, hướng sản phẩm tinh tế và câu chuyện công cụ từ nhu cầu thật.
+Cập nhật 19/10/2026. Landing tiếng Việt ở `/`, dành cho mọi người; tên Financial Manager, hướng sản phẩm tinh tế và câu chuyện công cụ từ nhu cầu thật.
 
 ## Nội dung và trạng thái
 
-Hero → preview → Thu nhập/Chi tiêu/Tiết kiệm → câu chuyện → trạng thái phát triển/FAQ → CTA. Nền kem, xanh xô thơm, Nunito, dark mode hệ thống, Lucide/SVG và reduced motion. Không bịa người dùng, lời chứng thực, tiểu sử hay hứa hẹn lợi ích đầu tư.
+Hero → preview → Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn → câu chuyện → trạng thái phát triển/FAQ → CTA. Nền kem, xanh xô thơm, Nunito, dark mode hệ thống, Lucide/SVG và reduced motion. Không bịa người dùng, lời chứng thực, tiểu sử hay hứa hẹn lợi ích đầu tư.
 
-`src/features/catalog.ts` giữ tên, mô tả và trạng thái module: `implemented`, `partial`, `planned`. Thu nhập/Chi tiêu/Tiết kiệm có triển khai; Tổng quan và Thiết lập có một phần. Trạng thái này nói về source, không chứng minh đã triển khai cloud. Không quảng bá tài sản ròng toàn hệ thống, kết nối ngân hàng hoặc ghi dữ liệu offline như chức năng hiện có.
+`src/features/catalog.ts` giữ tên, mô tả và trạng thái module: `implemented`, `partial`, `planned`. Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn có triển khai; Tổng quan và Thiết lập có một phần. Trạng thái này nói về source, không chứng minh đã triển khai cloud. Không quảng bá tài sản ròng toàn hệ thống, kết nối ngân hàng hoặc ghi dữ liệu offline như chức năng hiện có.
 
 ## Preview
 
-Bốn tab Thu nhập, Chi tiêu, Tiết kiệm và Đầu tư, mở đầu Chi tiêu. Có nhãn Dữ liệu minh họa, tháng cố định 06/2026 và số liệu cố định. Không gọi API tài chính, dùng workspace thật, đọc tài khoản hoặc ghi dữ liệu. Chuyển tab bằng click/mũi tên/Home/End; nút che tiền chỉ tác động preview, không lưu localStorage, giữ hình dạng biểu đồ. Giá trị bị che được loại khỏi nội dung hiển thị và accessibility tree.
+Năm tab Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn, mở đầu Chi tiêu. Có nhãn Dữ liệu minh họa, tháng cố định 06/2026 và số liệu cố định. Không gọi API tài chính, dùng workspace thật, đọc tài khoản hoặc ghi dữ liệu. Chuyển tab bằng click/mũi tên/Home/End; nút che tiền chỉ tác động preview, không lưu localStorage, giữ hình dạng biểu đồ. Giá trị bị che được loại khỏi nội dung hiển thị và accessibility tree.
 
 Đổi giao diện sản phẩm thì rà soát preview cùng thay đổi. Đây là mô phỏng gọn, không phải sandbox thực thi đầy đủ nghiệp vụ. Nội dung và preview mặc định render phía server; chuyển tab/form cần JavaScript.
 
@@ -58,3 +58,26 @@ Rà soát copy/preview cùng sửa Cài đặt: FAQ nhắc liên kết lưu tr�
 
 
 Ngày 18/10/2026 rà soát cùng thay đổi dialog: catalog bổ sung khả năng đọc chi tiết/lịch sử; copy landing và preview nhấn mạnh số liệu chính, nhãn bảng và ngày định giá. Preview vẫn chỉ minh họa cố định, chuyển tab/che tiền; không mô phỏng đầy đủ dialog và không gọi API tài chính.
+
+
+### Rà soát cập nhật ngầm — 19/10/2026
+
+Đã đối chiếu catalog, copy landing và preview với thay đổi quay lại ứng dụng: khả năng tài chính, trạng thái module và số liệu minh họa không đổi. Không quảng bá đồng bộ tức thời; Tổng quan/Chi tiêu/Thu nhập kiểm tra khi quay lại theo độ mới của dữ liệu. Preview vẫn chuyển tab bằng hằng số và không đăng ký cơ chế foreground hoặc gọi API tài khoản. README, kiến trúc, hướng UX và đặc tả phản hồi/Thu nhập/Chi tiêu cập nhật cùng source.
+
+
+## Preview Quỹ an toàn — 19/10/2026
+
+Preview có thêm tab Quỹ an toàn với bộ số liệu cố định: living expense 9 triệu, Emergency 27/54 triệu, Rainy Day 6,75/9 triệu, Sinking 9/18 triệu, tổng dự phòng 42,75 triệu. Cây Emergency ở 50%; hỗ trợ ẩn tiền và điều hướng tab bằng phím. Không đọc account API.
+
+## Đồng bộ giao diện — 19/10/2026
+
+Landing/login dùng cùng lựa chọn theme trên trình duyệt. Preview vẫn cố định, phân biệt nhãn thu cố định/phát sinh và giới thiệu nhắc khoản thiếu; không truy cập API tài chính. Footer giới thiệu hỗ trợ web/thiết bị di động và copyright Bình Nguyễn. Catalog cập nhật mô tả Thu nhập/Cài đặt và nhãn planned.
+
+## Giới thiệu Help — 20/10/2026
+
+FAQ giải thích cách dùng Hướng dẫn và giữ bản nháp khi tra cứu. Preview có phụ lục thu gọn riêng cho từng tab, nội dung cố định và nhãn minh họa rút gọn; không dùng HelpProvider của workspace, không đọc dữ liệu tài khoản hoặc API tài chính. Catalog thêm mô tả khả năng hướng dẫn dùng chung, giữ nguyên trạng thái module.
+
+
+### Trình bày Help — 20/10/2026
+
+FAQ/catalog mô tả vị trí mới cạnh tiêu đề; phụ lục preview nói rõ mục lục đánh số và nhấn ý chính. Preview vẫn dùng nội dung cố định, không đọc tài khoản.

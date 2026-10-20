@@ -1,5 +1,12 @@
 # Xác minh
 
+## Lỗi STORAGE_UNAVAILABLE ở Chi tiêu — 20/10/2026
+
+- Truy vấn chỉ đọc trên database mà app local đang cấu hình: kết nối thành công bằng runtime `expense_api`, thiếu hai cột `expense_labels.brand_key`/`icon_key`; truy vấn cũ tái hiện PostgreSQL `42703`. Sau sửa, đọc toàn bộ ExpenseView bằng adapter mới và RLS trên cùng database thành công, có sổ/phân loại/dòng tháng. Không in số tiền hoặc thông tin tài khoản, không ghi dữ liệu, chạy migration hoặc đổi quyền. Đây là bằng chứng backend, chưa xác minh phiên Auth trên trình duyệt đang lỗi của người dùng.
+- `npm run test:db`: **67/67** kiểm thử qua trên PostgreSQL local cô lập. Bốn ca mới kiểm tra thiếu cả hai/từng cột, đọc sổ và lưu phân loại/hũ, từ chối metadata với mã lỗi cụ thể và giữ version/audit/biên nhận, cùng lưu/giữ/xóa metadata sau migration. Thay đổi schema thử nghiệm được rollback; không dùng database đang cấu hình cho kiểm thử ghi.
+- `npm test`: **166/166** qua; `npm run typecheck` qua. Log: `artifacts/storage-unavailable-db.log`, `artifacts/storage-unavailable-unit.log`, `artifacts/storage-unavailable-typecheck.log`. Không chạy lại build hoặc browser suite trong lượt sửa repository này.
+- Đã cập nhật README, xử lý lỗi local, triển khai, kiến trúc, UX và đặc tả Chi tiêu. Đã rà soát catalog, copy landing và preview cố định: khả năng/trạng thái module không đổi, không cần thay dữ liệu minh họa hoặc lời giới thiệu; preview tiếp tục không đọc API tài khoản. Không deploy hoặc xác minh thiết bị vật lý.
+
 ## Phản hồi UI/UX — 17/10/2026
 
 - Chuẩn hóa khoảng cách và kiểu chữ, căn tiêu đề/giá trị tiền và nhóm thao tác, sắp lại dòng Thu nhập, tách chữ lỗi khỏi nút thử lại; tám cảnh SVG theo ngữ cảnh và bảng màu Zen. [Chi tiết hành vi](features/ui-feedback.md).
@@ -257,3 +264,101 @@ Trình duyệt Firefox local tái hiện lệch đáy 28,9px ban đầu và 152p
 - `TEST_WEBKIT=1 npm run test:e2e -- savings.spec.ts`: **18/18** qua trên Chrome desktop, Chrome mobile và WebKit mô phỏng iPhone. Thêm **2/2** bài tooltip trên Firefox desktop và WebKit desktop với config tạm trong artifacts, cùng production app local. Không có page errors trong bài tooltip.
 - Bài mới kiểm click/tap, hover từng lát thật theo tọa độ để phát hiện tooltip chặn phần bên dưới, số tiền từng cột, nhóm Khác, Tab/focus ring, Escape cả khi hover, Privacy Mode, đổi phân bố, tháng tương lai và hai nơi Tổng quan/Báo cáo. Kiểm không tràn ngang và tooltip nằm trong viewport ở 320px/844px ngang, light/dark và reduced motion; có ảnh `artifacts/savings-point-tooltip-desktop.png`, `artifacts/savings-allocation-tooltip-firefox.png`, `artifacts/savings-chart-320-mobile.png`.
 - Đã rà/cập nhật catalog, landing copy, preview cố định, README, đặc tả Tiết kiệm và UX; preview public tiếp tục không đọc API tài chính. Toàn bộ kiểm chứng dùng PostgreSQL/Auth double local cô lập, không ghi dữ liệu cloud; chưa deploy hoặc kiểm trên thiết bị vật lý. Giữ nguyên các mốc kiểm chứng trước đó.
+
+
+## Dialog và khả năng đọc dữ liệu — 19/10/2026
+
+Triển khai bắt đầu ngày 18/10: Thu nhập, Chi tiêu, Tiết kiệm và Đầu tư dùng header cố định, body cuộn, footer form cố định; detail 960px/form 760px/xác nhận 480px và gần toàn màn hình trên điện thoại. Tóm tắt số liệu, tab có số lượng, bảng/thẻ có nhãn, bộ lọc và 20 dòng/trang; preview có nhãn Trước/Sau và cho đọc toàn bộ thay đổi. Mở/sửa/lưu trong dialog con giữ parent, tab, bộ lọc và vị trí. Đầu tư bổ sung focus helper dùng chung để sửa lỗi trả focus trên WebKit.
+
+- `npm test`: **134/134 unit tests** qua. Bài mới đối chiếu tiền hiển thị với chênh lệch số dư do engine tính ở cả hai phía chuyển tiền, phí/thuế, vàng, tiền gửi/nhận lãi/tái tục và số nguyên vượt `Number.MAX_SAFE_INTEGER`.
+- `npm run typecheck` qua; production build `next build --webpack` trong runner kiểm thử cô lập qua. Dùng CSS/font Nunito thật đã cache qua biến môi trường kiểm thử do Google Fonts IPv6 không ổn định; không đổi cấu hình font ứng dụng.
+- Lần toàn bộ `TEST_WEBKIT=1 TEST_FIREFOX=1 node scripts/test-postgres.mjs --browser`: **224/228** qua. Bốn lỗi đều là một bài Zen lặp ở bốn trình duyệt, vẫn mong mọi dialog đóng sau khi lưu biểu tượng. Đã cập nhật bài để kiểm tra editor đóng, parent còn mở theo luồng mới rồi chủ động đóng parent trước khi thao tác nền.
+- Chạy lại `TEST_WEBKIT=1 TEST_FIREFOX=1 node scripts/test-postgres.mjs --browser tests/browser/zen.spec.ts`: **16/16** qua, gồm cả bốn ca trên. Tổng phạm vi 228 ca đã được kiểm chứng qua lần toàn bộ và lần chạy lại; không tuyên bố một lượt toàn bộ 228/228. Prettier cho các file giao diện/test thay đổi và `git diff --check` đều qua.
+- `dialogs.spec.ts`: **12/12** qua trên Chromium desktop, Chromium mô phỏng iPhone, Firefox desktop và WebKit mô phỏng iPhone. Kiểm dữ liệu tổng hợp 0/1/20/21/221 dòng, ranh giới trang, tìm không dấu/không có kết quả, ba lớp dialog, sửa/lưu thật qua API local rồi quay lại đúng nội dung; tháng, đợt vàng, sổ tiền gửi và che tiền/khối lượng.
+- Kiểm light/dark, reduced motion, viewport 320/375/768/1024/1440, 844×390 ngang và mô phỏng phóng chữ 200%; không tràn ngang, tiêu đề/nút đóng vẫn hiện khi cuộn, footer form tiếp cận được. Đã xem ảnh detail vàng dark, mobile phóng chữ và hũ chi tiêu desktop. Ảnh được giữ tại `artifacts/dialog-review/`; dữ liệu stress là tổng hợp, không phải số dư thật.
+- Bộ toàn ứng dụng còn kiểm auth/landing, backup, hồ sơ, loading/lỗi mạng, xung đột phiên bản, riêng tư, biểu đồ và tooltip Tiết kiệm. Log gốc: `artifacts/dialog-validation.log`; log chạy lại: `artifacts/dialog-zen-validation.log`.
+- Đã rà soát/cập nhật README, catalog, landing copy, preview minh họa cố định, UX và đặc tả bốn module. Preview không đọc API tài chính. Không thay API/schema/công thức nghiệp vụ; toàn bộ kiểm chứng dùng PostgreSQL/Auth double local cô lập, không ghi/reset cloud, chưa deploy hoặc kiểm trên thiết bị vật lý.
+
+
+## Cập nhật ngầm khi quay lại ứng dụng — 19/10/2026
+
+Tổng quan, Chi tiêu và Thu nhập giữ nội dung khi đã có dữ liệu; quay lại trong 60 giây từ lần đọc thành công không tạo request mới. Sự kiện focus/visibilitychange/online được gộp, bỏ qua khi còn request hoặc trang ẩn/offline; reconnect/đổi ngày Việt Nam có thể đọc sớm hơn, tối thiểu 5 giây giữa các lần tải tự động. Gợi ý khôi phục dùng cùng chính sách. Lần mở đầu/đổi năm Thu nhập vẫn tải có phản hồi; lưu, retry và timer đổi ngày vẫn đọc server ngay.
+
+- `npm test`: **141/141** unit tests qua, gồm **7** bài mới về độ mới dữ liệu, request chậm, sự kiện trùng, reconnect, đổi ngày Việt Nam, lỗi/cooldown và đọc bị thay thế.
+- `npm run typecheck` qua. Production build `next build --webpack` trong runner cô lập qua; dùng CSS/font Nunito thật đã cache qua `NEXT_FONT_GOOGLE_MOCKED_RESPONSES`, không đổi cấu hình font sản phẩm.
+- `TEST_WEBKIT=1 TEST_FIREFOX=1 npm run test:e2e -- foreground-refresh.spec.ts loading.spec.ts expenses.spec.ts income.spec.ts landing.spec.ts`: lượt cuối **112/112** qua trên Chrome desktop, Chrome mobile, Firefox desktop và WebKit mô phỏng iPhone. Log: `artifacts/foreground-validation-final.log`.
+- Bộ mới có **20/20** ca trên bốn profile: quay lại sớm không fetch, dữ liệu server thay đổi được phản ánh sau cập nhật ngầm, một request cho các sự kiện trùng, không chèn loading/không đổi tọa độ nội dung, lỗi giữ view và retry có busy/spinner, 401 xóa view, offline/ẩn không tải và reconnect khi ẩn được xử lý khi hiện lại; giữ nội dung và focus bản nháp. Hồi quy giữ loading lần đầu, đổi năm, rollover, lưu/version/idempotency, Auth và preview public độc lập API.
+- Lượt đầu có 8 lỗi ở selector mới (tên hũ có emoji trang trí, alert của Next route announcer); đã đổi sang tên truy cập của nút và giới hạn alert trong main, rồi chạy lại toàn bộ trên source cuối. Không dùng kết quả lượt đầu để coi các ca đó đã qua.
+- Đã xem ảnh Chi tiêu desktop sáng/mobile tối khi request ngầm còn chờ; ảnh `background-refresh.png` ở `artifacts/browser/foreground-refresh--budget-f8ca6-ut-loading-or-layout-shifts-{desktop,mobile}/`. Các kiểm loading còn kiểm cả hai theme, reduced motion và xoay ngang.
+- Đã rà soát catalog, copy landing và preview cố định; khả năng tài chính/trạng thái module không đổi. Cập nhật README, kiến trúc, UX và đặc tả Thu nhập/Chi tiêu/phản hồi giao diện/landing. Toàn bộ bằng chứng dùng PostgreSQL và Auth double local cô lập; không ghi cloud, chưa deploy hoặc kiểm thiết bị vật lý.
+
+
+## Fund — Vườn an toàn tài chính — 19/10/2026
+
+Đã triển khai `/funds`, API preview/commands và migration bổ sung sổ quỹ độc lập. Living expense lấy mức cấu hình hiệu lực từ hũ chi tháng được chọn, không lấy ngoại lệ/thực chi hoặc hũ tích lũy; người dùng nhập x và xác nhận mục tiêu. Source đổi chỉ tạo đề xuất. Ba cảnh SVG cây/ô/cầu phản ánh số dư, giữ tỷ lệ khi ẩn tiền. Financial Goals tiếp tục là module riêng.
+
+- `npm test`: **155/155 unit tests** qua. Kiểm phép nhân/làm tròn BigInt, nguồn hiệu lực/không hoạt động/0, thay nguồn và x, số dư xuyên lịch sử, chuyển tiền, sửa/hủy, số tiền lớn và vượt 100%, các mốc cảnh 0/24/25/50/75/100/200%, V1 → V2 và ngày giao dịch Việt Nam trong summary backup.
+- `npm run test:db`: **58/58 PostgreSQL tests** qua trên cluster local cô lập với runtime `expense_api`/RLS. Bao gồm preview không ghi, retry, version/source conflict, hai owner, composite FK, history append-only, rollback muộn, chuyển liên quỹ, restore V2 đầy đủ Fund/revisions, nhận V1, phát hiện tài khoản chỉ có Fund và schema thiếu.
+- `npm run typecheck` và `npm run build` qua; browser runner còn build production bằng webpack trong thư mục riêng. `git diff --check` qua.
+- `TEST_FIREFOX=1 TEST_WEBKIT=1 npm run test:e2e -- funds.spec.ts backup.spec.ts expenses.spec.ts landing.spec.ts`: lượt cuối **116/116** qua trên Chromium desktop, Chromium mô phỏng iPhone, Firefox desktop và WebKit mô phỏng iPhone. Trong đó **32 ca Fund**, **84 ca hồi quy** Backup/Chi tiêu/Landing/xác thực.
+- Browser Fund kiểm onboarding không mặc định x, preview chưa tạo sổ, ưu tiên, thay nguồn có xác nhận, dialog con giữ tab/bộ lọc, sửa/chuyển thực qua API, version conflict, mất phản hồi sau commit và retry không trùng, ngừng/khôi phục nơi giữ, hủy có lịch sử, phân trang 21 dòng, cập nhật foreground giữ bản nháp khi lỗi và xóa view khi hết phiên, riêng tư, bàn phím, reduced motion, light/dark và không tràn ngang.
+- Đã xem ảnh desktop sáng và mobile tối. Ảnh từng profile: `artifacts/funds-light-{desktop,mobile,firefox,webkit}.png` và `artifacts/funds-dark-{desktop,mobile,firefox,webkit}.png`. Landing Fund hiển thị minh họa cả ở màn hình nhỏ, dùng số liệu cố định và không gọi API tài chính.
+- Các vòng trước đã phát hiện/sửa: khác thứ tự khóa JSONB gây báo nguồn thay đổi giả, khác độ chính xác timestamp khi replay backup, selector dialog/tab ẩn bị trùng và CSS preview cũ ẩn hình Fund ở mobile. Chỉ dùng kết quả lượt cuối 116/116 để nghiệm thu browser.
+- Đã rà/cập nhật catalog, landing/copy/preview, README, đặc tả Fund/Chi tiêu/backup/landing và tài liệu kiến trúc, dữ liệu, UX, deployment/discovery/sample-data. Giữ nguyên các thay đổi đang có trước lượt triển khai.
+- Log cuối: `artifacts/funds-unit-validation.log`, `funds-postgres-validation.log`, `funds-browser-validation.log`, `funds-typecheck-validation.log`, `funds-build-validation.log`.
+
+Toàn bộ dữ liệu kiểm thử là tổng hợp, Auth là contract double local; không ghi/reset cloud. Migration `202610190001_funds.sql` cần áp dụng bằng SQL Editor/admin trước khi phát hành source mới. Chưa xác minh cloud deployment, Auth thật hoặc thiết bị vật lý. Backup V2 yêu cầu đủ schema Fund; không bỏ module thiếu khỏi bản sao lưu.
+
+## Dữ liệu review Fund — 19/10/2026
+
+Lượt bổ sung dữ liệu mẫu, tiếp nối lịch sử nghiệm thu triển khai Fund ở trên:
+
+- Unit: **158/158** đạt (`artifacts/fund-review-unit-validation.log`). Generator không sửa bộ bốn module cũ, sử dụng đúng nguồn Chi tiêu, dựng tiến độ 50/105/25% và đủ lịch sử.
+- PostgreSQL local riêng: **63/63** đạt (`artifacts/fund-review-postgres-validation.log`). Bao gồm nạp Fund bằng runtime RLS, bảo toàn 28 bảng cũ, retry giữ chỉnh sửa, từ chối version/marker/dữ liệu khác, CLI mặc định không ghi + apply/read-back, backup 35 bảng/biên nhận, reset bị khóa mặc định, bảo toàn owner khác/Auth, rollback lỗi muộn/trigger và migration+seed nguyên tử trên database chưa có Fund.
+- Browser production build local: **4/4** đạt trên Chromium desktop/mobile, Firefox desktop, WebKit mobile (`artifacts/fund-review-browser-validation.log`). Kiểm tra dữ liệu nhập thực qua SQL, cả ba tiến độ, phần vượt, bước tiếp theo, hai trang giao dịch/tìm kiếm, lịch sử hủy, nơi giữ ngừng/trống, Privacy Mode và không tràn ngang. Đây là mô phỏng, không phải thiết bị vật lý hoặc Auth cloud thật. Ảnh `artifacts/browser/fund-review-*.png`.
+- `npm run typecheck` đạt. Browser runner đã build production bằng webpack và mở thành công; không phát hành deployment.
+- `npm run data:preview` đã mở đủ năm module, đăng nhập demo và đọc lại Fund tổng 84.600.000 VND / 39 revision / 6 nơi giữ. Chứng cứ `artifacts/fund-review-preview-readback.json`, ảnh viewport desktop/mobile `artifacts/fund-review-preview-{desktop,mobile}.png`; metadata URL hiện tại ở `artifacts/review-preview.json`. Đây là phiên local riêng, không phải owner cloud.
+- Đã đối chiếu catalog/landing/public preview: các dữ liệu minh họa công khai vẫn cố định, không lấy dữ liệu private của owner. README, đặc tả Fund và hướng dẫn sample/reset được cập nhật cùng lượt.
+- Cloud chỉ kiểm tra đọc bằng `expense_api` và sao lưu đúng UID: bốn module đã có bộ review cùng dataset; 7 bảng Fund và `data_imports` còn thiếu, role không có CREATE. CLI dừng `FUNDS_MIGRATION_REQUIRED` trước mọi ghi. Package private có `01-enable-and-seed.sql` để SQL Editor/admin chạy. **Chưa nạp Fund, chưa reset cloud, chưa chứng minh deployment hoặc thiết bị vật lý.**
+
+## Help theo từng trang — 20/10/2026
+
+Đã bổ sung bài tiếng Việt cho đủ 12 trang, nút Hướng dẫn dùng chung và các điểm giải thích trong workspace/form. Nội dung tải khi mở, có mục lục, lỗi/thử lại; Help dùng cùng stack dialog, giữ bản nháp và trả focus khi đóng. Bốn module chưa triển khai có bài riêng ghi đúng trạng thái. Định nghĩa ba quỹ dùng chung với hướng dẫn Fund hiện có.
+
+- `npm test`: **167/167 tests**, **20/20 files** đạt. Contract Help kiểm đủ catalog cộng Hồ sơ, sáu phần mỗi bài, ID duy nhất, tác vụ có bước/kết quả, định nghĩa quỹ dùng chung và mọi đích của HelpButton, kể cả các nhánh theo loại form.
+- `npm run typecheck`, `npm run build` và `git diff --check` đạt. Log cuối: `artifacts/help-unit-final.log`, `help-typecheck-final.log`, `help-build-final.log`.
+- Lượt toàn bộ browser có **319/324 đạt**, còn năm ca bố cục: bộ chọn kỳ Thu nhập dưới 400px ở bốn profile và topbar bị tràn khi phóng 200% trên desktop. Đã sửa độ ưu tiên CSS bộ chọn kỳ và cho topbar có Help xuống dòng. Log: `artifacts/help-regression-final.log`.
+- Sau sửa, chạy lại `help.spec.ts profile.spec.ts zen.spec.ts interface-feedback.spec.ts backup.spec.ts`: **100/100 đạt** trên Chromium desktop/mobile, Firefox desktop và WebKit mô phỏng iPhone. Bao gồm cả năm ca lỗi trên, hồ sơ, bộ lọc, sao lưu/khôi phục, theme và phóng chữ. Log: `artifacts/help-regression-layout.log`.
+- Lượt cuối `help.spec.ts dialogs.spec.ts`: **36/36 đạt** trên cùng bốn profile, gồm **24 ca Help** và **12 ca dialog hiện có**. Kiểm bổ sung Tab từ tiêu đề được mục lục focus quay về nút đóng, Shift+Tab đi đúng vòng; Escape chỉ đóng lớp trên cùng. Log: `artifacts/help-dialog-final.log`. Sau lượt này chỉ tinh chỉnh đích tra cứu nạp/rút/chuyển ví và hủy giao dịch Đầu tư; contract đích Help, toàn bộ unit, typecheck và build chạy lại đạt.
+- Phạm vi Help bao gồm đúng bài cho 12 route; không phát sinh request tài chính hay lệnh ghi khi mở; đọc được khi API nghiệp vụ lỗi; hủy tải chunk và thử lại; đổi route đóng/đặt lại mục; hai form lồng nhau giữ giá trị chưa lưu, vị trí cuộn, focus và khóa cuộn nền. Bộ hồi quy rộng còn bao phủ điều hướng, xác thực, landing và các module tài chính.
+- Kiểm viewport 375px, desktop 1440px, ngang 812px, sáng/tối, reduced motion và chữ lớn; nội dung không tràn ngang, tiêu đề/nút đóng vẫn tiếp cận được. Đã xem ảnh 375px sáng và 1440px tối tại `artifacts/help/`. Public preview dùng phần giải thích minh họa cố định cho năm tab, không gọi API tài chính.
+- Trong quá trình kiểm tra đã tái hiện hydration mismatch của SVG hướng dẫn cài màn hình chính: `<title>` có nhiều React text node. Gộp thành một chuỗi và chạy lại bài 12 route trên cả bốn trình duyệt không còn lỗi runtime/hydration. Đây là lỗi tái hiện trong trình duyệt sạch local.
+- Đã cập nhật/rà soát catalog, landing/preview, README, tài liệu Help, kiến trúc, UX, discovery và các đặc tả liên quan; kiểm liên kết giữa các tài liệu Markdown đạt. Tám liên kết ảnh browser ở các mốc kiểm chứng cũ không còn file trong thư mục artifacts hiện tại; giữ nguyên lịch sử, không tái tạo ảnh để thay thế bằng chứng cũ. Không thêm API, schema, migration hay thay đổi công thức nghiệp vụ cho Help; giữ kiểm tra quyền server từng trang và các thay đổi có sẵn trong workspace.
+
+Các lượt browser dùng production build cô lập, PostgreSQL và Auth contract double local; dữ liệu kiểm thử tổng hợp. Kết quả trên là bằng chứng nhiều lượt có phạm vi rõ ràng, **không phải một lượt toàn bộ 324/324 trên source cuối**. Không ghi/reset cloud, không deploy và không coi mô phỏng là kiểm chứng Auth thật hoặc thiết bị vật lý. Các mốc kiểm chứng cũ được giữ nguyên.
+
+## Hoàn tất 33 phản hồi giao diện — 20/10/2026
+
+Tiếp tục lượt triển khai bị gián đoạn ngày 19/10, kiểm tra trên source hiện tại có cả Fund, Help và khả năng tương thích schema logo. Giữ nguyên các thay đổi sẵn có trong workspace. Lượt cũ `feedback-final-browser.log` đã dừng ở lỗi TypeScript trước khi chạy browser, không được tính là kết quả đạt; lượt mới dưới đây đã hoàn tất trên source hiện tại.
+
+- `npm test`: **167/167 tests, 20/20 files** đạt. Log `artifacts/feedback-resume-unit.log`.
+- `npm run test:db`: **67/67 tests, 11/11 files** đạt trên PostgreSQL local cô lập, runtime RLS. Bao gồm schema logo mới/cũ, lỗi lưu metadata và tính nguyên tử. Log `artifacts/feedback-resume-postgres.log`.
+- `npm run typecheck` và `npm run build` đạt trên Node **22.12.0**; build mặc định Next.js **16.4.1**. Log `artifacts/feedback-resume-typecheck.log`, `artifacts/feedback-resume-build.log`. Browser runner còn build production bằng webpack trong thư mục riêng; log `artifacts/feedback-resume-next.log`.
+- `TEST_FIREFOX=1 TEST_WEBKIT=1 npm run test:e2e`: **324/324 đạt trong một lượt toàn bộ, 10 phút**, gồm 81 ca mỗi profile Chromium desktop, Chromium mô phỏng iPhone, Firefox desktop và WebKit mô phỏng iPhone. Log `artifacts/feedback-resume-browser.log`; `artifacts/browser/.last-run.json` có trạng thái passed, không có failedTests. Sau lượt này chỉ cập nhật tài liệu, không đổi source ứng dụng.
+- Bộ mới `interface-feedback.spec.ts`: **16/16** ca trên bốn profile. Kiểm thứ tự/tag menu, sidebar và theme sau reload, theme hệ thống, hướng dẫn cài bốn bước theo thiết bị, quay lại từ Hồ sơ và nút riêng tư khi cuộn; Thu nhập phân biệt thiếu/0, nhập đúng ô tháng, chuẩn hóa tiền, tooltip/privacy, sửa rồi hoàn tác và danh mục ngừng; Chi tiêu select đóng, lỗi field, thêm phân loại lồng nhau giữ bản nháp, logo trong backup và giải mã đủ 13 asset bằng trình duyệt, cột được nhớ và năm trống chỉ xem; form Tiết kiệm/Đầu tư cùng quy tắc chưa đổi/lỗi field.
+- Toàn bộ hồi quy còn kiểm dialog cha/con, focus Safari, lịch sử tài chính, phân trang, loading/lỗi mạng/xung đột/retry, backup/import, Auth và preview public không đọc API tài chính. Các bài layout kiểm sáng/tối, reduced motion, nhiều viewport đến 320px, xoay ngang và chữ lớn; không tràn trang trong phạm vi được đo.
+- Đã xem ảnh Thu nhập desktop/mobile và Chi tiêu desktop tối từ lượt hiện tại. Ảnh `artifacts/browser/feedback-{shell,income,expenses}-{desktop,mobile,firefox,webkit}.png`, cùng ảnh từng bài layout. Ảnh full-page của trang đã cuộn có thể ghi header sticky tại vị trí viewport đang xem; kiểm vị trí nút riêng tư dùng tọa độ viewport thực.
+- Đã rà/cập nhật README, catalog, landing/copy/preview cố định, kiến trúc, UX và các đặc tả Chi tiêu/Thu nhập/Hồ sơ/Tiết kiệm/Đầu tư/Quỹ an toàn/backup/phản hồi giao diện. Ma trận [33 phản hồi](features/interface-feedback-2026-10-19.md) ghi kết quả và quy tắc rà soát thành phần cùng loại. `git diff --check` đạt.
+
+Toàn bộ bằng chứng mới là local với dữ liệu tổng hợp và Auth contract double, không ghi/reset cloud, không deploy, không xác minh Auth thật hoặc thiết bị vật lý. Migration `202610190002_label_visuals.sql` cần cho việc lưu logo/icon tùy chọn; schema cũ vẫn dùng được thao tác không có metadata theo bản sửa tương thích ngày 20/10. Lượt này không tự áp dụng migration cloud. Giữ nguyên các mốc kiểm chứng lịch sử ở trên.
+
+## Đối soát cloud Fund sau script 01 — 20/10/2026
+
+Sau khi người dùng báo đã chạy `imports/funds-review-2026-10-19-f10d12b7/01-enable-and-seed.sql`, đã kiểm tra lại đúng UID `00850da1-9131-4109-8d16-259424eaefc3` qua kết nối `expense_api`, role authenticated và RLS. Cả 7 bảng Fund đã có; marker cả năm module khớp dataset. Chỉ chạy importer ở chế độ đọc mặc định, không seed lại hoặc reset; giữ các thay đổi review hiện có ở module khác.
+
+- Đọc lại Fund version 48: 3 quỹ, 6 nơi giữ, 2 cấu hình, 37 giao dịch gốc / 39 revision và 48 audit. Dựng lại toàn bộ lịch sử bằng domain validator, đối chiếu toàn bộ FundBook và số tiền với package: khớp.
+- Emergency 27/54 triệu (50%), Rainy Day 44,1/42 triệu (105%), Sinking 13,5/54 triệu (25%); tổng dự phòng 84,6 triệu, Emergency 4,5 tháng. Nguồn sinh hoạt không đổi (`sourceChanged=false`).
+- Snapshot mới đúng owner tại `backups/before-funds-review-00850da1-9131-4109-8d16-259424eaefc3-1792507119998.json`, quyền 0600. Log `artifacts/fund-review-cloud-readback-2026-10-20.log`, kết quả đối soát `artifacts/fund-review-cloud-verified-2026-10-20.json`.
+- `data_imports` vẫn thiếu; không ảnh hưởng đọc/ghi Fund, nhưng chức năng restore tại Cài đặt còn cần migration biên nhận. Không tự áp dụng migration hoặc tăng quyền runtime.
+
+Đây là xác minh dữ liệu database cloud qua runtime/RLS, không phải bằng chứng UI deployment, Auth đăng nhập thật hoặc thiết bị vật lý. Reset cloud vẫn chưa thực hiện.

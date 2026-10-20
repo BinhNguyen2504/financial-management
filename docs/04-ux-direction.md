@@ -133,3 +133,32 @@ Hai thẻ Sao lưu/Khôi phục trong cùng hàng dùng grid stretch, tự bằn
 ## Dialog và dữ liệu dài — 18/10/2026
 
 Tóm tắt số liệu quan trọng trước, tab theo nội dung sau; giữ header và thao tác lưu/đóng tiếp cận được khi cuộn. Bảng desktop chuyển thành thẻ có nhãn trên mobile. Danh sách dài có tìm kiếm, bộ lọc theo ngữ cảnh và 20 dòng/trang. Xem trước có nhãn Trước/Sau, đọc được toàn bộ thay đổi. Dialog con quay lại parent cùng vị trí kể cả khi lưu; không làm người dùng tìm lại nội dung vừa đọc. Xem [quy chuẩn và phạm vi](features/ui-feedback.md#dialog-có-nhiều-dữ-liệu--18102026).
+
+
+### Quay lại ứng dụng — 19/10/2026
+
+Tổng quan, Chi tiêu và Thu nhập chỉ hiện thông báo tải ở lần mở đầu, khi chưa có dữ liệu hoặc đổi năm Thu nhập. Quay lại tab giữ nguyên nội dung, bộ lọc, vị trí và bản nháp; cập nhật ngầm khi dữ liệu đã tải ít nhất 60 giây. Focus/hiển thị lại tab được gộp; chưa có mạng hoặc trang đang ẩn thì chưa tải tự động. Có mạng trở lại/đổi ngày Việt Nam được kiểm tra sớm hơn, với khoảng cách tối thiểu 5 giây. Không polling định kỳ. Thao tác lưu/thử lại/timer đổi ngày vẫn tải trực tiếp, lỗi mạng giữ dữ liệu cũ và nút thử lại có tiến trình; lỗi xác thực xóa dữ liệu khỏi view và yêu cầu đăng nhập. Tiết kiệm/Đầu tư giữ hành vi tải hiện có, chưa có cơ chế tải lại khi foreground.
+
+
+## Vườn an toàn — 19/10/2026
+
+Emergency dùng cây lớn, Rainy Day dùng tán ô mở, Sinking dùng cây cầu xây dần. SVG từ tỷ lệ thực tế, số tiền và phần trăm rõ ràng, giữ hình khi ẩn tiền. Hình hoàn thiện ở 100%, phần vượt vẫn ghi số. Không animation liên tục; reduced motion tắt hiệu ứng. Thiết lập ba bước, xem trước Trước/Sau rồi lưu. Chi tiết chia bốn tab, dialog con giữ vị trí parent.
+
+## Quy tắc rà soát — 19/10/2026
+
+Mỗi lỗi ví dụ cần được tìm theo nhóm thành phần trên toàn ứng dụng. Kiểm tra trạng thái, thao tác, bố cục và khả năng hoàn thành công việc; ưu tiên chỉ rõ nơi còn thiếu/sai và cho bổ sung ngay. Dùng icon cùng nhãn/màu, không chỉ text hoặc chỉ màu. Theme, menu/cột tùy chỉnh và hướng dẫn cài đặt theo thiết bị nằm trong [ma trận 33 phản hồi](features/interface-feedback-2026-10-19.md).
+
+## Thiếu migration logo phân loại — 20/10/2026
+
+Thiếu metadata logo không khóa màn hình Chi tiêu hoặc thao tác hũ/phân loại không có metadata. Nếu lưu logo/icon tùy chọn khi database chưa sẵn sàng, dùng luồng lỗi lưu hiện có: báo rõ cần cập nhật schema, giữ dialog/bản nháp để người dùng thử lại; không báo mất kết nối chung hoặc tự bỏ metadata. Không đổi bố cục hay công thức tiền.
+
+## Hướng dẫn theo ngữ cảnh — 20/10/2026
+
+Nút Hướng dẫn nằm cạnh tiêu đề trên đủ 12 trang trong app, có biểu tượng sách và nhãn đầy đủ kể cả trên điện thoại. Desktop là bảng bên phải tối đa 640px, dưới 768px toàn màn hình. Tiêu đề/nút đóng cố định, phần đọc cuộn riêng; mục lục đưa focus đến tiêu đề mục. Nội dung 16px, theo theme hiện có, không có tour tự bật hoặc chuyển động bắt buộc.
+
+Các điểm Giải thích nằm cạnh tiêu đề và trong form, không lặp theo mọi dòng. Đóng Help bằng nút, Escape hoặc nền chỉ đóng lớp Help; giữ bản nháp, bộ lọc, scroll và focus của form cha. Ví dụ có nhãn Minh họa, không dùng số thật của tài khoản. Xem [Help](features/help.md).
+
+
+### Tinh chỉnh Help theo phản hồi — 20/10/2026
+
+Đề mục 01–06 và mục con được đánh số; đường phân cách, khoảng trắng và khối nền làm rõ cấu trúc. Nhấn đậm từ khóa/quy tắc, dùng màu theme cho số liệu minh họa. Các khối tư duy, ví dụ, lưu ý có nhãn và biểu tượng phù hợp. Bảng trượt vào/thu về nhẹ (280/220ms), không đổi kích thước layout; reduced motion bỏ chuyển động. Giữ focus/khóa cuộn đến khi đóng xong và có timeout dự phòng.

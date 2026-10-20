@@ -1,4 +1,8 @@
 "use client";
+import {
+  Pencil as EditCommandGlyph,
+  Trash2 as DeleteCommandGlyph,
+} from "lucide-react";
 import { useMoney } from "@/components/privacy";
 import {
   DialogChanges,
@@ -279,6 +283,7 @@ export function InvestmentTransactionDetails({
               className="expense-secondary"
               onClick={() => onEdit({ type: "revise", transaction: current })}
             >
+              <EditCommandGlyph size={17} aria-hidden="true" />
               Sửa giao dịch
             </button>
             <button
@@ -286,6 +291,7 @@ export function InvestmentTransactionDetails({
               className="expense-secondary"
               onClick={() => onEdit({ type: "cancel", transaction: current })}
             >
+              <DeleteCommandGlyph size={17} aria-hidden="true" />
               Hủy giao dịch
             </button>
           </div>

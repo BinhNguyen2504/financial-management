@@ -9,7 +9,7 @@ import {
   summarizeBackup,
   type BackupTable,
   type BackupTables,
-  type FullBackupV1,
+  type FullBackup,
 } from "../domain/backup/format";
 import { canonical, validateBackup } from "../domain/backup/validate";
 
@@ -34,7 +34,7 @@ export function backupMaxBytes() {
     );
   return n;
 }
-export function checkBackupSize(backup: FullBackupV1) {
+export function checkBackupSize(backup: FullBackup) {
   const body = JSON.stringify(backup);
   if (Buffer.byteLength(body) > backupMaxBytes())
     throw new BackupError(
@@ -150,13 +150,13 @@ export function postgresDataRepository(sql: postgres.Sql) {
         true,
       );
     },
-    async backup(owner: string, profile: FullBackupV1["profile"]) {
+    async backup(owner: string, profile: FullBackup["profile"]) {
       return transaction(
         owner,
         async (db) => {
           const backup = validateBackup({
             format: "financial-manager-full-backup",
-            schemaVersion: 1,
+            schemaVersion: 2,
             exportedAt: new Date().toISOString(),
             profile,
             tables: await readTables(db, owner),
@@ -187,6 +187,7 @@ export function postgresDataRepository(sql: postgres.Sql) {
           `income:${owner}`,
           `savings:${owner}`,
           `investments:${owner}`,
+          `funds:${owner}`,
         ])
           await db.unsafe(
             "select pg_advisory_xact_lock(hashtextextended($1,0))",

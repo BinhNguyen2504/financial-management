@@ -1,0 +1,865 @@
+"use client";
+import { HelpButton } from "@/features/help/provider";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import {
+  cloneElement,
+  useId,
+  useRef,
+  useState,
+  type ReactElement,
+} from "react";
+import { z } from "zod";
+import Link from "next/link";
+import { comparable, normalizeInteger, integerInput } from "@/lib/form-values";
+import { Save, X, ScanEye } from "lucide-react";
+import { ArrowUp, ArrowDown } from "lucide-react";
+import { ExpenseModal } from "@/features/expenses/modal";
+import {
+  PrivacyScope,
+  PrivacyReveal,
+  useMoney,
+  useMoneyHidden,
+} from "@/components/privacy";
+import { LoadingSpinner } from "@/components/loading";
+import {
+  actionSchema,
+  fundIds,
+  multipliersSchema,
+  type FundAction,
+  type FundCommand,
+  type FundId,
+  type FundTransaction,
+} from "@/domain/funds/schema";
+import { selectLiving } from "@/domain/funds/engine";
+import type { FundView } from "@/domain/funds/types";
+import type { FundCommandResult } from "@/application/funds";
+import { fundsJSON, FundAPIError } from "./api";
+import {
+  displayTime,
+  fundNames,
+  localDateTime,
+  transactionNames,
+} from "./content";
+export type EditorMode =
+  | { type: "configure" }
+  | { type: "location"; id?: string }
+  | { type: "transaction"; fundId?: FundId; kind?: FundTransaction["kind"] }
+  | { type: "revise" | "cancel"; transaction: FundTransaction };
+type Props = {
+  mode: EditorMode;
+  view: FundView;
+  refresh: () => Promise<FundView>;
+  onSaved: () => void;
+  onClose: () => void;
+  onAuthLost: () => void;
+};
+export function FundEditor(props: Props) {
+  return (
+    <PrivacyScope>
+      <Editor {...props} />
+    </PrivacyScope>
+  );
+}
+function Editor({
+  mode,
+  view: initial,
+  refresh,
+  onSaved,
+  onClose,
+  onAuthLost,
+}: Props) {
+  const [view, setView] = useState(initial),
+    config = initial.book?.configurations.at(-1),
+    old = "transaction" in mode ? mode.transaction : null;
+  const location =
+    mode.type === "location"
+      ? initial.book?.locations.find((l) => l.id === mode.id)
+      : null;
+  const entity = useRef(old?.id ?? location?.id ?? crypto.randomUUID()),
+    hidden = useMoneyHidden(),
+    money = useMoney(),
+    id = useId();
+  const [f, setF] = useState({
+    name: location?.name ?? "",
+    active: location?.active ?? true,
+    kind:
+      old?.kind ??
+      (mode.type === "transaction" ? mode.kind : undefined) ??
+      "deposit",
+    fundId:
+      old?.fundId ??
+      (mode.type === "transaction" ? mode.fundId : undefined) ??
+      "emergency",
+    locationId:
+      old?.locationId ??
+      initial.book?.locations.find((l) => l.active)?.id ??
+      "",
+    toFundId: old?.kind === "transfer" ? old.toFundId : "rainy_day",
+    toLocationId:
+      old?.kind === "transfer"
+        ? old.toLocationId
+        : (initial.book?.locations.find((l) => l.active)?.id ?? ""),
+    amount: old?.amount ?? "",
+    occurredAt: localDateTime(old?.occurredAt ?? initial.now),
+    note: old?.note ?? "",
+    reason: "",
+  });
+  const [jarIds, setJarIds] = useState(
+      config?.living.items.map((i) => i.jarId) ?? [],
+    ),
+    [multipliers, setMultipliers] = useState(
+      config?.multipliers ?? { emergency: "", rainy_day: "", sinking: "" },
+    ),
+    [priority, setPriority] = useState<FundId[]>(
+      config?.priority ?? [...fundIds],
+    ),
+    [applyLiving, setApplyLiving] = useState(!config || initial.sourceChanged),
+    [step, setStep] = useState(0);
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState(""),
+    [fieldErrors, setFieldErrors] = useState<Record<string, string>>({}),
+    [conflict, setConflict] = useState(false),
+    [uncertain, setUncertain] = useState(false),
+    [preview, setPreview] = useState<{
+      command: FundCommand;
+      result: FundCommandResult;
+    } | null>(null);
+  const pending = useRef<FundCommand | null>(null),
+    errorRef = useRef<HTMLDivElement>(null);
+  const draft = comparable({
+    ...f,
+    amount: normalizeInteger(f.amount),
+    reason: undefined,
+    jarIds: [...jarIds].sort(),
+    multipliers,
+    priority,
+    applyLiving,
+  });
+  const originalDraft = useRef(draft);
+  const unchanged =
+    ((mode.type === "location" && !!location) ||
+      mode.type === "revise" ||
+      (mode.type === "configure" && !!config && !initial.sourceChanged)) &&
+    draft === originalDraft.current;
+  const title =
+    mode.type === "configure"
+      ? config
+        ? "Điều chỉnh Quỹ an toàn"
+        : "Thiết lập Vườn an toàn"
+      : mode.type === "location"
+        ? location
+          ? "Sửa nơi giữ tiền"
+          : "Thêm nơi giữ tiền"
+        : mode.type === "cancel"
+          ? "Hủy giao dịch"
+          : mode.type === "revise"
+            ? "Sửa giao dịch"
+            : "Ghi giao dịch";
+  function invalidate() {
+    setPreview(null);
+    pending.current = null;
+    setError("");
+    setFieldErrors({});
+    setConflict(false);
+  }
+  function set<K extends keyof typeof f>(key: K, value: (typeof f)[K]) {
+    setF((s) => ({ ...s, [key]: value }));
+    invalidate();
+  }
+  function report(e: unknown) {
+    if (e instanceof z.ZodError) {
+      setFieldErrors(fieldErrorsFromIssues(e.issues, true));
+      setError("Kiểm tra các trường được đánh dấu.");
+    } else
+      setError(e instanceof Error ? e.message : "Chưa hoàn tất. Hãy thử lại.");
+    requestAnimationFrame(() => errorRef.current?.focus());
+  }
+  function action(): FundAction {
+    if (mode.type === "configure")
+      return actionSchema.parse({
+        type: "configure",
+        id: entity.current,
+        jarIds,
+        multipliers,
+        priority,
+        applyLiving,
+        expectedExpenseVersion: view.source.expenseVersion,
+        sourceMonth: view.source.month,
+      });
+    if (mode.type === "location")
+      return actionSchema.parse({
+        type: "saveLocation",
+        id: entity.current,
+        name: f.name,
+        active: f.active,
+      });
+    if (mode.type === "cancel")
+      return actionSchema.parse({
+        type: "reviseTransaction",
+        transactionId: entity.current,
+        replacement: null,
+        reason: f.reason,
+      });
+    const enteredTime = Date.parse(`${f.occurredAt}:00+07:00`);
+    if (!Number.isFinite(enteredTime))
+      throw new z.ZodError([
+        {
+          code: "custom",
+          path: ["occurredAt"],
+          message: "Nhập thời điểm giao dịch hợp lệ.",
+        },
+      ]);
+    const transaction = {
+      id: entity.current,
+      kind: f.kind,
+      fundId: f.fundId,
+      locationId: f.locationId,
+      amount: normalizeInteger(f.amount),
+      occurredAt:
+        old && f.occurredAt === localDateTime(old.occurredAt)
+          ? old.occurredAt
+          : new Date(enteredTime).toISOString(),
+      note: f.note,
+      ...(f.kind === "transfer"
+        ? { toFundId: f.toFundId, toLocationId: f.toLocationId }
+        : {}),
+    };
+    return actionSchema.parse(
+      mode.type === "revise"
+        ? {
+            type: "reviseTransaction",
+            transactionId: entity.current,
+            replacement: transaction,
+            reason: f.reason,
+          }
+        : { type: "postTransaction", transaction },
+    );
+  }
+  async function submit() {
+    if (hidden) return;
+    setBusy(true);
+    setError("");
+    let writing = false;
+    try {
+      const command = pending.current ?? {
+        id: crypto.randomUUID(),
+        expectedVersion: view.book?.version ?? 0,
+        action: action(),
+      };
+      pending.current = command;
+      if (!preview)
+        setPreview({
+          command,
+          result: await fundsJSON<FundCommandResult>("/preview", command),
+        });
+      else {
+        writing = true;
+        await fundsJSON("/commands", command);
+        onSaved();
+      }
+    } catch (e) {
+      if (e instanceof FundAPIError && e.status === 401) {
+        onAuthLost();
+        return;
+      }
+      report(e);
+      setConflict(
+        e instanceof FundAPIError &&
+          ["VERSION_CONFLICT", "EXPENSE_VERSION_CONFLICT"].includes(e.code),
+      );
+      if (
+        writing &&
+        (!(e instanceof FundAPIError) ||
+          ![400, 401, 403, 409, 415, 422].includes(e.status))
+      )
+        setUncertain(true);
+    } finally {
+      setBusy(false);
+    }
+  }
+  function next() {
+    try {
+      if (step === 0) {
+        if (applyLiving || !config) selectLiving(view.source, jarIds);
+        else if (!jarIds.length) throw new Error("Chọn hũ sinh hoạt.");
+      }
+      if (step === 1)
+        z.object({ multipliers: multipliersSchema }).parse({ multipliers });
+      setStep((s) => s + 1);
+      setError("");
+      setFieldErrors({});
+    } catch (e) {
+      report(e);
+    }
+  }
+  const fieldId = (key: string) => `${id}-${key.replaceAll(".", "-")}`;
+  function field(
+    key: string,
+    label: string,
+    input: ReactElement<{
+      "aria-label"?: string;
+      "aria-invalid"?: boolean;
+      "aria-describedby"?: string;
+    }>,
+  ) {
+    const err =
+      fieldErrors[key] ??
+      Object.entries(fieldErrors).find(([k]) => k.endsWith("." + key))?.[1];
+    return (
+      <div key={key} className="fund-field">
+        <label htmlFor={fieldId(key)}>
+          {label}
+          {!["note", "active"].includes(key) && (
+            <span className="required-mark"> *</span>
+          )}
+        </label>
+        {cloneElement(input, {
+          "aria-label": label,
+          "aria-invalid": Boolean(err),
+          "aria-describedby": err ? `${fieldId(key)}-error` : undefined,
+        })}
+        {err && (
+          <small id={`${fieldId(key)}-error`} className="fund-field-error">
+            {err}
+          </small>
+        )}
+      </div>
+    );
+  }
+  function input(
+    key: "name" | "amount" | "occurredAt" | "note" | "reason",
+    label: string,
+  ) {
+    return field(
+      key,
+      label,
+      <input
+        id={fieldId(key)}
+        value={f[key]}
+        required={key !== "note"}
+        onChange={(e) => {
+          const value =
+            key === "amount" ? integerInput(e.target.value) : e.target.value;
+          if (value !== null) set(key, value);
+        }}
+        onBlur={() => {
+          if (key === "amount") set(key, normalizeInteger(f.amount));
+        }}
+        type={
+          key === "occurredAt"
+            ? "datetime-local"
+            : key === "amount" && hidden
+              ? "password"
+              : "text"
+        }
+        inputMode={key === "amount" ? "numeric" : undefined}
+        readOnly={key === "amount" && hidden}
+        maxLength={key === "amount" ? 24 : 1000}
+        max={
+          key === "occurredAt"
+            ? localDateTime(new Date().toISOString())
+            : undefined
+        }
+        aria-invalid={Boolean(
+          fieldErrors[key] ||
+          Object.keys(fieldErrors).some((k) => k.endsWith("." + key)),
+        )}
+      />,
+    );
+  }
+  function fundSelect(key: "fundId" | "toFundId", label: string) {
+    return field(
+      key,
+      label,
+      <select
+        id={fieldId(key)}
+        value={f[key]}
+        onChange={(e) => set(key, e.target.value as FundId)}
+      >
+        {fundIds.map((k) => (
+          <option key={k} value={k}>
+            {fundNames[k]}
+          </option>
+        ))}
+      </select>,
+    );
+  }
+  function locationSelect(key: "locationId" | "toLocationId", label: string) {
+    return field(
+      key,
+      label,
+      <select
+        id={fieldId(key)}
+        value={f[key]}
+        onChange={(e) => set(key, e.target.value)}
+      >
+        <option value="">Chọn nơi giữ</option>
+        {view.book?.locations
+          .filter((l) => l.active || l.id === f[key])
+          .map((l) => (
+            <option key={l.id} value={l.id}>
+              {l.name}
+              {!l.active ? " · Đã ngừng" : ""}
+            </option>
+          ))}
+      </select>,
+    );
+  }
+  let livingTotal = config?.living.total ?? "0";
+  if (applyLiving) {
+    try {
+      livingTotal = selectLiving(view.source, jarIds).total;
+    } catch {
+      livingTotal = "0";
+    }
+  }
+  const options = [
+    ...view.source.items,
+    ...(config?.living.items.filter(
+      (i) => !view.source.items.some((j) => j.jarId === i.jarId),
+    ) ?? []),
+  ];
+  return (
+    <ExpenseModal
+      title={title}
+      onClose={onClose}
+      busy={busy || uncertain}
+      size="form"
+      footer={
+        <div className="fund-actions">
+          <button
+            type="button"
+            className="expense-secondary"
+            disabled={busy || uncertain}
+            onClick={onClose}
+          >
+            <X size={17} aria-hidden="true" />
+            Hủy
+          </button>
+          {mode.type === "configure" && step > 0 && !preview && (
+            <button
+              className="expense-secondary"
+              disabled={busy || uncertain}
+              onClick={() => setStep((s) => s - 1)}
+            >
+              Quay lại
+            </button>
+          )}
+          {mode.type === "configure" && step < 2 && !preview ? (
+            <button className="expense-primary" disabled={busy} onClick={next}>
+              Tiếp tục
+            </button>
+          ) : (
+            <button
+              className={`expense-primary ${mode.type === "cancel" ? "expense-danger" : ""}`}
+              disabled={busy || hidden || conflict || unchanged}
+              aria-busy={busy}
+              onClick={() => void submit()}
+            >
+              {busy ? (
+                <LoadingSpinner />
+              ) : preview ? (
+                <Save size={17} aria-hidden="true" />
+              ) : (
+                <ScanEye size={17} aria-hidden="true" />
+              )}
+              {preview ? "Xác nhận lưu" : "Xem trước thay đổi"}
+            </button>
+          )}
+        </div>
+      }
+    >
+      <PrivacyReveal />
+      <HelpButton
+        pageId="funds"
+        sectionId={
+          mode.type === "configure"
+            ? "living"
+            : mode.type === "location"
+              ? "locations"
+              : "transactions"
+        }
+        label="Hiểu mục tiêu và số dư quỹ"
+      />
+      {error && (
+        <div
+          className="expense-error"
+          role="alert"
+          tabIndex={-1}
+          ref={errorRef}
+        >
+          {error}
+          {Object.keys(fieldErrors).length > 0 && (
+            <ul>
+              {Object.entries(fieldErrors).map(([key, message]) => (
+                <li key={key}>
+                  <a
+                    href={`#${fieldId(key.startsWith("multipliers.") ? key : key.split(".").at(-1)!)}`}
+                  >
+                    {message}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+      {uncertain && (
+        <p role="status">
+          Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu để
+          kiểm tra lại cùng yêu cầu.
+        </p>
+      )}
+      {conflict && (
+        <button
+          className="expense-secondary"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              setView(await refresh());
+              invalidate();
+            } catch (e) {
+              if (e instanceof FundAPIError && e.status === 401) onAuthLost();
+              else report(e);
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          Tải dữ liệu mới, giữ nội dung nhập
+        </button>
+      )}
+      <fieldset className="fund-fields" disabled={busy || uncertain}>
+        {mode.type === "configure" ? (
+          <>
+            <p className="eyebrow">
+              Bước {step + 1}/3 ·{" "}
+              {step === 0
+                ? "Chi phí sinh hoạt"
+                : step === 1
+                  ? "Quy mô dự phòng"
+                  : "Thứ tự ưu tiên"}
+            </p>
+            {step === 0 && (
+              <>
+                <p>
+                  Living expense là chi phí thiết yếu để duy trì cuộc sống mỗi
+                  tháng. Chọn những hũ bạn cần tiếp tục chi ngay cả khi thu nhập
+                  bị gián đoạn.
+                </p>
+                <p className="fund-note">
+                  Dùng mức cấu hình của tháng{" "}
+                  {view.source.month.split("-").reverse().join("/")}; bỏ qua
+                  điều chỉnh riêng từng tháng và hũ tích lũy.
+                </p>
+                {config && (
+                  <label className="fund-check">
+                    <input
+                      type="checkbox"
+                      checked={applyLiving}
+                      onChange={(e) => {
+                        setApplyLiving(e.target.checked);
+                        setJarIds(config.living.items.map((i) => i.jarId));
+                        invalidate();
+                      }}
+                    />
+                    Cập nhật mức sinh hoạt từ Chi tiêu hiện tại
+                  </label>
+                )}
+                {!view.source.items.length && (
+                  <p>
+                    Chưa có hũ chi tháng đang hoạt động.{" "}
+                    <Link href="/budgets">Thiết lập tại Chi tiêu</Link>, sau đó
+                    tải lại dữ liệu.
+                  </p>
+                )}
+                {options.map((item) => (
+                  <label className="fund-check" key={item.jarId}>
+                    <input
+                      type="checkbox"
+                      checked={jarIds.includes(item.jarId)}
+                      disabled={Boolean(config && !applyLiving)}
+                      onChange={(e) => {
+                        setJarIds((s) =>
+                          e.target.checked
+                            ? [...s, item.jarId]
+                            : s.filter((v) => v !== item.jarId),
+                        );
+                        invalidate();
+                      }}
+                    />
+                    <span>
+                      {item.name}
+                      {!view.source.items.some((i) => i.jarId === item.jarId)
+                        ? " · Không còn hoạt động"
+                        : ""}
+                    </span>
+                    <strong>{money(item.amount)}</strong>
+                  </label>
+                ))}
+                <p className="fund-total">
+                  Mức sinh hoạt: <strong>{money(livingTotal)}/tháng</strong>
+                </p>
+              </>
+            )}
+            {step === 1 && (
+              <>
+                <p>
+                  Nhập số tháng muốn dự phòng cho từng quỹ. Ví dụ phép tính: 2
+                  tháng × mức sinh hoạt. Chọn hệ số phù hợp hoàn cảnh của bạn.
+                </p>
+                {fundIds.map((k) =>
+                  field(
+                    `multipliers.${k}`,
+                    `${fundNames[k]} — hệ số x`,
+                    <input
+                      key={k}
+                      id={fieldId(`multipliers.${k}`)}
+                      inputMode="decimal"
+                      autoComplete="off"
+                      value={multipliers[k]}
+                      onChange={(e) => {
+                        setMultipliers((s) => ({
+                          ...s,
+                          [k]: e.target.value.replace(",", "."),
+                        }));
+                        invalidate();
+                      }}
+                    />,
+                  ),
+                )}
+                <p className="fund-note">
+                  Mục tiêu bằng mức sinh hoạt đã xác nhận nhân x; số tiền làm
+                  tròn lên đồng VND.
+                </p>
+              </>
+            )}
+            {step === 2 && (
+              <>
+                <p>
+                  Quỹ chưa đủ đầu tiên trong thứ tự này sẽ là bước tiếp theo của
+                  bạn. Bạn có thể đổi thứ tự sau.
+                </p>
+                <ol className="fund-priorities">
+                  {priority.map((k, i) => (
+                    <li key={k}>
+                      <span>{fundNames[k]}</span>
+                      <button
+                        className="expense-icon-button"
+                        aria-label={`Ưu tiên ${fundNames[k]} lên`}
+                        disabled={i === 0}
+                        onClick={() => {
+                          setPriority((s) => {
+                            const n = [...s];
+                            [n[i - 1], n[i]] = [n[i], n[i - 1]];
+                            return n;
+                          });
+                          invalidate();
+                        }}
+                      >
+                        <ArrowUp size={18} />
+                      </button>
+                      <button
+                        className="expense-icon-button"
+                        aria-label={`Ưu tiên ${fundNames[k]} xuống`}
+                        disabled={i === 2}
+                        onClick={() => {
+                          setPriority((s) => {
+                            const n = [...s];
+                            [n[i + 1], n[i]] = [n[i], n[i + 1]];
+                            return n;
+                          });
+                          invalidate();
+                        }}
+                      >
+                        <ArrowDown size={18} />
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              </>
+            )}
+          </>
+        ) : mode.type === "location" ? (
+          <>
+            {input("name", "Tên nơi giữ tiền")}
+            {location && (
+              <label className="fund-check">
+                <input
+                  type="checkbox"
+                  checked={f.active}
+                  onChange={(e) => set("active", e.target.checked)}
+                />
+                Đang sử dụng
+              </label>
+            )}
+            <p className="fund-note">
+              Nơi giữ là nhãn ghi sổ trong Fund. Số dư được tách cho từng quỹ.
+            </p>
+          </>
+        ) : (
+          <>
+            {mode.type !== "cancel" && (
+              <>
+                {field(
+                  "kind",
+                  "Loại giao dịch",
+                  <select
+                    id={fieldId("kind")}
+                    value={f.kind}
+                    onChange={(e) =>
+                      set("kind", e.target.value as FundTransaction["kind"])
+                    }
+                  >
+                    {Object.entries(transactionNames).map(([k, v]) => (
+                      <option key={k} value={k}>
+                        {v}
+                      </option>
+                    ))}
+                  </select>,
+                )}
+                <div className="fund-form-grid">
+                  {fundSelect(
+                    "fundId",
+                    f.kind === "transfer" ? "Quỹ nguồn" : "Quỹ",
+                  )}
+                  {locationSelect(
+                    "locationId",
+                    f.kind === "transfer" ? "Nơi nguồn" : "Nơi giữ tiền",
+                  )}
+                </div>
+                {f.kind === "transfer" && (
+                  <div className="fund-form-grid">
+                    {fundSelect("toFundId", "Quỹ nhận")}
+                    {locationSelect("toLocationId", "Nơi nhận")}
+                  </div>
+                )}
+                {input("amount", "Số tiền (VND)")}
+                {input("occurredAt", "Thời điểm giao dịch (giờ Việt Nam)")}
+                {input(
+                  "note",
+                  f.kind === "withdraw" || f.kind === "transfer"
+                    ? "Lý do giao dịch"
+                    : "Ghi chú",
+                )}
+                {!view.book?.locations.some((l) => l.active) && (
+                  <p>Thêm nơi giữ tiền trước khi ghi giao dịch.</p>
+                )}
+              </>
+            )}
+            {mode.type === "cancel" && old && (
+              <p>
+                Hủy {transactionNames[old.kind].toLowerCase()}{" "}
+                {money(old.amount)} · {displayTime(old.occurredAt)}. Bản gốc vẫn
+                được giữ trong lịch sử.
+              </p>
+            )}
+            {(mode.type === "revise" || mode.type === "cancel") &&
+              input("reason", "Lý do sửa hoặc hủy")}
+          </>
+        )}
+      </fieldset>
+      {preview && (
+        <section className="fund-preview" aria-label="Xem trước thay đổi">
+          <h3>Trước / Sau</h3>
+          {mode.type === "configure" && (
+            <>
+              <p>
+                Mức sinh hoạt:{" "}
+                {money(preview.result.beforeConfig?.living.total ?? "0")} →{" "}
+                <strong>
+                  {money(preview.result.afterConfig.living.total)}
+                </strong>
+                /tháng
+              </p>
+              <p>
+                Nguồn: tháng {preview.result.afterConfig.living.month} · Chi
+                tiêu phiên bản{" "}
+                {preview.result.afterConfig.living.expenseVersion}
+              </p>
+              {preview.result.afterConfig.living.items.map((i) => (
+                <p key={i.jarId}>
+                  {i.name}: {money(i.amount)}
+                </p>
+              ))}
+              <p>
+                Ưu tiên:{" "}
+                {preview.result.afterConfig.priority
+                  .map((k) => fundNames[k])
+                  .join(" → ")}
+              </p>
+            </>
+          )}
+          {mode.type === "location" && (
+            <p>
+              {location?.name ?? "Chưa có"} → {f.name} ·{" "}
+              {f.active ? "Đang sử dụng" : "Ngừng sử dụng"}
+            </p>
+          )}
+          {mode.type !== "configure" && mode.type !== "location" && (
+            <p>
+              {mode.type === "cancel"
+                ? "Hủy giao dịch"
+                : `${transactionNames[f.kind]} · ${fundNames[f.fundId as FundId]} · ${view.book?.locations.find((l) => l.id === f.locationId)?.name ?? ""} · ${money(f.amount)}`}
+              <br />
+              {f.note}
+              {f.reason && ` · ${f.reason}`}
+              {mode.type !== "cancel" && ` · ${f.occurredAt.replace("T", " ")}`}
+              {f.kind === "transfer" &&
+                ` → ${fundNames[f.toFundId as FundId]} · ${view.book?.locations.find((l) => l.id === f.toLocationId)?.name}`}
+            </p>
+          )}
+          {old && (
+            <p>
+              Trước: {transactionNames[old.kind]} · {fundNames[old.fundId]} ·{" "}
+              {view.book?.locations.find((l) => l.id === old.locationId)?.name}{" "}
+              · {money(old.amount)} · {displayTime(old.occurredAt)} · {old.note}
+            </p>
+          )}
+          {Object.keys({
+            ...preview.result.before.balances,
+            ...preview.result.after.balances,
+          })
+            .filter(
+              (key) =>
+                (preview.result.before.balances[key] ?? "0") !==
+                (preview.result.after.balances[key] ?? "0"),
+            )
+            .map((key) => {
+              const [fund, locationId] = key.split(":");
+              return (
+                <p key={key}>
+                  {fundNames[fund as FundId]} ·{" "}
+                  {view.book?.locations.find((l) => l.id === locationId)?.name}:{" "}
+                  {money(preview.result.before.balances[key] ?? "0")} →{" "}
+                  {money(preview.result.after.balances[key] ?? "0")}
+                </p>
+              );
+            })}
+          <div className="fund-preview-rows">
+            {preview.result.after.funds.map((after) => {
+              const before = preview.result.before.funds.find(
+                (v) => v.id === after.id,
+              )!;
+              return (
+                <div key={after.id}>
+                  <strong>{fundNames[after.id]}</strong>
+                  <span>
+                    Số dư: {money(before.balance)} → {money(after.balance)}
+                  </span>
+                  <span>
+                    Mục tiêu: {money(before.target)} → {money(after.target)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <p className="fund-note">
+            Chưa ghi dữ liệu. Kiểm tra nội dung rồi xác nhận lưu.
+          </p>
+        </section>
+      )}
+    </ExpenseModal>
+  );
+}

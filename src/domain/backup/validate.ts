@@ -1,9 +1,11 @@
+import { validateFundBook } from "../funds/validate";
+import type { FundBook } from "../funds/types";
 import {
   backupTables,
   BackupError,
   parseBackup,
   primaryColumns,
-  type FullBackupV1,
+  type FullBackup,
 } from "./format";
 import { toView as expenseView } from "../expenses/engine";
 import { toView as incomeView } from "../income/engine";
@@ -26,7 +28,7 @@ export function canonical(value: unknown): string {
       .join(",")}}`;
   return JSON.stringify(value);
 }
-export function backupBooks(b: FullBackupV1) {
+export function backupBooks(b: FullBackup) {
   const t = b.tables;
   const expenses: ExpenseBook | null = t.expense_books[0]
     ? {
@@ -93,9 +95,23 @@ export function backupBooks(b: FullBackupV1) {
         audit: t.investments_audit,
       }
     : null;
-  return { expenses, income, savings, investments };
+  const funds: FundBook | null = t.funds_books[0]
+    ? {
+        version: t.funds_books[0].version,
+        funds: t.funds_definitions.map((r) => r.id),
+        locations: t.funds_locations.map((r) => r.data),
+        configurations: t.funds_configurations
+          .map((r) => r.data)
+          .sort((a, b) => a.sequence - b.sequence),
+        revisions: t.funds_transactions
+          .map((r) => r.data)
+          .sort((a, b) => a.sequence - b.sequence),
+        audit: [...t.funds_audit].sort((a, b) => a.version - b.version),
+      }
+    : null;
+  return { expenses, income, savings, investments, funds };
 }
-export function validateBackup(input: unknown): FullBackupV1 {
+export function validateBackup(input: unknown): FullBackup {
   const b = parseBackup(input),
     t = b.tables;
   for (const table of backupTables) {
@@ -146,6 +162,7 @@ export function validateBackup(input: unknown): FullBackupV1 {
     ["income", books.income],
     ["savings", books.savings],
     ["investments", books.investments],
+    ["funds", books.funds],
   ] as const) {
     if (!book) continue;
     const versions = new Set(book.audit.map((r) => r.version));
@@ -371,6 +388,39 @@ export function validateBackup(input: unknown): FullBackupV1 {
         jars.has(row.jarId) && row.month.startsWith(`${y.year}-`),
         "snapshot năm tham chiếu hũ hoặc tháng không hợp lệ.",
       );
+  if (books.funds) {
+    for (const r of t.funds_locations)
+      requireValid(r.id === r.data.id, "mã nơi giữ không khớp.");
+    for (const r of t.funds_configurations)
+      requireValid(
+        r.id === r.data.id && r.sequence === r.data.sequence,
+        "cấu hình quỹ không khớp.",
+      );
+    for (const r of t.funds_transactions) {
+      const first = books.funds.revisions.find(
+        (x) => x.rootId === r.data.rootId,
+      );
+      const transaction = r.data.transaction ?? first?.transaction;
+      requireValid(
+        transaction &&
+          r.id === r.data.id &&
+          r.sequence === r.data.sequence &&
+          r.root_id === first?.id &&
+          r.fund_id === transaction.fundId &&
+          r.location_id === transaction.locationId &&
+          r.to_fund_id ===
+            (transaction.kind === "transfer" ? transaction.toFundId : null) &&
+          r.to_location_id ===
+            (transaction.kind === "transfer" ? transaction.toLocationId : null),
+        "giao dịch quỹ không khớp.",
+      );
+    }
+    try {
+      validateFundBook(books.funds);
+    } catch {
+      throw new BackupError("Lịch sử, cấu hình hoặc số dư quỹ không hợp lệ.");
+    }
+  }
   try {
     const today = b.exportedAt.slice(0, 10),
       clock = { today, now: b.exportedAt };

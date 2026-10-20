@@ -52,3 +52,16 @@ Chạy npm test, npm run test:db, npm run test:e2e, npm run typecheck, npm run b
 ## Giao diện chi tiết — 18/10/2026
 
 Chi tiết thu phát sinh có tổng kỳ, số khoản, tìm kiếm và 20 dòng/trang. Sửa/xóa qua dialog con quay lại danh sách đã cập nhật, giữ bộ lọc. Xem trước đổi cấu hình hiển thị đầy đủ thay đổi có nhãn Trước/Sau và phân trang, thay cho giới hạn 24 dòng. Xem [quy chuẩn dialog](ui-feedback.md).
+
+
+## Cập nhật khi quay lại — 19/10/2026
+
+Giữ dữ liệu, bộ lọc và bản nháp khi quay lại tab; cập nhật ngầm nếu lần đọc thành công đã qua 60 giây. Reconnect/đổi ngày Việt Nam kiểm tra sớm hơn, tối thiểu 5 giây giữa các lần tải tự động, không tạo request trùng khi đang tải. Đổi năm bỏ view năm cũ và tải ngay theo năm mới. Lưu và thử lại không bị thời gian chờ này giới hạn. Lỗi mạng giữ view; lỗi 401 xóa view và yêu cầu đăng nhập. Không lưu dữ liệu tài chính vào storage trình duyệt.
+
+## Nhập bổ sung và trạng thái — 19/10/2026
+
+Danh mục chưa nhập, đã ghi 0 và đã ngừng có dấu hiệu riêng. Báo cáo liệt kê tháng/danh mục thiếu và cho nhập ngay từ ô được đánh dấu; không mở nhập cho tháng tương lai hoặc ngoài thời gian hoạt động. Lưu giữ bộ lọc/vị trí báo cáo. Form sửa không đổi dữ liệu vô hiệu nút Lưu/Xem trước. Cột/đường có tooltip hỗ trợ hover, bàn phím và chạm, tuân theo ẩn tiền. Xem [ma trận UI](interface-feedback-2026-10-19.md).
+
+## Help theo ngữ cảnh — 20/10/2026
+
+Giải thích nguồn cố định khác số tiền cố định, thu phát sinh, chưa nhập/0 và lưu thay thế số tháng. Hướng dẫn bám nút Lưu cho tạo/nhập, xem trước cho sửa/ngừng danh mục. Xem [Help theo từng trang](help.md).

@@ -151,6 +151,7 @@ test("outside and Escape cannot interrupt a pending save; dragging out does not 
   await page.mouse.move(2, 2);
   await page.mouse.up();
   await expect(dialog).toHaveAccessibleName("Đổi biểu tượng");
+  await dialog.getByRole("button", { name: "Quà tặng", exact: true }).click();
   let release!: () => void;
   const gate = new Promise<void>((resolve) => {
     release = resolve;

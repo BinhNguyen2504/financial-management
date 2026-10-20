@@ -1,4 +1,5 @@
 "use client";
+import { HelpButton, HelpPageTitle } from "@/features/help/provider";
 import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -19,11 +20,13 @@ import { browserAuth } from "@/lib/supabase/browser";
 import {
   parseBackup,
   BackupError,
-  type FullBackupV1,
+  type FullBackup,
   type summarizeBackup,
 } from "@/domain/backup/format";
 import { dataRequest, type DataStatus } from "./api";
 import "./settings.css";
+import { ThemePicker } from "@/components/ui-preferences";
+import { InstallGuide } from "./install-guide";
 
 type Summary = ReturnType<typeof summarizeBackup> & { canImport: boolean };
 type PreparedFile = { url: string; name: string; size: number };
@@ -49,7 +52,7 @@ export function SettingsWorkspace() {
   const [status, setStatus] = useState<DataStatus | null>(null);
   const [checking, setChecking] = useState(true);
   const [statusError, setStatusError] = useState("");
-  const [backup, setBackup] = useState<FullBackupV1 | null>(null);
+  const [backup, setBackup] = useState<FullBackup | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [fileName, setFileName] = useState("");
   const [restoreProfile, setRestoreProfile] = useState(false);
@@ -313,7 +316,7 @@ export function SettingsWorkspace() {
     <div className="settings-workspace">
       <header className="settings-heading">
         <p className="eyebrow">KHÔNG GIAN CỦA BẠN</p>
-        <h1>Cài đặt</h1>
+        <HelpPageTitle>Cài đặt</HelpPageTitle>
         <p className="lead">
           Quản lý dữ liệu của bạn và cách sử dụng ứng dụng.
         </p>
@@ -321,9 +324,14 @@ export function SettingsWorkspace() {
       <section className="settings-data" aria-labelledby="data-heading">
         <div className="settings-section-heading">
           <h2 id="data-heading">Sao lưu và khôi phục</h2>
+          <HelpButton
+            pageId="settings"
+            sectionId="restore"
+            label="Điều kiện khôi phục"
+          />
           <p>
-            Thu nhập, Chi tiêu, Tiết kiệm và Đầu tư — cùng toàn bộ lịch sử và
-            các kỳ đã chốt.
+            Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn — cùng toàn bộ
+            lịch sử và các kỳ đã chốt.
           </p>
         </div>
         {checking && !userError && (
@@ -632,6 +640,9 @@ export function SettingsWorkspace() {
           </section>
         </div>
       </section>
+      <section className="panel settings-appearance">
+        <ThemePicker />
+      </section>
       <details className="panel settings-install">
         <summary>
           <Smartphone size={22} aria-hidden="true" />
@@ -640,17 +651,7 @@ export function SettingsWorkspace() {
             <small>Mở ứng dụng nhanh hơn trên điện thoại hoặc máy tính.</small>
           </span>
         </summary>
-        <div>
-          <p>
-            Trên iPhone/iPad: mở bằng Safari → Chia sẻ → Thêm vào Màn hình
-            chính. Trên trình duyệt hỗ trợ, chọn cài đặt ứng dụng trong menu
-            trình duyệt.
-          </p>
-          <p>
-            Ứng dụng cần được phục vụ qua HTTPS. Cần kết nối mạng để xem và lưu
-            dữ liệu.
-          </p>
-        </div>
+        <InstallGuide />
       </details>
     </div>
   );

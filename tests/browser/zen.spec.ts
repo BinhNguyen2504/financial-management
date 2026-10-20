@@ -37,6 +37,12 @@ async function setup(page: Page) {
   const address = `${randomUUID()}@example.test`;
   await login(page, address);
   await command(page, { type: "initialize", start: current });
+  await command(page, {
+    type: "upsertLabel",
+    id: randomUUID(),
+    kind: "method",
+    name: "Ví",
+  });
   const id = randomUUID();
   await command(page, {
     type: "createJar",
@@ -230,7 +236,10 @@ test("emoji picker saves through commands and a separate session without changin
     page.getByRole("button", { name: "Tự động theo tên" }),
   ).toContainText("🏡");
   await page.getByRole("button", { name: "Cà phê", exact: true }).click();
-  await page.getByLabel("Phương thức", { exact: true }).last().fill("Ví");
+  await page
+    .getByLabel("Phương thức", { exact: true })
+    .last()
+    .selectOption("Ví");
   await page.getByLabel("Mức mặc định mỗi tháng").fill("200000");
   await confirm(page);
   await expect(

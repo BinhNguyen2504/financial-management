@@ -1294,3 +1294,29 @@
     font-size: 16px;
   }
 }
+
+/* Fund's illustration also explains its progress on compact preview layouts. */
+.preview-chart.preview-chart-funds {
+  display: block;
+}
+.preview-chart-funds .fund-scene {
+  max-width: 300px;
+  margin-inline: auto;
+}
+.preview-chart-funds p {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  margin: 8px 0;
+}
+@media (max-width: 1100px) {
+  .preview-chart-funds .fund-scene {
+    max-height: 180px !important;
+  }
+}
+
+.preview-help { margin: 12px 24px; border: 1px solid var(--border); border-radius: 12px; padding: 8px 14px; background: var(--surface); color: var(--text); }
+.preview-help summary { min-height: 44px; align-content: center; cursor: pointer; font-size: 14px; font-weight: 700; }
+.preview-help p { font-size: 15px; line-height: 1.7; }
+.preview-help small { display: block; margin-bottom: 8px; line-height: 1.6; }
+@media (max-width: 767px) { .preview-help { margin-inline: 12px; } }

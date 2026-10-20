@@ -112,3 +112,12 @@ Backup/import toàn tài khoản đã có trong source. Áp dụng migration bi�
 ### Rà soát tải backup và Cài đặt — 18/10/2026
 
 Thiếu migration `202610180002_data_imports.sql` chỉ khóa khôi phục, không khóa xuất khi đủ 28 bảng tài chính. Status trả `importReady:false`; giao diện báo rõ. Chưa áp dụng migration này trên database đang cấu hình trong lượt sửa lỗi; không tự đổi cấu hình hosting.
+
+
+## Migration Fund — 19/10/2026
+
+Áp dụng `supabase/migrations/202610190001_funds.sql` sau các migration cũ bằng SQL Editor/admin trước khi đưa source mới lên môi trường dùng thật. Runtime vẫn dùng `expense_api`, không cấp CREATE hoặc service role. Migration chỉ thêm bảng, không nạp dữ liệu. Thiếu bảng Fund, API báo `FUNDS_MIGRATION_REQUIRED`; full backup/status báo schema chưa sẵn sàng thay vì bỏ dữ liệu. Kiểm tra đăng nhập, RLS hai tài khoản, backup V2 và restore vào tài khoản thử nghiệm trống sau deployment.
+
+## Migration logo phân loại — 20/10/2026
+
+Áp dụng tiếp `supabase/migrations/202610190002_label_visuals.sql` một lần bằng SQL Editor/admin để lưu logo/icon phân loại. Khi thiếu riêng migration này, source mới vẫn đọc/lưu dữ liệu Chi tiêu không kèm metadata; lưu metadata trả `LABEL_VISUALS_MIGRATION_REQUIRED`. Đây là tương thích của repository Chi tiêu, không thay thế yêu cầu đủ migration của backup/import hoặc module khác. Không tự áp dụng migration hoặc đổi quyền runtime trong lượt chẩn đoán local này.

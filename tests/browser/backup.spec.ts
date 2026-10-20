@@ -1,10 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import {
-  backupTables,
-  type FullBackupV1,
-} from "../../src/domain/backup/format";
+import { backupTables, type FullBackup } from "../../src/domain/backup/format";
 import { vietnamClock } from "../../src/domain/expenses/engine";
 const origin = () => process.env.TEST_BASE_URL!;
 test("backup remains available without import readiness and errors stay beside export", async ({
@@ -34,7 +31,7 @@ test("backup remains available without import readiness and errors stay beside e
     .click();
   const file = await download;
   const backup = JSON.parse(await readFile((await file.path())!, "utf8"));
-  expect(Object.keys(backup.tables)).toHaveLength(28);
+  expect(Object.keys(backup.tables)).toHaveLength(35);
   await expect(
     exportCard.getByRole("link", { name: "Lưu file JSON", exact: true }),
   ).toBeVisible();
@@ -142,7 +139,7 @@ async function command(page: Page, module: string, action: unknown) {
   });
   expect(r.ok(), await r.text()).toBe(true);
 }
-async function source(page: Page): Promise<FullBackupV1> {
+async function source(page: Page): Promise<FullBackup> {
   await login(page, "/profile");
   await page.getByLabel("Họ và tên", { exact: true }).fill("Hồ sơ từ backup");
   await page
@@ -249,7 +246,7 @@ test("full transfer, optional profile failure/retry, download and responsive set
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   const backup = await source(page);
-  expect(Object.keys(backup.tables)).toHaveLength(28);
+  expect(Object.keys(backup.tables)).toHaveLength(35);
   const context = await browser.newContext({
     baseURL: origin(),
     viewport: page.viewportSize()!,
@@ -425,7 +422,7 @@ test("data API rejects anonymous access, wrong origins, malformed files and acco
   expect(status.headers()["cache-control"]).toBe("private, no-store");
   const empty = {
     format: "financial-manager-full-backup",
-    schemaVersion: 1,
+    schemaVersion: 2,
     exportedAt: new Date().toISOString(),
     profile: { full_name: "", birth_date: "", gender: "" },
     tables: Object.fromEntries(backupTables.map((t) => [t, []])),

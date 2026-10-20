@@ -62,9 +62,9 @@ test("public landing and preview stay independent of financial APIs and account 
   ).toBeFocused();
   await page.keyboard.press("End");
   await expect(
-    preview.getByRole("tab", { name: "Đầu tư", exact: true }),
+    preview.getByRole("tab", { name: "Quỹ an toàn", exact: true }),
   ).toBeFocused();
-  await expect(preview.getByRole("tabpanel")).toContainText("72.000.000 ₫");
+  await expect(preview.getByRole("tabpanel")).toContainText("42.750.000 ₫");
   await expect(page.locator("#dang-phat-trien")).toContainText(
     "chưa có tổng tài sản ròng",
   );
@@ -115,7 +115,7 @@ test("login returns to the requested page and authenticated users can revisit th
   await page
     .getByRole("link", { name: "Thông tin cá nhân", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/profile$/);
+  await expect(page).toHaveURL(/\/profile(?:\?|$)/);
   await page.goto("/login?next=/income");
   await expect(page).toHaveURL(/\/income$/);
   await page.goto("/");

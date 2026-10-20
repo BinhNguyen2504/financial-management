@@ -1,12 +1,30 @@
 "use client";
-import { LoadingStatus } from "@/components/loading";
+import { HelpButton, HelpPageTitle } from "@/features/help/provider";
+import { Trash2 as DeleteCommandGlyph } from "lucide-react";
+import {
+  Pencil as EditActionIcon,
+  Trash2 as DeleteActionIcon,
+} from "lucide-react";
+import { useForegroundRefresh } from "@/components/use-foreground-refresh";
+import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMoney } from "@/components/privacy";
 import { DailyNote } from "@/components/daily-note";
 import { Garden } from "@/components/garden";
 import { focusPointerControl } from "@/components/pointer-focus";
-import { Plus, ArrowLeft, ArrowRight, Download } from "lucide-react";
+import { MissingIncome } from "./missing-income";
+import {
+  Plus,
+  ArrowLeft,
+  ArrowRight,
+  Download,
+  Pencil,
+  Archive,
+  CircleAlert,
+  CheckCircle2,
+  Sparkles,
+} from "lucide-react";
 import type { IncomeRow, IncomeView } from "@/domain/income/types";
 import { ruleAt, hasRecordedIncome } from "@/domain/income/engine";
 import { buildReport, type ReportFilter } from "@/domain/income/reports";
@@ -41,50 +59,44 @@ export function IncomeWorkspace({
   const [editorKey, setEditorKey] = useState(0);
   const [details, setDetails] = useState<{ month?: string } | null>(null);
   const requestId = useRef(0);
-  const reload = useCallback(async () => {
-    const id = ++requestId.current;
-    setLoading(true);
-    try {
-      const next = await incomeJSON<IncomeView>(`?year=${year}`);
-      if (id === requestId.current) {
-        setView(next);
-        setNeedsLogin(false);
-        setError("");
-      }
-      return next;
-    } catch (e) {
-      if (id === requestId.current) {
-        setError(
-          e instanceof Error
-            ? e.message
-            : "Không thể tải dữ liệu. Hãy thử lại.",
-        );
-        if (e instanceof IncomeAPIError && e.status === 401) {
-          setNeedsLogin(true);
-          setView(null);
+  const reload = useForegroundRefresh(
+    useCallback(async () => {
+      const id = ++requestId.current;
+      setLoading(true);
+      try {
+        const next = await incomeJSON<IncomeView>(`?year=${year}`);
+        if (id === requestId.current) {
+          setView(next);
+          setNeedsLogin(false);
+          setError("");
         }
+        return next;
+      } catch (e) {
+        if (id === requestId.current) {
+          setError(
+            e instanceof Error
+              ? e.message
+              : "Không thể tải dữ liệu. Hãy thử lại.",
+          );
+          if (e instanceof IncomeAPIError && e.status === 401) {
+            setNeedsLogin(true);
+            setView(null);
+          }
+        }
+        throw e;
+      } finally {
+        if (id === requestId.current) setLoading(false);
       }
-      throw e;
-    } finally {
-      if (id === requestId.current) setLoading(false);
-    }
-  }, [year]);
+    }, [year]),
+    configured,
+  );
   useEffect(() => {
     if (!configured) return;
     setLoading(true);
     setView(null);
     void reload().catch(() => {});
-    const refresh = () => {
-      if (document.visibilityState === "visible") void reload().catch(() => {});
-    };
-    window.addEventListener("focus", refresh);
-    window.addEventListener("online", refresh);
-    document.addEventListener("visibilitychange", refresh);
     return () => {
       requestId.current++;
-      window.removeEventListener("focus", refresh);
-      window.removeEventListener("online", refresh);
-      document.removeEventListener("visibilitychange", refresh);
     };
   }, [configured, reload]);
   useEffect(() => {
@@ -175,9 +187,12 @@ export function IncomeWorkspace({
     return list.length ? (
       <div className="income-list">
         {list.map((r) => (
-          <article className="income-item" key={r.key}>
+          <article className="income-item is-oneoff" key={r.key}>
             <div>
-              <h3>{r.name}</h3>
+              <h3>
+                <Sparkles size={17} aria-hidden="true" /> {r.name}
+              </h3>
+              <span className="status-badge">Thu phát sinh</span>
               <p className="expense-muted">{monthName(r.month)}</p>
               {r.description && (
                 <p className="expense-muted">{r.description}</p>
@@ -188,18 +203,20 @@ export function IncomeWorkspace({
             </div>
             <div className="expense-actions">
               <button
-                className="expense-secondary"
+                className="expense-secondary icon-action action-edit"
                 onClick={() => open({ type: "oneoff", row: r })}
                 aria-label={`Sửa ${r.name}`}
+                title="Sửa"
               >
-                Sửa
+                <EditActionIcon size={18} aria-hidden="true" />
               </button>
               <button
-                className="expense-secondary"
+                className="expense-secondary icon-action action-delete"
                 onClick={() => open({ type: "deleteOneOff", row: r })}
                 aria-label={`Xóa ${r.name}`}
+                title="Xóa"
               >
-                Xóa
+                <DeleteActionIcon size={18} aria-hidden="true" />
               </button>
             </div>
           </article>
@@ -217,7 +234,7 @@ export function IncomeWorkspace({
       <div className="expense-page-heading">
         <div>
           <p className="eyebrow">THỰC NHẬN THEO THÁNG</p>
-          <h1>Thu nhập</h1>
+          <HelpPageTitle>Thu nhập</HelpPageTitle>
           <p className="lead">
             Ghi nguồn thu đều đặn và khoản phát sinh, theo dõi từng tháng trong
             năm.
@@ -249,9 +266,11 @@ export function IncomeWorkspace({
               <p>{error}</p>
               <button
                 className="expense-secondary"
+                disabled={loading}
+                aria-busy={loading}
                 onClick={() => void reload().catch(() => {})}
               >
-                Thử tải lại
+                {loading && <LoadingSpinner />} Thử tải lại
               </button>
             </div>
           )}
@@ -263,7 +282,9 @@ export function IncomeWorkspace({
               </Link>
             </section>
           )}
-          {loading && <LoadingStatus>Đang tải thu nhập…</LoadingStatus>}
+          {loading && !view && (
+            <LoadingStatus>Đang tải thu nhập…</LoadingStatus>
+          )}
           <p className="expense-status" role="status">
             {notice}
           </p>
@@ -350,7 +371,9 @@ export function IncomeWorkspace({
                       <p>
                         {future
                           ? "Tháng tương lai: chỉ xem danh mục, chưa ghi thực nhận."
-                          : `${missing} danh mục còn chưa nhập. Số 0 là đã ghi nhận không có thu.`}
+                          : missing
+                            ? `${missing} danh mục chưa nhập trong ${monthName(selectedMonth)}.`
+                            : "Đã ghi nhận đủ các danh mục đến hạn."}
                       </p>
                     </article>
                     <article>
@@ -378,8 +401,24 @@ export function IncomeWorkspace({
                       </p>
                     </article>
                   </section>
+                  {!future && (
+                    <MissingIncome
+                      rows={fixedRows}
+                      today={today}
+                      onEnter={(row) => open({ type: "monthly", row })}
+                    />
+                  )}
+                  <p className="expense-muted">
+                    Chưa nhập nghĩa là chưa ghi nhận thu nhập. Nhập 0 ₫ để xác
+                    nhận tháng này không có thu nhập từ danh mục này.
+                  </p>
                   <div className="expense-section-heading">
                     <h2>Danh mục cố định · {monthName(selectedMonth)}</h2>
+                    <HelpButton
+                      pageId="income"
+                      sectionId="fixed"
+                      label="Danh mục cố định là gì?"
+                    />
                     <button
                       className="expense-secondary"
                       onClick={() => open({ type: "create" })}
@@ -395,7 +434,10 @@ export function IncomeWorkspace({
                   )}
                   <div className="income-list">
                     {fixedRows.map((r) => (
-                      <article key={r.key} className="income-item">
+                      <article
+                        key={r.key}
+                        className={`income-item${!r.active ? " is-inactive" : r.amount === null && !future ? " is-missing" : ""}`}
+                      >
                         <div>
                           <h3>{r.name}</h3>
                           {r.description && (
@@ -404,7 +446,14 @@ export function IncomeWorkspace({
                         </div>
                         <div className="income-receipt">
                           <p className="income-amount">
-                            {r.amount === null ? "Chưa nhập" : money(r.amount)}
+                            {r.amount === null ? (
+                              <span className="status-badge status-missing">
+                                <CircleAlert size={15} aria-hidden="true" />
+                                {future ? "Chưa đến kỳ nhập" : "Chưa nhập"}
+                              </span>
+                            ) : (
+                              money(r.amount)
+                            )}
                             {!r.active && " · đã ngừng"}
                           </p>
                           {r.note && r.note !== r.description && (
@@ -418,6 +467,11 @@ export function IncomeWorkspace({
                             aria-label={`Nhập ${r.name}`}
                             onClick={() => open({ type: "monthly", row: r })}
                           >
+                            {r.amount === null ? (
+                              <Plus size={17} aria-hidden="true" />
+                            ) : (
+                              <Pencil size={17} aria-hidden="true" />
+                            )}
                             {r.amount === null ? "Nhập tiền" : "Sửa số thu"}
                           </button>
                           {r.amount !== null && (
@@ -426,6 +480,10 @@ export function IncomeWorkspace({
                               aria-label={`Xóa số thu ${r.name}`}
                               onClick={() => open({ type: "clear", row: r })}
                             >
+                              <DeleteCommandGlyph
+                                size={17}
+                                aria-hidden="true"
+                              />
                               Xóa số thu
                             </button>
                           )}
@@ -435,6 +493,11 @@ export function IncomeWorkspace({
                   </div>
                   <div className="expense-section-heading">
                     <h2>Thu phát sinh · {monthName(selectedMonth)}</h2>
+                    <HelpButton
+                      pageId="income"
+                      sectionId="oneoff"
+                      label="Thu phát sinh là gì?"
+                    />
                   </div>
                   {oneOffList(oneOffRows)}
                 </>
@@ -450,7 +513,7 @@ export function IncomeWorkspace({
                       Thêm danh mục
                     </button>
                   </div>
-                  <p className="expense-muted">
+                  <p className="expense-muted income-configuration-note">
                     Cấu hình tại {monthName(selectedMonth)}. Danh mục tự tiếp
                     tục qua năm mới; tiền mỗi tháng nhập riêng.
                   </p>
@@ -462,41 +525,59 @@ export function IncomeWorkspace({
                       const rule = ruleAt(c, selectedMonth) ?? c.rules[0];
                       const hasMoney = hasRecordedIncome(view.book!, c.id);
                       return (
-                        <article className="income-item" key={c.id}>
+                        <article
+                          className={`income-item${selectedMonth >= c.start && !rule.active ? " is-inactive" : ""}`}
+                          key={c.id}
+                        >
                           <div>
                             <h3>{rule.name}</h3>
                             <p className="expense-muted">
                               Từ {monthName(c.start)} ·{" "}
-                              {selectedMonth < c.start
-                                ? "Chưa bắt đầu"
-                                : rule.active
-                                  ? "Đang hoạt động"
-                                  : "Đã ngừng"}
+                              <span
+                                className={`status-badge ${!rule.active ? "status-inactive" : ""}`}
+                              >
+                                {selectedMonth < c.start
+                                  ? "Chưa bắt đầu"
+                                  : rule.active
+                                    ? "Đang hoạt động"
+                                    : "Đã ngừng"}
+                              </span>
                             </p>
                             {rule.description && <p>{rule.description}</p>}
                           </div>
                           <div className="expense-actions">
                             <button
-                              className="expense-secondary"
+                              className="expense-secondary icon-action action-edit"
                               onClick={() =>
                                 open({ type: "configure", category: c })
                               }
                               aria-label={`Sửa danh mục ${rule.name}`}
+                              title="Sửa"
                             >
-                              Sửa
+                              <EditActionIcon size={18} aria-hidden="true" />
                             </button>
-                            <button
-                              className="expense-secondary"
-                              onClick={() =>
-                                open({
-                                  type: hasMoney ? "stop" : "deleteCategory",
-                                  category: c,
-                                })
-                              }
-                              aria-label={`${hasMoney ? "Ngừng" : "Xóa"} danh mục ${rule.name}`}
-                            >
-                              {hasMoney ? "Ngừng từ tháng…" : "Xóa"}
-                            </button>
+                            {(!hasMoney ||
+                              (selectedMonth >= c.start && rule.active)) && (
+                              <button
+                                className={
+                                  hasMoney
+                                    ? "expense-secondary expense-warning"
+                                    : "expense-secondary expense-danger"
+                                }
+                                onClick={() =>
+                                  open({
+                                    type: hasMoney ? "stop" : "deleteCategory",
+                                    category: c,
+                                  })
+                                }
+                                aria-label={`${hasMoney ? "Ngừng" : "Xóa"} danh mục ${rule.name}`}
+                              >
+                                {hasMoney && (
+                                  <Archive size={17} aria-hidden="true" />
+                                )}
+                                {hasMoney ? "Ngừng từ tháng…" : "Xóa"}
+                              </button>
+                            )}
                           </div>
                         </article>
                       );
@@ -613,9 +694,12 @@ export function IncomeWorkspace({
                     <article>
                       <h2>Tổng đã ghi nhận trong kỳ</h2>
                       <strong>{displayMoney(report.total)}</strong>
-                      <p>
-                        {report.missing} danh mục–tháng đã đến còn chưa nhập.
-                      </p>
+                      {report.missing > 0 && (
+                        <p className="status-badge status-missing">
+                          <CircleAlert size={15} aria-hidden="true" />
+                          {report.missing} khoản thu cố định cần bổ sung.
+                        </p>
+                      )}
                     </article>
                     <article>
                       <h3>
@@ -627,7 +711,14 @@ export function IncomeWorkspace({
                       </p>
                     </article>
                   </section>
+                  <MissingIncome
+                    rows={report.rows}
+                    today={today}
+                    onEnter={(row) => open({ type: "monthly", row })}
+                  />
                   <IncomeReports
+                    today={today}
+                    onEnter={(row) => open({ type: "monthly", row })}
                     report={report}
                     onDetails={(m) => setDetails({ month: m })}
                   />

@@ -65,6 +65,8 @@ export interface Label {
   id: string;
   kind: "method" | "group";
   name: string;
+  brandKey?: string | null;
+  iconKey?: string | null;
 }
 export interface Audit {
   version: number;

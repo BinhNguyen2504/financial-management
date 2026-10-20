@@ -1,4 +1,5 @@
 "use client";
+import { useChartTooltip } from "@/components/chart-tooltip";
 import { useId, useState } from "react";
 import type { ReportItem } from "@/domain/expenses/reports";
 import { useMoney } from "@/components/privacy";
@@ -24,14 +25,19 @@ export function DonutChart({
   table?: boolean;
 }) {
   const money = useMoney();
+  const tooltip = useChartTooltip();
   const [active, setActive] = useState<string | null>(null);
   const slices = donutSlices(items.filter((r) => !r.planned));
   if (!slices.length) return <ChartEmpty />;
   const total = slices.reduce((n, r) => n + BigInt(r.value), 0n).toString();
-  const selected = slices.find((r) => r.key === active) ?? slices[0];
+  const selected =
+    slices.find((r) => r.key === (tooltip.active ?? active)) ?? slices[0];
   let offset = 0;
   return (
-    <div className="donut-section">
+    <div
+      {...tooltip.container}
+      className="donut-section savings-chart-interactive"
+    >
       <div className="donut-layout">
         <div className="donut-visual">
           <svg
@@ -53,6 +59,10 @@ export function DonutChart({
               return (
                 <circle
                   key={r.key}
+                  {...tooltip.trigger(
+                    r.key,
+                    `${r.label}: ${money(r.value)} · ${r.percent.toLocaleString("vi-VN")}%`,
+                  )}
                   cx="110"
                   cy="110"
                   r="83"
@@ -110,6 +120,15 @@ export function DonutChart({
           </p>
         </div>
       </div>
+      {tooltip.tooltip(
+        <>
+          <strong>{selected.label}</strong>
+          <span>
+            {money(selected.value)} · {selected.percent.toLocaleString("vi-VN")}
+            %
+          </span>
+        </>,
+      )}
       {table && (
         <details className="chart-data-table">
           <summary>Xem bảng dữ liệu</summary>
@@ -154,6 +173,7 @@ export function ReportChart({
   composition?: boolean;
 }) {
   const money = useMoney();
+  const tooltip = useChartTooltip();
   const gradientId = useId().replace(/:/g, "");
   const [active, setActive] = useState<string | null>(null);
   const visible = trend ? items.filter((r) => !r.planned) : items;
@@ -180,9 +200,13 @@ export function ReportChart({
     const y = (r: ReportItem) => 190 - ratio(r[field], maximum) * 1.5;
     const points = visible.map((r, i) => `${x(i)},${y(r)}`).join(" ");
     const selected =
-      visible.find((r) => r.key === active) ?? visible[visible.length - 1];
+      visible.find((r) => r.key === (tooltip.active ?? active)) ??
+      visible[visible.length - 1];
     return (
-      <div className="expense-line-chart">
+      <div
+        {...tooltip.container}
+        className="expense-line-chart savings-chart-interactive"
+      >
         <div className="chart-scale">
           <span>VND</span>
           <span>Mức cao nhất: {money(maximum)}</span>
@@ -214,7 +238,10 @@ export function ReportChart({
           />
           <polyline points={points} className="expense-chart-line" />
           {visible.map((r, i) => (
-            <g key={r.key}>
+            <g
+              key={r.key}
+              {...tooltip.trigger(r.key, `${label(r)}: ${money(r[field])}`)}
+            >
               <circle
                 cx={x(i)}
                 cy={y(r)}
@@ -227,6 +254,15 @@ export function ReportChart({
             </g>
           ))}
         </svg>
+        {tooltip.tooltip(
+          <>
+            <strong>{label(selected)}</strong>
+            <span>
+              {money(selected[field])}
+              {selected.provisional ? " · tạm tính" : ""}
+            </span>
+          </>,
+        )}
         <div className="chart-months" aria-label="Chọn điểm dữ liệu">
           {visible.map((r) => (
             <button
@@ -250,12 +286,18 @@ export function ReportChart({
   }
   return (
     <div
-      className="expense-bar-chart"
+      {...tooltip.container}
+      className="expense-bar-chart savings-chart-interactive"
       role="list"
       aria-label="Biểu đồ so sánh, đơn vị VND"
     >
       {visible.map((r) => (
-        <div key={r.key} role="listitem" className="expense-chart-item">
+        <div
+          key={r.key}
+          {...tooltip.trigger(r.key, `${label(r)}: ${money(r[field])}`)}
+          role="listitem"
+          className="expense-chart-item"
+        >
           <div>
             <strong>{label(r)}</strong>
             <span>
@@ -285,6 +327,27 @@ export function ReportChart({
           </div>
         </div>
       ))}
+      {tooltip.tooltip(
+        (() => {
+          const selected = visible.find((item) => item.key === tooltip.active);
+          return (
+            selected && (
+              <>
+                <strong>{label(selected)}</strong>
+                <span>
+                  {money(selected[field])}
+                  {selected.provisional
+                    ? " · tạm tính"
+                    : selected.planned
+                      ? " · kế hoạch"
+                      : ""}
+                </span>
+                {compare && <span>Mức kế hoạch: {money(selected.target)}</span>}
+              </>
+            )
+          );
+        })(),
+      )}
     </div>
   );
 }

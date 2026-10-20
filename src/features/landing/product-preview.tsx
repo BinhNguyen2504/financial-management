@@ -10,15 +10,63 @@ import {
   WalletCards,
 } from "lucide-react";
 import { modules } from "@/features/catalog";
+import { ProgressScene } from "@/features/funds/progress-scene";
 import { ModuleIcon } from "@/components/module-icon";
 
 const tabs = modules.filter((item) =>
-  ["income", "budgets", "savings", "investments"].includes(item.slug),
+  ["income", "budgets", "savings", "investments", "funds"].includes(item.slug),
 );
+const helpPreview = {
+  budgets:
+    "Chia trước, chi sau. Hũ là phần tiền dành cho một mục đích; ngân hàng, ví hay tiền mặt là nơi bạn quy ước để chi. Đối chiếu số còn lại để biết tháng này thừa thiếu ra sao.",
+  income:
+    "Danh mục cố định là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng.",
+  savings:
+    "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.",
+  investments:
+    "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví.",
+  funds:
+    "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt và hệ số bạn chọn; đổi mục tiêu không tự thêm tiền vào quỹ.",
+};
 const data = {
+  funds: {
+    title: "Từng bước vun đắp sự an tâm.",
+    subtitle: "Ba quỹ độc lập, cùng một nền tảng sinh hoạt đã xác nhận.",
+    label: "Tổng dự phòng",
+    value: "42.750.000",
+    secondary: "Emergency đủ trang trải",
+    secondaryValue: "3 tháng",
+    columns: ["Quỹ an toàn", "Đã dự phòng"],
+    rows: [
+      {
+        name: "Emergency Fund",
+        note: "27 / 54 triệu · Hoàn thành 50%",
+        emoji: "🌳",
+        amount: "27.000.000",
+        percent: 50,
+      },
+      {
+        name: "Rainy Day Fund",
+        note: "6,75 / 9 triệu · Hoàn thành 75%",
+        emoji: "☂️",
+        amount: "6.750.000",
+        percent: 75,
+      },
+      {
+        name: "Sinking Fund",
+        note: "9 / 18 triệu · Hoàn thành 50%",
+        emoji: "🌉",
+        amount: "9.000.000",
+        percent: 50,
+      },
+    ],
+    chartLabel: "EMERGENCY · CÂY ĐANG LỚN",
+    bars: [0, 0, 0, 0, 0, 0],
+  },
   income: {
     title: "Những điều bạn đã làm được.",
-    subtitle: "Tổng thực nhận ở đầu, từng nguồn thu và số tiền dễ đối chiếu.",
+    subtitle:
+      "Thu cố định và phát sinh phân biệt rõ; khoản chưa nhập có nhắc bổ sung.",
     label: "Tổng thực nhận",
     value: "28.500.000",
     secondary: "Nguồn thu trong tháng",
@@ -27,14 +75,14 @@ const data = {
     rows: [
       {
         name: "Lương",
-        note: "Thu nhập cố định",
+        note: "Cố định · Đã ghi nhận",
         emoji: "🌿",
         amount: "25.000.000",
         percent: 88,
       },
       {
         name: "Dự án cá nhân",
-        note: "Thu nhập phát sinh",
+        note: "Phát sinh · Khoản thu một lần",
         emoji: "☀️",
         amount: "3.500.000",
         percent: 12,
@@ -217,6 +265,16 @@ export function ProductPreview() {
               <span>Riêng tư</span>
             </button>
           </div>
+          <details className="preview-help" key={active}>
+            <summary>
+              Hướng dẫn · {modules.find((item) => item.slug === active)?.title}
+            </summary>
+            <p>{helpPreview[active]}</p>
+            <small>
+              Minh họa rút gọn. Trong ứng dụng, mỗi trang có mục lục đánh số,
+              các ý chính được nhấn rõ và hướng dẫn từng thao tác.
+            </small>
+          </details>
           {tabs.map((item) => (
             <div
               key={item.slug}
@@ -271,8 +329,15 @@ export function ProductPreview() {
                           </span>
                           <div className="preview-row-info">
                             <strong>{row.name}</strong>
-                            <small>{row.note}</small>
-                            <span className="preview-progress">
+                            <small>
+                              {active === "funds"
+                                ? `Hoàn thành ${row.percent}%`
+                                : row.note}
+                            </small>
+                            <span
+                              className="preview-progress"
+                              hidden={active === "funds"}
+                            >
                               <i style={{ width: `${row.percent}%` }} />
                             </span>
                           </div>
@@ -282,25 +347,37 @@ export function ProductPreview() {
                         </div>
                       ))}
                     </div>
-                    <div className="preview-chart">
+                    <div
+                      className={`preview-chart ${active === "funds" ? "preview-chart-funds" : ""}`}
+                    >
                       <span>{selected.chartLabel}</span>
-                      <div
-                        className="preview-bars"
-                        role="img"
-                        aria-label={
-                          active === "budgets"
-                            ? "Minh họa mức thực chi khác nhau qua sáu tháng"
-                            : "Minh họa xu hướng qua sáu tháng"
-                        }
-                      >
-                        {selected.bars.map((height, index) => (
-                          <div key={index}>
-                            <i style={{ height: `${height}%` }} />
-                            <small>T{index + 1}</small>
-                          </div>
-                        ))}
-                      </div>
-                      <small>Biểu đồ từ số liệu minh họa cố định</small>
+                      {active === "funds" ? (
+                        <>
+                          <ProgressScene fund="emergency" percent="50" />
+                          <p>
+                            Đã chuẩn bị 50% · Mức sinh hoạt {money("9.000.000")}
+                            /tháng
+                          </p>
+                        </>
+                      ) : (
+                        <div
+                          className="preview-bars"
+                          role="img"
+                          aria-label={
+                            active === "budgets"
+                              ? "Minh họa mức thực chi khác nhau qua sáu tháng"
+                              : "Minh họa xu hướng qua sáu tháng"
+                          }
+                        >
+                          {selected.bars.map((height, index) => (
+                            <div key={index}>
+                              <i style={{ height: `${height}%` }} />
+                              <small>T{index + 1}</small>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <small>Số liệu minh họa cố định</small>
                     </div>
                   </div>
                 </>

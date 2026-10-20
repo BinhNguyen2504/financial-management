@@ -1,3 +1,4 @@
+import { HelpPageTitle } from "@/features/help/provider";
 import { pageAccess } from "@/server/page-auth";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -10,7 +11,16 @@ import { ModuleIcon } from "@/components/module-icon";
 export function generateStaticParams() {
   return modules
     .filter(
-      (m) => !["overview", "budgets", "income", "savings", "investments", "settings"].includes(m.slug),
+      (m) =>
+        ![
+          "overview",
+          "budgets",
+          "income",
+          "savings",
+          "investments",
+          "funds",
+          "settings",
+        ].includes(m.slug),
     )
     .map((m) => ({ module: m.slug }));
 }
@@ -59,7 +69,7 @@ export default async function ModulePage({
           <ModuleIcon name={item.icon} size={27} />
         </span>
         <p className="eyebrow">{item.label}</p>
-        <h1>{item.title}</h1>
+        <HelpPageTitle>{item.title}</HelpPageTitle>
         <p className="lead">{item.description}</p>
       </div>
       <div className="spec-grid">

@@ -99,3 +99,11 @@ Lần kiểm tra tài khoản mục tiêu: đã có Tiết kiệm trên cloud, c
 ## Giao diện chi tiết — 18/10/2026
 
 Chi tiết danh mục ưu tiên giá trị/vốn/lãi lỗ, lịch sử có lọc và phân trang. Chi tiết giao dịch ưu tiên phiên bản hiện hành, ảnh hưởng Trước/Sau, tách tab lịch sử sửa/hủy. Mở form không đóng parent; lưu thành công cập nhật và quay về đúng nơi. Preview dùng nhãn Trước/Sau và footer luôn tiếp cận được. Xem [quy chuẩn dialog](ui-feedback.md).
+
+## Help theo ngữ cảnh — 20/10/2026
+
+Hướng dẫn tổng danh mục, ví tiền chờ, giá vốn bán nhập tay, giá trị sau giao dịch, định giá và kết quả kỳ; không mô tả quản lý từng mã hoặc lấy giá trực tuyến. Xem [Help theo từng trang](help.md).
+
+## Quy chuẩn giao diện dùng chung — 20/10/2026
+
+Bảng rộng cho chọn cột và giữ lựa chọn trên trình duyệt; cột định danh/thao tác luôn hiện. Form sửa vô hiệu lưu/xem trước khi dữ liệu nghiệp vụ chưa đổi, kể cả khi chỉ nhập lý do. Tiền nguyên bỏ số 0 đầu khi blur/submit; field bắt buộc và lỗi có chỉ báo, nội dung lỗi tiếng Việt và tổng hợp lỗi dẫn về trường tương ứng. Thao tác sửa/hủy có icon, hành động hủy giao dịch dùng màu nguy hiểm; đóng form con tiếp tục giữ ngữ cảnh dialog cha. Xem [đối chiếu phản hồi toàn ứng dụng](interface-feedback-2026-10-19.md).

@@ -44,3 +44,24 @@ Kiểm chứng loading trong `tests/browser/loading.spec.ts`: giữ request đ�
 - Chế độ riêng tư che giá trị và khối lượng trong summary, bảng, preview và nội dung hỗ trợ đọc; không thêm số thô vào aria-label/title. Preview public vẫn dùng hằng số, không đọc tài khoản.
 
 Kiểm thử chuyên biệt: `tests/browser/dialogs.spec.ts`; hồi quy bốn module, loading, tooltip và dialog stack. Bằng chứng chạy và giới hạn môi trường được ghi thêm tại `docs/07-validation.md` sau kiểm chứng.
+
+
+## Cập nhật ngầm khi quay lại — 19/10/2026
+
+Hành vi này thay thế việc bật loading mỗi lần quay lại của Tổng quan/Thu nhập/Chi tiêu được mô tả ngày 18/10. Khi đã có view, giữ nội dung và không chèn vòng xoay/thông báo tải gây dịch chuyển bố cục. Lần mở đầu, thử lại khi chưa có dữ liệu và đổi năm Thu nhập vẫn hiện LoadingStatus. Nút thử lại báo busy và bị khóa trong khi chờ, kể cả đang giữ dữ liệu cũ; lỗi tải tự động vẫn có thông báo và nút thử lại, lỗi xác thực xóa view.
+
+`createRefreshController` và `useForegroundRefresh` gộp focus/visibilitychange/online theo mỗi view: dữ liệu mới hơn 60 giây không tải lại khi focus; reconnect hoặc đổi ngày Việt Nam có thể tải sớm hơn, tối thiểu 5 giây giữa các lần tải tự động. Bỏ qua khi đang ẩn/offline hoặc còn request. Thành công cập nhật mốc thời gian, lỗi có thể thử lại sau 5 giây khi quay về tiếp theo. Gợi ý khôi phục tài khoản trống dùng cùng cơ chế để tránh gọi status trùng. Không polling, không cache tài chính bền vững; lần mở trang, lưu, retry và timer qua ngày không bị chặn.
+
+Kiểm thử chính sách trong `tests/foreground-refresh.test.ts`; kiểm request thật, dữ liệu server đổi, bố cục, lỗi/thử lại, 401, offline/reconnect và bản nháp trong `tests/browser/foreground-refresh.spec.ts`. Các kiểm loading lần đầu tiếp tục ở `loading.spec.ts`.
+
+## Rà soát mở rộng — 19/10/2026
+
+Quy chuẩn form, trạng thái dữ liệu, cột bảng, tooltip, theme, điều hướng và ma trận 33 phản hồi được mô tả trong [đợt rà soát 19/10](interface-feedback-2026-10-19.md). Kiểm tra cùng loại lỗi xuyên module, gồm cả tình huống sửa rồi hoàn tác, dữ liệu thiếu so với số 0, hành động ngừng và dữ liệu lịch sử.
+
+## Help và dialog lồng nhau — 20/10/2026
+
+Help dùng dialog stack hiện có với biến thể bên phải/toàn màn hình; Escape được chặn lan truyền khỏi dialog đang xử lý. Nút giải thích dùng pointer-focus helper để trả focus đúng trên WebKit. Bộ kiểm thử Help kiểm tra mở trên hai dialog, giữ bản nháp và scroll, khóa cuộn cho đến khi lớp cuối đóng, kích thước 375px/landscape, theme và chữ lớn. Kết quả môi trường được ghi ở validation, không suy thành kiểm chứng thiết bị thật.
+
+Khi hồi quy Help, phát hiện hydration ở tiêu đề SVG của hướng dẫn cài đặt: nhiều React text node bị trình duyệt gộp trong `<title>`. Chuyển tiêu đề thành một chuỗi template duy nhất để markup server/client khớp; không dùng suppressHydrationWarning.
+
+Rà soát bàn phím bổ sung Tab từ tiêu đề được mục lục focus: Help đưa focus về nút đóng thay vì thoát sang thanh trình duyệt; Shift+Tab từ nút đóng quay về mục cuối. Thanh đầu trang cho phép xuống hàng khi phóng lớn; bộ chọn kỳ Thu nhập dưới 400px dùng selector đủ cụ thể để giữ hai cột, tránh phụ thuộc thứ tự stylesheet.

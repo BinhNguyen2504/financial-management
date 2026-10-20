@@ -1,5 +1,9 @@
 "use client";
 import Link from "next/link";
+import {
+  createRefreshController,
+  subscribeToForegroundRefresh,
+} from "@/lib/foreground-refresh";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useUser } from "@/features/profile/user-provider";
@@ -31,19 +35,17 @@ export function ImportSuggestion() {
               status.importReady !== false &&
               status.ownerId === user.id,
           );
-      } catch {
+      } catch (error) {
         if (active) setVisible(false);
+        throw error;
       }
     };
-    void refresh();
-    window.addEventListener("focus", refresh);
-    window.addEventListener("online", refresh);
-    document.addEventListener("visibilitychange", refresh);
+    const controller = createRefreshController(refresh);
+    void controller.reload().catch(() => {});
+    const unsubscribe = subscribeToForegroundRefresh(controller);
     return () => {
       active = false;
-      window.removeEventListener("focus", refresh);
-      window.removeEventListener("online", refresh);
-      document.removeEventListener("visibilitychange", refresh);
+      unsubscribe();
     };
   }, [user?.id]);
   if (!visible) return null;

@@ -1,4 +1,5 @@
 "use client";
+import { ColumnTable } from "@/components/column-table";
 import { useState } from "react";
 import type { SavingsReport } from "@/domain/savings/reports";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
@@ -301,7 +302,10 @@ export function SavingsReports({
             <details>
               <summary>Xem bảng diễn biến</summary>
               <div className="savings-table-scroll">
-                <table className="savings-table">
+                <ColumnTable
+                  tableId="savings-report-panel-1"
+                  className="savings-table"
+                >
                   <thead>
                     <tr>
                       <th>Tháng</th>
@@ -320,7 +324,7 @@ export function SavingsReports({
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </ColumnTable>
               </div>
             </details>
           )}
@@ -443,7 +447,10 @@ export function SavingsReports({
               aria-label="Tài sản theo danh mục"
               tabIndex={0}
             >
-              <table className="savings-table">
+              <ColumnTable
+                tableId="savings-report-panel-2"
+                className="savings-table"
+              >
                 <caption>
                   VND · Giá trị cuối kỳ, không cộng số dư các tháng
                 </caption>
@@ -500,7 +507,7 @@ export function SavingsReports({
                     <td colSpan={10}>Giá trị tại cuối kỳ</td>
                   </tr>
                 </tfoot>
-              </table>
+              </ColumnTable>
             </div>
           </section>
           <section className="panel">
@@ -511,7 +518,10 @@ export function SavingsReports({
               role="region"
               aria-label="Bảng tiết kiệm theo tháng"
             >
-              <table className="savings-table">
+              <ColumnTable
+                tableId="savings-report-panel-3"
+                className="savings-table"
+              >
                 <thead>
                   <tr>
                     <th>Tháng</th>
@@ -542,7 +552,7 @@ export function SavingsReports({
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </ColumnTable>
             </div>
           </section>
         </>

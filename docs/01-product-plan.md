@@ -52,3 +52,12 @@ Chưa xây ở P0: AI tư vấn đầu tư, kết nối tài khoản ngân hàng
 ## Bổ sung backup toàn tài khoản — 18/10/2026
 
 Cài đặt đã có backup JSON toàn bộ bốn module và import vào tài khoản trống, hồ sơ tùy chọn. Gợi ý nhập chỉ có trên Tổng quan khi server xác nhận chưa có dữ liệu. Không gộp/ghi đè hoặc tự chạy nền; xem [đặc tả](features/backup.md).
+
+
+## Fund đã triển khai trong source — 19/10/2026
+
+Quỹ an toàn có thiết lập nguồn từ Chi tiêu, mục tiêu theo x, hướng dẫn, hình tiến độ, sổ tiền độc lập và backup V2. Financial Goals tiếp tục là module riêng. Nghiệm thu local/cloud/thiết bị được ghi riêng tại tài liệu validation.
+
+## Hướng dẫn sản phẩm — 20/10/2026
+
+Help có trên toàn bộ 12 trang trong app, gồm các trang đang phát triển và Hồ sơ. Nội dung tiếng Việt hướng đến người quản lý tài chính cá nhân, kể cả người mới: mục đích/đối tượng, tư duy, thuật ngữ, tác vụ, ví dụ và điểm dễ nhầm. Nền tảng Chi tiêu là “chia trước, chi sau”, tách mục đích của hũ với nơi giữ/chi tiền. Không thay đổi nghiệp vụ hoặc nâng trạng thái các module planned. Xem [Help](features/help.md).

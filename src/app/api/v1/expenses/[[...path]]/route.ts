@@ -1,3 +1,4 @@
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { authenticatedOwner } from "@/server/auth";
@@ -35,19 +36,19 @@ const fieldNames: Record<string, string> = {
 function failure(error: unknown) {
   if (error instanceof ExpenseError)
     return NextResponse.json(
-      { error: error.message, code: error.code },
+      {
+        error: error.message,
+        code: error.code,
+        ...(error.fieldErrors ? { fieldErrors: error.fieldErrors } : {}),
+      },
       { status: error.status, headers },
     );
   if (error instanceof ZodError)
     return NextResponse.json(
       {
-        error: error.issues
-          .map(
-            (i) =>
-              `${fieldNames[String(i.path.at(-1))] ?? "Dữ liệu"}: ${i.message}`,
-          )
-          .join("; "),
+        error: Object.values(fieldErrorsFromIssues(error.issues)).join("; "),
         code: "INVALID_INPUT",
+        fieldErrors: fieldErrorsFromIssues(error.issues),
       },
       { status: 422, headers },
     );

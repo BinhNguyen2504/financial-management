@@ -2,6 +2,7 @@
 import { LoadingSpinner } from "@/components/loading";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useId, useEffect, useRef, useState } from "react";
 import { ChevronDown, LogOut, UserRound } from "lucide-react";
 import { browserAuth } from "@/lib/supabase/browser";
@@ -14,6 +15,7 @@ export function UserMenu({
 }: {
   showSignInLabel?: boolean;
 }) {
+  const pathname = usePathname();
   const { user, loading, error, reload, setSigningOut } = useUser();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -135,7 +137,10 @@ export function UserMenu({
             <strong>{name}</strong>
             <span>{user.email}</span>
           </div>
-          <Link href="/profile" onClick={() => setOpen(false)}>
+          <Link
+            href={`/profile?from=${encodeURIComponent(pathname)}`}
+            onClick={() => setOpen(false)}
+          >
             <UserRound size={18} aria-hidden="true" />
             Thông tin cá nhân
           </Link>

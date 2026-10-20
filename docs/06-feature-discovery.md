@@ -61,3 +61,11 @@ Viết đặc tả ngắn trong `docs/features/<feature>.md`, ghi trạng thái 
 ## Bổ sung backup toàn tài khoản — 18/10/2026
 
 Đã chốt và triển khai trong source: JSON không mật khẩu, chỉ nhập vào tài khoản trống; kèm hồ sơ và tùy chọn áp dụng mặc định tắt. Toàn bộ thao tác trong Cài đặt, gợi ý duy nhất trên Tổng quan. Chi tiết và giới hạn: [backup](features/backup.md).
+
+## Quyết định Quỹ an toàn — 19/10/2026
+
+Đã chốt và triển khai theo [đặc tả Fund](features/funds.md): ba quỹ cố định, living expense từ mức cấu hình các hũ chi tháng đã chọn, hệ số tự nhập, nguồn đổi phải xem trước/xác nhận, ưu tiên do người dùng sắp. Sổ tiền độc lập, nhiều nơi giữ, chuyển liên quỹ và sửa/hủy có lịch sử. Các con số Notion không được dùng làm số mặc định. Financial Goals tách riêng; câu hỏi Quỹ ở agenda cũ phía trên đã được giải quyết.
+
+## Help theo trang — 20/10/2026
+
+Đã bổ sung hướng dẫn trong source cho 12 trang; nút chung theo trang và các điểm giải thích tại chỗ, bao gồm trong form. Các trang planned chỉ giới thiệu và chỉ đến tính năng hiện có. Tên/trạng thái lấy từ catalog; không thêm module Help vào menu và không coi nội dung hướng dẫn là bằng chứng triển khai cloud. Xem [Help](features/help.md).

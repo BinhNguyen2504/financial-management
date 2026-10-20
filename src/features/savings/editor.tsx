@@ -1,4 +1,14 @@
 "use client";
+import { HelpButton } from "@/features/help/provider";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import { Save, X, ScanEye } from "lucide-react";
+import {
+  comparable,
+  normalizedMoneyFields,
+  normalizeInteger,
+  integerInput,
+} from "@/lib/form-values";
+import { FormErrorSummary } from "@/components/form-feedback";
 import { LoadingSpinner } from "@/components/loading";
 import {
   DialogChanges,
@@ -160,6 +170,7 @@ function EditorForm({
     entityId = useRef(crypto.randomUUID());
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
+    [fieldErrors, setFieldErrors] = useState<Record<string, string>>({}),
     [conflict, setConflict] = useState(false);
   const [preview, setPreview] = useState<{
     command: SavingsCommand;
@@ -167,10 +178,24 @@ function EditorForm({
   } | null>(null);
   const pending = useRef<SavingsCommand | null>(null),
     errorRef = useRef<HTMLDivElement>(null);
+  const draft = comparable({
+    ...normalizedMoneyFields(f),
+    reason: undefined,
+    allocations,
+  });
+  const originalDraft = useRef(draft);
+  const unchanged =
+    (mode.type === "configure" || (mode.type === "transaction" && !!old)) &&
+    draft === originalDraft.current;
   const set = (key: string, value: string) => {
     setF((s) => ({ ...s, [key]: value }));
     setPreview(null);
     setError("");
+    setFieldErrors((previous) => {
+      const next = { ...previous };
+      delete next[key];
+      return next;
+    });
   };
   const categories = view.book?.categories ?? [];
   const names = (c: SavingsCategory) =>
@@ -273,7 +298,7 @@ function EditorForm({
         note: f.note,
       },
       cash = { cashCategoryId: f.cashCategoryId || null },
-      charges = { fee: f.fee, tax: f.tax },
+      charges = { fee: normalizeInteger(f.fee), tax: normalizeInteger(f.tax) },
       contract = { name: f.name, maturity: f.maturity, term: f.term };
     switch (txKind) {
       case "openingCash":
@@ -282,35 +307,35 @@ function EditorForm({
         return transactionSchema.parse({
           ...b,
           kind: txKind,
-          amount: f.amount,
+          amount: normalizeInteger(f.amount),
         });
       case "openingDeposit":
         return transactionSchema.parse({
           ...b,
           kind: txKind,
-          amount: f.amount,
+          amount: normalizeInteger(f.amount),
           ...contract,
         });
       case "openingGold":
         return transactionSchema.parse({
           ...b,
           kind: txKind,
-          amount: f.amount,
+          amount: normalizeInteger(f.amount),
           quantity: f.quantity,
-          unitPrice: f.unitPrice,
+          unitPrice: normalizeInteger(f.unitPrice),
         });
       case "withdraw":
         return transactionSchema.parse({
           ...b,
           kind: txKind,
-          amount: f.amount,
+          amount: normalizeInteger(f.amount),
           ...charges,
         });
       case "transfer":
         return transactionSchema.parse({
           ...b,
           kind: txKind,
-          amount: f.amount,
+          amount: normalizeInteger(f.amount),
           cashCategoryId: f.cashCategoryId,
           ...charges,
         });
@@ -318,7 +343,7 @@ function EditorForm({
         return transactionSchema.parse({
           ...b,
           kind: txKind,
-          amount: f.amount,
+          amount: normalizeInteger(f.amount),
           ...contract,
           ...cash,
         });
@@ -327,8 +352,8 @@ function EditorForm({
           ...b,
           kind: txKind,
           contractId: f.contractId,
-          amount: f.amount,
-          interest: f.interest,
+          amount: normalizeInteger(f.amount),
+          interest: normalizeInteger(f.interest),
           ...charges,
           ...cash,
         });
@@ -337,7 +362,7 @@ function EditorForm({
           ...b,
           kind: txKind,
           contractId: f.contractId,
-          amount: f.amount,
+          amount: normalizeInteger(f.amount),
           capitalize: f.capitalize === "true",
           cashCategoryId: f.capitalize === "true" ? null : cash.cashCategoryId,
         });
@@ -346,8 +371,8 @@ function EditorForm({
           ...b,
           kind: txKind,
           contractId: f.contractId,
-          interest: f.interest,
-          reinvestInterest: f.reinvestInterest,
+          interest: normalizeInteger(f.interest),
+          reinvestInterest: normalizeInteger(f.reinvestInterest),
           ...contract,
           ...charges,
           ...cash,
@@ -357,7 +382,7 @@ function EditorForm({
           ...b,
           kind: txKind,
           quantity: f.quantity,
-          unitPrice: f.unitPrice,
+          unitPrice: normalizeInteger(f.unitPrice),
           ...charges,
           ...cash,
         });
@@ -368,7 +393,7 @@ function EditorForm({
           allocations: Object.entries(allocations)
             .filter(([, q]) => q && q !== "0")
             .map(([lotId, quantity]) => ({ lotId, quantity })),
-          unitPrice: f.unitPrice,
+          unitPrice: normalizeInteger(f.unitPrice),
           ...charges,
           ...cash,
         });
@@ -410,7 +435,7 @@ function EditorForm({
           id: entityId.current,
           categoryId: f.categoryId,
           date: f.date,
-          price: f.unitPrice,
+          price: normalizeInteger(f.unitPrice),
         };
       case "close":
         return {
@@ -440,6 +465,7 @@ function EditorForm({
   }
   async function submit(e: FormEvent) {
     e.preventDefault();
+    if (unchanged) return;
     setBusy(true);
     setError("");
     try {
@@ -464,11 +490,11 @@ function EditorForm({
         await onSaved();
       }
     } catch (e) {
+      if (e instanceof ZodError)
+        setFieldErrors(fieldErrorsFromIssues(e.issues));
       setError(
         e instanceof ZodError
-          ? e.issues
-              .map((i) => `${String(i.path.at(-1))}: ${i.message}`)
-              .join("; ")
+          ? "Kiểm tra các trường được đánh dấu."
           : e instanceof Error
             ? e.message
             : "Không thể lưu.",
@@ -491,15 +517,31 @@ function EditorForm({
     required = true,
   ) {
     return (
-      <label key={key}>
+      <label key={key} htmlFor={`savings-field-${key}`}>
         {label}
         <input
+          aria-label={label}
+          id={`savings-field-${key}`}
           name={key}
+          aria-invalid={!!fieldErrors[key]}
+          aria-describedby={
+            fieldErrors[key] ? `savings-error-${key}` : undefined
+          }
           type={secret && hidden ? "password" : type}
           inputMode={secret ? "decimal" : undefined}
           value={secret && hidden ? "••••••" : f[key]}
           disabled={busy || (secret && hidden)}
-          onChange={(e) => set(key, e.target.value)}
+          onChange={(e) => {
+            const value =
+              secret && key !== "quantity"
+                ? integerInput(e.target.value)
+                : e.target.value;
+            if (value !== null) set(key, value);
+          }}
+          onBlur={() => {
+            if (secret && key !== "quantity")
+              set(key, normalizeInteger(f[key]));
+          }}
           required={required}
           autoComplete="off"
           max={
@@ -508,6 +550,11 @@ function EditorForm({
               : undefined
           }
         />
+        {fieldErrors[key] && (
+          <small id={`savings-error-${key}`} className="field-error">
+            {fieldErrors[key]}
+          </small>
+        )}
       </label>
     );
   }
@@ -516,6 +563,11 @@ function EditorForm({
       <label>
         {label}
         <select
+          id={`savings-field-${key}`}
+          aria-invalid={!!fieldErrors[key]}
+          aria-describedby={
+            fieldErrors[key] ? `savings-error-${key}` : undefined
+          }
           aria-label={label}
           value={f[key]}
           onChange={(e) => {
@@ -546,6 +598,11 @@ function EditorForm({
         >
           {options}
         </select>
+        {fieldErrors[key] && (
+          <small id={`savings-error-${key}`} className="field-error">
+            {fieldErrors[key]}
+          </small>
+        )}
       </label>
     );
   }
@@ -565,10 +622,16 @@ function EditorForm({
           <button
             form={formId}
             aria-busy={busy}
-            className="expense-primary"
-            disabled={busy || conflict || (sensitive && hidden)}
+            className={`expense-primary ${mode.type === "void" ? "expense-danger" : ""}`}
+            disabled={busy || conflict || unchanged || (sensitive && hidden)}
           >
-            {busy && <LoadingSpinner />}
+            {busy ? (
+              <LoadingSpinner />
+            ) : preview ? (
+              <Save size={17} aria-hidden="true" />
+            ) : (
+              <ScanEye size={17} aria-hidden="true" />
+            )}
             {busy
               ? "Đang xử lý…"
               : preview
@@ -582,13 +645,33 @@ function EditorForm({
             onClick={onClose}
             disabled={busy}
           >
+            <X size={17} aria-hidden="true" />
             Hủy
           </button>
         </div>
       }
     >
-      <form id={formId} className="expense-form savings-form" onSubmit={submit}>
+      <form
+        id={formId}
+        className="expense-form savings-form"
+        noValidate
+        onSubmit={submit}
+      >
         <PrivacyReveal />
+        <HelpButton
+          pageId="savings"
+          sectionId={
+            mode.type === "price"
+              ? "valuation"
+              : mode.type === "close" || mode.type === "reopen"
+                ? "close-month"
+                : mode.type === "transaction"
+                  ? "tasks"
+                  : "assets"
+          }
+          label="Hiểu tài sản và giao dịch"
+        />
+        <FormErrorSummary errors={fieldErrors} prefix="savings-field-" />
         {error && (
           <div
             className="expense-error"
@@ -915,6 +998,7 @@ function EditorForm({
           <DialogPreview className="savings-preview">
             <h3>Xem trước thay đổi</h3>
             <DialogChanges
+              numeric
               rows={[
                 {
                   key: "total",

@@ -14,6 +14,7 @@ export class ExpenseError extends Error {
     message: string,
     public status = 422,
     public code = "INVALID_EXPENSE",
+    public fieldErrors?: Record<string, string>,
   ) {
     super(message);
   }
@@ -222,6 +223,31 @@ export function applyAction(
     if (!jar) throw new ExpenseError("Không tìm thấy hũ chi tiêu.", 404);
     return jar;
   };
+  if (action.type === "createJar" || action.type === "configureJar") {
+    const original =
+      action.type === "configureJar"
+        ? ruleAt(findJar(action.jarId).rules, action.month)
+        : undefined;
+    for (const field of ["method", "group"] as const) {
+      const options = book.labels.filter((label) => label.kind === field);
+      // Older integrations may predate catalogs. Once a catalog exists, new
+      // selections must be in it; unchanged historical labels remain valid.
+      if (
+        options.length &&
+        action[field] &&
+        action[field] !== original?.[field] &&
+        !options.some((label) => label.name === action[field])
+      ) {
+        const message =
+          field === "method"
+            ? "Chọn một phương thức có sẵn trong Phân loại."
+            : "Chọn một nhóm mục đích có sẵn hoặc để trống.";
+        throw new ExpenseError(message, 422, "INVALID_CLASSIFICATION", {
+          [field]: message,
+        });
+      }
+    }
+  }
   switch (action.type) {
     case "createJar": {
       editable(book, action.start, clock);
@@ -357,7 +383,19 @@ export function applyAction(
         throw new ExpenseError("Không thể đổi loại phân loại.");
       book.labels = [
         ...book.labels.filter((l) => l.id !== action.id),
-        { id: action.id, kind: action.kind, name: action.name },
+        {
+          id: action.id,
+          kind: action.kind,
+          name: action.name,
+          brandKey:
+            action.brandKey === undefined
+              ? (old?.brandKey ?? null)
+              : action.brandKey,
+          iconKey:
+            action.iconKey === undefined
+              ? (old?.iconKey ?? null)
+              : action.iconKey,
+        },
       ];
       break;
     }

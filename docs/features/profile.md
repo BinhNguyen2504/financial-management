@@ -26,3 +26,11 @@ Các bài kiểm tra tự động trong `tests/browser/profile.spec.ts` bao ph�
 ## Bổ sung backup toàn tài khoản — 18/10/2026
 
 Full backup kèm ba trường hồ sơ được hỗ trợ; import hồ sơ tùy chọn, mặc định tắt, không thay email/token/tài khoản đăng nhập. Auth được cập nhật sau commit tài chính; lỗi cho retry riêng. Validator hồ sơ dùng chung ở domain, đường import/export hiện có của feature được giữ tương thích. Xem [backup](backup.md).
+
+## Điều hướng và form — 19/10/2026
+
+Menu tài khoản truyền đường quay lại nội bộ; nút Quay lại trên Hồ sơ dùng allowlist và mặc định Tổng quan khi không có đường hợp lệ. Nút Lưu chỉ hoạt động khi nội dung đã chuẩn hóa khác hồ sơ ban đầu.
+
+## Help theo ngữ cảnh — 20/10/2026
+
+Help giải thích trường có thể chỉnh, email chỉ đọc, avatar từ tên, Lưu khi có thay đổi và Quay lại. Nút tra cứu không làm mất bản nháp hồ sơ. Xem [Help theo từng trang](help.md).

@@ -4,9 +4,9 @@ Người dùng chủ động thao tác tại **Cài đặt → Sao lưu và khô
 
 ## Xuất và nhập
 
-- **Tải bản sao lưu** xuất JSON không mật khẩu: toàn bộ 28 bảng Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư, kể cả lịch sử sửa/hủy, lô vàng, định giá, snapshot và kỳ đã chốt. Tiền/lượng giữ dạng chuỗi; Privacy Mode không che số trong file.
+- **Tải bản sao lưu** xuất JSON không mật khẩu: toàn bộ 35 bảng Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn, kể cả lịch sử sửa/hủy, lô vàng, định giá, snapshot và kỳ đã chốt. Tiền/lượng giữ dạng chuỗi; Privacy Mode không che số trong file.
 - Kèm họ tên, ngày sinh, giới tính. Không kèm mật khẩu, token, email đăng nhập hoặc tùy chọn riêng tư trên thiết bị. File có thể được nhập khi không còn truy cập tài khoản cũ.
-- **Nhập bản sao lưu**: chọn file → kiểm tra và xem trước ngày xuất, khoảng thời gian, số bản ghi → tùy chọn hồ sơ (mặc định tắt) → xác nhận. Chỉ nhận định dạng `financial-manager-full-backup`, `schemaVersion: 1`. CSV, SQL và file backup từng module không được tự chuyển đổi.
+- **Nhập bản sao lưu**: chọn file → kiểm tra và xem trước ngày xuất, khoảng thời gian, số bản ghi → tùy chọn hồ sơ (mặc định tắt) → xác nhận. Nhận định dạng `financial-manager-full-backup`, `schemaVersion: 1` hoặc `2`; xuất mới luôn là V2, V1 được chuẩn hóa với Fund trống. CSV, SQL và file backup từng module không được tự chuyển đổi.
 - Chỉ tài khoản không có bản ghi trong bất kỳ bảng tài chính nào mới được nhập. Xem trang/status không khởi tạo sổ. Không gộp hoặc ghi đè. Số bản ghi xem trước bao gồm cả sổ, lịch sử và dữ liệu kỹ thuật, không đồng nghĩa số giao dịch.
 - Tổng quan có một gợi ý dẫn đến `/settings#import` sau khi server xác nhận tài khoản trống. Đóng gợi ý có hiệu lực trong phiên theo tài khoản; lỗi mạng/Auth/schema không được coi là tài khoản trống.
 - File được giữ tạm trong bộ nhớ trình duyệt trong luồng nhập, không lưu vào localStorage/IndexedDB. Server không lưu file hoặc ghi nội dung tài chính vào log. Người dùng tự lưu file đã tải ở nơi an toàn.
@@ -22,7 +22,7 @@ Người dùng chủ động thao tác tại **Cài đặt → Sao lưu và khô
 
 Mọi API xác minh Auth và trả `private, no-store`. POST yêu cầu cùng origin. Table/column allowlist và schema nghiêm ngặt chặn cột owner hoặc bảng lạ. Kiểm tra khóa trùng, quan hệ, dữ liệu JSON lồng, thứ tự revision và replay domain trước ghi. Không thực thi SQL từ file.
 
-Export và status yêu cầu đủ schema tài chính của bốn module. Chỉ import yêu cầu thêm migration `202610180002_data_imports.sql`; thiếu bảng biên nhận không được chặn tải backup. Status trả `importReady: false` và giao diện giải thích ngay trong thẻ khôi phục; preview trả `canImport: false` và import trả `IMPORT_NOT_READY`. Không âm thầm bỏ module chưa có migration. Kết nối runtime vẫn là `expense_api`, `SET LOCAL ROLE authenticated` và JWT claims theo tài khoản đã xác minh; không cần service role.
+Export và status yêu cầu đủ schema tài chính của năm module. Chỉ import yêu cầu thêm migration `202610180002_data_imports.sql`; thiếu bảng biên nhận không được chặn tải backup. Status trả `importReady: false` và giao diện giải thích ngay trong thẻ khôi phục; preview trả `canImport: false` và import trả `IMPORT_NOT_READY`. Không âm thầm bỏ module chưa có migration. Kết nối runtime vẫn là `expense_api`, `SET LOCAL ROLE authenticated` và JWT claims theo tài khoản đã xác minh; không cần service role.
 
 Import lấy advisory locks theo thứ tự Chi tiêu → Thu nhập → Tiết kiệm → Đầu tư, dùng cùng khóa với thao tác ghi thường. Kiểm tra lại tài khoản trống sau khi lấy khóa, INSERT theo quan hệ, đọc đối soát toàn bộ bảng trước commit. Không tắt trigger hoặc sửa chính sách RLS. Bất kỳ lỗi nào rollback cả dữ liệu và biên nhận.
 
@@ -55,3 +55,18 @@ Export không phụ thuộc request status thành công; lỗi Auth hoặc dữ 
 ### Căn đều bố cục — 18/10/2026
 
 Thẻ Sao lưu và Khôi phục cùng hàng được stretch theo nội dung cao nhất, giữ cùng mép trên/dưới ở trạng thái ban đầu, sau tạo file và xem trước import. Mobile vẫn xếp dọc, không ép bằng chiều cao hoặc chồng nội dung. Catalog, README, landing copy và preview đã rà soát; phạm vi và mô tả tính năng không đổi nên không cần sửa copy.
+
+
+## Backup V2 và Fund — 19/10/2026
+
+V2 bổ sung sổ/quỹ, nơi giữ, cấu hình nguồn và mục tiêu, phiên bản giao dịch, audit và command của Fund. Validate dựng lại toàn bộ lịch sử Fund để kiểm chứng số dư/cấu hình, kiểm tra cột tham chiếu cùng dữ liệu JSON. Phát hiện tài khoản trống và restore bao gồm Fund; khóa restore theo thứ tự Expenses → Income → Savings → Investments → Fund. Các lệnh Fund giữ khóa Expenses trước Fund để đọc nguồn nhất quán.
+
+Cần migration Fund trước khi dùng source mới; thiếu schema không âm thầm bỏ quỹ khỏi backup. Không nhận V1 chứa bảng Fund hoặc phiên bản lạ. File V1 gốc vẫn khôi phục vào tài khoản trống, Fund chưa thiết lập. Nội dung lịch sử xác minh ngày 18/10 ở trên giữ nguyên phạm vi bốn module tại thời điểm đó.
+
+## Metadata trình bày — 19/10/2026
+
+Phân loại Chi tiêu có `brand_key`/`icon_key` nullable sau migration `202610190002_label_visuals.sql`. Backup cũ không có hai field vẫn được chấp nhận với null; backup mới lưu và phục hồi chúng. Tùy chọn theme/sidebar/cột trên trình duyệt không nằm trong backup tài chính.
+
+## Help theo ngữ cảnh — 20/10/2026
+
+Help tại Cài đặt hướng dẫn file JSON toàn tài khoản, khôi phục vào tài khoản trống, hồ sơ tùy chọn và file luôn chứa đầy đủ số tiền. Không thêm gộp/ghi đè hoặc nhập từng phần. Xem [Help theo từng trang](help.md).

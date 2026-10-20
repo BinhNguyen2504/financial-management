@@ -30,7 +30,7 @@
   --sidebar-width: 232px;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --canvas: #1f2520;
     --surface: #29312b;
     --surface-alt: #323d33;
@@ -865,4 +865,36 @@ svg {
     animation: none !important;
     transition: none !important;
   }
+}
+
+:root[data-theme="dark"] {
+  --canvas: #1f2520;
+  --surface: #29312b;
+  --surface-alt: #323d33;
+  --text: #f3eee3;
+  --muted: #bcb8aa;
+  --primary: #b4caa7;
+  --on-primary: #233326;
+  --primary-soft: #354735;
+  --border: #4b574a;
+  --accent: #d6a07d;
+  --accent-soft: #413429;
+  --garden-shadow: #1c231d;
+  --garden-sun: #665c3d;
+  --garden-leaf: #9db88b;
+  --garden-leaf-soft: #687f5c;
+  --garden-stem: #c0d2b2;
+  --garden-pot: #99765a;
+  --garden-pot-rim: #c29a79;
+  --chart-1: #b4caa7;
+  --chart-2: #d6a07d;
+  --chart-3: #b7acd6;
+  --chart-4: #8ebbc2;
+  --chart-5: #ccba82;
+  --on-chart: #1f2520;
+  --card-shadow: 0 4px 24px #0000000a;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
 }

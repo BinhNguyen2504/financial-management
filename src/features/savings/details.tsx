@@ -1,4 +1,8 @@
 "use client";
+import {
+  Pencil as EditCommandGlyph,
+  Trash2 as DeleteCommandGlyph,
+} from "lucide-react";
 import { useState } from "react";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
 import {
@@ -496,6 +500,7 @@ export function SavingsDetails({
                     onEdit({ type: "transaction", transaction: selectedRow.t })
                   }
                 >
+                  <EditCommandGlyph size={17} aria-hidden="true" />
                   Sửa giao dịch
                 </button>
                 <button
@@ -505,6 +510,7 @@ export function SavingsDetails({
                     onEdit({ type: "void", transaction: selectedRow.t })
                   }
                 >
+                  <DeleteCommandGlyph size={17} aria-hidden="true" />
                   Hủy giao dịch
                 </button>
               </div>

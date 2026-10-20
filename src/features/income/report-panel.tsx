@@ -1,4 +1,9 @@
 "use client";
+import { ColumnTable } from "@/components/column-table";
+import { useChartTooltip } from "@/components/chart-tooltip";
+import { missingIncomeRows } from "./missing-income";
+import { monthName } from "@/features/expenses/format";
+import type { IncomeRow } from "@/domain/income/types";
 import { useState } from "react";
 import type { IncomeReport } from "@/domain/income/reports";
 import { ratio } from "@/features/expenses/format";
@@ -10,12 +15,19 @@ export function useDisplayMoney() {
 export function IncomeReports({
   report,
   onDetails,
+  onEnter,
+  today,
 }: {
   report: IncomeReport;
   onDetails(month?: string): void;
+  onEnter(row: IncomeRow): void;
+  today: string;
 }) {
   const money = useMoney();
   const displayMoney = useDisplayMoney();
+  const tooltip = useChartTooltip();
+  const activeMonth = report.months.find((m) => m.month === tooltip.active);
+  const missing = missingIncomeRows(report.rows, today);
   const [chart, setChart] = useState("columns");
   const [sort, setSort] = useState<"name" | "total">("name");
   const categories = [...report.categories].sort((a, b) =>
@@ -48,7 +60,8 @@ export function IncomeReports({
       <div className="expense-section-heading">
         <h2>Bảng thu nhập · VND</h2>
         <p className="expense-muted">
-          Dấu — là chưa có số thu; 0 ₫ là đã ghi nhận bằng 0.
+          Bấm ô — được đánh dấu để nhập khoản còn thiếu. 0 ₫ xác nhận không có
+          thu nhập.
         </p>
       </div>
       <div
@@ -57,7 +70,7 @@ export function IncomeReports({
         aria-label="Bảng thu nhập theo tháng"
         tabIndex={0}
       >
-        <table className="income-table">
+        <ColumnTable tableId="income-months" className="income-table">
           <caption>
             Tổng đã ghi nhận năm {report.filter.year}, tháng{" "}
             {report.filter.from}–{report.filter.to}
@@ -95,7 +108,34 @@ export function IncomeReports({
                         <br />
                       </small>
                     )}
-                    {displayMoney(m.amount)}
+                    {(() => {
+                      const row = missing.find(
+                        (r) => r.categoryId === c.id && r.month === m.month,
+                      );
+                      return row ? (
+                        <button
+                          type="button"
+                          className="income-missing-cell"
+                          aria-label={`Nhập ${c.name} · ${monthName(m.month)}`}
+                          title="Chưa nhập — bấm để bổ sung"
+                          onClick={() => onEnter(row)}
+                        >
+                          —
+                        </button>
+                      ) : (
+                        <span
+                          title={
+                            m.amount === null
+                              ? m.month > today.slice(0, 7)
+                                ? "Chưa đến kỳ nhập"
+                                : "Ngoài thời gian hoạt động hoặc chưa có số thu"
+                              : undefined
+                          }
+                        >
+                          {displayMoney(m.amount)}
+                        </span>
+                      );
+                    })()}
                   </td>
                 ))}
                 <td>{displayMoney(c.total)}</td>
@@ -128,14 +168,16 @@ export function IncomeReports({
                 <td key={m.month}>
                   {displayMoney(m.total)}
                   {m.missing > 0 && (
-                    <small>{m.missing} danh mục chưa nhập</small>
+                    <small className="status-badge status-missing">
+                      {m.missing} danh mục chưa nhập
+                    </small>
                   )}
                 </td>
               ))}
               <td>{displayMoney(report.total)}</td>
             </tr>
           </tfoot>
-        </table>
+        </ColumnTable>
       </div>
       <div className="income-quarter-grid">
         {report.quarters.map((q) => (
@@ -166,84 +208,106 @@ export function IncomeReports({
         {report.total === null ? (
           <p className="expense-empty">Chưa có dữ liệu cho bộ lọc này.</p>
         ) : chart === "columns" || chart === "line" ? (
-          <div className="income-chart-scroll">
-            <svg
-              viewBox="0 0 730 265"
-              role="img"
-              aria-label={
-                chart === "line"
-                  ? "Xu hướng tổng thu theo tháng, đơn vị VND"
-                  : "Cột tổng thu theo tháng, đơn vị VND"
-              }
-            >
-              <title>Tổng đã ghi nhận theo tháng · VND</title>
-              <line
-                x1="30"
-                x2="710"
-                y1="200"
-                y2="200"
-                className="income-axis"
-              />
-              <text x="30" y="20">
-                {money(max)}
-              </text>
-              <text x="10" y="205">
-                0
-              </text>
-              {chart === "line" &&
-                report.months
-                  .slice(1)
-                  .map((m, i) =>
-                    m.total !== null && report.months[i].total !== null ? (
-                      <line
-                        key={m.month}
-                        x1={x(i)}
-                        y1={y(report.months[i].total!)}
-                        x2={x(i + 1)}
-                        y2={y(m.total)}
-                        className="income-line"
-                      />
-                    ) : null,
-                  )}
-              {report.months.map((m, i) => (
-                <g
-                  key={m.month}
-                  tabIndex={0}
-                  role="img"
-                  aria-label={`Tháng ${Number(m.month.slice(5))}: ${displayMoney(m.total)}${m.total === null ? ", chưa có dữ liệu" : ""}${m.missing ? `, ${m.missing} danh mục chưa nhập` : ""}`}
-                >
-                  <title>
-                    {m.month}: {displayMoney(m.total)}
-                    {m.missing ? ` · ${m.missing} danh mục chưa nhập` : ""}
-                  </title>
-                  {m.total !== null ? (
-                    chart === "columns" ? (
-                      <rect
-                        x={x(i) - Math.min(18, 200 / report.months.length)}
-                        y={y(m.total)}
-                        width={Math.min(36, 400 / report.months.length)}
-                        height={Math.max(2, 200 - y(m.total))}
-                        className="income-bar"
-                      />
+          <div {...tooltip.container}>
+            <div className="income-chart-scroll" onScroll={tooltip.onScroll}>
+              <svg
+                viewBox="0 0 730 265"
+                role="img"
+                aria-label={
+                  chart === "line"
+                    ? "Xu hướng tổng thu theo tháng, đơn vị VND"
+                    : "Cột tổng thu theo tháng, đơn vị VND"
+                }
+              >
+                <title>Tổng đã ghi nhận theo tháng · VND</title>
+                <line
+                  x1="30"
+                  x2="710"
+                  y1="200"
+                  y2="200"
+                  className="income-axis"
+                />
+                <text x="30" y="20">
+                  {money(max)}
+                </text>
+                <text x="10" y="205">
+                  0
+                </text>
+                {chart === "line" &&
+                  report.months
+                    .slice(1)
+                    .map((m, i) =>
+                      m.total !== null && report.months[i].total !== null ? (
+                        <line
+                          key={m.month}
+                          x1={x(i)}
+                          y1={y(report.months[i].total!)}
+                          x2={x(i + 1)}
+                          y2={y(m.total)}
+                          className="income-line"
+                        />
+                      ) : null,
+                    )}
+                {report.months.map((m, i) => (
+                  <g
+                    key={m.month}
+                    {...tooltip.trigger(
+                      m.month,
+                      `${monthName(m.month)}: ${displayMoney(m.total)}${m.total === null ? ", chưa có dữ liệu" : ""}${m.missing ? `, ${m.missing} danh mục chưa nhập` : ""}`,
+                    )}
+                  >
+                    <title>
+                      {m.month}: {displayMoney(m.total)}
+                      {m.missing ? ` · ${m.missing} danh mục chưa nhập` : ""}
+                    </title>
+                    {m.total !== null ? (
+                      chart === "columns" ? (
+                        <rect
+                          x={x(i) - Math.min(18, 200 / report.months.length)}
+                          y={y(m.total)}
+                          width={Math.min(36, 400 / report.months.length)}
+                          height={Math.max(2, 200 - y(m.total))}
+                          className="income-bar"
+                        />
+                      ) : (
+                        <circle
+                          cx={x(i)}
+                          cy={y(m.total)}
+                          r="6"
+                          className="income-bar"
+                        />
+                      )
                     ) : (
-                      <circle
-                        cx={x(i)}
-                        cy={y(m.total)}
-                        r="6"
-                        className="income-bar"
-                      />
-                    )
-                  ) : (
-                    <text x={x(i)} y="185" textAnchor="middle">
-                      —
+                      <text x={x(i)} y="185" textAnchor="middle">
+                        —
+                      </text>
+                    )}
+                    <text x={x(i)} y="230" textAnchor="middle">
+                      T{Number(m.month.slice(5))}
                     </text>
+                  </g>
+                ))}
+              </svg>
+            </div>
+            {tooltip.tooltip(
+              activeMonth && (
+                <>
+                  <strong>{monthName(activeMonth.month)}</strong>
+                  <span>
+                    Tổng đã ghi nhận: {displayMoney(activeMonth.total)}
+                  </span>
+                  <span>
+                    Cố định: {displayMoney(activeMonth.fixed)} · Phát sinh:{" "}
+                    {displayMoney(activeMonth.oneoff)}
+                  </span>
+                  {activeMonth.missing > 0 && (
+                    <span className="status-badge status-missing">
+                      {activeMonth.missing} danh mục chưa nhập
+                    </span>
                   )}
-                  <text x={x(i)} y="230" textAnchor="middle">
-                    T{Number(m.month.slice(5))}
-                  </text>
-                </g>
-              ))}
-            </svg>
+                </>
+              ),
+            )}
           </div>
         ) : (
           <div className="income-share-list" aria-label="Tỷ trọng thu nhập">
@@ -268,9 +332,11 @@ export function IncomeReports({
           </div>
         )}
         <p className="expense-muted">
-          Tổng đã ghi nhận: {displayMoney(report.total)}. {report.missing} danh
-          mục–tháng đã đến còn chưa nhập. Dùng Tab để đọc điểm biểu đồ; đường
-          không nối qua tháng thiếu dữ liệu.
+          Tổng đã ghi nhận: {displayMoney(report.total)}.{" "}
+          {report.missing > 0
+            ? `Còn ${report.missing} khoản thu cố định cần bổ sung; xem danh sách tháng phía trên.`
+            : "Đã ghi nhận đủ các khoản đến hạn."}{" "}
+          Dùng Tab để đọc điểm biểu đồ; đường không nối qua tháng thiếu dữ liệu.
         </p>
       </section>
     </>

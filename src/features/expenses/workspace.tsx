@@ -1,5 +1,11 @@
 "use client";
-import { LoadingStatus } from "@/components/loading";
+import { HelpPageTitle } from "@/features/help/provider";
+import { ColumnPicker, hiddenColumns } from "@/components/column-table";
+import { usePreference } from "@/components/ui-preferences";
+import { LabelName } from "./label-visual";
+import { ColumnTable } from "@/components/column-table";
+import { useForegroundRefresh } from "@/components/use-foreground-refresh";
+import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus, Settings2, ArrowUpRight, Pencil, Archive } from "lucide-react";
@@ -19,6 +25,11 @@ import { jarEmoji } from "@/domain/expenses/emoji";
 
 export function ExpenseWorkspace({ configured }: { configured: boolean }) {
   const money = useMoney();
+  const [columnPreference] = usePreference(
+    "fm-columns:expenses-workspace-1",
+    "[]",
+  );
+  const hidden = hiddenColumns(columnPreference);
   const [view, setView] = useState<ExpenseView | null>(null);
   const [year, setYear] = useState<number | null>(null);
   const [month, setMonth] = useState<number | null>(null);
@@ -39,63 +50,58 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
   const calendarYear = useRef<number | null>(null);
   const selectedYearRef = useRef(year);
   selectedYearRef.current = year;
-  const reload = useCallback(async () => {
-    const id = ++requestId.current;
-    setLoading(true);
-    try {
-      const next = await apiJSON<ExpenseView>("");
-      if (id === requestId.current) {
-        if (
-          calendarYear.current !== null &&
-          calendarYear.current !== next.currentYear &&
-          selectedYearRef.current === calendarYear.current
-        ) {
-          setYear(next.currentYear);
-          setMonth(Number(next.today.slice(5, 7)));
-          setTab("month");
+  const reload = useForegroundRefresh(
+    useCallback(async () => {
+      const id = ++requestId.current;
+      setLoading(true);
+      try {
+        const next = await apiJSON<ExpenseView>("");
+        if (id === requestId.current) {
+          if (
+            calendarYear.current !== null &&
+            calendarYear.current !== next.currentYear &&
+            selectedYearRef.current === calendarYear.current
+          ) {
+            setYear(next.currentYear);
+            setMonth(Number(next.today.slice(5, 7)));
+            setTab("month");
+          }
+          calendarYear.current = next.currentYear;
+          setView(next);
+          setNeedsLogin(false);
+          setError("");
+          setYear((y) => y ?? next.currentYear);
+          setMonth((m) => m ?? Number(next.today.slice(5, 7)));
         }
-        calendarYear.current = next.currentYear;
-        setView(next);
-        setNeedsLogin(false);
-        setError("");
-        setYear((y) => y ?? next.currentYear);
-        setMonth((m) => m ?? Number(next.today.slice(5, 7)));
-      }
-      return next;
-    } catch (e) {
-      if (id === requestId.current) {
-        const auth =
-          e instanceof Error && "code" in e && e.code === "UNAUTHENTICATED";
-        if (auth) {
-          setNeedsLogin(true);
-          setView(null);
-          setEditor(null);
-          setDetail(null);
+        return next;
+      } catch (e) {
+        if (id === requestId.current) {
+          const auth =
+            e instanceof Error && "code" in e && e.code === "UNAUTHENTICATED";
+          if (auth) {
+            setNeedsLogin(true);
+            setView(null);
+            setEditor(null);
+            setDetail(null);
+          }
+          setError(
+            e instanceof Error
+              ? e.message
+              : "Không thể tải dữ liệu. Vui lòng thử lại.",
+          );
         }
-        setError(
-          e instanceof Error
-            ? e.message
-            : "Không thể tải dữ liệu. Vui lòng thử lại.",
-        );
+        throw e;
+      } finally {
+        if (id === requestId.current) setLoading(false);
       }
-      throw e;
-    } finally {
-      if (id === requestId.current) setLoading(false);
-    }
-  }, []);
+    }, []),
+    configured,
+  );
   useEffect(() => {
     if (!configured) return;
     void reload().catch(() => {});
-    const foreground = () => {
-      if (document.visibilityState === "visible") void reload().catch(() => {});
-    };
-    window.addEventListener("focus", foreground);
-    window.addEventListener("online", foreground);
-    document.addEventListener("visibilitychange", foreground);
     return () => {
-      window.removeEventListener("focus", foreground);
-      window.removeEventListener("online", foreground);
-      document.removeEventListener("visibilitychange", foreground);
+      requestId.current++;
     };
   }, [configured, reload]);
   useEffect(() => {
@@ -126,7 +132,11 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
   const selectedYear = year ?? currentYear;
   const selectedMonth = `${selectedYear}-${String(month ?? 1).padStart(2, "0")}`;
   const period = view?.book?.years.find((y) => y.year === selectedYear);
-  const readonly = Boolean(period?.closedAt);
+  const outsideYears =
+    !!view?.book &&
+    (selectedYear < Number(view.book.start.slice(0, 4)) ||
+      selectedYear > currentYear);
+  const readonly = outsideYears || Boolean(period?.closedAt);
   const rows =
     view?.rows.filter(
       (r) =>
@@ -170,7 +180,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
       <div className="expense-page-heading">
         <div>
           <p className="eyebrow">MỖI KHOẢN TIỀN, MỘT MỤC ĐÍCH</p>
-          <h1>Chi tiêu</h1>
+          <HelpPageTitle>Chi tiêu</HelpPageTitle>
           <p className="lead">
             Chuẩn bị cho tháng này. Dành sẵn cho những đợt chi sắp tới.
           </p>
@@ -212,7 +222,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
         </section>
       ) : (
         <>
-          {loading ? (
+          {loading && !view ? (
             <LoadingStatus>Đang tải dữ liệu chi tiêu…</LoadingStatus>
           ) : (
             <p role="status" className="expense-status">
@@ -229,9 +239,11 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
               ) : (
                 <button
                   className="expense-secondary"
+                  disabled={loading}
+                  aria-busy={loading}
                   onClick={() => void reload().catch(() => {})}
                 >
-                  Thử tải lại
+                  {loading && <LoadingSpinner />} Thử tải lại
                 </button>
               )}
             </div>
@@ -254,6 +266,22 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
           )}
           {view?.book && (
             <>
+              {outsideYears && (
+                <div className="data-warning" role="status">
+                  Năm {selectedYear} chưa có dữ liệu. Sổ đang quản lý từ{" "}
+                  {monthName(view.book.start)} đến năm {currentYear}.
+                  <button
+                    type="button"
+                    className="expense-secondary"
+                    onClick={() => {
+                      setYear(currentYear);
+                      setMonth(Number(view.today.slice(5, 7)));
+                    }}
+                  >
+                    Về năm hiện tại
+                  </button>
+                </div>
+              )}
               <div className="expense-toolbar">
                 <div className="expense-filters">
                   <label>
@@ -273,16 +301,26 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                           setMonth(Number(min.slice(5)));
                       }}
                     >
-                      {[...view.book.years].reverse().map((y) => (
-                        <option key={y.year} value={y.year}>
-                          {y.year}
-                          {y.closedAt
-                            ? " · Đã chốt"
-                            : y.year < currentYear
-                              ? " · Chưa chốt"
-                              : ""}
-                        </option>
-                      ))}
+                      {Array.from(
+                        { length: 100 },
+                        (_, index) => 2099 - index,
+                      ).map((value) => {
+                        const entry = view.book!.years.find(
+                          (item) => item.year === value,
+                        );
+                        return (
+                          <option key={value} value={value}>
+                            {value}
+                            {entry?.closedAt
+                              ? " · Đã chốt"
+                              : !entry
+                                ? " · Chưa có dữ liệu"
+                                : value === currentYear
+                                  ? " · Hiện tại"
+                                  : " · Chưa chốt"}
+                          </option>
+                        );
+                      })}
                     </select>
                   </label>
                   <label>
@@ -326,7 +364,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   </button>
                 </div>
               </div>
-              {selectedYear < currentYear && (
+              {selectedYear < currentYear && !outsideYears && (
                 <div className="expense-notice expense-archive-note">
                   <Archive size={20} aria-hidden="true" />
                   <p>
@@ -346,7 +384,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   )}
                 </div>
               )}
-              {selectedYear < currentYear && (
+              {selectedYear < currentYear && !outsideYears && (
                 <details className="panel expense-archive-summary">
                   <summary>
                     Tổng kết năm {selectedYear}
@@ -374,7 +412,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                     </div>
                   )}
                   <div className="expense-table-scroll">
-                    <table>
+                    <ColumnTable tableId="expenses-workspace-1">
                       <caption className="sr-only">
                         Tổng kết từng tháng năm {selectedYear}, đơn vị VND
                       </caption>
@@ -396,7 +434,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </ColumnTable>
                   </div>
                 </details>
               )}
@@ -496,7 +534,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   {rows.length ? (
                     <>
                       <div className="expense-desktop-table expense-table-scroll">
-                        <table>
+                        <ColumnTable tableId="expenses-workspace-2">
                           <caption className="sr-only">
                             Các hũ trong {monthName(selectedMonth)}, đơn vị VND
                           </caption>
@@ -536,8 +574,22 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                     {row.kind === "monthly"
                                       ? "Chi trong tháng"
                                       : "Tích lũy"}{" "}
-                                    · {row.method}
-                                    {row.group ? ` · ${row.group}` : ""}
+                                    ·{" "}
+                                    <LabelName
+                                      name={row.method}
+                                      labels={view.book?.labels}
+                                    />
+                                    {row.group && (
+                                      <>
+                                        {" "}
+                                        ·{" "}
+                                        <LabelName
+                                          name={row.group}
+                                          labels={view.book?.labels}
+                                          kind="group"
+                                        />
+                                      </>
+                                    )}
                                     {!row.active ? " · Đã ngừng" : ""}
                                   </small>
                                   <JarProgress row={row} />
@@ -591,9 +643,24 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                               </tr>
                             ))}
                           </tbody>
-                        </table>
+                        </ColumnTable>
                       </div>
                       <div className="expense-mobile-cards">
+                        <ColumnPicker
+                          tableId="expenses-workspace-1"
+                          columns={[
+                            { id: "Khoản chi", fixed: true },
+                            ...[
+                              "Mức tháng",
+                              "Chuyển sang",
+                              "Cần thêm",
+                              future ? "Dự kiến bỏ" : "Đã bỏ hũ",
+                              "Thực chi",
+                              "Còn lại",
+                            ].map((id) => ({ id })),
+                            { id: "Thao tác", fixed: true },
+                          ]}
+                        />
                         {rows.map((row) => (
                           <article
                             key={row.jarId}
@@ -614,8 +681,22 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                 {row.kind === "monthly"
                                   ? "Chi trong tháng"
                                   : "Tích lũy"}{" "}
-                                · {row.method}
-                                {row.group ? ` · ${row.group}` : ""}
+                                ·{" "}
+                                <LabelName
+                                  name={row.method}
+                                  labels={view.book?.labels}
+                                />
+                                {row.group && (
+                                  <>
+                                    {" "}
+                                    ·{" "}
+                                    <LabelName
+                                      name={row.group}
+                                      labels={view.book?.labels}
+                                      kind="group"
+                                    />
+                                  </>
+                                )}
                                 {!row.active ? " · Đã ngừng" : ""}
                               </p>
                             </div>
@@ -641,12 +722,14 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                   ],
                                   ["Thực chi", row.spent],
                                   ["Còn lại", row.closing],
-                                ].map(([label, value]) => (
-                                  <div key={label}>
-                                    <dt>{label}</dt>
-                                    <dd>{money(value)}</dd>
-                                  </div>
-                                ))}
+                                ]
+                                  .filter(([label]) => !hidden.includes(label))
+                                  .map(([label, value]) => (
+                                    <div key={label}>
+                                      <dt>{label}</dt>
+                                      <dd>{money(value)}</dd>
+                                    </div>
+                                  ))}
                               </dl>
                             </details>
                             {BigInt(row.over) > 0n && (

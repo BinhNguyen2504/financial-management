@@ -38,7 +38,7 @@ Backup JSON theo năm có `schemaVersion: 1`, trạng thái draft/closed, kỳ, 
 - Các bảng: `expense_books`, `expense_jars`, `expense_month_inputs`, `expense_spends`, `expense_years`, `expense_labels`, `expense_audit`, `expense_commands`. Lịch cấu hình có hiệu lực nằm trong JSONB của hũ; inputs chỉ lưu ngoại lệ, mặc định được tính tại server. Không tạo bảng SQL mới cho mỗi năm.
 - Backend xác minh Auth qua `getUser`, dùng danh tính đã xác minh làm owner. Connection runtime là `expense_api`; trong transaction `SET LOCAL ROLE authenticated` và đặt JWT claims cho RLS. Composite FK ngăn gắn hũ của owner khác. RLS chặn cả truy cập PostgREST trực tiếp.
 - Advisory transaction lock theo owner tuần tự hóa ghi, retry và khởi tạo. Version ngăn ghi đè stale data. Command ID và fingerprint toàn payload kiểm soát retry. Audit append-only lưu các action để lần theo lịch sử; xóa lần sử dụng là đánh dấu, không xóa record.
-- API và trang private không cache. Không lưu tài chính vào localStorage/IndexedDB/service worker. Đổi thiết bị hoặc quay lại foreground sẽ refetch; chưa có Realtime hoặc nhập offline.
+- API và trang private không cache. Không lưu tài chính vào localStorage/IndexedDB/service worker. Đổi thiết bị/mở trang sẽ refetch. Quay lại foreground giữ dữ liệu trên màn hình và chỉ cập nhật ngầm nếu lần tải trước đã qua 60 giây; reconnect/đổi ngày Việt Nam kiểm tra sớm hơn, tối thiểu 5 giây giữa các lần tải tự động. Gộp sự kiện quay lại trùng nhau, không tải thêm khi còn request; chưa có Realtime hoặc nhập offline.
 
 | Endpoint | Hành vi |
 | --- | --- |
@@ -70,3 +70,18 @@ Theo tháng/khoản/phương thức/nhóm: mức kế hoạch, tiền bỏ hũ v
 ## Giao diện chi tiết — 18/10/2026
 
 Chi tiết hũ ưu tiên còn lại, mức tháng, bỏ hũ và thực chi; tab Theo tháng, Các lần sử dụng (hũ tích lũy), Lịch sử thay đổi. Lịch sử không còn bị cắt ở 20 dòng; danh sách dài có tìm kiếm/lọc/phân trang. Phương thức/nhóm tách tab. Xem trước có Trước/Sau; lưu trong dialog con giữ chi tiết và vị trí. Xem [quy chuẩn dialog](ui-feedback.md).
+
+
+## Nguồn living expense cho Fund — 19/10/2026
+
+Fund chỉ đọc mức cấu hình có hiệu lực của các hũ `monthly` đang hoạt động do người dùng chọn. Không dùng `MonthInput.target`, funding, extra, closing hoặc hũ tích lũy. Chỉnh Chi tiêu tạo đề xuất cập nhật mục tiêu Fund; chỉ xác nhận trong Fund mới thay bản chụp nguồn. Không ghi giao dịch Fund vào Chi tiêu.
+
+## Phân loại và bố cục — 19/10/2026
+
+Phương thức/nhóm chọn từ danh sách có sẵn; thêm phân loại qua dialog con giữ bản nháp hũ. Logo/icon là metadata tùy chọn, migration `202610190002_label_visuals.sql`, nguồn asset local ở `public/brands/sources.json`. Phân loại lịch sử giữ nguyên. Chọn được năm 2000–2099; năm ngoài phạm vi hiện thông báo trống và không cho sửa. Bảng/card có tùy chỉnh cột trên trình duyệt; không đổi phép tính hoặc CSV. Tiền chuẩn hóa số 0 đầu khi blur/submit. Xem [ma trận UI](interface-feedback-2026-10-19.md).
+
+Bổ sung 20/10/2026: khi chưa có cột logo/icon, repository đọc metadata thành null và tiếp tục lưu hũ/phân loại không kèm metadata. Chỉ lệnh lưu metadata khác null bị chặn với HTTP 503 / `LABEL_VISUALS_MIGRATION_REQUIRED`, giữ bản nháp và không đổi version/audit/biên nhận lệnh. Sau migration, metadata được lưu/đọc bình thường; không tự chạy DDL hoặc nâng quyền runtime. Điều này cũng giữ nguồn Chi tiêu cho Fund đọc được khi thiếu riêng migration metadata.
+
+## Help theo ngữ cảnh — 20/10/2026
+
+Hướng dẫn “chia trước, chi sau”, hũ chi tháng/tích lũy, phương thức/nhóm, cách tính tiền và chốt năm; tra cứu từ form đến đúng khái niệm. Công thức và API giữ nguyên. Xem [Help theo từng trang](help.md).

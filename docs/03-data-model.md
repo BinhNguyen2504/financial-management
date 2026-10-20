@@ -110,3 +110,8 @@ Vàng là holding duy nhất có số lượng/đơn vị và valuation; hiển 
 ## Bổ sung backup toàn tài khoản — 18/10/2026
 
 `data_imports(owner_id,id,fingerprint,result,imported_at)` là biên nhận kỹ thuật append-only, RLS theo owner, thêm bởi migration `202610180002_data_imports.sql`. FullBackupV1 mang 28 bảng tài chính hiện tại, bỏ owner khỏi file và gán owner phiên đích khi nhập; giữ ID/tham chiếu nội bộ. Không xuất Auth secrets hoặc biên nhận import.
+
+
+## Fund độc lập — 19/10/2026
+
+Bổ sung `funds_books`, `funds_definitions`, `funds_locations`, `funds_configurations`, `funds_transactions`, `funds_audit`, `funds_commands`. Ba loại quỹ cố định, số dư theo (fund_id,location_id). Configuration giữ bản chụp living expense, x và thứ tự ưu tiên. Giao dịch có thời điểm UTC hiển thị giờ Việt Nam; sửa/hủy append revision, replay theo thời điểm và thứ tự gốc. Composite FK owner và trigger bất biến giữ lịch sử. Backup V2 có đủ 35 bảng.

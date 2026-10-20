@@ -342,6 +342,7 @@ test("income retries a lost response after commit without duplicating income or 
   const refresh = page.waitForResponse((response) =>
     response.url().includes("/api/v1/income?year="),
   );
+  await page.clock.setFixedTime(await page.evaluate(() => Date.now() + 61_000));
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await refresh;
   await page.unroute("**/api/v1/income/commands");
@@ -417,7 +418,9 @@ test("income API rejects forged auth, CSRF, cross-owner changes and invalid repo
 }) => {
   await page.goto("/income");
   await expect(page).toHaveURL(/\/login\?next=%2Fincome$/);
-  await expect(page.getByRole("heading", { name: "Đăng nhập", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Đăng nhập", exact: true }),
+  ).toBeVisible();
   await login(page);
   const id = randomUUID();
   expect(

@@ -52,13 +52,42 @@ async function confirm(page: Page) {
   await page.getByRole("button", { name: "Xác nhận lưu", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
 }
+async function ensureLabels(page: Page) {
+  for (const [kind, name] of [
+    ["method", "Tiền mặt"],
+    ["method", "Ví"],
+    ["method", "Cash"],
+    ["group", "Gia đình"],
+  ] as const) {
+    if (
+      !(await view(page)).book?.labels.some(
+        (label) => label.kind === kind && label.name === name,
+      )
+    )
+      expect(
+        (
+          await command(page, {
+            type: "upsertLabel",
+            id: randomUUID(),
+            kind,
+            name,
+          })
+        ).ok(),
+      ).toBe(true);
+  }
+}
 async function create(page: Page, name: string, kind = "monthly") {
+  await ensureLabels(page);
+  await page.reload();
   await page.getByRole("button", { name: "Thêm hũ", exact: true }).click();
   await page.getByLabel("Tên hũ", { exact: true }).fill(name);
   await page.getByRole("dialog").getByLabel("Loại hũ").selectOption(kind);
   await page.getByLabel("Tháng bắt đầu", { exact: true }).fill(prior);
-  await page.getByLabel("Phương thức", { exact: true }).last().fill("Tiền mặt");
-  await page.getByLabel("Nhóm mục đích (tùy chọn)").fill("Gia đình");
+  await page
+    .getByLabel("Phương thức", { exact: true })
+    .last()
+    .selectOption("Tiền mặt");
+  await page.getByLabel("Nhóm mục đích (tùy chọn)").selectOption("Gia đình");
   await page.getByLabel("Mức mặc định mỗi tháng").fill("2000000");
   await confirm(page);
 }
@@ -155,10 +184,14 @@ test("network errors preserve drafts and Escape restores keyboard access", async
   expect(
     (await command(page, { type: "initialize", start: current })).ok(),
   ).toBe(true);
+  await ensureLabels(page);
   await page.reload();
   await page.getByRole("button", { name: "Thêm hũ", exact: true }).click();
   await page.getByLabel("Tên hũ").fill("Bản nháp còn nguyên");
-  await page.getByLabel("Phương thức", { exact: true }).last().fill("Ví");
+  await page
+    .getByLabel("Phương thức", { exact: true })
+    .last()
+    .selectOption("Ví");
   await page.getByLabel("Mức mặc định mỗi tháng").fill("500000");
   await page.route("**/api/v1/expenses/preview", (route) =>
     route.abort("failed"),
@@ -190,7 +223,9 @@ test("network errors preserve drafts and Escape restores keyboard access", async
   await page.unroute("**/api/v1/expenses/commands");
   await page.getByRole("button", { name: "Xác nhận lưu" }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
-  expect((await view(page)).book?.audit).toHaveLength(2);
+  expect(
+    (await view(page)).book?.audit.filter((row) => row.action === "createJar"),
+  ).toHaveLength(1);
   await page
     .getByRole("button", { name: "Bản nháp còn nguyên", exact: true })
     .click();
@@ -210,10 +245,14 @@ test("independent sessions detect conflicts, keep drafts, and reload without ove
   expect(
     (await command(page, { type: "initialize", start: current })).ok(),
   ).toBe(true);
+  await ensureLabels(page);
   await page.reload();
   await page.getByRole("button", { name: "Thêm hũ", exact: true }).click();
   await page.getByLabel("Tên hũ").fill("Bản nháp đa thiết bị");
-  await page.getByLabel("Phương thức", { exact: true }).last().fill("Cash");
+  await page
+    .getByLabel("Phương thức", { exact: true })
+    .last()
+    .selectOption("Cash");
   await page.getByLabel("Mức mặc định mỗi tháng").fill("100000");
   const other = await browser.newContext({
     baseURL: process.env.TEST_BASE_URL,
@@ -242,7 +281,9 @@ test("independent sessions detect conflicts, keep drafts, and reload without ove
     await confirm(page);
     const data = await view(second);
     expect(data.book?.jars[0].rules[0].name).toBe("Bản nháp đa thiết bị");
-    expect(data.book?.labels[0].name).toBe("Thiết bị thứ hai");
+    expect(
+      data.book?.labels.some((label) => label.name === "Thiết bị thứ hai"),
+    ).toBe(true);
   } finally {
     await other.close();
   }
@@ -379,12 +420,14 @@ test("a foreground refresh at New Year opens January and exits the previous year
   await page.route("**/api/v1/expenses", (route) =>
     route.fulfill({ json: snapshot }),
   );
+  await page.clock.setFixedTime(new Date(`${year}-12-31T23:59:50+07:00`));
   await page.reload();
   await page.getByRole("button", { name: "Báo cáo năm", exact: true }).click();
   snapshot = toView(original.book, {
     today: `${year + 1}-01-01`,
     now: `${year}-12-31T18:00:00Z`,
   });
+  await page.clock.setFixedTime(new Date(`${year + 1}-01-01T00:00:01+07:00`));
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await expect(
     page.getByRole("combobox", { name: "Năm", exact: true }),

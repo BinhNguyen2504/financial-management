@@ -1,7 +1,11 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import postgres from "postgres";
-import { postgresExpenseRepository } from "../src/server/expense-repository";
+import {
+  postgresExpenseRepository,
+  transactionAdapter,
+} from "../src/server/expense-repository";
+import type { ExpenseRepository } from "../src/application/expenses";
 import {
   readExpenseView,
   runExpenseCommand,
@@ -70,6 +74,148 @@ afterAll(async () => {
   await admin.end();
 });
 describe("PostgreSQL transactions, retry, concurrency and owner isolation", () => {
+  it.each([["brand_key", "icon_key"], ["brand_key"], ["icon_key"]])(
+    "keeps existing expenses usable without visual columns %j",
+    async (...columns) => {
+      const user = await initialized();
+      const labelId = randomUUID();
+      await execute(user, 1, {
+        type: "upsertLabel",
+        id: labelId,
+        kind: "method",
+        name: "Tiền mặt",
+      });
+      const rollback = new Error("Rollback schema regression fixture");
+      try {
+        await admin.begin(async (tx) => {
+          for (const column of columns)
+            await tx.unsafe(
+              `alter table public.expense_labels drop column ${column}`,
+            );
+          await tx.unsafe("set local session authorization expense_api");
+          await tx.unsafe("set local role authenticated");
+          await tx.unsafe("select set_config('request.jwt.claims', $1, true)", [
+            JSON.stringify({ sub: user, role: "authenticated" }),
+          ]);
+          const legacy: ExpenseRepository = {
+            transaction: async (owner, fn) => {
+              expect(owner).toBe(user);
+              return fn(transactionAdapter(tx, owner));
+            },
+          };
+          const view = await readExpenseView(legacy, user, clock);
+          expect(view.book?.labels).toEqual([
+            {
+              id: labelId,
+              kind: "method",
+              name: "Tiền mặt",
+              brandKey: null,
+              iconKey: null,
+            },
+          ]);
+          const run = (version: number, action: ExpenseAction) =>
+            runExpenseCommand(
+              legacy,
+              user,
+              { id: randomUUID(), expectedVersion: version, action },
+              clock,
+            );
+          await run(2, {
+            type: "upsertLabel",
+            id: labelId,
+            kind: "method",
+            name: "Ví tiền mặt",
+          });
+          await run(3, {
+            type: "createJar",
+            id: randomUUID(),
+            kind: "monthly",
+            start: "2026-12",
+            opening: "0",
+            name: "Sinh hoạt",
+            description: "",
+            method: "Ví tiền mặt",
+            group: "Gia đình",
+            amount: "2000000",
+          });
+          const before = await readExpenseView(legacy, user, clock);
+          for (const metadata of [
+            { brandKey: "momo" },
+            { iconKey: "wallet" },
+          ] as const) {
+            const commandId = randomUUID();
+            await expect(
+              runExpenseCommand(
+                legacy,
+                user,
+                {
+                  id: commandId,
+                  expectedVersion: 4,
+                  action: {
+                    type: "upsertLabel",
+                    id: labelId,
+                    kind: "method",
+                    name: "MoMo",
+                    ...metadata,
+                  },
+                },
+                clock,
+              ),
+            ).rejects.toMatchObject({
+              status: 503,
+              code: "LABEL_VISUALS_MIGRATION_REQUIRED",
+            });
+            expect(await readExpenseView(legacy, user, clock)).toEqual(before);
+            expect(
+              await transactionAdapter(tx, user).command(commandId),
+            ).toBeNull();
+          }
+          expect(before.book?.version).toBe(4);
+          expect(before.book?.labels[0].name).toBe("Ví tiền mặt");
+          expect(before.rows.length).toBeGreaterThan(0);
+          throw rollback;
+        });
+      } catch (error) {
+        if (error !== rollback) throw error;
+      }
+    },
+  );
+  it("persists visual metadata after migration, including across unrelated saves", async () => {
+    const user = await initialized();
+    const id = randomUUID();
+    await execute(user, 1, {
+      type: "upsertLabel",
+      id,
+      kind: "method",
+      name: "MoMo",
+      brandKey: "momo",
+      iconKey: "wallet",
+    });
+    await execute(user, 2, {
+      type: "upsertLabel",
+      id: randomUUID(),
+      kind: "group",
+      name: "Gia đình",
+    });
+    expect(
+      (await readExpenseView(repository, user, clock)).book?.labels.find(
+        (l) => l.id === id,
+      ),
+    ).toMatchObject({ brandKey: "momo", iconKey: "wallet" });
+    await execute(user, 3, {
+      type: "upsertLabel",
+      id,
+      kind: "method",
+      name: "Ví",
+      brandKey: null,
+      iconKey: null,
+    });
+    expect(
+      (await readExpenseView(repository, user, clock)).book?.labels.find(
+        (l) => l.id === id,
+      ),
+    ).toMatchObject({ brandKey: null, iconKey: null });
+  });
   it("persists exact amounts and audit across independent connections", async () => {
     const user = await initialized();
     const id = await jar(user);

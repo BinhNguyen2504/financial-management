@@ -137,3 +137,48 @@ Các ca bổ sung: nạp theo tháng, mua TCBS/ghi chú HPG, hai ví, chuyển/r
 **Trạng thái cloud trong lượt chuẩn bị này:** importer đã dừng ở kiểm tra thiếu migration; **chưa nạp Đầu tư lên cloud**. Cần chạy 01-enable-and-seed.sql bằng SQL Editor trước; không cần gửi mật khẩu, OTP hoặc secret. Sau đó có thể dùng 00-inspect.sql hoặc chạy lại `npm run data:import -- --file <BỘ_MỚI>/sample-data.json --apply` để backup/read-back qua runtime RLS.
 
 **Reset mới đủ 28 bảng của cả bốn module**, thay cho bản 14/22 bảng cũ. Chỉ dùng sau khi người dùng xác nhận hoàn tất UI/UX, dừng nhập ở mọi thiết bị và xuất backup mới nhất. Mặc định `NOT_CONFIRMED` nên không xóa. Nó kiểm UID/dataset ở cả bốn module, giữ Auth/hồ sơ và owner khác, khóa bảng, chụp snapshot, tạm tắt đúng 15 trigger lịch sử, xóa theo FK rồi bật lại và kiểm counts bằng 0. Lỗi rollback cả dữ liệu lẫn trigger. Chưa chạy reset cloud.
+
+
+## Giới hạn bộ reset cũ khi đã có Fund — 19/10/2026
+
+Các bộ review/reset 28 bảng ở trên chỉ bao phủ bốn module cũ, không phải reset toàn tài khoản của phiên bản có Fund. Không dùng chúng để làm trống tài khoản có quỹ; xuất backup V2 tại Cài đặt để giữ đủ năm module. Triển khai Fund không chạy seed hoặc reset cloud.
+
+## Bổ sung Fund và reset 35 bảng — 19/10/2026
+
+Kiểm tra cloud trong lượt này: đúng UID được chỉ định đang có bộ review bốn module cùng dataset (18 hũ, 2 danh mục thu, 6 danh mục Tiết kiệm, 8 danh mục/ví Đầu tư). Cả 7 bảng Fund và bảng biên nhận `data_imports` đều chưa có; `expense_api` không có CREATE. Đã sao lưu các bảng hiện có theo đúng owner trong `backups/before-funds-review-*.json` với quyền 0600. **Chưa nạp Fund hoặc reset cloud.** Thông tin source/local không chứng minh deploy.
+
+```bash
+npm run data:funds:sample -- --base imports/<BỘ_ĐẦU_TƯ>/sample-data.json --snapshot backups/<OWNER_INSPECTION_BACKUP>.json
+npm run data:funds:import -- --file imports/<BỘ_FUND>/sample-data.json
+# Khi schema đã được bật, thêm --apply để nạp và đối soát.
+```
+
+Generator yêu cầu snapshot đúng owner, dùng hũ/version hiện tại thay vì bản cũ trong manifest Đầu tư. Năm hũ mẫu: Ăn uống & cà phê, Phí sinh hoạt, Mua sắm, Hóa đơn điện và Hóa đơn nước, tổng 6 triệu/tháng. Hệ số cuối Emergency/Rainy Day/Sinking là 9/7/9 để giữ mục tiêu tham khảo 54/42/54 triệu trong ảnh. Không sửa Chi tiêu hay tạo Financial Goals. Các số dư và ngày hoàn toàn minh họa.
+
+| Quỹ | Số dư mẫu | Mục tiêu | Tỷ lệ |
+|---|---:|---:|---:|
+| Emergency | 27.000.000 | 54.000.000 | 50% |
+| Rainy Day | 44.100.000 | 42.000.000 | 105% |
+| Sinking | 13.500.000 | 54.000.000 | 25% |
+
+Tổng 84,6 triệu, Emergency bằng 4,5 tháng sinh hoạt đã xác nhận. Có 37 giao dịch gốc, 39 revision (36 giao dịch hiện hành), hai cấu hình, sáu nơi giữ và 48 audit. Thể hiện thêm/rút/bổ sung, chuyển nội bộ/liên quỹ, sửa số tiền, hủy ghi trùng, nơi giữ hết tiền/ngừng và nơi giữ mới. Danh sách đủ hai trang để kiểm tra tìm/lọc/phân trang.
+
+Package private `imports/funds-review-<ngày>-<dataset>/` gồm:
+
+| File | Công dụng |
+|---|---|
+| `00-inspect.sql` | Chỉ đọc, dùng được cả khi thiếu bảng; báo counts/marker/schema. |
+| `01-enable-and-seed.sql` | SQL Editor/admin: tạo Fund khi cả 7 bảng thiếu, từ chối schema dở dang, nạp đúng owner trong cùng transaction; không đổi bốn module cũ. |
+| `04-seed-funds-only.sql` | Nạp nếu schema đã có; runtime CLI dùng `expense_api`/RLS, không dùng admin. |
+| `02-backup.sql` | Snapshot vận hành đủ 35 bảng và `data_imports` nếu có; không phải định dạng app restore. |
+| `03-reset.sql` | Mặc định `NOT_CONFIRMED`; chỉ reset sau xác nhận UI/UX riêng, đúng owner và marker năm module. |
+
+Seed kiểm lại tháng Việt Nam, version và mức hiệu lực của từng hũ trước lần nạp đầu; thay đổi thì phải tạo package mới. Chạy lại đúng bộ giữ các chỉnh sửa review. CLI mặc định chỉ kiểm tra; luôn lưu snapshot trước, không chạy seed khi thiếu migration. Không tăng quyền tài khoản ứng dụng. Migration `202610180002_data_imports.sql` cần được áp dụng riêng để dùng restore tại Cài đặt; Fund seed không tự thay đổi schema này.
+
+**Reset mới thay bản 14/22/28 bảng:** sau duyệt UI/UX và sao lưu mới nhất, nhập đúng `RESET REVIEW <UID>` vào file guard. Reset khóa ghi đồng bộ với các module/restore, chụp thêm snapshot, xóa đúng owner ở 35 bảng cùng biên nhận `data_imports` nếu tồn tại, giữ Auth/hồ sơ và owner khác. Lỗi rollback cả dữ liệu và trigger lịch sử. Chưa thực hiện reset cloud.
+
+`npm run data:preview` hiện chứa đủ năm module trong database/Auth local riêng; mở `/funds` sau đăng nhập demo để review ngay trong khi chờ migration cloud. Preview này chuyển sang bộ Đầu tư cùng cấu trúc cloud review (8 danh mục, 44 revision giao dịch, 22 revision định giá); lịch sử mô tả bản preview 18/10 ở trên vẫn là bằng chứng của bản cũ. Public landing preview vẫn dùng dữ liệu cố định riêng, không đọc tài khoản/API tài chính.
+
+### Cập nhật cloud — 20/10/2026
+
+Người dùng đã chạy script 01. Kiểm tra lại bằng `expense_api`/authenticated RLS xác nhận đủ schema Fund, marker đúng owner/dataset và toàn bộ lịch sử khớp package (version 48, 37 giao dịch gốc, 39 revision, 6 nơi giữ). Số dư 27 / 44,1 / 13,5 triệu, tổng 84,6 triệu; không cần nạp lại. Đã sao lưu lại owner, chỉ đọc và đối soát, không ghi đè hoặc reset. Bằng chứng ở `artifacts/fund-review-cloud-verified-2026-10-20.json`. Các ghi nhận thiếu schema ngày 19/10 ở trên là lịch sử trước khi người dùng chạy script; `data_imports` vẫn cần migration riêng nếu sử dụng restore tại Cài đặt.

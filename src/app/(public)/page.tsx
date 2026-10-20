@@ -7,7 +7,11 @@ import {
   Fingerprint,
   Sprout,
 } from "lucide-react";
-import { modules, moduleStatusLabels } from "@/features/catalog";
+import {
+  modules,
+  moduleStatusLabels,
+  pageHelpSummary,
+} from "@/features/catalog";
 import { ModuleIcon } from "@/components/module-icon";
 import { Garden } from "@/components/garden";
 import { StartLink } from "@/features/landing/account-actions";
@@ -15,7 +19,7 @@ import { ProductPreview } from "@/features/landing/product-preview";
 
 const title = "Financial Manager — Một nơi rõ ràng hơn cho tài chính của bạn";
 const description =
-  "Từ nhu cầu thật đến một không gian quản lý thu nhập, hũ chi tiêu, tiết kiệm và đầu tư. Khám phá Financial Manager, theo nhịp của bạn.";
+  "Từ nhu cầu thật đến một không gian quản lý thu nhập, hũ chi tiêu, tiết kiệm, đầu tư và quỹ an toàn. Khám phá Financial Manager, theo nhịp của bạn.";
 export const metadata: Metadata = {
   title: { absolute: title },
   description,
@@ -30,9 +34,13 @@ export const metadata: Metadata = {
 };
 
 const features = modules.filter((item) =>
-  ["income", "budgets", "savings", "investments"].includes(item.slug),
+  ["income", "budgets", "savings", "investments", "funds"].includes(item.slug),
 );
 const benefits: Record<string, { heading: string; detail: string }> = {
+  funds: {
+    heading: "Vun đắp nền tảng an tâm.",
+    detail: "Chi phí sinh hoạt · Ba quỹ · Tiến độ trực quan",
+  },
   income: {
     heading: "Biết rõ tiền đến từ đâu.",
     detail: "Thực nhận rõ ràng · Báo cáo theo kỳ",
@@ -99,8 +107,8 @@ export default function Home() {
         <div className="preview-caption">
           <span>01 / MỘT GÓC KHÔNG GIAN CỦA BẠN</span>
           <p>
-            Chuyển giữa các mục để khám phá số liệu chính và bảng có nhãn rõ ràng.
-            Dữ liệu minh họa, không cần đăng nhập.
+            Chuyển giữa các mục để khám phá số liệu chính, phần hướng dẫn và
+            bảng có nhãn rõ ràng. Dữ liệu minh họa, không cần đăng nhập.
           </p>
         </div>
       </section>
@@ -112,7 +120,7 @@ export default function Home() {
         <div className="section-intro">
           <p className="landing-kicker">BẮT ĐẦU TỪ NHỮNG ĐIỀU THIẾT THỰC</p>
           <h2 id="features-title">
-            Ba mảnh ghép.
+            Từng mảnh ghép.
             <br />
             Một bức tranh rõ hơn.
           </h2>
@@ -242,6 +250,16 @@ export default function Home() {
         <div className="landing-faq">
           <h3>Một vài điều bạn có thể muốn biết</h3>
           <details>
+            <summary>
+              Tôi chưa quen các khái niệm tài chính, bắt đầu thế nào?
+            </summary>
+            <p>
+              {pageHelpSummary} Mở nút Hướng dẫn cạnh tiêu đề trang hoặc phần
+              giải thích cạnh thuật ngữ. Đóng hướng dẫn để tiếp tục với nội dung
+              đang nhập.
+            </p>
+          </details>
+          <details>
             <summary>Tôi có cần đăng nhập để dùng ứng dụng?</summary>
             <p>
               Có. Bạn có thể khám phá trang giới thiệu và dữ liệu minh họa
@@ -265,16 +283,24 @@ export default function Home() {
             </p>
           </details>
           <details>
-            <summary>Nếu mất tài khoản, tôi có thể lấy lại dữ liệu không?</summary>
-            <p>Trong Cài đặt, bạn có thể chủ động tải bản sao lưu JSON toàn bộ dữ liệu và nhập lại vào tài khoản mới chưa có dữ liệu. File không mật khẩu; hãy tự giữ một bản ở nơi an toàn. Trang Cài đặt có liên kết lưu file trực tiếp nếu trình duyệt chưa bắt đầu tải. Hồ sơ cá nhân được khôi phục nếu bạn chọn.</p>
+            <summary>
+              Nếu mất tài khoản, tôi có thể lấy lại dữ liệu không?
+            </summary>
+            <p>
+              Trong Cài đặt, bạn có thể chủ động tải bản sao lưu JSON toàn bộ dữ
+              liệu và nhập lại vào tài khoản mới chưa có dữ liệu. File không mật
+              khẩu; hãy tự giữ một bản ở nơi an toàn. Trang Cài đặt có liên kết
+              lưu file trực tiếp nếu trình duyệt chưa bắt đầu tải. Hồ sơ cá nhân
+              được khôi phục nếu bạn chọn.
+            </p>
           </details>
           <details>
             <summary>Ứng dụng đã hoàn thiện chưa?</summary>
             <p>
-              Chưa. Thu nhập, Chi tiêu, Tiết kiệm và Đầu tư đã có trong phiên
-              bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới
-              thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản
-              phẩm.
+              Chưa. Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn đã có
+              trong phiên bản hiện tại; các phần còn lại tiếp tục được xây dựng.
+              Trang giới thiệu sẽ được rà soát và cập nhật cùng những thay đổi
+              của sản phẩm.
             </p>
           </details>
         </div>

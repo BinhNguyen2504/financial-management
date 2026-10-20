@@ -1,5 +1,6 @@
 "use client";
 
+import { ColumnTable } from "./column-table";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 export function DialogPreview({
@@ -166,6 +167,8 @@ export interface DialogColumn<T> {
   label: string;
   render: (item: T) => ReactNode;
   numeric?: boolean;
+  kind?: "text" | "date" | "actions";
+  width?: string;
 }
 export interface DialogFilter<T> {
   label: string;
@@ -307,7 +310,10 @@ export function DialogList<T>({
         )}
       </div>
       {visible.length ? (
-        <table className="dialog-data-table">
+        <ColumnTable
+          tableId={`dialog:${columns.map((column) => column.label).join("/")}`}
+          className="dialog-data-table"
+        >
           <caption className="sr-only">{label}</caption>
           <thead>
             <tr>
@@ -315,7 +321,18 @@ export function DialogList<T>({
                 <th
                   scope="col"
                   key={column.label}
-                  className={column.numeric ? "is-numeric" : ""}
+                  className={
+                    column.numeric
+                      ? "is-numeric"
+                      : column.kind === "date" ||
+                          /^(Tháng|Ngày)$/.test(column.label)
+                        ? "is-date"
+                        : column.kind === "actions" ||
+                            column.label === "Thao tác"
+                          ? "is-actions"
+                          : ""
+                  }
+                  style={column.width ? { width: column.width } : undefined}
                 >
                   {column.label}
                 </th>
@@ -328,7 +345,18 @@ export function DialogList<T>({
                 {columns.map((column) => (
                   <td
                     key={column.label}
-                    className={column.numeric ? "is-numeric" : ""}
+                    className={
+                      column.numeric
+                        ? "is-numeric"
+                        : column.kind === "date" ||
+                            /^(Tháng|Ngày)$/.test(column.label)
+                          ? "is-date"
+                          : column.kind === "actions" ||
+                              column.label === "Thao tác"
+                            ? "is-actions"
+                            : ""
+                    }
+                    style={column.width ? { width: column.width } : undefined}
                   >
                     <span className="dialog-cell-label" aria-hidden="true">
                       {column.label}
@@ -339,7 +367,7 @@ export function DialogList<T>({
               </tr>
             ))}
           </tbody>
-        </table>
+        </ColumnTable>
       ) : (
         <p className="dialog-empty">
           {items.length
@@ -376,18 +404,31 @@ export function DialogList<T>({
 
 export function DialogChanges({
   rows,
+  numeric = false,
 }: {
+  numeric?: boolean;
   rows: { key: string; label: string; before: ReactNode; after: ReactNode }[];
 }) {
+  const changedRows = rows.filter((row) => row.before !== row.after);
+  if (!changedRows.length)
+    return (
+      <p className="expense-muted">
+        Cập nhật thông tin cấu hình; số liệu đã ghi nhận được giữ nguyên.
+      </p>
+    );
   return (
     <DialogList
-      items={rows}
+      items={changedRows}
       rowKey={(r) => r.key}
       label="Ảnh hưởng trước và sau"
       columns={[
-        { label: "Thông tin", render: (r) => r.label },
-        { label: "Trước", render: (r) => r.before, numeric: true },
-        { label: "Sau", render: (r) => r.after, numeric: true },
+        {
+          label: "Thông tin",
+          render: (r) => r.label,
+          width: numeric ? "44%" : "20%",
+        },
+        { label: "Trước", render: (r) => r.before, numeric },
+        { label: "Sau", render: (r) => r.after, numeric },
       ]}
     />
   );

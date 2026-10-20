@@ -1,4 +1,7 @@
 "use client";
+import { HelpButton, HelpPageTitle } from "@/features/help/provider";
+import { Trash2 as DeleteCommandGlyph } from "lucide-react";
+import { Pencil as EditActionIcon } from "lucide-react";
 import { LoadingStatus } from "@/components/loading";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -194,19 +197,21 @@ export function SavingsWorkspace({
             </div>
             <div className="expense-actions">
               <button
-                className="expense-secondary"
+                className="expense-secondary icon-action action-edit"
                 onClick={() =>
                   setEditor({ type: "transaction", transaction: t })
                 }
                 aria-label={`Sửa giao dịch ${t.id}`}
+                title="Sửa"
               >
-                Sửa
+                <EditActionIcon size={18} aria-hidden="true" />
               </button>
               <button
                 className="expense-secondary"
                 onClick={() => setEditor({ type: "void", transaction: t })}
                 aria-label={`Hủy giao dịch ${t.id}`}
               >
+                <DeleteCommandGlyph size={17} aria-hidden="true" />
                 Hủy giao dịch
               </button>
             </div>
@@ -219,9 +224,9 @@ export function SavingsWorkspace({
       <div className="expense-page-heading">
         <div>
           <p className="eyebrow">TÍCH LŨY CÓ LỊCH SỬ</p>
-          <h1>
+          <HelpPageTitle>
             Chăm chút <span>ngày mai.</span>
-          </h1>
+          </HelpPageTitle>
           <p className="lead">
             Tiền, sổ tiết kiệm và vàng — từng bước vun đắp theo tháng.
           </p>
@@ -444,6 +449,11 @@ export function SavingsWorkspace({
                     <section className="panel">
                       <div className="expense-section-heading">
                         <h2>Các khoản đang tích lũy</h2>
+                        <HelpButton
+                          pageId="savings"
+                          sectionId="valuation"
+                          label="Vốn và lãi/lỗ"
+                        />
                         <span className="expense-muted">
                           Mỗi tài sản được tính một lần
                         </span>
@@ -555,13 +565,14 @@ export function SavingsWorkspace({
                           </div>
                           <div className="expense-actions">
                             <button
-                              className="expense-secondary"
+                              className="expense-secondary icon-action action-edit"
                               aria-label={`Sửa danh mục ${r.name}`}
                               onClick={() =>
                                 setEditor({ type: "configure", category: c })
                               }
+                              title="Sửa"
                             >
-                              Sửa
+                              <EditActionIcon size={18} aria-hidden="true" />
                             </button>
                             <button
                               className="expense-secondary"

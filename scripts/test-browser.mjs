@@ -6,13 +6,17 @@ import { createWriteStream } from "node:fs";
 import { readFile, cp, mkdtemp, symlink, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import postgres from "postgres";
+import { register } from "node:module";
 import { buildReviewData, buildReviewSQL } from "./lib/review-data.mjs";
 import {
   addSavingsReviewData,
   buildSavingsReviewSQL,
 } from "./lib/savings-review-data.mjs";
 
-import { buildInvestmentReviewData, buildInvestmentReviewSQL } from "./lib/investment-review-data.mjs";
+import {
+  addInvestmentReviewData,
+  buildInvestmentCloudReviewSQL,
+} from "./lib/investment-cloud-review.mjs";
 
 // A local Auth contract double. No test identity or bypass is compiled into production code.
 const db = postgres(process.env.TEST_DATABASE_ADMIN_URL, { max: 1 });
@@ -65,9 +69,10 @@ const auth = http.createServer(async (request, response) => {
     if (path === "/__test__/auth-state") {
       if (body.unavailable) authOutages.add(body.email);
       else authOutages.delete(body.email);
-      if (body.revoke) for (const [key, value] of sessions) {
-        if (value.user.email === body.email) sessions.delete(key);
-      }
+      if (body.revoke)
+        for (const [key, value] of sessions) {
+          if (value.user.email === body.email) sessions.delete(key);
+        }
       const code = randomUUID();
       confirmationCodes.set(code, body.email);
       return send(200, { code });
@@ -103,7 +108,8 @@ const auth = http.createServer(async (request, response) => {
       );
       if (!value || value.expires_at <= Date.now() / 1000)
         return send(401, { message: "Invalid token" });
-      if (authOutages.has(value.user.email)) return send(503, { message: "Local Auth outage" });
+      if (authOutages.has(value.user.email))
+        return send(503, { message: "Local Auth outage" });
       if (request.method === "PUT") {
         value.user.user_metadata = {
           ...value.user.user_metadata,
@@ -116,8 +122,11 @@ const auth = http.createServer(async (request, response) => {
       if (body.auth_code) {
         const email = confirmationCodes.get(body.auth_code);
         const user = identities.get(email);
-        const challenge = createHash("sha256").update(body.code_verifier ?? "").digest("base64url");
-        if (!user || challenges.get(email) !== challenge) return send(400, { message: "Invalid PKCE code" });
+        const challenge = createHash("sha256")
+          .update(body.code_verifier ?? "")
+          .digest("base64url");
+        if (!user || challenges.get(email) !== challenge)
+          return send(400, { message: "Invalid PKCE code" });
         confirmationCodes.delete(body.auth_code);
         return send(200, session(user));
       }
@@ -153,10 +162,16 @@ if (reviewPreview) {
   };
   identities.set(user.email, user);
   await db`insert into auth.users(id) values(${user.id})`;
-  const sample = addSavingsReviewData(buildReviewData({ ownerId: user.id }));
+  const sample = addInvestmentReviewData(
+    addSavingsReviewData(buildReviewData({ ownerId: user.id })),
+  );
   await db.unsafe(buildReviewSQL(sample).seed);
   await db.unsafe(buildSavingsReviewSQL(sample).seed);
-  await db.unsafe(buildInvestmentReviewSQL(buildInvestmentReviewData({ ownerId: user.id })).seed);
+  await db.unsafe(buildInvestmentCloudReviewSQL(sample).seed);
+  register(new URL("./lib/typescript-loader.mjs", import.meta.url));
+  const { buildFundReviewData, buildFundReviewSQL } =
+    await import("./lib/fund-review-data.ts");
+  await db.unsafe(buildFundReviewSQL(buildFundReviewData(sample)).seed);
 }
 const port = await new Promise((resolve) => {
   const socket = net.createServer();
@@ -171,11 +186,16 @@ const environment = {
   DATABASE_URL: process.env.TEST_DATABASE_URL,
   DATABASE_SSL: "disable",
   APP_ORIGIN: baseURL,
-  NEXT_PUBLIC_SUPABASE_URL: process.env.TEST_AUTH_UNCONFIGURED === "1" ? "" : authURL,
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.TEST_AUTH_UNCONFIGURED === "1" ? "" : "sb_publishable_local_test",
+  NEXT_PUBLIC_SUPABASE_URL:
+    process.env.TEST_AUTH_UNCONFIGURED === "1" ? "" : authURL,
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+    process.env.TEST_AUTH_UNCONFIGURED === "1"
+      ? ""
+      : "sb_publishable_local_test",
   TEST_BASE_URL: baseURL,
 };
-const log = createWriteStream("artifacts/browser-next.log");
+const logPath = process.env.TEST_BROWSER_LOG ?? "artifacts/browser-next.log";
+const log = createWriteStream(logPath);
 // Give tests their own Next app/build/lock; preserve any developer server and its Auth.
 const testApp = await mkdtemp(resolve("artifacts/browser-app-"));
 for (const name of [
@@ -209,9 +229,7 @@ try {
       build.once("exit", resolve);
     });
     if (code !== 0)
-      throw new Error(
-        "Next test production build failed; see artifacts/browser-next.log",
-      );
+      throw new Error(`Next test production build failed; see ${logPath}`);
   }
   web = spawn(
     process.execPath,
@@ -233,7 +251,7 @@ try {
   for (let i = 0; i < 120; i++) {
     if (web.exitCode !== null)
       throw new Error(
-        "Next test server exited before becoming ready; see artifacts/browser-next.log",
+        `Next test server exited before becoming ready; see ${logPath}`,
       );
     try {
       const response = await fetch(`${baseURL}/login`);
@@ -250,7 +268,7 @@ try {
   if (process.env.TEST_BROWSER_MCP === "1" || reviewPreview) {
     if (reviewPreview) {
       const info = {
-        url: `${baseURL}/login?next=/investments`,
+        url: `${baseURL}/login?next=/funds`,
         email: "review@example.test",
         otp: "123456",
         scope: "Isolated local UI review only; no cloud writes",
@@ -285,9 +303,7 @@ try {
       tests.on("exit", (code) => resolve(code ?? 1)),
     );
     if (process.exitCode)
-      console.error(
-        (await readFile("artifacts/browser-next.log", "utf8")).slice(-5000),
-      );
+      console.error((await readFile(logPath, "utf8")).slice(-5000));
   }
 } finally {
   try {

@@ -69,7 +69,7 @@ Trang `[module]` giữ bản đồ phạm vi cho module chưa triển khai; vẫ
 
 ## Ghi dữ liệu và API cho iOS
 
-Đề xuất `/api/v1/accounts`, `/transactions`, `/budgets`, `/funds`, `/goals`, `/trades`, `/valuations`, `/reports` và `/imports`. Đây là các hợp đồng mở rộng dự kiến. Hiện đã có `/api/v1/income`, `/api/v1/expenses`, `/api/v1/savings` và `/api/v1/investments`, gồm preview/commands/reports theo module. Viết OpenAPI/schema request-response trước khi app iOS dùng API.
+Đề xuất `/api/v1/accounts`, `/transactions`, `/budgets`, `/goals`, `/trades`, `/valuations`, `/reports` và `/imports`. Đây là các hợp đồng mở rộng dự kiến. Hiện đã có `/api/v1/income`, `/api/v1/expenses`, `/api/v1/savings`, `/api/v1/investments` và `/api/v1/funds`; các module có preview/commands, báo cáo tùy module. Viết OpenAPI/schema request-response trước khi app iOS dùng API.
 
 Web dùng session cookie được xác minh phía server; native về sau dùng bearer access token đã kiểm chứng issuer/audience/expiry. Không tin `owner_id` từ request. Mọi use case lấy chủ sở hữu từ danh tính đã xác thực, kiểm quan hệ tài khoản/tài sản thuộc cùng chủ.
 
@@ -79,7 +79,7 @@ React Server Components có thể đọc trực tiếp qua application service k
 
 ## Đồng bộ
 
-P1: server là nguồn dữ liệu chuẩn; sau lệnh thành công thì refetch. Thiết bị khác cập nhật khi mở lại trang, quay lại foreground và refresh; nếu cần cập nhật tức thời, thêm Realtime có lọc quyền. Không coi việc bật Realtime là đã giải quyết xung đột.
+P1: server là nguồn dữ liệu chuẩn; sau lệnh thành công thì refetch. Thiết bị khác cập nhật khi mở lại trang và refresh. Tổng quan/Chi tiêu/Thu nhập cập nhật ngầm khi quay lại foreground nếu lần tải thành công đã qua 60 giây; có mạng trở lại hoặc đổi ngày Asia/Ho_Chi_Minh được kiểm tra sớm hơn, với khoảng cách tối thiểu 5 giây giữa các lần tải tự động. Các sự kiện focus/visibilitychange/online dùng chung bộ điều phối riêng cho mỗi view, không tải trùng khi còn request. Lưu, thử lại, đổi năm Thu nhập và timer qua ngày vẫn đọc server ngay; nếu cần cập nhật tức thời, thêm Realtime có lọc quyền. Không coi việc bật Realtime là đã giải quyết xung đột.
 
 P5: bản nháp/offline command có UUID, trạng thái chờ/đã gửi/thất bại, retry có idempotency; version ngăn ghi đè sửa đổi trên thiết bị khác. Xung đột phải cho người dùng chọn hoặc sửa lại, không âm thầm last-write-wins với tiền. Xóa cache dữ liệu riêng khi đăng xuất; xử lý cả khi token hết hạn, thiết bị offline hoặc người dùng đổi tài khoản.
 
@@ -127,3 +127,27 @@ API `/api/v1/data` và repository riêng đọc snapshot nhất quán, dùng run
 ### Rà soát tải backup và Cài đặt — 18/10/2026
 
 Tách readiness của dữ liệu tài chính khỏi readiness của biên nhận import: export/status không đòi `data_imports`, status thêm `importReady`; chỉ import đòi migration biên nhận. Không giảm kiểm tra đầy đủ 28 bảng hoặc RLS. Xem đặc tả backup.
+
+
+## Quỹ an toàn — 19/10/2026
+
+Fund dùng domain/application/repository/API riêng tại `/api/v1/funds`; page chờ `pageAccess`. Command version/idempotency, RLS owner, lịch sử append-only. Đọc nguồn Chi tiêu trong cùng transaction và khóa Expenses → Fund. GET không khởi tạo dữ liệu. Client refetch khi foreground bằng helper hiện tại; không lưu tài chính trên thiết bị.
+
+## Thành phần trải nghiệm dùng chung — 19/10/2026
+
+Theme được áp dụng bằng script cố định trước first paint và đồng bộ qua storage/media events; HTML suppressHydrationWarning chỉ giới hạn ở thuộc tính root được script quản lý. Sidebar và cột bảng dùng storage chỉ cho UI preferences, không lưu bản nháp hay số tiền. Tooltip dùng chung giữ key điểm được chọn, format từ dữ liệu hiện hành để tránh lộ tiền sau toggle. Metadata logo dùng cột nullable riêng với RLS/command/version hiện có; xem [quy chuẩn](features/interface-feedback-2026-10-19.md).
+
+## Tương thích schema logo Chi tiêu — 20/10/2026
+
+Repository Chi tiêu đọc `brand_key`/`icon_key` bằng `to_jsonb` của hàng để cột metadata còn thiếu trở thành null. Khi lưu có phân loại, kiểm tra đủ hai cột qua `information_schema.columns` trong cùng transaction: schema cũ lưu các trường cũ; yêu cầu metadata khác null trả `LABEL_VISUALS_MIGRATION_REQUIRED` trước mọi ghi. Không nuốt lỗi SQL khác, không tự migrate, không đổi RLS/version/idempotency. Adapter dùng chung cho nguồn Fund hưởng cùng khả năng đọc tương thích; backup/import vẫn có yêu cầu schema riêng.
+
+## Help theo trang — 20/10/2026
+
+`src/features/help/` quản lý nội dung TypeScript, registry và controller `openHelp(pageId, sectionId?)`. Registry lấy tên/trạng thái từ catalog, thêm Hồ sơ; controller nằm bên trong SessionBoundary. Nội dung tải bằng dynamic import khi mở, có trạng thái tải/lỗi/thử lại, không gọi API tài chính. Route đổi hoặc session boundary gỡ nội dung sẽ đóng Help. Không thêm API, schema, migration hoặc lưu trạng thái Help vào storage.
+
+Help dùng biến thể `help` của dialog chung, giữ cùng stack/inert, khóa cuộn và phục hồi focus khi mở trên form/dialog con. Trang private vẫn tự await pageAccess; public preview chỉ dùng nội dung minh họa cố định độc lập. Xem [đặc tả Help](features/help.md).
+
+
+### Tinh chỉnh trình đọc Help — 20/10/2026
+
+`HelpPageTitle` gắn nút theo pathname cạnh h1 của từng workspace và trang planned; không phụ thuộc tải dữ liệu nghiệp vụ. `HelpText` chỉ xử lý dấu nhấn biên tập thành React strong, giữ escape mặc định. Biến thể Help của ExpenseModal trì hoãn unmount khi đóng đến animationend hoặc timeout 300ms, dọn timer khi đổi route/unmount; các dialog khác giữ hành vi hiện có.

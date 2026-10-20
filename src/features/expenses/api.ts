@@ -2,6 +2,7 @@ export class RequestError extends Error {
   constructor(
     message: string,
     public code: string,
+    public fieldErrors?: Record<string, string>,
   ) {
     super(message);
   }
@@ -33,6 +34,7 @@ export async function apiJSON<T>(path: string, init?: RequestInit): Promise<T> {
     throw new RequestError(
       result.error ?? "Không thể tải dữ liệu.",
       result.code ?? "UNKNOWN",
+      result.fieldErrors,
     );
   return result as T;
 }

@@ -1,5 +1,7 @@
 "use client";
-import { LoadingStatus } from "@/components/loading";
+import { HelpButton, HelpPageTitle } from "@/features/help/provider";
+import { useForegroundRefresh } from "@/components/use-foreground-refresh";
+import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, Leaf, Sprout, Wallet } from "lucide-react";
@@ -21,42 +23,39 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
   const [login, setLogin] = useState(false);
   const [loading, setLoading] = useState(configured);
   const request = useRef(0);
-  const reload = useCallback(async () => {
-    const id = ++request.current;
-    setLoading(true);
-    try {
-      const next = await apiJSON<ExpenseView>("");
-      if (id !== request.current) return;
-      setView(next);
-      setError("");
-      setLogin(false);
-    } catch (e) {
-      if (id !== request.current) return;
-      const unauthenticated =
-        e instanceof RequestError && e.code === "UNAUTHENTICATED";
-      if (unauthenticated) setView(null);
-      setLogin(unauthenticated);
-      setError(
-        e instanceof Error ? e.message : "Chưa tải được dữ liệu. Hãy thử lại.",
-      );
-    } finally {
-      if (id === request.current) setLoading(false);
-    }
-  }, []);
+  const reload = useForegroundRefresh(
+    useCallback(async () => {
+      const id = ++request.current;
+      setLoading(true);
+      try {
+        const next = await apiJSON<ExpenseView>("");
+        if (id !== request.current) return;
+        setView(next);
+        setError("");
+        setLogin(false);
+      } catch (e) {
+        if (id !== request.current) return;
+        const unauthenticated =
+          e instanceof RequestError && e.code === "UNAUTHENTICATED";
+        if (unauthenticated) setView(null);
+        setLogin(unauthenticated);
+        setError(
+          e instanceof Error
+            ? e.message
+            : "Chưa tải được dữ liệu. Hãy thử lại.",
+        );
+        throw e;
+      } finally {
+        if (id === request.current) setLoading(false);
+      }
+    }, []),
+    configured,
+  );
   useEffect(() => {
     if (!configured) return;
-    void reload();
-    const refresh = () => {
-      if (document.visibilityState === "visible") void reload();
-    };
-    window.addEventListener("focus", refresh);
-    window.addEventListener("online", refresh);
-    document.addEventListener("visibilitychange", refresh);
+    void reload().catch(() => {});
     return () => {
       request.current++;
-      window.removeEventListener("focus", refresh);
-      window.removeEventListener("online", refresh);
-      document.removeEventListener("visibilitychange", refresh);
     };
   }, [configured, reload]);
   useEffect(() => {
@@ -71,7 +70,10 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
           1000,
       ),
     );
-    const timer = window.setTimeout(() => void reload(), timeout);
+    const timer = window.setTimeout(
+      () => void reload().catch(() => {}),
+      timeout,
+    );
     return () => window.clearTimeout(timer);
   }, [view, reload]);
   const current = view?.today.slice(0, 7);
@@ -94,11 +96,11 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
       <section className="welcome-garden" aria-labelledby="welcome-title">
         <div>
           <p className="eyebrow">KHÔNG GIAN TÀI CHÍNH CỦA BẠN</p>
-          <h1 id="welcome-title">
+          <HelpPageTitle id="welcome-title">
             Bình tâm hôm nay.
             <br />
             <span>Vun đắp ngày mai.</span>
-          </h1>
+          </HelpPageTitle>
           <p className="lead">
             Một chút quan tâm mỗi ngày, để tiền bạc trở thành điểm tựa cho những
             điều bạn yêu.
@@ -110,6 +112,11 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
         <Garden />
       </section>
       <DailyNote />
+      <HelpButton
+        pageId="overview"
+        sectionId="terms"
+        label="Đọc các chỉ số tháng"
+      />
       {configured && <ImportSuggestion />}
       <section aria-labelledby="month-overview-title">
         <div className="section-title">
@@ -128,7 +135,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
             </span>
           )}
         </div>
-        {loading && (
+        {loading && !view && (
           <LoadingStatus className="overview-loading">
             Đang chăm chút bức tranh tháng này…
           </LoadingStatus>
@@ -144,9 +151,11 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
               <button
                 type="button"
                 className="expense-secondary"
-                onClick={() => void reload()}
+                disabled={loading}
+                aria-busy={loading}
+                onClick={() => void reload().catch(() => {})}
               >
-                Thử tải lại
+                {loading && <LoadingSpinner />} Thử tải lại
               </button>
             )}
           </div>
@@ -231,8 +240,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
             </div>
           </>
         ) : (
-          !loading &&
-          !error && (
+          (view || (!loading && !error)) && (
             <div className="panel overview-start">
               <Garden variant="jar" />
               <div>

@@ -1,4 +1,10 @@
 "use client";
+import {
+  Pencil as EditActionIcon,
+  Trash2 as DeleteActionIcon,
+} from "lucide-react";
+import { Palette, Settings2, Archive, Plus } from "lucide-react";
+import { LabelName } from "./label-visual";
 import { useMoney } from "@/components/privacy";
 import {
   DialogFacts,
@@ -199,21 +205,31 @@ export function ExpenseDetails({
                               <div className="expense-actions">
                                 <button
                                   type="button"
-                                  className="expense-secondary"
+                                  className="expense-secondary icon-action action-edit"
                                   onClick={() =>
                                     onEdit({ mode: "spend", row, spend: s })
                                   }
+                                  aria-label="Sửa"
+                                  title="Sửa"
                                 >
-                                  Sửa
+                                  <EditActionIcon
+                                    size={18}
+                                    aria-hidden="true"
+                                  />
                                 </button>
                                 <button
                                   type="button"
-                                  className="expense-secondary"
+                                  className="expense-secondary icon-action action-delete"
                                   onClick={() =>
                                     onEdit({ mode: "deleteSpend", spend: s })
                                   }
+                                  aria-label="Xóa"
+                                  title="Xóa"
                                 >
-                                  Xóa
+                                  <DeleteActionIcon
+                                    size={18}
+                                    aria-hidden="true"
+                                  />
                                 </button>
                               </div>
                             ) : (
@@ -261,8 +277,13 @@ export function ExpenseDetails({
         <summary>Thông tin và quản lý hũ</summary>
         <DialogNote text={row.description || "Chưa có mô tả."} />
         <p className="expense-muted">
-          {row.method}
-          {row.group ? ` · ${row.group}` : ""}
+          <LabelName name={row.method} labels={book.labels} />
+          {row.group && (
+            <>
+              {" "}
+              · <LabelName name={row.group} labels={book.labels} kind="group" />
+            </>
+          )}
         </p>
         {!readonly && (
           <div className="expense-actions">
@@ -271,6 +292,7 @@ export function ExpenseDetails({
               className="expense-secondary"
               onClick={() => onEdit({ mode: "emoji", row })}
             >
+              <Palette size={18} aria-hidden="true" />
               Đổi biểu tượng
             </button>
             <button
@@ -278,15 +300,19 @@ export function ExpenseDetails({
               className="expense-secondary"
               onClick={() => onEdit({ mode: "configure", row })}
             >
+              <Settings2 size={18} aria-hidden="true" />
               Sửa hũ / mức mặc định
             </button>
-            <button
-              type="button"
-              className="expense-secondary"
-              onClick={() => onEdit({ mode: "stop", row })}
-            >
-              Ngừng cấp tiền
-            </button>
+            {row.active && (
+              <button
+                type="button"
+                className="expense-secondary expense-warning"
+                onClick={() => onEdit({ mode: "stop", row })}
+              >
+                <Archive size={18} aria-hidden="true" />
+                Ngừng cấp tiền
+              </button>
+            )}
           </div>
         )}
       </details>
@@ -306,8 +332,9 @@ export function ExpenseLabels({
   return (
     <ExpenseModal
       title="Phương thức và nhóm"
+      stableTabs
       size="detail"
-      description="Gợi ý giúp nhập nhanh. Các hũ giữ phân loại theo từng tháng."
+      description="Danh sách lựa chọn khi thêm hũ. Các hũ giữ phân loại theo từng tháng."
       onClose={onClose}
       footer={
         <div className="expense-actions">
@@ -333,26 +360,41 @@ export function ExpenseLabels({
               label={kind === "method" ? "Phương thức" : "Nhóm mục đích"}
               searchText={(l) => l.name}
               columns={[
-                { label: "Tên", render: (l) => <strong>{l.name}</strong> },
+                {
+                  label: "Tên",
+                  render: (l) => (
+                    <strong>
+                      <LabelName
+                        name={l.name}
+                        labels={book.labels}
+                        kind={l.kind}
+                      />
+                    </strong>
+                  ),
+                },
                 {
                   label: "Thao tác",
                   render: (l) => (
                     <div className="expense-actions">
                       <button
                         type="button"
-                        className="expense-secondary"
+                        className="expense-secondary icon-action action-edit"
                         onClick={() => onEdit({ mode: "label", label: l })}
+                        aria-label="Sửa"
+                        title="Sửa"
                       >
-                        Sửa
+                        <EditActionIcon size={18} aria-hidden="true" />
                       </button>
                       <button
                         type="button"
-                        className="expense-secondary"
+                        className="expense-secondary icon-action action-delete"
                         onClick={() =>
                           onEdit({ mode: "deleteLabel", label: l })
                         }
+                        aria-label="Xóa"
+                        title="Xóa"
                       >
-                        Xóa
+                        <DeleteActionIcon size={18} aria-hidden="true" />
                       </button>
                     </div>
                   ),

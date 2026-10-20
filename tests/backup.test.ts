@@ -4,23 +4,23 @@ import {
   backupTables,
   parseBackup,
   summarizeBackup,
-  type FullBackupV1,
+  type FullBackup,
 } from "../src/domain/backup/format";
 import { validateBackup, canonical } from "../src/domain/backup/validate";
 import { backupMaxBytes, checkBackupSize } from "../src/server/data-repository";
 
-function empty(): FullBackupV1 {
+function empty(): FullBackup {
   return parseBackup({
     format: "financial-manager-full-backup",
-    schemaVersion: 1,
+    schemaVersion: 2,
     exportedAt: "2026-10-18T00:00:00.000Z",
     profile: { full_name: "", birth_date: "", gender: "" },
     tables: Object.fromEntries(backupTables.map((t) => [t, []])),
   });
 }
 describe("portable full backup validation", () => {
-  it("requires all 28 allowlisted tables and accepts an empty account without initializing it", () => {
-    expect(backupTables).toHaveLength(28);
+  it("requires all 35 allowlisted tables and accepts an empty account without initializing it", () => {
+    expect(backupTables).toHaveLength(35);
     expect(validateBackup(empty())).toEqual(empty());
     expect(summarizeBackup(empty()).from).toBeNull();
     const wrong = structuredClone(empty()) as unknown as {
@@ -35,7 +35,7 @@ describe("portable full backup validation", () => {
     expect(() =>
       validateBackup({ format: "financial-manager-savings", schemaVersion: 1 }),
     ).toThrow();
-    expect(() => validateBackup({ ...empty(), schemaVersion: 2 })).toThrow();
+    expect(() => validateBackup({ ...empty(), schemaVersion: 3 })).toThrow();
     const b = empty();
     b.tables.income_books.push({ version: 1 });
     b.tables.income_audit.push({
@@ -88,6 +88,16 @@ describe("portable full backup validation", () => {
     b.tables.income_oneoffs.pop();
     (b.tables.income_oneoffs[0] as unknown as { amount: number }).amount = 100;
     expect(() => validateBackup(b)).toThrow();
+  });
+  it("includes Fund business dates in the Vietnamese timezone in the preview period", () => {
+    const b = empty();
+    b.tables.funds_transactions.push({
+      data: { transaction: { occurredAt: "2026-10-18T23:30:00Z" } },
+    } as unknown as FullBackup["tables"]["funds_transactions"][number]);
+    expect(summarizeBackup(b)).toMatchObject({
+      from: "2026-10-19",
+      to: "2026-10-19",
+    });
   });
   it("uses canonical object fingerprints and one shared size limit", () => {
     expect(canonical({ b: 2, a: 1 })).toBe(canonical({ a: 1, b: 2 }));

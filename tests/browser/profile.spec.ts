@@ -79,7 +79,9 @@ test("profile persists across reload and another session; avatar menu owns logou
   await expect(page).toHaveURL(/\/$/);
   await page.goto("/profile");
   await expect(page).toHaveURL(/\/login\?next=%2Fprofile$/);
-  await expect(page.getByRole("heading", { name: "Đăng nhập", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Đăng nhập", exact: true }),
+  ).toBeVisible();
   await expect(page.getByLabel("Họ và tên", { exact: true })).toHaveCount(0);
 });
 
@@ -87,6 +89,10 @@ test("validation and save failures preserve drafts and support retry", async ({
   page,
 }) => {
   await login(page);
+  await expect(
+    page.getByRole("button", { name: "Lưu thông tin", exact: true }),
+  ).toBeDisabled();
+  await page.getByLabel("Ngày sinh", { exact: true }).fill("2000-01-01");
   await page
     .getByRole("button", { name: "Lưu thông tin", exact: true })
     .click();
@@ -146,7 +152,9 @@ test("remote logout failure still exits financial screens when Auth clears the l
   await expect(page).toHaveURL(/\/$/);
   await page.goto("/profile");
   await expect(page).toHaveURL(/\/login\?next=%2Fprofile$/);
-  await expect(page.getByRole("heading", { name: "Đăng nhập", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Đăng nhập", exact: true }),
+  ).toBeVisible();
   await expect(page.getByLabel("Họ và tên", { exact: true })).toHaveCount(0);
 });
 
@@ -169,10 +177,19 @@ test("period controls align and navigation stays within supported years", async 
           return { bottom: r.bottom, height: r.height, width: r.width };
         }),
       );
-    expect(
-      Math.max(...controls.map((r) => r.bottom)) -
-        Math.min(...controls.map((r) => r.bottom)),
-    ).toBeLessThanOrEqual(1);
+    const rows =
+      width <= 400 ? [controls.slice(0, 2), controls.slice(2)] : [controls];
+    for (const row of rows)
+      expect(
+        Math.max(...row.map((r) => r.bottom)) -
+          Math.min(...row.map((r) => r.bottom)),
+      ).toBeLessThanOrEqual(1);
+    if (width <= 400) {
+      expect(controls[0].width).toBeGreaterThanOrEqual(100);
+      expect(controls[2].bottom - controls[2].height).toBeGreaterThan(
+        controls[0].bottom,
+      );
+    }
     expect(controls.every((r) => r.height >= 44)).toBe(true);
     expect(
       await page.evaluate(

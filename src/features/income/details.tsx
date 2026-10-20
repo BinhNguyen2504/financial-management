@@ -1,4 +1,8 @@
 "use client";
+import {
+  Pencil as EditActionIcon,
+  Trash2 as DeleteActionIcon,
+} from "lucide-react";
 import { useMoney } from "@/components/privacy";
 import {
   DialogList,
@@ -74,19 +78,21 @@ export function IncomeDetails({
               <div className="expense-actions">
                 <button
                   type="button"
-                  className="expense-secondary"
+                  className="expense-secondary icon-action action-edit"
                   aria-label={`Sửa ${r.name}`}
                   onClick={() => onEdit({ type: "oneoff", row: r })}
+                  title="Sửa"
                 >
-                  Sửa
+                  <EditActionIcon size={18} aria-hidden="true" />
                 </button>
                 <button
                   type="button"
-                  className="expense-secondary"
+                  className="expense-secondary icon-action action-delete"
                   aria-label={`Xóa ${r.name}`}
                   onClick={() => onEdit({ type: "deleteOneOff", row: r })}
+                  title="Xóa"
                 >
-                  Xóa
+                  <DeleteActionIcon size={18} aria-hidden="true" />
                 </button>
               </div>
             ),
