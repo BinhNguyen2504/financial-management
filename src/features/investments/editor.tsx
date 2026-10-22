@@ -1,40 +1,42 @@
 "use client";
-import { HelpButton } from "@/features/help/provider";
-import { fieldErrorsFromIssues } from "@/lib/field-errors";
-import { Save, X, ScanEye } from "lucide-react";
-import {
-  comparable,
-  normalizedMoneyFields,
-  normalizeInteger,
-  integerInput,
-} from "@/lib/form-values";
-import { LoadingSpinner } from "@/components/loading";
-import { focusFirstInvalid } from "@/components/form-feedback";
-import { MoneyHint } from "@/components/money-hint";
-import { useToast } from "@/components/toast";
+import { LocalizedInput } from "@/components/localized-input";
+import { useI18n } from "@/i18n/provider";
+
+import type { CommandResult } from "@/application/investments";
 import { DialogChanges, DialogPreview } from "@/components/dialog-content";
-import { useRef, useId, useState } from "react";
-import { ExpenseModal } from "@/features/expenses/modal";
+import { focusFirstInvalid } from "@/components/form-feedback";
+import { LoadingSpinner } from "@/components/loading";
+import { MoneyHint } from "@/components/money-hint";
 import {
-  PrivacyScope,
   PrivacyReveal,
+  PrivacyScope,
   useMoney,
   useMoneyHidden,
 } from "@/components/privacy";
+import { useToast } from "@/components/toast";
+import {
+  activeTransactions,
+  replay,
+  ruleAt,
+} from "@/domain/investments/engine";
 import {
   actionSchema,
   type InvestmentAction,
   type InvestmentCommand,
   type InvestmentTransaction,
 } from "@/domain/investments/schema";
-import {
-  activeTransactions,
-  replay,
-  ruleAt,
-} from "@/domain/investments/engine";
 import type { InvestmentView } from "@/domain/investments/types";
-import type { CommandResult } from "@/application/investments";
-import { investmentsJSON, InvestmentAPIError } from "./api";
+import { ExpenseModal } from "@/features/expenses/modal";
+import { HelpButton } from "@/features/help/provider";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import {
+  comparable,
+  normalizedMoneyFields,
+  normalizeInteger,
+} from "@/lib/form-values";
+import { Save, ScanEye, X } from "lucide-react";
+import { useId, useRef, useState } from "react";
+import { InvestmentAPIError, investmentsJSON } from "./api";
 export const transactionNames: Record<InvestmentTransaction["kind"], string> = {
   openingCash: "Số dư ví mở đầu",
   openingInvestment: "Tài sản mở đầu",
@@ -83,6 +85,9 @@ function Editor({
   onSaved: () => void;
   onClose: () => void;
 }) {
+  const { t: tr, config: localize } = useI18n("investments");
+  const localizedTransactionNames = localize(transactionNames);
+
   const toast = useToast();
   const [view, setView] = useState(initial),
     hidden = useMoneyHidden(),
@@ -158,20 +163,20 @@ function Editor({
   const financial = mode.type === "transaction" || mode.type === "revise";
   const title =
     mode.type === "create"
-      ? "Thêm danh mục"
+      ? tr("Thêm danh mục")
       : mode.type === "configure"
-        ? "Sửa danh mục"
+        ? tr("Sửa danh mục")
         : mode.type === "archive"
-          ? "Xóa / lưu trữ danh mục"
+          ? tr("Xóa / lưu trữ danh mục")
           : mode.type === "restore"
-            ? "Khôi phục danh mục"
+            ? tr("Khôi phục danh mục")
             : mode.type === "cancel"
-              ? "Hủy giao dịch"
-              : "Ghi giao dịch";
+              ? tr("Hủy giao dịch")
+              : tr("Ghi giao dịch");
   function close() {
     if (
       (draft === originalDraft.current && !f.reason) ||
-      window.confirm("Đóng form và bỏ nội dung chưa lưu?")
+      window.confirm(tr("Đóng form và bỏ nội dung chưa lưu?"))
     )
       onClose();
   }
@@ -192,7 +197,7 @@ function Editor({
             *
           </span>
         )}
-        <input
+        <LocalizedInput
           aria-label={label}
           id={`investment-${key}`}
           type={masked ? "password" : type === "money" ? "text" : type}
@@ -200,11 +205,8 @@ function Editor({
           autoComplete="off"
           value={f[key] ?? ""}
           required={required}
-          onChange={(e) => {
-            const value =
-              type === "money" ? integerInput(e.target.value) : e.target.value;
-            if (value !== null) set(key, value);
-          }}
+          numberKind={type === "money" ? "integer" : undefined}
+          onValueChange={(value) => set(key, value)}
           onBlur={() => {
             if (type === "money") set(key, normalizeInteger(f[key]));
           }}
@@ -224,7 +226,7 @@ function Editor({
         )}
         {fieldErrors[key] && (
           <small id={`investment-error-${key}`} className="expense-error">
-            {fieldErrors[key]}
+            {tr(fieldErrors[key])}
           </small>
         )}
       </label>
@@ -241,10 +243,10 @@ function Editor({
   function categorySelect() {
     return (
       <label>
-        Danh mục / ví
+        {tr("Danh mục / ví")}
         <select
           required
-          aria-label="Danh mục / ví"
+          aria-label={tr("Danh mục / ví")}
           id="investment-categoryId"
           aria-invalid={!!fieldErrors.categoryId}
           aria-describedby={
@@ -253,7 +255,7 @@ function Editor({
           value={f.categoryId}
           onChange={(e) => set("categoryId", e.target.value)}
         >
-          <option value="">Chọn danh mục / ví</option>
+          <option value="">{tr("Chọn danh mục / ví")}</option>
           {eligible.map((c) => (
             <option key={c.id} value={c.id}>
               {ruleAt(c, f.date)?.name}
@@ -262,7 +264,7 @@ function Editor({
         </select>
         {fieldErrors.categoryId && (
           <small id="investment-error-categoryId" className="expense-error">
-            {fieldErrors.categoryId}
+            {tr(fieldErrors.categoryId)}
           </small>
         )}
       </label>
@@ -345,7 +347,7 @@ function Editor({
   async function submit() {
     if (unchanged) return;
     if (hidden) {
-      setError("Hãy hiện tiền trong form để kiểm tra trước khi lưu.");
+      setError(tr("Hãy hiện tiền trong form để kiểm tra trước khi lưu."));
       return;
     }
     setBusy(true);
@@ -371,7 +373,7 @@ function Editor({
       else {
         writing = true;
         await investmentsJSON("/commands", command);
-        toast("success", "Đã lưu thay đổi.");
+        toast("success", tr("Đã lưu thay đổi."));
         onSaved();
       }
     } catch (e) {
@@ -386,11 +388,11 @@ function Editor({
               .issues,
           ),
         );
-        setError("Kiểm tra các trường được đánh dấu.");
+        setError(tr("Kiểm tra các trường được đánh dấu."));
       } else {
         if (e instanceof InvestmentAPIError && e.fieldErrors)
           setFieldErrors(e.fieldErrors);
-        setError(e instanceof Error ? e.message : "Không thể lưu.");
+        setError(e instanceof Error ? e.message : tr("Không thể lưu."));
         setConflict(
           e instanceof InvestmentAPIError && e.code === "VERSION_CONFLICT",
         );
@@ -405,10 +407,10 @@ function Editor({
       toast(
         unknownWrite ? "warning" : "error",
         unknownWrite
-          ? "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu."
+          ? tr("Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.")
           : e instanceof Error
             ? e.message
-            : "Chưa hoàn tất. Hãy thử lại.",
+            : tr("Chưa hoàn tất. Hãy thử lại."),
       );
     } finally {
       setBusy(false);
@@ -438,7 +440,9 @@ function Editor({
       }
     } catch {
       setError(
-        "Không thể tính vốn tại ngày này. Hãy nhập giá vốn bán và xem trước để kiểm tra.",
+        tr(
+          "Không thể tính vốn tại ngày này. Hãy nhập giá vốn bán và xem trước để kiểm tra.",
+        ),
       );
     }
   }
@@ -460,7 +464,7 @@ function Editor({
             onClick={close}
             disabled={busy || uncertain}
           >
-            <X size={17} aria-hidden="true" /> Đóng form
+            <X size={17} aria-hidden="true" /> {tr("Đóng form")}
           </button>
           <button
             form={formId}
@@ -477,10 +481,10 @@ function Editor({
               <ScanEye size={17} aria-hidden="true" />
             )}
             {busy
-              ? "Đang kiểm tra…"
+              ? tr("Đang kiểm tra…")
               : preview
-                ? "Xác nhận lưu"
-                : "Xem trước thay đổi"}
+                ? tr("Xác nhận lưu")
+                : tr("Xem trước thay đổi")}
           </button>
         </div>
       }
@@ -498,7 +502,7 @@ function Editor({
           <span className="required-mark" aria-hidden="true">
             *
           </span>{" "}
-          là thông tin cần nhập.
+          {tr("là thông tin cần nhập.")}
         </p>
         <PrivacyReveal />
         <HelpButton
@@ -518,7 +522,7 @@ function Editor({
                 ? "history"
                 : "portfolio"
           }
-          label="Hiểu vốn, giá trị và tiền chờ"
+          label={tr("Hiểu vốn, giá trị và tiền chờ")}
         />
         {error && (
           <div
@@ -527,32 +531,33 @@ function Editor({
             ref={errorRef}
             className="expense-error"
           >
-            {error}
+            {tr(error)}
             {Object.entries(fieldErrors).map(([key, message]) => (
               <div key={key}>
-                <a href={`#investment-${key}`}>{message}</a>
+                <a href={`#investment-${key}`}>{tr(message)}</a>
               </div>
             ))}
           </div>
         )}
         {uncertain && (
           <p className="expense-notice">
-            Chưa xác nhận kết quả lưu. Nội dung được khóa; bấm xác nhận lại để
-            kiểm tra cùng yêu cầu, không tạo giao dịch trùng.
+            {tr(
+              "Chưa xác nhận kết quả lưu. Nội dung được khóa; bấm xác nhận lại để kiểm tra cùng yêu cầu, không tạo giao dịch trùng.",
+            )}
           </p>
         )}
         <fieldset disabled={busy || uncertain} className="investment-fields">
-          <legend>Thông tin giao dịch / danh mục</legend>
+          <legend>{tr("Thông tin giao dịch / danh mục")}</legend>
           {(mode.type === "create" || mode.type === "configure") && (
             <>
               {mode.type === "create" ? (
                 <div className="investment-suggestions">
                   {[
-                    ["Cổ phiếu", "📈"],
-                    ["Quỹ cổ phiếu", "🌿"],
-                    ["Quỹ trái phiếu", "🏦"],
+                    [tr("Cổ phiếu"), "📈"],
+                    [tr("Quỹ cổ phiếu"), "🌿"],
+                    [tr("Quỹ trái phiếu"), "🏦"],
                     ["Crypto", "🌐"],
-                    ["Tiền chờ TCBS", "💼"],
+                    [tr("Tiền chờ TCBS"), "💼"],
                   ].map(([name, emoji]) => (
                     <button
                       type="button"
@@ -563,7 +568,7 @@ function Editor({
                         set("emoji", emoji);
                         set(
                           "kind",
-                          name === "Tiền chờ TCBS" ? "cash" : "investment",
+                          name === tr("Tiền chờ TCBS") ? "cash" : "investment",
                         );
                       }}
                     >
@@ -572,44 +577,51 @@ function Editor({
                   ))}
                 </div>
               ) : null}
-              {input("name", "Tên danh mục")}
+              {input("name", tr("Tên danh mục"))}
               {input("emoji", "Emoji")}
-              {input("description", "Ghi chú danh mục")}
+              {input("description", tr("Ghi chú danh mục"))}
               <label>
-                Loại danh mục
+                {tr("Loại danh mục")}
                 <select
                   value={f.kind}
                   onChange={(e) => set("kind", e.target.value)}
                 >
-                  <option value="investment">Danh mục đầu tư</option>
-                  <option value="cash">Ví tiền chờ</option>
+                  <option value="investment">{tr("Danh mục đầu tư")}</option>
+                  <option value="cash">{tr("Ví tiền chờ")}</option>
                 </select>
               </label>
               {input(
                 mode.type === "create" ? "start" : "date",
-                mode.type === "create" ? "Ngày bắt đầu" : "Ngày hiệu lực",
+                mode.type === "create"
+                  ? tr("Ngày bắt đầu")
+                  : tr("Ngày hiệu lực"),
                 "date",
               )}
               <p className="expense-muted">
-                Số dư mở đầu được ghi riêng tại ngày bắt đầu. Loại danh mục chỉ
-                đổi được khi chưa có phát sinh.
+                {tr(
+                  "Số dư mở đầu được ghi riêng tại ngày bắt đầu. Loại danh mục chỉ đổi được khi chưa có phát sinh.",
+                )}
               </p>
             </>
           )}
           {(mode.type === "archive" || mode.type === "restore") && (
             <>
-              {input("date", "Ngày hiệu lực", "date")}
+              {input("date", tr("Ngày hiệu lực"), "date")}
               <p>
                 {mode.type === "archive"
-                  ? "Chỉ lưu trữ khi vốn và giá trị tài sản, hoặc tiền ví đều bằng 0. Lịch sử được giữ nguyên; có thể khôi phục."
-                  : "Khôi phục danh mục để tiếp tục ghi giao dịch từ ngày hiệu lực."}
+                  ? tr(
+                      "Chỉ lưu trữ khi vốn và giá trị tài sản, hoặc tiền ví đều bằng 0. Lịch sử được giữ nguyên; có thể khôi phục.",
+                    )
+                  : tr(
+                      "Khôi phục danh mục để tiếp tục ghi giao dịch từ ngày hiệu lực.",
+                    )}
               </p>
             </>
           )}
           {financial && (
             <>
               <label>
-                Loại giao dịch
+                {tr("Loại giao dịch")}
                 <select
                   value={kind}
                   disabled={mode.type === "revise"}
@@ -618,14 +630,16 @@ function Editor({
                     set("categoryId", "");
                   }}
                 >
-                  {Object.entries(transactionNames).map(([id, name]) => (
-                    <option key={id} value={id}>
-                      {name}
-                    </option>
-                  ))}
+                  {Object.entries(localizedTransactionNames).map(
+                    ([id, name]) => (
+                      <option key={id} value={id}>
+                        {name}
+                      </option>
+                    ),
+                  )}
                 </select>
               </label>
-              {input("date", "Ngày giao dịch", "date")}
+              {input("date", tr("Ngày giao dịch"), "date")}
               {categorySelect()}
               {[
                 "openingCash",
@@ -638,18 +652,18 @@ function Editor({
                 input(
                   "amount",
                   kind === "sell"
-                    ? "Tiền bán trước phí/thuế (VND)"
+                    ? tr("Tiền bán trước phí/thuế (VND)")
                     : kind === "buy"
-                      ? "Tiền mua trước phí/thuế (VND)"
-                      : "Số tiền (VND)",
+                      ? tr("Tiền mua trước phí/thuế (VND)")
+                      : tr("Số tiền (VND)"),
                   "money",
                 )}
               {(kind === "openingInvestment" || kind === "sell") &&
                 input(
                   "cost",
                   kind === "sell"
-                    ? "Giá vốn phần đã bán (VND)"
-                    : "Giá vốn mở đầu (VND)",
+                    ? tr("Giá vốn phần đã bán (VND)")
+                    : tr("Giá vốn mở đầu (VND)"),
                   "money",
                 )}
               {kind === "sell" && (
@@ -658,25 +672,25 @@ function Editor({
                   className="expense-secondary"
                   onClick={sellAll}
                 >
-                  Bán hết: lấy toàn bộ vốn, giá trị còn lại 0
+                  {tr("Bán hết: lấy toàn bộ vốn, giá trị còn lại 0")}
                 </button>
               )}
               {(kind === "buy" || kind === "sell") && (
                 <>
                   <fieldset className="dialog-form-section">
-                    <legend>Phí và thuế</legend>
-                    {input("fee", "Phí (VND)", "money")}
-                    {input("tax", "Thuế (VND)", "money")}
+                    <legend>{tr("Phí và thuế")}</legend>
+                    {input("fee", tr("Phí (VND)"), "money")}
+                    {input("tax", tr("Thuế (VND)"), "money")}
                   </fieldset>
                 </>
               )}
               {["buy", "sell", "transfer"].includes(kind) && (
                 <label>
                   {kind === "buy"
-                    ? "Nguồn tiền"
+                    ? tr("Nguồn tiền")
                     : kind === "sell"
-                      ? "Nơi nhận tiền"
-                      : "Ví nhận"}
+                      ? tr("Nơi nhận tiền")
+                      : tr("Ví nhận")}
                   <select
                     required={kind === "transfer"}
                     id="investment-cashCategoryId"
@@ -690,7 +704,9 @@ function Editor({
                     onChange={(e) => set("cashCategoryId", e.target.value)}
                   >
                     <option value="">
-                      {kind === "transfer" ? "Chọn ví nhận" : "Bên ngoài"}
+                      {kind === "transfer"
+                        ? tr("Chọn ví nhận")
+                        : tr("Bên ngoài")}
                     </option>
                     {categories
                       .filter(
@@ -710,7 +726,7 @@ function Editor({
                       id="investment-error-cashCategoryId"
                       className="expense-error"
                     >
-                      {fieldErrors.cashCategoryId}
+                      {tr(fieldErrors.cashCategoryId)}
                     </small>
                   )}
                 </label>
@@ -722,45 +738,47 @@ function Editor({
                   {input(
                     "value",
                     kind === "buy" || kind === "sell"
-                      ? "Giá trị tài sản còn giữ sau giao dịch (VND)"
-                      : "Giá trị định giá (VND)",
+                      ? tr("Giá trị tài sản còn giữ sau giao dịch (VND)")
+                      : tr("Giá trị định giá (VND)"),
                     "money",
                   )}
                   <p className="expense-muted">
-                    Tổng giá trị của riêng danh mục, không gồm tiền chờ. Có thể
-                    nhập 0; không lấy giá vốn thay cho giá thị trường.
+                    {tr(
+                      "Tổng giá trị của riêng danh mục, không gồm tiền chờ. Có thể nhập 0; không lấy giá vốn thay cho giá thị trường.",
+                    )}
                   </p>
                 </>
               )}
-              {input("counterparty", "Nguồn / đích bên ngoài (tùy chọn)")}
-              {input("note", "Ghi chú giao dịch")}
+              {input("counterparty", tr("Nguồn / đích bên ngoài (tùy chọn)"))}
+              {input("note", tr("Ghi chú giao dịch"))}
             </>
           )}
           {(mode.type === "revise" || mode.type === "cancel") &&
-            input("reason", "Lý do sửa / hủy")}
+            input("reason", tr("Lý do sửa / hủy"))}
           {mode.type === "cancel" && (
             <p>
-              Hủy hiệu lực giao dịch này và tính lại diễn biến phía sau. Bản cũ
-              vẫn nằm trong lịch sử.
+              {tr(
+                "Hủy hiệu lực giao dịch này và tính lại diễn biến phía sau. Bản cũ vẫn nằm trong lịch sử.",
+              )}
             </p>
           )}
         </fieldset>
         {preview && (
           <DialogPreview className="investment-preview">
-            <h3>Xem trước thay đổi</h3>
+            <h3>{tr("Xem trước thay đổi")}</h3>
             <DialogChanges
               numeric
               rows={[
                 {
                   key: "total",
-                  label: "Tổng tài sản",
+                  label: tr("Tổng tài sản"),
                   before:
                     preview.result.before.total === null
-                      ? "Thiếu định giá"
+                      ? tr("Thiếu định giá")
                       : money(preview.result.before.total),
                   after:
                     preview.result.after.total === null
-                      ? "Thiếu định giá"
+                      ? tr("Thiếu định giá")
                       : money(preview.result.after.total),
                 },
                 ...preview.result.after.positions.flatMap((p) => {
@@ -771,13 +789,15 @@ function Editor({
                     .filter((field) => before?.[field] !== p[field])
                     .map((field) => ({
                       key: `${p.id}/${field}`,
-                      label: `${p.name} · ${{ cost: "Giá vốn", value: "Giá trị", realized: "Lãi / lỗ đã chốt" }[field]}`,
+                      label: `${p.name} · ${{ cost: tr("Giá vốn"), value: tr("Giá trị"), realized: tr("Lãi / lỗ đã chốt") }[field]}`,
                       before:
                         before?.[field] === null
-                          ? "Thiếu định giá"
+                          ? tr("Thiếu định giá")
                           : money(before?.[field] ?? "0"),
                       after:
-                        p[field] === null ? "Thiếu định giá" : money(p[field]),
+                        p[field] === null
+                          ? tr("Thiếu định giá")
+                          : money(p[field]),
                     }));
                 }),
               ]}
@@ -799,14 +819,14 @@ function Editor({
                 setError("");
               } catch (e) {
                 setError(
-                  e instanceof Error ? e.message : "Chưa tải được dữ liệu.",
+                  e instanceof Error ? e.message : tr("Chưa tải được dữ liệu."),
                 );
               } finally {
                 setBusy(false);
               }
             }}
           >
-            Tải dữ liệu mới, giữ nội dung nhập
+            {tr("Tải dữ liệu mới, giữ nội dung nhập")}
           </button>
         )}
       </form>

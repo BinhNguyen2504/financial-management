@@ -1,18 +1,24 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
+
 import { useChartTooltip } from "@/components/chart-tooltip";
-import { useId, useState } from "react";
-import type { ReportItem } from "@/domain/expenses/reports";
-import { useMoney } from "@/components/privacy";
 import { Garden } from "@/components/garden";
+import { useMoney } from "@/components/privacy";
+import type { ReportItem } from "@/domain/expenses/reports";
+import { useId, useState } from "react";
 import { donutSlices } from "./chart-data";
 import { ratio } from "./format";
 
 export function ChartEmpty() {
+  const { t: tr } = useI18n("expenses");
+
   return (
     <div className="chart-empty">
       <Garden variant="balance" />
-      <p>Chưa có giá trị để vẽ biểu đồ.</p>
-      <span>Các khoản trong kỳ hoặc bộ lọc khác sẽ xuất hiện ở đây.</span>
+      <p>{tr("Chưa có giá trị để vẽ biểu đồ.")}</p>
+      <span>
+        {tr("Các khoản trong kỳ hoặc bộ lọc khác sẽ xuất hiện ở đây.")}
+      </span>
     </div>
   );
 }
@@ -24,10 +30,15 @@ export function DonutChart({
   items: ReportItem[];
   table?: boolean;
 }) {
+  const { t: tr, numberLocale } = useI18n("expenses");
+
   const money = useMoney();
   const tooltip = useChartTooltip();
   const [active, setActive] = useState<string | null>(null);
-  const slices = donutSlices(items.filter((r) => !r.planned));
+  const slices = donutSlices(
+    items.filter((r) => !r.planned),
+    tr("Khác"),
+  );
   if (!slices.length) return <ChartEmpty />;
   const total = slices.reduce((n, r) => n + BigInt(r.value), 0n).toString();
   const selected =
@@ -43,7 +54,9 @@ export function DonutChart({
           <svg
             viewBox="0 0 220 220"
             role="img"
-            aria-label="Cơ cấu thực chi. Chọn một mục trong chú giải để xem giá trị, đơn vị VND."
+            aria-label={tr(
+              "Cơ cấu thực chi. Chọn một mục trong chú giải để xem giá trị, đơn vị VND.",
+            )}
           >
             <circle
               cx="110"
@@ -61,7 +74,7 @@ export function DonutChart({
                   key={r.key}
                   {...tooltip.trigger(
                     r.key,
-                    `${r.label}: ${money(r.value)} · ${r.percent.toLocaleString("vi-VN")}%`,
+                    `${r.label}: ${money(r.value)} · ${r.percent.toLocaleString(numberLocale)}%`,
                   )}
                   cx="110"
                   cy="110"
@@ -78,14 +91,14 @@ export function DonutChart({
             })}
           </svg>
           <div className="donut-center">
-            <span>Tổng thực chi</span>
+            <span>{tr("Tổng thực chi")}</span>
             <strong>{money(total)}</strong>
             <small>
-              VND{items.some((r) => r.provisional) ? " · tạm tính" : ""}
+              VND{items.some((r) => r.provisional) ? tr(" · tạm tính") : ""}
             </small>
           </div>
         </div>
-        <div className="chart-legend" aria-label="Chú giải cơ cấu chi">
+        <div className="chart-legend" aria-label={tr("Chú giải cơ cấu chi")}>
           {slices.map((r, i) => (
             <button
               type="button"
@@ -104,7 +117,7 @@ export function DonutChart({
               </span>
               <span>{r.label}</span>
               <strong>
-                {r.percent.toLocaleString("vi-VN", {
+                {r.percent.toLocaleString(numberLocale, {
                   maximumFractionDigits: 1,
                 })}
                 %
@@ -113,7 +126,7 @@ export function DonutChart({
           ))}
           <p className="chart-tooltip" role="status">
             {selected.label}: <strong>{money(selected.value)}</strong> ·{" "}
-            {selected.percent.toLocaleString("vi-VN", {
+            {selected.percent.toLocaleString(numberLocale, {
               maximumFractionDigits: 1,
             })}
             %
@@ -124,24 +137,24 @@ export function DonutChart({
         <>
           <strong>{selected.label}</strong>
           <span>
-            {money(selected.value)} · {selected.percent.toLocaleString("vi-VN")}
-            %
+            {money(selected.value)} ·{" "}
+            {selected.percent.toLocaleString(numberLocale)}%
           </span>
         </>,
       )}
       {table && (
         <details className="chart-data-table">
-          <summary>Xem bảng dữ liệu</summary>
+          <summary>{tr("Xem bảng dữ liệu")}</summary>
           <div className="expense-table-scroll">
             <table>
               <caption className="sr-only">
-                Thực chi theo nhóm, đơn vị VND
+                {tr("Thực chi theo nhóm, đơn vị VND")}
               </caption>
               <thead>
                 <tr>
-                  <th>Nhóm</th>
-                  <th>Thực chi</th>
-                  <th>Tỷ trọng</th>
+                  <th>{tr("Nhóm")}</th>
+                  <th>{tr("Thực chi")}</th>
+                  <th>{tr("Tỷ trọng")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -149,7 +162,7 @@ export function DonutChart({
                   <tr key={r.key}>
                     <th>{r.label}</th>
                     <td>{money(r.value)}</td>
-                    <td>{r.percent.toLocaleString("vi-VN")}%</td>
+                    <td>{r.percent.toLocaleString(numberLocale)}%</td>
                   </tr>
                 ))}
               </tbody>
@@ -172,6 +185,8 @@ export function ReportChart({
   trend?: boolean;
   composition?: boolean;
 }) {
+  const { t: tr, locale } = useI18n("expenses");
+
   const money = useMoney();
   const tooltip = useChartTooltip();
   const gradientId = useId().replace(/:/g, "");
@@ -192,7 +207,7 @@ export function ReportChart({
   if (!visible.length || BigInt(maximum) === 0n) return <ChartEmpty />;
   const label = (r: ReportItem) =>
     /^20\d{2}-\d{2}$/.test(r.label)
-      ? `Tháng ${Number(r.label.slice(5))}`
+      ? tr("Tháng {0}", { 0: Number(r.label.slice(5)) })
       : r.label;
   if (trend) {
     const x = (i: number) =>
@@ -209,12 +224,16 @@ export function ReportChart({
       >
         <div className="chart-scale">
           <span>VND</span>
-          <span>Mức cao nhất: {money(maximum)}</span>
+          <span>
+            {tr("Mức cao nhất:")} {money(maximum)}
+          </span>
         </div>
         <svg
           viewBox="0 0 700 240"
           role="img"
-          aria-label="Diễn biến tiền thực chi theo tháng, đơn vị VND. Các nút tháng bên dưới cung cấp giá trị chính xác."
+          aria-label={tr(
+            "Diễn biến tiền thực chi theo tháng, đơn vị VND. Các nút tháng bên dưới cung cấp giá trị chính xác.",
+          )}
         >
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -249,7 +268,8 @@ export function ReportChart({
                 className="expense-chart-point"
               />
               <text x={x(i)} y="221" textAnchor="middle">
-                T{Number(r.key.slice(5))}
+                {locale === "en" ? "M" : "T"}
+                {Number(r.key.slice(5))}
               </text>
             </g>
           ))}
@@ -259,11 +279,11 @@ export function ReportChart({
             <strong>{label(selected)}</strong>
             <span>
               {money(selected[field])}
-              {selected.provisional ? " · tạm tính" : ""}
+              {selected.provisional ? tr(" · tạm tính") : ""}
             </span>
           </>,
         )}
-        <div className="chart-months" aria-label="Chọn điểm dữ liệu">
+        <div className="chart-months" aria-label={tr("Chọn điểm dữ liệu")}>
           {visible.map((r) => (
             <button
               type="button"
@@ -279,7 +299,7 @@ export function ReportChart({
         </div>
         <p role="status" className="chart-tooltip">
           {label(selected)}: <strong>{money(selected[field])}</strong>
-          {selected.provisional ? " · tạm tính" : ""}
+          {selected.provisional ? tr(" · tạm tính") : ""}
         </p>
       </div>
     );
@@ -289,7 +309,7 @@ export function ReportChart({
       {...tooltip.container}
       className="expense-bar-chart savings-chart-interactive"
       role="list"
-      aria-label="Biểu đồ so sánh, đơn vị VND"
+      aria-label={tr("Biểu đồ so sánh, đơn vị VND")}
     >
       {visible.map((r) => (
         <div
@@ -302,14 +322,14 @@ export function ReportChart({
             <strong>{label(r)}</strong>
             <span>
               {money(r[field])}
-              {r.provisional ? " · tạm tính" : ""}
-              {r.planned ? " · kế hoạch" : ""}
+              {r.provisional ? tr(" · tạm tính") : ""}
+              {r.planned ? tr(" · kế hoạch") : ""}
             </span>
           </div>
           {compare && (
             <>
               <small className="expense-muted">
-                Mức kế hoạch: {money(r.target)}
+                {tr("Mức kế hoạch:")} {money(r.target)}
               </small>
               <div
                 className="expense-bar-track expense-bar-budget"
@@ -318,7 +338,8 @@ export function ReportChart({
                 <span style={{ width: `${ratio(r.target, maximum)}%` }} />
               </div>
               <small className="expense-muted">
-                Thực chi{r.planned ? " chưa phát sinh" : ""}
+                {tr("Thực chi")}
+                {r.planned ? tr(" chưa phát sinh") : ""}
               </small>
             </>
           )}
@@ -337,12 +358,16 @@ export function ReportChart({
                 <span>
                   {money(selected[field])}
                   {selected.provisional
-                    ? " · tạm tính"
+                    ? tr(" · tạm tính")
                     : selected.planned
-                      ? " · kế hoạch"
+                      ? tr(" · kế hoạch")
                       : ""}
                 </span>
-                {compare && <span>Mức kế hoạch: {money(selected.target)}</span>}
+                {compare && (
+                  <span>
+                    {tr("Mức kế hoạch:")} {money(selected.target)}
+                  </span>
+                )}
               </>
             )
           );

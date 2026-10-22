@@ -95,16 +95,16 @@
 }
 .income-period-controls {
   display: grid;
-  grid-template-columns: minmax(72px, 0.8fr) minmax(98px, 1fr) 44px 44px;
+  grid-template-columns: 44px minmax(72px, 0.75fr) minmax(0, 1.25fr) 44px;
   gap: 6px;
   align-items: flex-end;
   width: 100%;
   max-width: 340px;
 }
-.income-period-controls select {
+.income-workspace .income-period-controls select:not([multiple]) {
   width: 100%;
   min-width: 0;
-  padding-inline: 8px 24px;
+  padding-inline: 4px 20px;
   background-position:
     calc(100% - 12px) 50%,
     calc(100% - 7px) 50%;
@@ -115,7 +115,6 @@
 }
 @media (max-width: 360px) {
   .income-period-controls {
-    grid-template-columns: minmax(72px, 0.8fr) minmax(104px, 1fr) 44px 44px;
     gap: 4px;
   }
 }
@@ -128,7 +127,6 @@
 }
 .income-table-wrap {
   max-width: 100%;
-  overflow: auto;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
@@ -149,6 +147,12 @@
   text-align: right;
   border-top: 1px solid var(--border);
   white-space: nowrap;
+}
+.income-table tbody tr {
+  height: 48px;
+}
+.income-table td:has(.income-missing-cell) {
+  padding-block: 0;
 }
 .income-table th:first-child {
   position: sticky;

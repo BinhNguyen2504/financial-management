@@ -1,10 +1,13 @@
+import { savingsClock } from "@/domain/savings/engine";
+import "@/features/savings/savings.css";
+import { SavingsWorkspace } from "@/features/savings/workspace";
+import { localizedMetadata } from "@/i18n/server";
+import { authConfigured } from "@/server/auth";
 import { pageAccess } from "@/server/page-auth";
 import type { Metadata } from "next";
-import { authConfigured } from "@/server/auth";
-import { savingsClock } from "@/domain/savings/engine";
-import { SavingsWorkspace } from "@/features/savings/workspace";
-import "@/features/savings/savings.css";
-export const metadata: Metadata = { title: "Tiết kiệm" };
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedMetadata("Tiết kiệm");
+}
 export const dynamic = "force-dynamic";
 export default async function SavingsPage() {
   const denied = await pageAccess("/savings");

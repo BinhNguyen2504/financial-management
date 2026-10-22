@@ -1,26 +1,30 @@
 "use client";
-import { HelpButton, HelpPageTitle } from "@/features/help/provider";
-import { Pencil as EditCommandGlyph } from "lucide-react";
+import { ScrollTabs } from "@/components/scroll-tabs";
+import { formatDate } from "@/i18n/format";
+import { useI18n } from "@/i18n/provider";
+
 import { ColumnTable } from "@/components/column-table";
-import { LoadingStatus } from "@/components/loading";
-import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { Garden } from "@/components/garden";
+import { LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
-import { useToast } from "@/components/toast";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
+import { useToast } from "@/components/toast";
 import { activeTransactions, ruleAt } from "@/domain/investments/engine";
 import { buildReport, type ReportFilter } from "@/domain/investments/reports";
 import type {
+  InvestmentTransaction,
   InvestmentView,
   Position,
-  InvestmentTransaction,
 } from "@/domain/investments/types";
-import { InvestmentEditor, type EditorMode, transactionNames } from "./editor";
-import { InvestmentReports } from "./report-panel";
-import { investmentsJSON, downloadInvestment, InvestmentAPIError } from "./api";
+import { HelpButton, HelpPageTitle } from "@/features/help/provider";
+import { Pencil as EditCommandGlyph } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { downloadInvestment, InvestmentAPIError, investmentsJSON } from "./api";
 import { InvestmentDetails, InvestmentTransactionDetails } from "./details";
+import { InvestmentEditor, transactionNames, type EditorMode } from "./editor";
 import { formatROI } from "./format";
+import { InvestmentReports } from "./report-panel";
 const tabs = [
   ["portfolio", "Danh mục"],
   ["transactions", "Giao dịch"],
@@ -34,6 +38,9 @@ export function InvestmentWorkspace({
   configured: boolean;
   initialToday: string;
 }) {
+  const { t: tr, locale, config: localize } = useI18n("investments");
+  const localizedTabs = localize(tabs);
+
   const toast = useToast();
   const money = useMoney(),
     hidden = useMoneyHidden(),
@@ -70,7 +77,7 @@ export function InvestmentWorkspace({
       return v;
     } catch (e) {
       if (n === request.current) {
-        setError(e instanceof Error ? e.message : "Không thể tải dữ liệu.");
+        setError(e instanceof Error ? e.message : tr("Không thể tải dữ liệu."));
         setStatus(e instanceof InvestmentAPIError ? e.status : 0);
       }
       throw e;
@@ -90,7 +97,7 @@ export function InvestmentWorkspace({
     return c ? (ruleAt(c, date)?.name ?? c.rules[0].name) : id;
   };
   const display = (v: string | null) =>
-    v === null ? "Thiếu định giá" : money(v);
+    v === null ? tr("Thiếu định giá") : money(v);
   const sum = (values: (string | null)[]) =>
     values.reduce<bigint>((n, x) => n + BigInt(x ?? "0"), 0n).toString();
   const investments =
@@ -145,14 +152,14 @@ export function InvestmentWorkspace({
     try {
       await downloadInvestment(path, filename);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Không thể xuất dữ liệu.");
+      setError(e instanceof Error ? e.message : tr("Không thể xuất dữ liệu."));
     }
   }
   function saved() {
     setEditor(null);
     setNotice("");
     void load().catch(() =>
-      toast("warning", "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu."),
+      toast("warning", tr("Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.")),
     );
   }
   function open(mode: EditorMode) {
@@ -163,7 +170,7 @@ export function InvestmentWorkspace({
     return (
       <div className="expense-actions">
         <button className="expense-secondary" onClick={() => setDetails(p.id)}>
-          Chi tiết <span className="sr-only">{p.name}</span>
+          {tr("Chi tiết")} <span className="sr-only">{p.name}</span>
         </button>
         {p.active && (
           <button
@@ -176,7 +183,7 @@ export function InvestmentWorkspace({
               })
             }
           >
-            {p.kind === "cash" ? "Nạp" : "Mua"}
+            {p.kind === "cash" ? tr("Nạp") : "Mua"}
             <span className="sr-only"> {p.name}</span>
           </button>
         )}
@@ -187,7 +194,8 @@ export function InvestmentWorkspace({
               open({ type: "transaction", kind: "valuation", categoryId: p.id })
             }
           >
-            Định giá<span className="sr-only"> {p.name}</span>
+            {tr("Định giá")}
+            <span className="sr-only"> {p.name}</span>
           </button>
         )}
       </div>
@@ -202,26 +210,29 @@ export function InvestmentWorkspace({
         <strong className="investment-card-value">{display(p.value)}</strong>
         <dl>
           <div>
-            <dt>Vốn còn lại</dt>
+            <dt>{tr("Vốn còn lại")}</dt>
             <dd>{money(p.cost)}</dd>
           </div>
           <div>
-            <dt>Chưa chốt</dt>
+            <dt>{tr("Chưa chốt")}</dt>
             <dd>{display(p.unrealized)}</dd>
           </div>
           <div>
-            <dt>Đã chốt</dt>
+            <dt>{tr("Đã chốt")}</dt>
             <dd>{money(p.realized)}</dd>
           </div>
           <div>
-            <dt>ROI chưa chốt</dt>
-            <dd>{formatROI(p.roi)}</dd>
+            <dt>{tr("ROI chưa chốt")}</dt>
+            <dd>{formatROI(p.roi, locale)}</dd>
           </div>
         </dl>
         <p className="expense-muted">
           {p.kind === "cash"
-            ? "Số dư theo giao dịch"
-            : `Định giá ${p.valueDate ?? "chưa có"}${p.stale ? " · từ kỳ trước" : ""}`}
+            ? tr("Số dư theo giao dịch")
+            : tr("Định giá {0}{1}", {
+                0: p.valueDate ?? tr("chưa có"),
+                1: p.stale ? tr(" · từ kỳ trước") : "",
+              })}
         </p>
         {positionActions(p)}
       </article>
@@ -234,27 +245,30 @@ export function InvestmentWorkspace({
     >
       <header className="investment-heading">
         <div>
-          <p className="eyebrow">Vốn và giá trị hiện tại</p>
-          <HelpPageTitle>Đầu tư</HelpPageTitle>
+          <p className="eyebrow">{tr("Vốn và giá trị hiện tại")}</p>
+          <HelpPageTitle>{tr("Đầu tư")}</HelpPageTitle>
           <p className="lead">
-            Theo dõi từng danh mục, giữ rõ dòng tiền và những thay đổi theo thời
-            gian.
+            {tr(
+              "Theo dõi từng danh mục, giữ rõ dòng tiền và những thay đổi theo thời gian.",
+            )}
           </p>
         </div>
         <Garden variant="grove" />
       </header>
       {!configured ? (
         <section className="panel">
-          <h2>Kết nối dữ liệu Đầu tư</h2>
+          <h2>{tr("Kết nối dữ liệu Đầu tư")}</h2>
           <p>
-            Cần cấu hình Auth, database và áp dụng migration Đầu tư để sử dụng.
+            {tr(
+              "Cần cấu hình Auth, database và áp dụng migration Đầu tư để sử dụng.",
+            )}
           </p>
         </section>
       ) : (
         <>
           <div className="investment-toolbar">
             <label>
-              Xem tài sản tại ngày
+              {tr("Xem tài sản tại ngày")}
               <input
                 type="date"
                 value={date}
@@ -270,52 +284,56 @@ export function InvestmentWorkspace({
                 disabled={!view || loading}
                 onClick={() => open({ type: "transaction" })}
               >
-                Ghi giao dịch
+                {tr("Ghi giao dịch")}
               </button>
               <button
                 className="expense-secondary"
                 disabled={!view || loading}
                 onClick={() => open({ type: "create" })}
               >
-                Thêm danh mục
+                {tr("Thêm danh mục")}
               </button>
               <button
                 className="expense-secondary"
                 disabled={loading}
                 onClick={() => void load().catch(() => {})}
               >
-                Tải lại
+                {tr("Tải lại")}
               </button>
             </div>
           </div>
           {error && (
             <div className="expense-error" role="alert">
-              {error}
+              {tr(error)}
               {status === 401 && (
-                <Link href="/login?next=/investments"> Đăng nhập lại</Link>
+                <Link href="/login?next=/investments">
+                  {" "}
+                  {tr("Đăng nhập lại")}
+                </Link>
               )}
               {status === 503 && (
                 <p>
-                  Kiểm tra kết nối và migration Đầu tư; nội dung trong form được
-                  giữ.
+                  {tr(
+                    "Kiểm tra kết nối và migration Đầu tư; nội dung trong form được giữ.",
+                  )}
                 </p>
               )}
             </div>
           )}
           {notice && (
             <p role="status" className="expense-notice">
-              {notice}
+              {tr(notice)}
             </p>
           )}
-          {loading && <LoadingStatus>Đang tải danh mục…</LoadingStatus>}
+          {loading && <LoadingStatus>{tr("Đang tải danh mục…")}</LoadingStatus>}
           {view && (
             <>
-              <div
+              <ScrollTabs
                 role="tablist"
-                aria-label="Đầu tư"
+                aria-label={tr("Đầu tư")}
                 className="investment-tabs"
               >
-                {tabs.map(([id, label], i) => (
+                {localizedTabs.map(([id, label], i) => (
                   <button
                     key={id}
                     role="tab"
@@ -326,23 +344,27 @@ export function InvestmentWorkspace({
                     onClick={() => setTab(id)}
                     onKeyDown={(e) => {
                       let next = i;
-                      if (e.key === "ArrowRight") next = (i + 1) % tabs.length;
+                      if (e.key === "ArrowRight")
+                        next = (i + 1) % localizedTabs.length;
                       else if (e.key === "ArrowLeft")
-                        next = (i + tabs.length - 1) % tabs.length;
+                        next =
+                          (i + localizedTabs.length - 1) % localizedTabs.length;
                       else if (e.key === "Home") next = 0;
-                      else if (e.key === "End") next = tabs.length - 1;
+                      else if (e.key === "End") next = localizedTabs.length - 1;
                       else return;
                       e.preventDefault();
-                      setTab(tabs[next][0]);
+                      setTab(localizedTabs[next][0]);
                       document
-                        .getElementById(`investment-tab-${tabs[next][0]}`)
-                        ?.focus();
+                        .getElementById(
+                          `investment-tab-${localizedTabs[next][0]}`,
+                        )
+                        ?.focus({ preventScroll: true });
                     }}
                   >
                     {label}
                   </button>
                 ))}
-              </div>
+              </ScrollTabs>
               <div
                 role="tabpanel"
                 id={`investment-panel-${tab}`}
@@ -352,13 +374,16 @@ export function InvestmentWorkspace({
                   <>
                     <div className="investment-metrics">
                       {[
-                        ["Tài sản trong Đầu tư", state!.total],
-                        ["Vốn còn giữ", sum(investments.map((p) => p.cost))],
-                        ["Tiền chờ", sum(wallets.map((p) => p.cash))],
-                        ["Lãi/lỗ đã chốt", realized],
-                        ["Lãi/lỗ chưa chốt", unrealized],
+                        [tr("Tài sản trong Đầu tư"), state!.total],
                         [
-                          "Tổng lãi/lỗ",
+                          tr("Vốn còn giữ"),
+                          sum(investments.map((p) => p.cost)),
+                        ],
+                        [tr("Tiền chờ"), sum(wallets.map((p) => p.cash))],
+                        [tr("Lãi/lỗ đã chốt"), realized],
+                        [tr("Lãi/lỗ chưa chốt"), unrealized],
+                        [
+                          tr("Tổng lãi/lỗ"),
                           unrealized === null
                             ? null
                             : (
@@ -373,32 +398,34 @@ export function InvestmentWorkspace({
                       ))}
                     </div>
                     <p className="expense-muted">
-                      Đã chốt từ ngày bắt đầu theo dõi; chưa chốt tính trên giá
-                      vốn còn giữ, kể cả vốn mở đầu. Tiền chờ không có ROI.
+                      {tr(
+                        "Đã chốt từ ngày bắt đầu theo dõi; chưa chốt tính trên giá vốn còn giữ, kể cả vốn mở đầu. Tiền chờ không có ROI.",
+                      )}
                     </p>
                     {!categories.length ? (
                       <section className="panel investment-empty">
                         <Garden variant="grove" />
-                        <h2>Bắt đầu từ những gì bạn đang có</h2>
+                        <h2>{tr("Bắt đầu từ những gì bạn đang có")}</h2>
                         <p>
-                          Tạo danh mục hoặc ví, rồi ghi số dư mở đầu tại ngày
-                          bắt đầu theo dõi. Có thể mua trực tiếp từ Bên ngoài.
+                          {tr(
+                            "Tạo danh mục hoặc ví, rồi ghi số dư mở đầu tại ngày bắt đầu theo dõi. Có thể mua trực tiếp từ Bên ngoài.",
+                          )}
                         </p>
                         <button
                           className="expense-primary"
                           onClick={() => open({ type: "create" })}
                         >
-                          Tạo danh mục đầu tiên
+                          {tr("Tạo danh mục đầu tiên")}
                         </button>
                       </section>
                     ) : (
                       <>
                         <section className="panel investment-desktop">
-                          <h2>Danh mục đầu tư</h2>
+                          <h2>{tr("Danh mục đầu tư")}</h2>
                           <HelpButton
                             pageId="investments"
                             sectionId="profit"
-                            label="Hiểu kết quả đầu tư"
+                            label={tr("Hiểu kết quả đầu tư")}
                           />
                           <div className="investment-table-scroll">
                             <ColumnTable
@@ -407,13 +434,13 @@ export function InvestmentWorkspace({
                             >
                               <thead>
                                 <tr>
-                                  <th>Danh mục</th>
-                                  <th>Vốn còn lại</th>
-                                  <th>Giá trị hiện tại</th>
-                                  <th>Chưa chốt / ROI</th>
-                                  <th>Đã chốt</th>
-                                  <th>Định giá</th>
-                                  <th>Thao tác</th>
+                                  <th>{tr("Danh mục")}</th>
+                                  <th>{tr("Vốn còn lại")}</th>
+                                  <th>{tr("Giá trị hiện tại")}</th>
+                                  <th>{tr("Chưa chốt / ROI")}</th>
+                                  <th>{tr("Đã chốt")}</th>
+                                  <th>{tr("Định giá")}</th>
+                                  <th>{tr("Thao tác")}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -428,12 +455,16 @@ export function InvestmentWorkspace({
                                       <td>{display(p.value)}</td>
                                       <td>
                                         {display(p.unrealized)}
-                                        <small>{formatROI(p.roi)}</small>
+                                        <small>
+                                          {formatROI(p.roi, locale)}
+                                        </small>
                                       </td>
                                       <td>{money(p.realized)}</td>
                                       <td>
-                                        {p.valueDate ?? "Chưa có"}
-                                        {p.stale && <small>Từ kỳ trước</small>}
+                                        {p.valueDate ?? tr("Chưa có")}
+                                        {p.stale && (
+                                          <small>{tr("Từ kỳ trước")}</small>
+                                        )}
                                       </td>
                                       <td>{positionActions(p)}</td>
                                     </tr>
@@ -448,11 +479,11 @@ export function InvestmentWorkspace({
                             .map(positionCard)}
                         </div>
                         <section className="panel">
-                          <h2>Ví tiền chờ</h2>
+                          <h2>{tr("Ví tiền chờ")}</h2>
                           <HelpButton
                             pageId="investments"
                             sectionId="portfolio"
-                            label="Tiền chờ là gì?"
+                            label={tr("Tiền chờ là gì?")}
                           />
                           {wallets.filter((p) => p.active).length ? (
                             wallets
@@ -470,8 +501,9 @@ export function InvestmentWorkspace({
                               ))
                           ) : (
                             <p>
-                              Chưa có ví tiền chờ. Bạn vẫn có thể mua/bán với
-                              nguồn Bên ngoài.
+                              {tr(
+                                "Chưa có ví tiền chờ. Bạn vẫn có thể mua/bán với nguồn Bên ngoài.",
+                              )}
                             </p>
                           )}
                         </section>
@@ -483,7 +515,7 @@ export function InvestmentWorkspace({
                   <>
                     <section className="panel investment-filters">
                       <label>
-                        Từ ngày giao dịch
+                        {tr("Từ ngày giao dịch")}
                         <input
                           type="date"
                           value={from}
@@ -492,7 +524,7 @@ export function InvestmentWorkspace({
                         />
                       </label>
                       <label>
-                        Đến ngày giao dịch
+                        {tr("Đến ngày giao dịch")}
                         <input
                           type="date"
                           value={to}
@@ -501,12 +533,12 @@ export function InvestmentWorkspace({
                         />
                       </label>
                       <label>
-                        Danh mục / ví giao dịch
+                        {tr("Danh mục / ví giao dịch")}
                         <select
                           value={activityCategory}
                           onChange={(e) => setActivityCategory(e.target.value)}
                         >
-                          <option value="">Tất cả</option>
+                          <option value="">{tr("Tất cả")}</option>
                           {categories.map((c) => (
                             <option key={c.id} value={c.id}>
                               {name(c.id)}
@@ -515,13 +547,13 @@ export function InvestmentWorkspace({
                         </select>
                       </label>
                       <label>
-                        Loại giao dịch lọc
+                        {tr("Loại giao dịch lọc")}
                         <select
                           value={activityKind}
                           onChange={(e) => setActivityKind(e.target.value)}
                         >
-                          <option value="">Tất cả loại</option>
-                          {Object.entries(transactionNames).map(
+                          <option value="">{tr("Tất cả loại")}</option>
+                          {Object.entries(localize(transactionNames)).map(
                             ([id, name]) => (
                               <option key={id} value={id}>
                                 {name}
@@ -538,13 +570,13 @@ export function InvestmentWorkspace({
                             setIncludeCancelled(e.target.checked)
                           }
                         />
-                        Hiện cả giao dịch đã hủy
+                        {tr("Hiện cả giao dịch đã hủy")}
                       </label>
                     </section>
                     <section className="panel">
-                      <h2>Nhật ký giao dịch</h2>
+                      <h2>{tr("Nhật ký giao dịch")}</h2>
                       {!visible.length ? (
-                        <p>Chưa có giao dịch phù hợp bộ lọc.</p>
+                        <p>{tr("Chưa có giao dịch phù hợp bộ lọc.")}</p>
                       ) : (
                         visible.map(({ t, cancelled }) => {
                           const e = state!.effects.find((e) => e.id === t.id);
@@ -552,12 +584,12 @@ export function InvestmentWorkspace({
                             <article className="investment-activity" key={t.id}>
                               <div>
                                 <h3>
-                                  {transactionNames[t.kind]} ·{" "}
+                                  {localize(transactionNames)[t.kind]} ·{" "}
                                   {name(t.categoryId)}
-                                  {cancelled ? " · đã hủy" : ""}
+                                  {cancelled ? tr(" · đã hủy") : ""}
                                 </h3>
                                 <p>
-                                  {t.date}
+                                  {formatDate(t.date!, locale)}
                                   {"cashCategoryId" in t && t.cashCategoryId
                                     ? ` · ${name(t.cashCategoryId)}`
                                     : ""}
@@ -569,10 +601,11 @@ export function InvestmentWorkspace({
                                 className="expense-secondary"
                                 onClick={() => setTransaction(t.id)}
                               >
-                                Xem giao dịch
+                                {tr("Xem giao dịch")}
                                 <span className="sr-only">
                                   {" "}
-                                  {t.date} {name(t.categoryId)}
+                                  {formatDate(t.date!, locale)}{" "}
+                                  {name(t.categoryId)}
                                 </span>
                               </button>
                             </article>
@@ -596,6 +629,7 @@ export function InvestmentWorkspace({
                         ) as [string, string][],
                       );
                       q.set("format", "csv");
+                      q.set("locale", locale);
                       void download(
                         `/reports?${q}`,
                         `investments-${filter.from}-${filter.to}.csv`,
@@ -606,10 +640,11 @@ export function InvestmentWorkspace({
                 {tab === "manage" && (
                   <>
                     <section className="panel">
-                      <h2>Danh mục và ví</h2>
+                      <h2>{tr("Danh mục và ví")}</h2>
                       <p className="expense-muted">
-                        Xóa khỏi danh sách đang dùng bằng cách lưu trữ khi hết
-                        tài sản. Toàn bộ lịch sử vẫn được giữ.
+                        {tr(
+                          "Xóa khỏi danh sách đang dùng bằng cách lưu trữ khi hết tài sản. Toàn bộ lịch sử vẫn được giữ.",
+                        )}
                       </p>
                       {categories.map((c) => {
                         const r = ruleAt(c, date);
@@ -621,10 +656,10 @@ export function InvestmentWorkspace({
                               </h3>
                               <p>
                                 {c.kind === "cash"
-                                  ? "Ví tiền chờ"
-                                  : "Danh mục đầu tư"}{" "}
-                                · từ {c.start}
-                                {r?.active === false ? " · đã lưu trữ" : ""}
+                                  ? tr("Ví tiền chờ")
+                                  : tr("Danh mục đầu tư")}{" "}
+                                {tr("· từ")} {formatDate(c.start!, locale)}
+                                {r?.active === false ? tr(" · đã lưu trữ") : ""}
                               </p>
                             </div>
                             <div className="expense-actions">
@@ -638,7 +673,7 @@ export function InvestmentWorkspace({
                                   size={17}
                                   aria-hidden="true"
                                 />
-                                Sửa
+                                {tr("Sửa")}
                                 <span className="sr-only"> {name(c.id)}</span>
                               </button>
                               <button
@@ -654,7 +689,7 @@ export function InvestmentWorkspace({
                                   })
                                 }
                               >
-                                Mở đầu
+                                {tr("Mở đầu")}
                                 <span className="sr-only"> {name(c.id)}</span>
                               </button>
                               <button
@@ -670,15 +705,15 @@ export function InvestmentWorkspace({
                                 }
                               >
                                 {r?.active === false
-                                  ? "Khôi phục"
-                                  : "Xóa / lưu trữ"}
+                                  ? tr("Khôi phục")
+                                  : tr("Xóa / lưu trữ")}
                                 <span className="sr-only"> {name(c.id)}</span>
                               </button>
                             </div>
                           </article>
                         );
                       })}
-                      {!categories.length && <p>Chưa có danh mục.</p>}
+                      {!categories.length && <p>{tr("Chưa có danh mục.")}</p>}
                     </section>
                   </>
                 )}
@@ -716,7 +751,7 @@ export function InvestmentWorkspace({
           onClose={() => setEditor(null)}
         />
       )}
-      {hidden && <p className="sr-only">Số tiền đang được che.</p>}
+      {hidden && <p className="sr-only">{tr("Số tiền đang được che.")}</p>}
     </div>
   );
 }

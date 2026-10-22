@@ -1,5 +1,8 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
 
+import { money } from "@/features/expenses/format";
+import { Eye, EyeOff } from "lucide-react";
 import {
   createContext,
   useContext,
@@ -7,8 +10,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { money } from "@/features/expenses/format";
 
 const STORAGE_KEY = "fm-privacy";
 const PrivacyContext = createContext({
@@ -66,6 +67,8 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
 }
 
 export function PrivacyToggle() {
+  const { t: tr } = useI18n();
+
   const { hidden, ready, toggle } = useContext(PrivacyContext);
   const Icon = hidden ? EyeOff : Eye;
   return (
@@ -75,10 +78,10 @@ export function PrivacyToggle() {
       onClick={toggle}
       disabled={!ready}
       aria-pressed={hidden}
-      aria-label={hidden ? "Hiện số tiền" : "Ẩn số tiền"}
+      aria-label={hidden ? tr("Hiện số tiền") : tr("Ẩn số tiền")}
     >
       <Icon size={19} aria-hidden="true" />
-      <span>{hidden ? "Hiện số tiền" : "Ẩn số tiền"}</span>
+      <span>{hidden ? tr("Hiện số tiền") : tr("Ẩn số tiền")}</span>
     </button>
   );
 }
@@ -90,8 +93,9 @@ export function useMoneyHidden() {
 }
 
 export function useMoney() {
+  const { locale } = useI18n();
   const hidden = useMoneyHidden();
-  return (value: string) => (hidden ? "•••••• ₫" : money(value));
+  return (value: string) => (hidden ? "•••••• ₫" : money(value, locale));
 }
 
 export function MoneyText({ value }: { value: string }) {
@@ -128,13 +132,15 @@ export function PrivacyScope({ children }: { children: ReactNode }) {
 }
 
 export function PrivacyReveal() {
+  const { t: tr } = useI18n();
+
   const scope = useContext(RevealContext);
   const hidden = useMoneyHidden();
   if (!scope.available) return null;
   const Icon = hidden ? Eye : EyeOff;
   return (
     <div className="privacy-form-note">
-      <span>Số tiền được giữ riêng trong form này.</span>
+      <span>{tr("Số tiền được giữ riêng trong form này.")}</span>
       <button
         type="button"
         className="expense-secondary"
@@ -143,7 +149,7 @@ export function PrivacyReveal() {
         onClick={scope.reveal}
       >
         <Icon size={17} aria-hidden="true" />
-        {hidden ? "Hiện tiền trong form" : "Ẩn tiền trong form"}
+        {hidden ? tr("Hiện tiền trong form") : tr("Ẩn tiền trong form")}
       </button>
     </div>
   );

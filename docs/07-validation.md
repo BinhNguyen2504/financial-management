@@ -482,3 +482,57 @@ Giới hạn: tất cả là local production build và PostgreSQL/Auth contract
 - Đã cập nhật/rà catalog, landing thành viên và preview minh họa cố định, README, kiến trúc, UX, themes, Funds, Help, backup và UI feedback; giữ lịch sử và các sửa đổi từ công việc song song. Liên kết tới tài liệu mới/cập nhật hợp lệ, `git diff --check` đạt. Các ảnh lịch sử đã thiếu trong thư mục artifact tạm từ trước vẫn được ghi nhận trong phần validation trước, không tái tạo hoặc thay thế bằng bằng chứng mới.
 
 Giới hạn: trình duyệt local và mô phỏng viewport/color-scheme/motion, PostgreSQL tạm, Auth contract double; chưa xác nhận Supabase Auth/cloud/deployment hoặc thiết bị vật lý. Không chạy lại toàn bộ browser suite của các nghiệp vụ không liên quan.
+
+
+## Bổ sung Nâu — Đất lành — 22/10/2026
+
+Hoàn thành bộ năm theme bằng `earth`: nền cát/nâu đất sáng–tối, icon địa hình, lời dẫn, tám cảnh SVG và ba cảnh Quỹ. Địa hình, lớp đất, đá cuội, bình đất nung và ruộng bậc thang tạo khác biệt với hình cây lá của Khu vườn. Bộ chọn ba cột desktop, hai cột 561–900px và một cột dưới 561px. Cùng Sáng/Tối/Theo hệ thống, đổi tức thời, giữ bản nháp và đồng bộ trình duyệt giữa tab; cache offline `fm-offline-v6` chỉ chứa fallback HTML. Không thêm API/migration, đồng bộ tài khoản hoặc dữ liệu vào backup; logo/emoji và ngữ nghĩa tài chính/cảnh báo giữ nguyên. Landing marketing khách tiếp tục dùng nhận diện riêng.
+
+Bằng chứng local với Node 22.12.0 / Next.js 16.4.1:
+
+- `npm test`: **176/176**, 21 file, log `artifacts/earth-theme-unit.log`. Bao phủ registry năm theme, parser bootstrap/storage, offline cùng copy/màu, tám cảnh địa hình riêng biệt, nền/mái trú tăng dần và đá tiến lên đích. Kiểm giới hạn hình ở 100% với phần trăm vượt mục tiêu hoặc rất lớn dùng chung mọi nhánh SVG.
+- `npm run typecheck`: đạt, log `artifacts/earth-theme-typecheck.log`; `npm run build`: đạt (Turbopack), log `artifacts/earth-theme-build.log`. Browser chạy build production Webpack riêng, PostgreSQL tạm và Auth contract double.
+- Bản chụp source/test đầy đủ `artifacts/earth-theme-validation-gl6lj5r1` dùng đúng public layout/page hiện tại, không có overlay. `artifacts/earth-theme-validation-source.json` ghi hash, phạm vi và source của lượt kiểm tra đầu; bản mã cuối sau sửa Tab được ghi riêng bên dưới.
+
+
+### Hoàn tất thao tác bàn phím và hồi quy cuối — 22/10/2026
+
+- Lượt đầu: **53 đạt, 2 bỏ qua, 1 lỗi / 56 ca**, log `artifacts/earth-theme-browser.log`. Lỗi nằm ở Tab từ Chủ đề sang Chế độ hiển thị trên WebKit. Sửa giả định “phải focus Tối” thành “focus một radio chế độ” vẫn còn **3 đạt, 1 lỗi / 4 ca** (`artifacts/earth-theme-keyboard.log`), vì Tab thực sự bỏ qua cả nhóm trong cấu hình WebKit này.
+- Tái hiện bằng HTML radio tối giản trên WebKit desktop/iPhone: Tab mặc định rời nhóm; khai báo `tabIndex=0` trên lựa chọn đang chọn đưa focus vào nhóm kế tiếp. Sửa cả hai nhóm trong `ThemePicker`: lựa chọn đang chọn có `tabIndex=0`, các lựa chọn khác `-1`; vẫn dùng radio và phím mũi tên native. Ca hồi quy kiểm Tab, đổi chế độ bằng mũi tên/Space, dữ liệu lưu và nhiều tab. Kiểm riêng sau sửa: **4/4 đạt**, log `artifacts/earth-theme-keyboard-final.log`.
+- `npm run check` trên mã cuối đạt: **176/176 unit test**, typecheck và build Turbopack, log `artifacts/earth-theme-final-check.log`.
+- Lượt hồi quy cuối trên bản mã cố định `artifacts/earth-theme-final-oai3sf0y`: **54 đạt, 2 bỏ qua / 56 ca**, log `artifacts/earth-theme-final-browser.log`; không có ca lỗi. Chạy `TEST_FIREFOX=1 TEST_WEBKIT=1 TEST_THEME_MATRIX=earth` với `visual-themes.spec.ts funds.spec.ts --grep 'theme|identit|preferences|real progress'`. Hai ca bỏ qua là service worker trên Firefox/WebKit; offline HTML được kiểm tra ở mọi engine, service worker thực được kiểm trên Chromium.
+- Phạm vi: cả năm theme trong registry, radio/ảnh thu nhỏ, bàn phím, lưu/tải lại/nhiều tab, giá trị lạ, storage bị chặn, Theo hệ thống/ghi đè và tương phản đủ mười tổ hợp sáng/tối. Riêng Earth sáng/tối đi qua 12 workspace, Help, dialog, biểu đồ, che tiền và settings 320/768/1440px; không diễn giải thành ma trận mọi module của cả năm theme. Có 12 ca Quỹ Gold/Fire/Earth trên bốn cấu hình, kiểm 0/25/50/75%, vượt mục tiêu (hình 100%, số 200%), riêng tư và giảm chuyển động.
+- Landing thành viên Water/Gold/Fire/Earth giữ đúng nhánh minh họa, không thấy lỗi hydration trong ca kiểm tra và preview không gọi API dữ liệu tài chính; request phiên/hồ sơ được phép. Theme và display mode độc lập, bản nháp đang mở được giữ khi tab khác đổi sang Earth.
+- Đo token chữ trên canvas/surface/surface-alt/primary-soft ≥4.5:1, nút ≥4.5:1, focus ≥3:1; Earth thấp nhất khoảng **4.72:1 sáng / 5.81:1 tối**. Token cảnh báo/lỗi giữ nguyên giữa các theme trong cùng mode. Có kiểm CSS zoom 200% và reduced motion.
+- Đã xem ảnh bộ chọn Earth sáng desktop/tối 320px và Tổng quan tối desktop; đủ năm thẻ, đúng chủ đề riêng, không thấy tràn ngang. Ảnh lượt cuối ở `artifacts/earth-theme-final-images/`. `artifacts/earth-theme-final-source.json` ghi source/test không có overlay và hash 14 file triển khai/kiểm thử vẫn khớp workspace sau hồi quy.
+- Đã rà/cập nhật catalog, landing/preview số liệu cố định, README, kiến trúc/UX, themes, Quỹ, Help, backup và UI feedback; không đổi trạng thái nghiệp vụ hoặc đọc dữ liệu tài khoản trong preview. Bổ sung hướng dẫn điểm Tab của mỗi nhóm radio vào tài liệu theme/UX, bảo toàn lịch sử validation và các sửa đổi đã có. Liên kết tài liệu nội bộ hợp lệ, `git diff --check` đạt; các link PNG artifact lịch sử đã thiếu từ trước được giữ nguyên.
+
+Giới hạn: bằng chứng local, PostgreSQL tạm, Auth contract double, trình duyệt/viewport/color-scheme/motion mô phỏng. Chưa xác nhận Supabase Auth/cloud/deployment hoặc thiết bị vật lý; không chạy lại toàn bộ browser suite của các nghiệp vụ ngoài phạm vi theme.
+
+## Logo trung tính và Anh/Việt trong app — 22/10/2026
+
+Đổi logo sang hũ tích lũy/đồng xu màu than–ngà, độc lập năm theme; đồng bộ sidebar/mobile, public header/preview, favicon và bộ icon PWA/Apple. Thêm lựa chọn Tiếng Việt/English trong Cài đặt, mặc định vi, lưu trình duyệt/cookie, cập nhật giữa tab và giữ workspace/bản nháp/bộ lọc. Toàn bộ workspace, trang dự kiến, hồ sơ, Help, biểu đồ, tooltip và lỗi/thông báo có hai ngôn ngữ. Landing, preview công khai và đăng nhập giữ tiếng Việt. English dùng en-GB, vẫn VND và giờ Việt Nam. Không có migration hoặc thay đổi dữ liệu cloud.
+
+### Bằng chứng local
+
+- `npm test`: **187/187** qua trên 22 file. Kiểm tra khóa/tham số dịch, namespace, đủ bài và anchor Help Anh/Việt, định dạng tiền lớn/số lượng chính xác, parser phân nhóm/thập phân, metadata lỗi và CSV giữ dữ liệu người dùng/chống công thức.
+- `npm run test:db`: **67/67** qua trên 11 file, PostgreSQL local cô lập với role/RLS thực. Không dùng database cloud để thử ghi.
+- `TEST_WEBKIT=1 TEST_FIREFOX=1 npm run test:e2e -- tests/browser/localization.spec.ts --output=artifacts/localization-verified`: **28/28** qua, một lượt sạch trên Chromium desktop, Chromium iPhone mô phỏng, Firefox desktop và WebKit iPhone mô phỏng. Mỗi cấu hình kiểm tra 5 theme × 3 mode × 2 ngôn ngữ, bàn phím radio, reload/SSR, nhiều tab, storage bị chặn, giao diện từ 320px, mọi trang và Help, giữ tên/ghi chú, bản nháp số lỗi theo ngôn ngữ lúc nhập, trạng thái chưa xác nhận ghi và retry cùng ID. Kiểm tra trang công khai/đăng nhập vẫn tiếng Việt, preview không gọi API tài chính.
+- `TEST_WEBKIT=1 TEST_FIREFOX=1 npm run test:e2e -- tests/browser/localized-gold.spec.ts --output=artifacts/localized-gold-browser`: **4/4** qua. Tạo danh mục vàng bằng English với nhãn `chi`/`luong/tael` nhưng lưu enum `chỉ`/`lượng/cây`; đổi locale trong form giữ lượng `1.25`/`1,25`, request gửi `1.25` và giá trị VND đối chiếu chính xác. Chỉ dịch nhãn option, không dịch giá trị hợp đồng dữ liệu.
+- `npm run test:e2e -- expenses.spec.ts income.spec.ts savings.spec.ts investments.spec.ts funds.spec.ts profile.spec.ts backup.spec.ts help.spec.ts landing.spec.ts dialogs.spec.ts --output=artifacts/localization-regression-verified`: **124/124** qua trong lượt sạch desktop/mobile. Bao gồm nhập/sửa/xóa, lịch sử, chốt/mở lại, xung đột/retry, backup/restore, nested dialogs/focus/scroll, Auth/origin/owner và landing độc lập dữ liệu.
+- TypeScript strict/typegen và production build Next.js 16.4.1/Node 22.12.0 qua. Browser runner tạo checkout riêng dưới `artifacts/`, build `next build --webpack` rồi chạy `next start`; giữ server phát triển hiện có trên cổng 3000. Log build: `artifacts/localization-next-verified.log`, `artifacts/localization-regression-verified-next.log`, `artifacts/localized-gold-next.log`.
+- Dữ liệu và Auth là mẫu/double local. Fallback service worker được kiểm tra với kết nối tắt thật trong Chromium/WebKit; Firefox xác nhận cache rồi thực thi tài liệu offline bằng mô phỏng response vì Playwright Firefox chặn navigation trước service worker khi bật offline. Cache vẫn chỉ chứa `/offline.html`; không có nhập/đồng bộ tài chính offline.
+
+Ảnh kiểm tra nằm tại `artifacts/localization/settings-{desktop,mobile,firefox,webkit}.png`. Các thư mục output riêng lưu `.last-run.json` và trace lỗi nếu có; các lượt sạch cuối đều không có failed tests. Những lượt dò lỗi ban đầu không được tính thành bằng chứng pass: đã sửa lỗi thông báo field chưa có nội dung, khôi phục lựa chọn sau storage bị chặn, giữ ID cột qua locale và tách nhãn đơn vị vàng khỏi giá trị lưu.
+
+Đã rà soát/cập nhật catalog, landing/preview cố định, README, kiến trúc, UX, theme, Help và các đặc tả liên quan. Source implementation và kiểm chứng mô phỏng local không chứng minh deploy, Supabase Auth/email thật, cài PWA thật hoặc thiết bị vật lý.
+
+## Bố cục mobile, tab và vùng cuộn bảng — 23/10/2026
+
+Sửa bốn nhóm lỗi từ phản ánh Thu nhập và áp dụng cho các thành phần tương ứng toàn ứng dụng: mũi tên hai đầu bộ chọn kỳ, tab một hàng cuộn ngang, hàng nhập thiếu không nở do padding và toolbar cột đứng ngoài vùng cuộn dữ liệu. Đồng thời sửa đồng bộ hiển thị số hợp lệ khi blur (`000777` → `777`), giữ nguyên bản nháp lỗi. Xem [ma trận rà soát](features/layout-scroll-2026-10-23.md).
+
+- `npm test`: **187/187** qua trên 22 file ở source hiện tại. `npm run typecheck`: qua.
+- Production build Next.js 16.4.1/Node 22.12.0 trong runner cô lập qua, chạy bằng `next start`. Log bản kiểm chứng sau gián đoạn: `artifacts/layout-scroll-resumed-next.log`. Các lượt gián đoạn hoặc đang dò selector không được tính thành lượt pass đầy đủ.
+- Rà soát/cập nhật catalog và bản dịch, FAQ landing, preview cố định, README, kiến trúc, UX, đặc tả Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ/landing và ngôn ngữ. Kiểm tra liên kết tài liệu liên quan: **108 liên kết / 12 file**, không có liên kết hỏng. Giữ lịch sử validation các ngày trước.
+
+Môi trường kiểm thử dùng production build, PostgreSQL/Auth double và tài khoản/dữ liệu tổng hợp local riêng. Không ghi/reset dữ liệu cloud. Bằng chứng local không xác nhận triển khai cloud, Supabase Auth/email thật hoặc thiết bị vật lý.

@@ -1,11 +1,6 @@
 "use client";
-import {
-  Pencil as EditActionIcon,
-  Trash2 as DeleteActionIcon,
-} from "lucide-react";
-import { Palette, Settings2, Archive, Plus } from "lucide-react";
-import { LabelName } from "./label-visual";
-import { useMoney } from "@/components/privacy";
+import { useI18n } from "@/i18n/provider";
+
 import {
   DialogFacts,
   DialogList,
@@ -14,10 +9,19 @@ import {
   DialogTabs,
   dateLabel,
 } from "@/components/dialog-content";
+import { useMoney } from "@/components/privacy";
 import type { ExpenseBook, ExpenseRow } from "@/domain/expenses/types";
-import { ExpenseModal } from "./modal";
+import {
+  Archive,
+  Trash2 as DeleteActionIcon,
+  Pencil as EditActionIcon,
+  Palette,
+  Settings2,
+} from "lucide-react";
 import type { EditorMode } from "./editor";
 import { monthName } from "./format";
+import { LabelName } from "./label-visual";
+import { ExpenseModal } from "./modal";
 
 const actionNames: Record<string, string> = {
   createJar: "Tạo hũ",
@@ -45,6 +49,9 @@ export function ExpenseDetails({
   onClose(): void;
   onEdit(mode: EditorMode): void;
 }) {
+  const { t: tr, locale, numberLocale, config: localize } = useI18n("expenses");
+  const localizedActionNames = localize(actionNames);
+
   const money = useMoney();
   const months = yearRows
     .filter((r) => r.jarId === row.jarId)
@@ -69,32 +76,34 @@ export function ExpenseDetails({
     <ExpenseModal
       title={row.name}
       size="detail"
-      description={`${monthName(row.month)} · ${row.kind === "monthly" ? "Chi trong tháng" : "Tích lũy"}`}
+      description={`${monthName(row.month, locale)} · ${row.kind === "monthly" ? tr("Chi trong tháng") : tr("Tích lũy")}`}
       onClose={onClose}
     >
       <DialogSummary
         label={
           row.status === "planned"
-            ? "Còn lại theo kế hoạch"
-            : "Còn lại trong hũ"
+            ? tr("Còn lại theo kế hoạch")
+            : tr("Còn lại trong hũ")
         }
         value={money(row.closing)}
       >
         <DialogFacts
           items={[
-            { label: "Mức tháng", value: money(row.target) },
+            { label: tr("Mức tháng"), value: money(row.target) },
             {
-              label: "Đã bỏ hũ",
+              label: tr("Đã bỏ hũ"),
               value: money(
                 (BigInt(row.funding) + BigInt(row.extra)).toString(),
               ),
             },
-            { label: "Thực chi", value: money(row.spent) },
+            { label: tr("Thực chi"), value: money(row.spent) },
           ]}
         />
         {row.status !== "actual" && (
           <p className="expense-muted">
-            {row.status === "planned" ? "Tháng kế hoạch" : "Số liệu tạm tính"}
+            {row.status === "planned"
+              ? tr("Tháng kế hoạch")
+              : tr("Số liệu tạm tính")}
           </p>
         )}
       </DialogSummary>
@@ -104,52 +113,54 @@ export function ExpenseDetails({
           className="expense-secondary"
           onClick={() => onEdit({ mode: "spend", row })}
         >
-          Ghi lần sử dụng
+          {tr("Ghi lần sử dụng")}
         </button>
       )}
       <DialogTabs
         tabs={[
           {
             id: "months",
-            label: "Theo tháng",
+            label: tr("Theo tháng"),
             count: months.length,
             content: (
               <DialogList
                 items={months}
                 rowKey={(r) => r.month}
-                label={`Các tháng trong năm ${year}`}
+                label={tr("Các tháng trong năm {0}", { 0: year })}
                 columns={[
                   {
-                    label: "Tháng",
+                    label: tr("Tháng"),
                     render: (r) => (
                       <>
-                        {dateLabel(r.month)}
+                        {dateLabel(r.month, locale)}
                         {r.status !== "actual" && (
                           <p className="expense-muted">
-                            {r.status === "planned" ? "Kế hoạch" : "Tạm tính"}
+                            {r.status === "planned"
+                              ? tr("Kế hoạch")
+                              : tr("Tạm tính")}
                           </p>
                         )}
                       </>
                     ),
                   },
                   {
-                    label: "Mức tháng",
+                    label: tr("Mức tháng"),
                     numeric: true,
                     render: (r) => money(r.target),
                   },
                   {
-                    label: "Bỏ hũ",
+                    label: tr("Bỏ hũ"),
                     numeric: true,
                     render: (r) =>
                       money((BigInt(r.funding) + BigInt(r.extra)).toString()),
                   },
                   {
-                    label: "Thực chi",
+                    label: tr("Thực chi"),
                     numeric: true,
                     render: (r) => money(r.spent),
                   },
                   {
-                    label: "Còn lại",
+                    label: tr("Còn lại"),
                     numeric: true,
                     render: (r) => <strong>{money(r.closing)}</strong>,
                   },
@@ -161,45 +172,50 @@ export function ExpenseDetails({
             ? [
                 {
                   id: "spends",
-                  label: "Các lần sử dụng",
+                  label: tr("Các lần sử dụng"),
                   count: spends.filter((s) => !s.deleted).length,
                   content: (
                     <DialogList
                       items={spends}
                       rowKey={(s) => s.id}
-                      label={`Các lần sử dụng · ${year}`}
+                      label={tr("Các lần sử dụng · {0}", { 0: year })}
                       searchText={(s) => s.note}
                       getDate={(s) => s.date}
                       filters={[
                         {
-                          label: "Trạng thái",
+                          label: tr("Trạng thái"),
                           initial: "active",
                           value: (s) => (s.deleted ? "deleted" : "active"),
                           options: [
-                            { value: "active", label: "Đang có hiệu lực" },
-                            { value: "", label: "Tất cả" },
-                            { value: "deleted", label: "Đã xóa" },
+                            { value: "active", label: tr("Đang có hiệu lực") },
+                            { value: "", label: tr("Tất cả") },
+                            { value: "deleted", label: tr("Đã xóa") },
                           ],
                         },
                       ]}
                       columns={[
-                        { label: "Ngày", render: (s) => dateLabel(s.date) },
                         {
-                          label: "Nội dung",
+                          label: tr("Ngày"),
+                          render: (s) => dateLabel(s.date, locale),
+                        },
+                        {
+                          label: tr("Nội dung"),
                           render: (s) => (
                             <>
-                              <DialogNote text={s.note || "Không có ghi chú"} />
-                              {s.deleted && <p>Đã xóa</p>}
+                              <DialogNote
+                                text={s.note || tr("Không có ghi chú")}
+                              />
+                              {s.deleted && <p>{tr("Đã xóa")}</p>}
                             </>
                           ),
                         },
                         {
-                          label: "Số tiền",
+                          label: tr("Số tiền"),
                           numeric: true,
                           render: (s) => <strong>{money(s.amount)}</strong>,
                         },
                         {
-                          label: "Thao tác",
+                          label: tr("Thao tác"),
                           render: (s) =>
                             !readonly && !s.deleted ? (
                               <div className="expense-actions">
@@ -209,8 +225,8 @@ export function ExpenseDetails({
                                   onClick={() =>
                                     onEdit({ mode: "spend", row, spend: s })
                                   }
-                                  aria-label="Sửa"
-                                  title="Sửa"
+                                  aria-label={tr("Sửa")}
+                                  title={tr("Sửa")}
                                 >
                                   <EditActionIcon
                                     size={18}
@@ -223,8 +239,8 @@ export function ExpenseDetails({
                                   onClick={() =>
                                     onEdit({ mode: "deleteSpend", spend: s })
                                   }
-                                  aria-label="Xóa"
-                                  title="Xóa"
+                                  aria-label={tr("Xóa")}
+                                  title={tr("Xóa")}
                                 >
                                   <DeleteActionIcon
                                     size={18}
@@ -244,29 +260,31 @@ export function ExpenseDetails({
             : []),
           {
             id: "audit",
-            label: "Lịch sử thay đổi",
+            label: tr("Lịch sử thay đổi"),
             count: audit.length,
             content: (
               <DialogList
                 items={audit}
                 rowKey={(a) => String(a.version)}
-                label="Lịch sử thay đổi"
-                searchText={(a) => actionNames[a.action] ?? a.action}
+                label={tr("Lịch sử thay đổi")}
+                searchText={(a) => localizedActionNames[a.action] ?? a.action}
                 columns={[
                   {
-                    label: "Thời điểm",
+                    label: tr("Thời điểm"),
                     render: (a) =>
-                      new Date(a.at).toLocaleString("vi-VN", {
+                      new Date(a.at).toLocaleString(numberLocale, {
                         timeZone: "Asia/Ho_Chi_Minh",
                       }),
                   },
                   {
-                    label: "Thay đổi",
+                    label: tr("Thay đổi"),
                     render: (a) => (
-                      <strong>{actionNames[a.action] ?? a.action}</strong>
+                      <strong>
+                        {localizedActionNames[a.action] ?? a.action}
+                      </strong>
                     ),
                   },
-                  { label: "Lần ghi", render: (a) => `#${a.version}` },
+                  { label: tr("Lần ghi"), render: (a) => `#${a.version}` },
                 ]}
               />
             ),
@@ -274,8 +292,8 @@ export function ExpenseDetails({
         ]}
       />
       <details className="dialog-secondary-section" open>
-        <summary>Thông tin và quản lý hũ</summary>
-        <DialogNote text={row.description || "Chưa có mô tả."} />
+        <summary>{tr("Thông tin và quản lý hũ")}</summary>
+        <DialogNote text={row.description || tr("Chưa có mô tả.")} />
         <p className="expense-muted">
           <LabelName name={row.method} labels={book.labels} />
           {row.group && (
@@ -293,7 +311,7 @@ export function ExpenseDetails({
               onClick={() => onEdit({ mode: "emoji", row })}
             >
               <Palette size={18} aria-hidden="true" />
-              Đổi biểu tượng
+              {tr("Đổi biểu tượng")}
             </button>
             <button
               type="button"
@@ -301,7 +319,7 @@ export function ExpenseDetails({
               onClick={() => onEdit({ mode: "configure", row })}
             >
               <Settings2 size={18} aria-hidden="true" />
-              Sửa hũ / mức mặc định
+              {tr("Sửa hũ / mức mặc định")}
             </button>
             {row.active && (
               <button
@@ -310,7 +328,7 @@ export function ExpenseDetails({
                 onClick={() => onEdit({ mode: "stop", row })}
               >
                 <Archive size={18} aria-hidden="true" />
-                Ngừng cấp tiền
+                {tr("Ngừng cấp tiền")}
               </button>
             )}
           </div>
@@ -329,12 +347,16 @@ export function ExpenseLabels({
   onClose(): void;
   onEdit(mode: EditorMode): void;
 }) {
+  const { t: tr } = useI18n("expenses");
+
   return (
     <ExpenseModal
-      title="Phương thức và nhóm"
+      title={tr("Phương thức và nhóm")}
       stableTabs
       size="detail"
-      description="Danh sách lựa chọn khi thêm hũ. Các hũ giữ phân loại theo từng tháng."
+      description={tr(
+        "Danh sách lựa chọn khi thêm hũ. Các hũ giữ phân loại theo từng tháng.",
+      )}
       onClose={onClose}
       footer={
         <div className="expense-actions">
@@ -343,7 +365,7 @@ export function ExpenseLabels({
             className="expense-primary"
             onClick={() => onEdit({ mode: "label" })}
           >
-            Thêm phân loại
+            {tr("Thêm phân loại")}
           </button>
         </div>
       }
@@ -351,17 +373,19 @@ export function ExpenseLabels({
       <DialogTabs
         tabs={(["method", "group"] as const).map((kind) => ({
           id: kind,
-          label: kind === "method" ? "Phương thức" : "Nhóm mục đích",
+          label: kind === "method" ? tr("Phương thức") : tr("Nhóm mục đích"),
           count: book.labels.filter((l) => l.kind === kind).length,
           content: (
             <DialogList
               items={book.labels.filter((l) => l.kind === kind)}
               rowKey={(l) => l.id}
-              label={kind === "method" ? "Phương thức" : "Nhóm mục đích"}
+              label={
+                kind === "method" ? tr("Phương thức") : tr("Nhóm mục đích")
+              }
               searchText={(l) => l.name}
               columns={[
                 {
-                  label: "Tên",
+                  label: tr("Tên"),
                   render: (l) => (
                     <strong>
                       <LabelName
@@ -373,15 +397,15 @@ export function ExpenseLabels({
                   ),
                 },
                 {
-                  label: "Thao tác",
+                  label: tr("Thao tác"),
                   render: (l) => (
                     <div className="expense-actions">
                       <button
                         type="button"
                         className="expense-secondary icon-action action-edit"
                         onClick={() => onEdit({ mode: "label", label: l })}
-                        aria-label="Sửa"
-                        title="Sửa"
+                        aria-label={tr("Sửa")}
+                        title={tr("Sửa")}
                       >
                         <EditActionIcon size={18} aria-hidden="true" />
                       </button>
@@ -391,8 +415,8 @@ export function ExpenseLabels({
                         onClick={() =>
                           onEdit({ mode: "deleteLabel", label: l })
                         }
-                        aria-label="Xóa"
-                        title="Xóa"
+                        aria-label={tr("Xóa")}
+                        title={tr("Xóa")}
                       >
                         <DeleteActionIcon size={18} aria-hidden="true" />
                       </button>

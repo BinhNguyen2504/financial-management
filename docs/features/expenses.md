@@ -97,3 +97,11 @@ Hướng dẫn “chia trước, chi sau”, hũ chi tháng/tích lũy, phương
 ## Phản hồi nhập liệu — 21/10/2026
 
 Các ô tiền của hũ, chi tích lũy và điều chỉnh kỳ đọc số VND ngay dưới ô, có gợi ý khi trống và che theo chế độ riêng tư. Dấu `*` sát nhãn; lỗi nhập sai hiển thị tại ô và được nối bằng `aria-describedby`. Toast chỉ báo sau ghi nhận, giữ bản nháp nếu ghi chưa rõ; header/footer dialog ổn định khi cuộn.
+
+## Anh/Việt — 22/10/2026
+
+Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định dạng vi-VN/en-GB, vẫn VND và giờ Việt Nam. Tên/ghi chú và dữ liệu tài chính giữ nguyên. Không có migration hay đổi cấu trúc backup. Xem [đặc tả ngôn ngữ](localization.md).
+
+## Bố cục và cuộn — 23/10/2026
+
+Thanh nội dung và kiểu báo cáo dùng tab ngang. Bảng báo cáo/tổng kết dùng scroller chung; toolbar cột giữ vị trí theo khung. Bảng số liệu biểu đồ vẫn cuộn riêng. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).

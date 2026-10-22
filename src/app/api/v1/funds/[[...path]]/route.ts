@@ -1,13 +1,13 @@
-import { fieldErrorsFromIssues } from "@/lib/field-errors";
-import { NextResponse } from "next/server";
-import { ZodError } from "zod";
-import { authenticatedOwner } from "@/server/auth";
-import { fundRepository } from "@/server/database";
 import { readFundView, runFundCommand } from "@/application/funds";
 import { ExpenseError, vietnamClock } from "@/domain/expenses/engine";
 import { FundError } from "@/domain/funds/engine";
 import { commandSchema } from "@/domain/funds/schema";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import { authenticatedOwner } from "@/server/auth";
+import { fundRepository } from "@/server/database";
+import { jsonResponse } from "@/server/json-response";
 import { sameOrigin } from "@/server/request-origin";
+import { ZodError } from "zod";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const headers = {
@@ -18,12 +18,12 @@ const headers = {
 type Context = { params: Promise<{ path?: string[] }> };
 function failure(error: unknown) {
   if (error instanceof FundError || error instanceof ExpenseError)
-    return NextResponse.json(
+    return jsonResponse(
       { error: error.message, code: error.code },
       { status: error.status, headers },
     );
   if (error instanceof ZodError)
-    return NextResponse.json(
+    return jsonResponse(
       {
         error: Object.values(fieldErrorsFromIssues(error.issues)).join("; "),
         code: "INVALID_INPUT",
@@ -34,7 +34,7 @@ function failure(error: unknown) {
   console.error("Fund API failed", {
     name: error instanceof Error ? error.name : "UnknownError",
   });
-  return NextResponse.json(
+  return jsonResponse(
     {
       error:
         "Không thể truy cập dữ liệu. Kiểm tra kết nối rồi thử lại; nội dung đang nhập được giữ.",
@@ -48,7 +48,7 @@ export async function GET(request: Request, context: Context) {
     const owner = await authenticatedOwner(request);
     if ((await context.params).path?.length)
       throw new FundError("Đường dẫn không tồn tại.", 404);
-    return NextResponse.json(
+    return jsonResponse(
       await readFundView(fundRepository(), owner, vietnamClock()),
       { headers },
     );
@@ -81,7 +81,7 @@ export async function POST(request: Request, context: Context) {
       vietnamClock(),
       path === "preview",
     );
-    return NextResponse.json(result, { headers });
+    return jsonResponse(result, { headers });
   } catch (error) {
     return failure(error);
   }

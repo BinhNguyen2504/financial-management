@@ -1,4 +1,8 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
+
+import type { Locale } from "@/i18n/locale";
+import { translator } from "@/i18n/translate";
 import { AlertCircle } from "lucide-react";
 
 export type FieldErrors = Record<string, string>;
@@ -12,7 +16,10 @@ export function focusFirstInvalid(
     input?.scrollIntoView({ block: "center", behavior: "instant" });
   });
 }
-export function nativeErrors(form: HTMLFormElement): FieldErrors {
+export function nativeErrors(
+  form: HTMLFormElement,
+  locale: Locale = "vi",
+): FieldErrors {
   const errors: FieldErrors = {};
   for (const input of Array.from(form.elements)) {
     if (
@@ -39,7 +46,8 @@ export function nativeErrors(form: HTMLFormElement): FieldErrors {
             : input.validity.rangeOverflow && input instanceof HTMLInputElement
               ? `Giá trị không được vượt ${input.max}.`
               : "Giá trị chưa đúng định dạng. Kiểm tra hướng dẫn bên dưới.";
-      errors[input.name || input.id] = `${label}: ${message}`;
+      errors[input.name || input.id] =
+        `${label}: ${translator(locale)(message)}`;
     }
   }
   return errors;
@@ -51,13 +59,15 @@ export function FormErrorSummary({
   errors: FieldErrors;
   prefix: string;
 }) {
+  const { t: tr } = useI18n();
+
   const entries = Object.entries(errors).filter(([, message]) => !!message);
   if (!entries.length) return null;
   return (
     <div className="form-error-summary" role="alert" tabIndex={-1}>
       <strong>
         <AlertCircle size={18} aria-hidden="true" />
-        Kiểm tra thông tin được đánh dấu
+        {tr("Kiểm tra thông tin được đánh dấu")}
       </strong>
       <ul>
         {entries.map(([key, message]) => (
@@ -69,7 +79,7 @@ export function FormErrorSummary({
                 document.getElementById(`${prefix}${key}`)?.focus();
               }}
             >
-              {message}
+              {tr(message)}
             </a>
           </li>
         ))}

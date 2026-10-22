@@ -1,8 +1,20 @@
 "use client";
+import { LanguagePicker } from "@/i18n/language-picker";
+import { useI18n } from "@/i18n/provider";
+
+import { LoadingSpinner, LoadingStatus } from "@/components/loading";
+import { useToast } from "@/components/toast";
+import { ThemePicker } from "@/components/ui-preferences";
+import {
+  BackupError,
+  parseBackup,
+  type FullBackup,
+  type summarizeBackup,
+} from "@/domain/backup/format";
 import { HelpButton, HelpPageTitle } from "@/features/help/provider";
-import { LoadingStatus, LoadingSpinner } from "@/components/loading";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { profileSchema } from "@/features/profile/fields";
+import { useUser } from "@/features/profile/user-provider";
+import { browserAuth } from "@/lib/supabase/browser";
 import {
   ArrowRight,
   Check,
@@ -14,20 +26,11 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { useUser } from "@/features/profile/user-provider";
-import { profileSchema } from "@/features/profile/fields";
-import { browserAuth } from "@/lib/supabase/browser";
-import {
-  parseBackup,
-  BackupError,
-  type FullBackup,
-  type summarizeBackup,
-} from "@/domain/backup/format";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { dataRequest, DataRequestError, type DataStatus } from "./api";
-import "./settings.css";
-import { ThemePicker } from "@/components/ui-preferences";
-import { useToast } from "@/components/toast";
 import { InstallGuide } from "./install-guide";
+import "./settings.css";
 
 type Summary = ReturnType<typeof summarizeBackup> & { canImport: boolean };
 type PreparedFile = { url: string; name: string; size: number };
@@ -43,6 +46,8 @@ function period(value: string | null) {
   return value.split("-").reverse().join("/");
 }
 export function SettingsWorkspace() {
+  const { t: tr, numberLocale } = useI18n("settings");
+
   const toast = useToast();
   const {
     user,
@@ -167,7 +172,9 @@ export function SettingsWorkspace() {
       if (owner.current === downloadOwner)
         setExportError(
           e instanceof SyntaxError || e instanceof BackupError
-            ? "Chưa nhận được file JSON hợp lệ. Hãy tải lại trang và thử lại."
+            ? tr(
+                "Chưa nhận được file JSON hợp lệ. Hãy tải lại trang và thử lại.",
+              )
             : message(e),
         );
     } finally {
@@ -193,7 +200,7 @@ export function SettingsWorkspace() {
     setBusy("preview");
     try {
       if (file.size > status.maxBytes)
-        throw new Error("File vượt giới hạn dung lượng hiện tại.");
+        throw new Error(tr("File vượt giới hạn dung lượng hiện tại."));
       const parsed = parseBackup(JSON.parse(await file.text()));
       const preview: Summary = await (
         await dataRequest("/import/preview", {
@@ -207,7 +214,9 @@ export function SettingsWorkspace() {
       requestId.current = crypto.randomUUID();
       if (!preview.canImport)
         setImportError(
-          "Chưa thể khôi phục vào tài khoản này. Kiểm tra trạng thái tài khoản rồi thử lại.",
+          tr(
+            "Chưa thể khôi phục vào tài khoản này. Kiểm tra trạng thái tài khoản rồi thử lại.",
+          ),
         );
     } catch (e) {
       if (owner.current === selectedOwner) setImportError(message(e));
@@ -225,18 +234,22 @@ export function SettingsWorkspace() {
       user.id !== status?.ownerId ||
       owner.current !== user.id
     )
-      throw new Error("Phiên đăng nhập đã thay đổi. Hãy tải lại trang.");
+      throw new Error(tr("Phiên đăng nhập đã thay đổi. Hãy tải lại trang."));
     const parsed = profileSchema.safeParse(backup.profile);
     if (!parsed.success)
       throw new Error(
-        "Dữ liệu tài chính đã khôi phục. Hồ sơ chưa đầy đủ; hãy cập nhật trong Thông tin cá nhân.",
+        tr(
+          "Dữ liệu tài chính đã khôi phục. Hồ sơ chưa đầy đủ; hãy cập nhật trong Thông tin cá nhân.",
+        ),
       );
     const { data, error } = await browserAuth().auth.updateUser({
       data: parsed.data,
     });
     if (error || !data.user)
       throw new Error(
-        "Dữ liệu tài chính đã khôi phục. Chưa lưu được hồ sơ; hãy thử lại riêng bước hồ sơ.",
+        tr(
+          "Dữ liệu tài chính đã khôi phục. Chưa lưu được hồ sơ; hãy thử lại riêng bước hồ sơ.",
+        ),
       );
     if (owner.current !== user.id) return;
     update(data.user);
@@ -253,7 +266,7 @@ export function SettingsWorkspace() {
     let writing = false;
     try {
       if (user?.id !== destination || owner.current !== destination)
-        throw new Error("Phiên đăng nhập đã thay đổi. Hãy tải lại trang.");
+        throw new Error(tr("Phiên đăng nhập đã thay đổi. Hãy tải lại trang."));
       writing = true;
       await dataRequest("/import", {
         method: "POST",
@@ -265,17 +278,21 @@ export function SettingsWorkspace() {
       });
       if (owner.current !== destination) return;
       imported = true;
-      toast("success", "Đã khôi phục dữ liệu tài chính.");
+      toast("success", tr("Đã khôi phục dữ liệu tài chính."));
       setComplete(true);
       setStatus((s) => (s ? { ...s, empty: false } : s));
       setImportNotice(
-        "Đã khôi phục toàn bộ dữ liệu tài chính. Bạn có thể mở các module để kiểm tra.",
+        tr(
+          "Đã khôi phục toàn bộ dữ liệu tài chính. Bạn có thể mở các module để kiểm tra.",
+        ),
       );
       if (restoreProfile) {
         setProfilePending(true);
         await applyProfile();
         if (owner.current === destination)
-          setImportNotice("Đã khôi phục dữ liệu tài chính và hồ sơ cá nhân.");
+          setImportNotice(
+            tr("Đã khôi phục dữ liệu tài chính và hồ sơ cá nhân."),
+          );
       }
     } catch (e) {
       if (owner.current === destination) {
@@ -287,15 +304,17 @@ export function SettingsWorkspace() {
             e.status >= 500);
         setImportError(
           uncertain
-            ? "Chưa xác nhận kết quả khôi phục. Giữ bản xem trước và thử lại cùng yêu cầu."
+            ? tr(
+                "Chưa xác nhận kết quả khôi phục. Giữ bản xem trước và thử lại cùng yêu cầu.",
+              )
             : message(e),
         );
         toast(
           imported || uncertain ? "warning" : "error",
           imported
-            ? "Dữ liệu tài chính đã khôi phục; hồ sơ cá nhân chưa lưu được."
+            ? tr("Dữ liệu tài chính đã khôi phục; hồ sơ cá nhân chưa lưu được.")
             : uncertain
-              ? "Chưa xác nhận kết quả khôi phục. Thử lại cùng yêu cầu."
+              ? tr("Chưa xác nhận kết quả khôi phục. Thử lại cùng yêu cầu.")
               : message(e),
         );
       }
@@ -313,8 +332,8 @@ export function SettingsWorkspace() {
     setImportError("");
     try {
       await applyProfile();
-      setImportNotice("Đã khôi phục dữ liệu tài chính và hồ sơ cá nhân.");
-      toast("success", "Đã lưu hồ sơ cá nhân từ bản sao lưu.");
+      setImportNotice(tr("Đã khôi phục dữ liệu tài chính và hồ sơ cá nhân."));
+      toast("success", tr("Đã lưu hồ sơ cá nhân từ bản sao lưu."));
     } catch (e) {
       setImportError(message(e));
       toast("error", message(e));
@@ -344,27 +363,30 @@ export function SettingsWorkspace() {
   return (
     <div className="settings-workspace">
       <header className="settings-heading">
-        <p className="eyebrow">KHÔNG GIAN CỦA BẠN</p>
-        <HelpPageTitle>Cài đặt</HelpPageTitle>
+        <p className="eyebrow">{tr("KHÔNG GIAN CỦA BẠN")}</p>
+        <HelpPageTitle>{tr("Cài đặt")}</HelpPageTitle>
         <p className="lead">
-          Quản lý dữ liệu của bạn và cách sử dụng ứng dụng.
+          {tr("Quản lý dữ liệu của bạn và cách sử dụng ứng dụng.")}
         </p>
       </header>
       <section className="settings-data" aria-labelledby="data-heading">
         <div className="settings-section-heading">
-          <h2 id="data-heading">Sao lưu và khôi phục</h2>
+          <h2 id="data-heading">{tr("Sao lưu và khôi phục")}</h2>
           <HelpButton
             pageId="settings"
             sectionId="restore"
-            label="Điều kiện khôi phục"
+            label={tr("Điều kiện khôi phục")}
           />
           <p>
-            Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn — cùng toàn bộ
-            lịch sử và các kỳ đã chốt.
+            {tr(
+              "Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn — cùng toàn bộ lịch sử và các kỳ đã chốt.",
+            )}
           </p>
         </div>
         {checking && !userError && (
-          <LoadingStatus>Đang kiểm tra trạng thái dữ liệu…</LoadingStatus>
+          <LoadingStatus>
+            {tr("Đang kiểm tra trạng thái dữ liệu…")}
+          </LoadingStatus>
         )}
         {(statusError || userError) && (
           <div className="settings-feedback settings-feedback-error">
@@ -375,7 +397,7 @@ export function SettingsWorkspace() {
               onClick={() => void (userError ? reloadUser() : reloadStatus())}
             >
               <RefreshCw size={16} aria-hidden="true" />
-              Thử kết nối lại
+              {tr("Thử kết nối lại")}
             </button>
           </div>
         )}
@@ -389,13 +411,14 @@ export function SettingsWorkspace() {
                 <Download size={22} aria-hidden="true" />
               </span>
               <div>
-                <h3 id="backup-heading">Sao lưu dữ liệu</h3>
-                <p>Giữ một bản để có thể bắt đầu lại.</p>
+                <h3 id="backup-heading">{tr("Sao lưu dữ liệu")}</h3>
+                <p>{tr("Giữ một bản để có thể bắt đầu lại.")}</p>
               </div>
             </div>
             <p>
-              Tải toàn bộ dữ liệu thành một file JSON, lưu ở nơi bạn có thể truy
-              cập khi mất tài khoản.
+              {tr(
+                "Tải toàn bộ dữ liệu thành một file JSON, lưu ở nơi bạn có thể truy cập khi mất tài khoản.",
+              )}
             </p>
             <div className="settings-actions">
               <button
@@ -414,14 +437,15 @@ export function SettingsWorkspace() {
                 ) : (
                   <Download size={18} aria-hidden="true" />
                 )}
-                {busy === "export" ? "Đang xuất…" : "Tải bản sao lưu"}
+                {busy === "export" ? tr("Đang xuất…") : tr("Tải bản sao lưu")}
               </button>
             </div>
             <p className="settings-hint" id="backup-safety">
               <ShieldCheck size={16} aria-hidden="true" />
               <span>
-                File không có mật khẩu và chứa số tiền đầy đủ, kể cả khi đang
-                che tiền. Không kèm email hay thông tin đăng nhập.
+                {tr(
+                  "File không có mật khẩu và chứa số tiền đầy đủ, kể cả khi đang che tiền. Không kèm email hay thông tin đăng nhập.",
+                )}
               </span>
             </p>
             {exportError && (
@@ -429,29 +453,29 @@ export function SettingsWorkspace() {
                 className="settings-feedback settings-feedback-error"
                 id="export-error"
               >
-                <p role="alert">{exportError}</p>
-                <p>Chưa tạo được file. Bạn có thể thử tải lại.</p>
+                <p role="alert">{tr(exportError)}</p>
+                <p>{tr("Chưa tạo được file. Bạn có thể thử tải lại.")}</p>
               </div>
             )}
             {prepared && (
               <div className="settings-feedback settings-download-ready">
                 <p role="status">
                   <Check size={17} aria-hidden="true" />
-                  Bản sao lưu đã sẵn sàng.
+                  {tr("Bản sao lưu đã sẵn sàng.")}
                 </p>
-                <p>Nếu trình duyệt chưa tải, chọn liên kết bên dưới.</p>
+                <p>{tr("Nếu trình duyệt chưa tải, chọn liên kết bên dưới.")}</p>
                 <a
                   className="expense-secondary"
                   href={prepared.url}
                   download={prepared.name}
                 >
                   <FileJson size={17} aria-hidden="true" />
-                  Lưu file JSON
+                  {tr("Lưu file JSON")}
                 </a>
                 <small className="settings-file-name">
                   {prepared.name} ·{" "}
                   {Math.max(1, Math.ceil(prepared.size / 1024)).toLocaleString(
-                    "vi-VN",
+                    numberLocale,
                   )}{" "}
                   KB
                 </small>
@@ -468,13 +492,14 @@ export function SettingsWorkspace() {
                 <Upload size={22} aria-hidden="true" />
               </span>
               <div>
-                <h3 id="import-heading">Khôi phục dữ liệu</h3>
-                <p>Dùng bản sao lưu từ tài khoản trước.</p>
+                <h3 id="import-heading">{tr("Khôi phục dữ liệu")}</h3>
+                <p>{tr("Dùng bản sao lưu từ tài khoản trước.")}</p>
               </div>
             </div>
             <p>
-              Chọn file JSON đã xuất từ Cài đặt, kiểm tra nội dung rồi xác nhận.
-              Chỉ khôi phục vào tài khoản chưa có dữ liệu.
+              {tr(
+                "Chọn file JSON đã xuất từ Cài đặt, kiểm tra nội dung rồi xác nhận. Chỉ khôi phục vào tài khoản chưa có dữ liệu.",
+              )}
             </p>
             <input
               ref={fileInput}
@@ -483,7 +508,7 @@ export function SettingsWorkspace() {
               type="file"
               hidden
               accept=".json,application/json"
-              aria-label="Chọn file JSON sao lưu toàn tài khoản"
+              aria-label={tr("Chọn file JSON sao lưu toàn tài khoản")}
               aria-invalid={!!importError && !summary}
               aria-describedby={
                 importError && !summary ? "import-error" : undefined
@@ -493,25 +518,30 @@ export function SettingsWorkspace() {
             />
             {importUnavailable ? (
               <div className="settings-feedback">
-                <p>Khôi phục chưa được bật trên hệ thống này.</p>
-                <p>Bạn vẫn có thể tải bản sao lưu và giữ file để dùng sau.</p>
+                <p>{tr("Khôi phục chưa được bật trên hệ thống này.")}</p>
+                <p>
+                  {tr(
+                    "Bạn vẫn có thể tải bản sao lưu và giữ file để dùng sau.",
+                  )}
+                </p>
                 <button
                   className="expense-secondary"
                   disabled={checking || !!busy}
                   onClick={() => void reloadStatus()}
                 >
-                  Kiểm tra lại
+                  {tr("Kiểm tra lại")}
                 </button>
               </div>
             ) : !status?.empty && status && !complete ? (
               <div className="settings-feedback">
                 <p className="settings-state-label">
                   <ShieldCheck size={17} aria-hidden="true" />
-                  Tài khoản đang có dữ liệu
+                  {tr("Tài khoản đang có dữ liệu")}
                 </p>
                 <p>
-                  Để tránh ghi đè, hãy đăng nhập một tài khoản mới chưa có dữ
-                  liệu trước khi khôi phục.
+                  {tr(
+                    "Để tránh ghi đè, hãy đăng nhập một tài khoản mới chưa có dữ liệu trước khi khôi phục.",
+                  )}
                 </p>
               </div>
             ) : (
@@ -519,19 +549,21 @@ export function SettingsWorkspace() {
                 <>
                   <ol
                     className="settings-import-steps"
-                    aria-label="Các bước khôi phục"
+                    aria-label={tr("Các bước khôi phục")}
                   >
-                    {["Chọn file", "Kiểm tra", "Khôi phục"].map((label, i) => (
-                      <li
-                        key={label}
-                        aria-current={
-                          (summary ? 1 : 0) === i ? "step" : undefined
-                        }
-                      >
-                        <span>{i + 1}</span>
-                        {label}
-                      </li>
-                    ))}
+                    {[tr("Chọn file"), tr("Kiểm tra"), tr("Khôi phục")].map(
+                      (label, i) => (
+                        <li
+                          key={label}
+                          aria-current={
+                            (summary ? 1 : 0) === i ? "step" : undefined
+                          }
+                        >
+                          <span>{i + 1}</span>
+                          {label}
+                        </li>
+                      ),
+                    )}
                   </ol>
                   <div className="settings-actions">
                     <button
@@ -543,13 +575,15 @@ export function SettingsWorkspace() {
                       onClick={chooseFile}
                     >
                       <Upload size={17} aria-hidden="true" />
-                      {fileName ? "Chọn file khác" : "Nhập bản sao lưu"}
+                      {fileName ? tr("Chọn file khác") : tr("Nhập bản sao lưu")}
                     </button>
                   </div>
                   {status && (
                     <p className="settings-hint">
-                      File JSON toàn tài khoản · Tối đa{" "}
-                      {(status.maxBytes / 1024 / 1024).toLocaleString("vi-VN")}{" "}
+                      {tr("File JSON toàn tài khoản · Tối đa")}{" "}
+                      {(status.maxBytes / 1024 / 1024).toLocaleString(
+                        numberLocale,
+                      )}{" "}
                       MiB
                     </p>
                   )}
@@ -562,7 +596,7 @@ export function SettingsWorkspace() {
                 <span>{fileName}</span>
                 <button
                   className="expense-secondary settings-icon-button"
-                  aria-label="Bỏ file đã chọn"
+                  aria-label={tr("Bỏ file đã chọn")}
                   disabled={!!busy}
                   onClick={clearFile}
                 >
@@ -575,26 +609,29 @@ export function SettingsWorkspace() {
                 className="settings-feedback settings-feedback-error"
                 id="import-error"
               >
-                <p role="alert">{importError}</p>
+                <p role="alert">{tr(importError)}</p>
               </div>
             )}
             {busy === "preview" && (
-              <LoadingStatus>Đang kiểm tra bản sao lưu…</LoadingStatus>
+              <LoadingStatus>{tr("Đang kiểm tra bản sao lưu…")}</LoadingStatus>
             )}
             {summary && !complete && (
               <div className="backup-summary">
-                <h4>Xem trước bản sao lưu</h4>
+                <h4>{tr("Xem trước bản sao lưu")}</h4>
                 <dl className="backup-metadata">
                   <div>
-                    <dt>Ngày xuất</dt>
+                    <dt>{tr("Ngày xuất")}</dt>
                     <dd>
-                      {new Date(summary.exportedAt).toLocaleString("vi-VN", {
-                        timeZone: "Asia/Ho_Chi_Minh",
-                      })}
+                      {new Date(summary.exportedAt).toLocaleString(
+                        numberLocale,
+                        {
+                          timeZone: "Asia/Ho_Chi_Minh",
+                        },
+                      )}
                     </dd>
                   </div>
                   <div>
-                    <dt>Thời gian dữ liệu</dt>
+                    <dt>{tr("Thời gian dữ liệu")}</dt>
                     <dd>
                       {period(summary.from)} → {period(summary.to)}
                     </dd>
@@ -604,12 +641,14 @@ export function SettingsWorkspace() {
                   {Object.entries(summary.counts).map(([key, v]) => (
                     <div key={key}>
                       <dt>{v.label}</dt>
-                      <dd>{v.rows.toLocaleString("vi-VN")} bản ghi</dd>
+                      <dd>
+                        {v.rows.toLocaleString(numberLocale)} {tr("bản ghi")}
+                      </dd>
                     </div>
                   ))}
                 </dl>
                 <p className="settings-hint">
-                  Số bản ghi bao gồm cả dữ liệu và lịch sử.
+                  {tr("Số bản ghi bao gồm cả dữ liệu và lịch sử.")}
                 </p>
                 <label className="backup-profile-option">
                   <input
@@ -619,9 +658,11 @@ export function SettingsWorkspace() {
                     onChange={(e) => setRestoreProfile(e.target.checked)}
                   />
                   <span>
-                    Khôi phục họ tên, ngày sinh và giới tính từ file
+                    {tr("Khôi phục họ tên, ngày sinh và giới tính từ file")}
                     <small>
-                      Email và thông tin đăng nhập hiện tại được giữ nguyên.
+                      {tr(
+                        "Email và thông tin đăng nhập hiện tại được giữ nguyên.",
+                      )}
                     </small>
                   </span>
                 </label>
@@ -637,8 +678,8 @@ export function SettingsWorkspace() {
                     <Upload size={17} aria-hidden="true" />
                   )}
                   {busy === "import"
-                    ? "Đang khôi phục…"
-                    : "Xác nhận nhập bản sao lưu"}
+                    ? tr("Đang khôi phục…")
+                    : tr("Xác nhận nhập bản sao lưu")}
                 </button>
               </div>
             )}
@@ -647,7 +688,7 @@ export function SettingsWorkspace() {
                 className="settings-feedback settings-feedback-error"
                 id="import-error"
               >
-                <p role="alert">{importError}</p>
+                <p role="alert">{tr(importError)}</p>
               </div>
             )}
             {importNotice && (
@@ -658,11 +699,11 @@ export function SettingsWorkspace() {
               >
                 <p role="status">
                   <Check size={18} aria-hidden="true" />
-                  {importNotice}
+                  {tr(importNotice)}
                 </p>
                 {complete && (
                   <Link className="back-link" href="/overview">
-                    Mở Tổng quan
+                    {tr("Mở Tổng quan")}
                     <ArrowRight size={16} aria-hidden="true" />
                   </Link>
                 )}
@@ -676,23 +717,27 @@ export function SettingsWorkspace() {
                   disabled={!!busy}
                   onClick={() => void retryProfile()}
                 >
-                  {busy === "profile" && <LoadingSpinner />}Thử khôi phục hồ sơ
+                  {busy === "profile" && <LoadingSpinner />}
+                  {tr("Thử khôi phục hồ sơ")}
                 </button>
-                <Link href="/profile">Thông tin cá nhân</Link>
+                <Link href="/profile">{tr("Thông tin cá nhân")}</Link>
               </div>
             )}
           </section>
         </div>
       </section>
       <section className="panel settings-appearance">
+        <LanguagePicker />
         <ThemePicker />
       </section>
       <details className="panel settings-install">
         <summary>
           <Smartphone size={22} aria-hidden="true" />
           <span>
-            Cài lên màn hình chính
-            <small>Mở ứng dụng nhanh hơn trên điện thoại hoặc máy tính.</small>
+            {tr("Cài lên màn hình chính")}
+            <small>
+              {tr("Mở ứng dụng nhanh hơn trên điện thoại hoặc máy tính.")}
+            </small>
           </span>
         </summary>
         <InstallGuide />

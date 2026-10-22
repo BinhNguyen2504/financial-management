@@ -248,11 +248,13 @@
   font-variant-numeric: tabular-nums;
 }
 .expense-table-scroll {
-  overflow-x: auto;
   max-width: 100%;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
+}
+.expense-table-scroll:not(:has(> .column-table)) {
+  overflow-x: auto;
 }
 .expense-table-scroll table {
   width: 100%;

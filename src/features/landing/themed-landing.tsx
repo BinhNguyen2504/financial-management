@@ -1,4 +1,14 @@
+import { Garden } from "@/components/garden";
+import { ModuleIcon } from "@/components/module-icon";
 import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
+import {
+  languageSummary,
+  modules,
+  moduleStatusLabels,
+  pageHelpSummary,
+} from "@/features/catalog";
+import { StartLink } from "@/features/landing/account-actions";
+import { ProductPreview } from "@/features/landing/product-preview";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -6,15 +16,6 @@ import {
   EyeOff,
   Fingerprint,
 } from "lucide-react";
-import {
-  modules,
-  moduleStatusLabels,
-  pageHelpSummary,
-} from "@/features/catalog";
-import { ModuleIcon } from "@/components/module-icon";
-import { Garden } from "@/components/garden";
-import { StartLink } from "@/features/landing/account-actions";
-import { ProductPreview } from "@/features/landing/product-preview";
 
 const features = modules.filter((item) =>
   ["income", "budgets", "savings", "investments", "funds"].includes(item.slug),
@@ -262,11 +263,16 @@ export function ThemedLanding() {
             </p>
           </details>
           <details>
+            <summary>Có thể dùng tiếng Anh không?</summary>
+            <p>{languageSummary}</p>
+          </details>
+          <details>
             <summary>Có thể dùng trên điện thoại không?</summary>
             <p>
-              Giao diện được thiết kế cho cả điện thoại và máy tính. Bản triển
-              khai qua HTTPS có nền PWA để thêm vào màn hình chính; hiện chưa hỗ
-              trợ ghi dữ liệu khi mất mạng.
+              Giao diện được thiết kế cho cả điện thoại và máy tính. Tab giữ
+              nhãn đầy đủ; bảng rộng cuộn trong vùng riêng. Bản triển khai qua
+              HTTPS có nền PWA để thêm vào màn hình chính; hiện chưa hỗ trợ ghi
+              dữ liệu khi mất mạng.
             </p>
           </details>
           <details>

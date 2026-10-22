@@ -54,3 +54,11 @@ Khu vườn giữ cây/tán ô/cây cầu; Dòng nước dùng hồ dự trữ �
 ## Xem trước giao dịch và phản hồi — 21/10/2026
 
 Xem trước nêu loại giao dịch cùng bảng các số dư/mục tiêu thực sự đổi, đối chiếu Trước–Sau và mức tăng giảm. Nơi giữ tiền, nguồn mức sinh hoạt và giao dịch gốc nằm trong Chi tiết có thể mở. Tiền VND được đọc ngay dưới ô; hệ số x giữ dạng số. Lỗi tại trường hoặc form, toast kết quả và footer cố định dùng cùng quy chuẩn chung; không ghi từ bước xem trước.
+
+## Anh/Việt — 22/10/2026
+
+Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định dạng vi-VN/en-GB, vẫn VND và giờ Việt Nam. Tên/ghi chú và dữ liệu tài chính giữ nguyên. Không có migration hay đổi cấu trúc backup. Xem [đặc tả ngôn ngữ](localization.md).
+
+## Bố cục và cuộn — 23/10/2026
+
+Tab chi tiết một hàng cuộn ngang, giữ nhãn đầy đủ và đưa mục đang chọn vào tầm nhìn bằng cuộn nội bộ. Phân trang giao dịch được rà soát cùng nhóm điều khiển mobile. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).

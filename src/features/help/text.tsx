@@ -1,9 +1,11 @@
+"use client";
+
 import { Fragment } from "react";
 
 // Editorial emphasis only: plain text stays escaped by React. No HTML or links.
 export function HelpText({ text }: { text: string }) {
   return text
-    .replace(/^Kết quả:/, "**Kết quả:**")
+    .replace(/^(Kết quả|Result):/, "**$1:**")
     .split(/(\*\*[\s\S]+?\*\*|==[\s\S]+?==)/g)
     .map((part, index) => {
       if (part.startsWith("**") && part.endsWith("**"))

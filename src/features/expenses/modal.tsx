@@ -1,8 +1,11 @@
 "use client";
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { X } from "lucide-react";
+import { useI18n } from "@/i18n/provider";
+
 import "@/components/dialog-content.css";
+import { focusInvalidNumber } from "@/components/localized-input";
 import { ToastViewport } from "@/components/toast";
+import { X } from "lucide-react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 const openDialogs = new Set<HTMLDialogElement>();
 let previousOverflow = "";
@@ -37,6 +40,8 @@ export function ExpenseModal({
   footer?: ReactNode;
   stableTabs?: boolean;
 }) {
+  const { t: tr } = useI18n("expenses");
+
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const outsidePointer = useRef(false);
@@ -113,6 +118,12 @@ export function ExpenseModal({
   return (
     <dialog
       ref={dialog}
+      onSubmitCapture={(event) => {
+        if (focusInvalidNumber(event.target as HTMLFormElement)) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }}
       className={`expense-dialog dialog-shell dialog-${size}${stableTabs ? " dialog-stable-tabs" : ""}`}
       aria-labelledby={titleId}
       aria-describedby={description ? `${titleId}-description` : undefined}
@@ -202,7 +213,7 @@ export function ExpenseModal({
         <button
           type="button"
           className="expense-icon-button"
-          aria-label="Đóng"
+          aria-label={tr("Đóng")}
           disabled={busy}
           onClick={requestClose}
         >

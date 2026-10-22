@@ -38,3 +38,7 @@ Help giải thích trường có thể chỉnh, email chỉ đọc, avatar từ 
 ## Bố cục và phản hồi lưu — 21/10/2026
 
 Nút Quay lại đứng cùng vùng tiêu đề; thẻ hồ sơ giới hạn chiều rộng đọc, phần nhận diện tách khỏi form, lưới trường chuyển một cột trên màn hình hẹp. Dấu `*` gắn sát nhãn Họ và tên. Lỗi ngày sinh/tên ở ngay dưới ô và đưa focus đến ô lỗi đầu; lưu thành công hiện toast, lỗi giữ bản nháp và báo tại form. Mất phản hồi khi cập nhật hồ sơ được báo là chưa rõ kết quả để người dùng kiểm tra trước khi thử lại.
+
+## Anh/Việt — 22/10/2026
+
+Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định dạng vi-VN/en-GB, vẫn VND và giờ Việt Nam. Tên/ghi chú và dữ liệu tài chính giữ nguyên. Không có migration hay đổi cấu trúc backup. Xem [đặc tả ngôn ngữ](localization.md).

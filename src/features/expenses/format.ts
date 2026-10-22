@@ -1,8 +1,10 @@
-export function money(value: string): string {
-  return `${BigInt(value).toLocaleString("vi-VN")} ₫`;
+import { formatMoney, formatMonth } from "@/i18n/format";
+import type { Locale } from "@/i18n/locale";
+export function money(value: string, locale: Locale = "vi"): string {
+  return formatMoney(value, locale);
 }
-export function monthName(value: string): string {
-  return `Tháng ${Number(value.slice(5))}/${value.slice(0, 4)}`;
+export function monthName(value: string, locale: Locale = "vi"): string {
+  return formatMonth(value, locale);
 }
 export function sum(values: string[]): string {
   return values.reduce((n, v) => n + BigInt(v), 0n).toString();

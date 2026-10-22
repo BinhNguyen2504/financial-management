@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
-import { authenticatedUser } from "@/server/auth";
-import { dataRepository } from "@/server/database";
-import { backupMaxBytes, checkBackupSize } from "@/server/data-repository";
-import { sameOrigin } from "@/server/request-origin";
 import { BackupError, summarizeBackup } from "@/domain/backup/format";
 import { validateBackup } from "@/domain/backup/validate";
-import { profileFields } from "@/features/profile/fields";
 import { ExpenseError } from "@/domain/expenses/engine";
+import { profileFields } from "@/features/profile/fields";
+import { authenticatedUser } from "@/server/auth";
+import { backupMaxBytes, checkBackupSize } from "@/server/data-repository";
+import { dataRepository } from "@/server/database";
+import { jsonResponse } from "@/server/json-response";
+import { sameOrigin } from "@/server/request-origin";
+import { NextResponse } from "next/server";
+import { z } from "zod";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,17 +20,17 @@ const headers = {
 type Context = { params: Promise<{ path?: string[] }> };
 function failure(error: unknown) {
   if (error instanceof BackupError || error instanceof ExpenseError)
-    return NextResponse.json(
+    return jsonResponse(
       { error: error.message, code: error.code },
       { status: error.status, headers },
     );
   if (error instanceof z.ZodError || error instanceof SyntaxError)
-    return NextResponse.json(
+    return jsonResponse(
       { error: "File JSON hoặc yêu cầu không hợp lệ.", code: "INVALID_BACKUP" },
       { status: 422, headers },
     );
   // Do not log SQL errors: postgres diagnostics may contain uploaded financial values.
-  return NextResponse.json(
+  return jsonResponse(
     {
       error: "Chưa truy cập được dữ liệu. Kiểm tra kết nối và thử lại.",
       code: "STORAGE_UNAVAILABLE",
@@ -81,7 +82,7 @@ export async function GET(request: Request, context: Context) {
     const user = await authenticatedUser(request),
       path = ((await context.params).path ?? []).join("/");
     if (path === "status")
-      return NextResponse.json(await dataRepository().status(user.id), {
+      return jsonResponse(await dataRepository().status(user.id), {
         headers,
       });
     if (path !== "backup")
@@ -118,7 +119,7 @@ export async function POST(request: Request, context: Context) {
       const backup = validateBackup(body);
       checkBackupSize(backup);
       const status = await dataRepository().status(user.id);
-      return NextResponse.json(
+      return jsonResponse(
         {
           ...summarizeBackup(backup),
           canImport: status.empty && status.importReady,
@@ -139,7 +140,7 @@ export async function POST(request: Request, context: Context) {
         409,
         "ACCOUNT_CHANGED",
       );
-    return NextResponse.json(
+    return jsonResponse(
       await dataRepository().import(user.id, parsed.requestId, parsed.backup),
       { headers },
     );

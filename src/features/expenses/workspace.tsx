@@ -1,31 +1,39 @@
 "use client";
+import { ScrollTabs } from "@/components/scroll-tabs";
+import { useI18n } from "@/i18n/provider";
+
+import {
+  ColumnPicker,
+  ColumnTable,
+  hiddenColumns,
+} from "@/components/column-table";
+import { DailyNote } from "@/components/daily-note";
+import { Garden } from "@/components/garden";
+import { LoadingSpinner, LoadingStatus } from "@/components/loading";
+import { focusPointerControl } from "@/components/pointer-focus";
+import { useMoney } from "@/components/privacy";
 import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
-import { HelpPageTitle } from "@/features/help/provider";
-import { ColumnPicker, hiddenColumns } from "@/components/column-table";
+import { useToast } from "@/components/toast";
 import { usePreference } from "@/components/ui-preferences";
-import { JarClassification } from "./label-visual";
-import { ColumnTable } from "@/components/column-table";
 import { useForegroundRefresh } from "@/components/use-foreground-refresh";
-import { LoadingStatus, LoadingSpinner } from "@/components/loading";
-import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Plus, Settings2, ArrowUpRight, Pencil, Archive } from "lucide-react";
-import type { ExpenseRow, ExpenseView } from "@/domain/expenses/types";
+import { jarEmoji } from "@/domain/expenses/emoji";
 import { vietnamClock } from "@/domain/expenses/engine";
 import { summarize } from "@/domain/expenses/reports";
-import { ExpenseEditor, type EditorMode } from "./editor";
+import type { ExpenseRow, ExpenseView } from "@/domain/expenses/types";
+import { HelpPageTitle } from "@/features/help/provider";
+import { Archive, ArrowUpRight, Pencil, Plus, Settings2 } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { apiJSON } from "./api";
-import { ExpenseReports } from "./report-panel";
 import { ExpenseDetails, ExpenseLabels } from "./details";
-import { monthName, sum, ratio } from "./format";
-import { useMoney } from "@/components/privacy";
-import { Garden } from "@/components/garden";
-import { DailyNote } from "@/components/daily-note";
-import { focusPointerControl } from "@/components/pointer-focus";
-import { useToast } from "@/components/toast";
-import { jarEmoji } from "@/domain/expenses/emoji";
+import { ExpenseEditor, type EditorMode } from "./editor";
+import { monthName, ratio, sum } from "./format";
+import { JarClassification } from "./label-visual";
+import { ExpenseReports } from "./report-panel";
 
 export function ExpenseWorkspace({ configured }: { configured: boolean }) {
+  const { t: tr, locale } = useI18n("expenses");
+
   const toast = useToast();
   const money = useMoney();
   const [columnPreference] = usePreference(
@@ -90,7 +98,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
           setError(
             e instanceof Error
               ? e.message
-              : "Không thể tải dữ liệu. Vui lòng thử lại.",
+              : tr("Không thể tải dữ liệu. Vui lòng thử lại."),
           );
         }
         throw e;
@@ -127,8 +135,10 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
     try {
       await reload();
     } catch {
-      setNotice("Đã lưu thay đổi. Chưa tải lại được dữ liệu; hãy thử tải lại.");
-      toast("warning", "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.");
+      setNotice(
+        tr("Đã lưu thay đổi. Chưa tải lại được dữ liệu; hãy thử tải lại."),
+      );
+      toast("warning", tr("Đã lưu thay đổi nhưng chưa tải lại được dữ liệu."));
     }
   }
   const currentYear =
@@ -183,10 +193,10 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
     >
       <div className="expense-page-heading">
         <div>
-          <p className="eyebrow">MỖI KHOẢN TIỀN, MỘT MỤC ĐÍCH</p>
-          <HelpPageTitle>Chi tiêu</HelpPageTitle>
+          <p className="eyebrow">{tr("MỖI KHOẢN TIỀN, MỘT MỤC ĐÍCH")}</p>
+          <HelpPageTitle>{tr("Chi tiêu")}</HelpPageTitle>
           <p className="lead">
-            Chuẩn bị cho tháng này. Dành sẵn cho những đợt chi sắp tới.
+            {tr("Chuẩn bị cho tháng này. Dành sẵn cho những đợt chi sắp tới.")}
           </p>
         </div>
         {view?.book && (
@@ -195,14 +205,14 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
               className="expense-secondary"
               onClick={() => setLabelsOpen(true)}
             >
-              <Settings2 size={17} /> Phân loại
+              <Settings2 size={17} /> {tr("Phân loại")}
             </button>
             {!readonly && (
               <button
                 className="expense-primary"
                 onClick={() => openEditor({ mode: "create" })}
               >
-                <Plus size={18} /> Thêm hũ
+                <Plus size={18} /> {tr("Thêm hũ")}
               </button>
             )}
           </div>
@@ -212,33 +222,34 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
       {!configured ? (
         <section className="panel expense-setup">
           <Garden variant="jar" />
-          <h2>Sẵn sàng cho những khoản chi của bạn</h2>
+          <h2>{tr("Sẵn sàng cho những khoản chi của bạn")}</h2>
           <p>
-            Cần kết nối dịch vụ đăng nhập và lưu trữ cloud trước khi bắt đầu.
-            Khi kết nối xong, bạn chọn tháng bắt đầu và thêm các hũ của mình.
+            {tr(
+              "Cần kết nối dịch vụ đăng nhập và lưu trữ cloud trước khi bắt đầu. Khi kết nối xong, bạn chọn tháng bắt đầu và thêm các hũ của mình.",
+            )}
           </p>
           <p className="expense-muted">
-            Dữ liệu chi tiêu không được lưu tạm trong trình duyệt.
+            {tr("Dữ liệu chi tiêu không được lưu tạm trong trình duyệt.")}
           </p>
           <Link className="expense-secondary" href="/login">
-            Đến trang đăng nhập
+            {tr("Đến trang đăng nhập")}
           </Link>
         </section>
       ) : (
         <>
           {loading && !view ? (
-            <LoadingStatus>Đang tải dữ liệu chi tiêu…</LoadingStatus>
+            <LoadingStatus>{tr("Đang tải dữ liệu chi tiêu…")}</LoadingStatus>
           ) : (
             <p role="status" className="expense-status">
-              {notice}
+              {tr(notice)}
             </p>
           )}
           {error && (
             <div className="expense-notice expense-feedback" role="alert">
-              <p>{error}</p>
+              <p>{tr(error)}</p>
               {needsLogin ? (
                 <Link className="expense-primary" href="/login">
-                  Đăng nhập
+                  {tr("Đăng nhập")}
                 </Link>
               ) : (
                 <button
@@ -247,7 +258,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   aria-busy={loading}
                   onClick={() => void reload().catch(() => {})}
                 >
-                  {loading && <LoadingSpinner />} Thử tải lại
+                  {loading && <LoadingSpinner />} {tr("Thử tải lại")}
                 </button>
               )}
             </div>
@@ -255,16 +266,17 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
           {view && !view.book && (
             <section className="panel expense-setup">
               <Garden variant="sprout" />
-              <h2>Bắt đầu từ tháng bạn chọn</h2>
+              <h2>{tr("Bắt đầu từ tháng bạn chọn")}</h2>
               <p>
-                Thêm các khoản chi định kỳ và khoản cần tích lũy. Ứng dụng tự
-                tính tiền cần bỏ hũ; bạn chỉ điều chỉnh những tháng có thay đổi.
+                {tr(
+                  "Thêm các khoản chi định kỳ và khoản cần tích lũy. Ứng dụng tự tính tiền cần bỏ hũ; bạn chỉ điều chỉnh những tháng có thay đổi.",
+                )}
               </p>
               <button
                 className="expense-primary"
                 onClick={() => openEditor({ mode: "initialize" })}
               >
-                Chọn tháng bắt đầu
+                {tr("Chọn tháng bắt đầu")}
               </button>
             </section>
           )}
@@ -272,8 +284,10 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
             <>
               {outsideYears && (
                 <div className="data-warning" role="status">
-                  Năm {selectedYear} chưa có dữ liệu. Sổ đang quản lý từ{" "}
-                  {monthName(view.book.start)} đến năm {currentYear}.
+                  {tr("Năm")} {selectedYear}{" "}
+                  {tr("chưa có dữ liệu. Sổ đang quản lý từ")}{" "}
+                  {monthName(view.book.start, locale)} {tr("đến năm")}{" "}
+                  {currentYear}.
                   <button
                     type="button"
                     className="expense-secondary"
@@ -282,14 +296,14 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                       setMonth(Number(view.today.slice(5, 7)));
                     }}
                   >
-                    Về năm hiện tại
+                    {tr("Về năm hiện tại")}
                   </button>
                 </div>
               )}
               <div className="expense-toolbar">
                 <div className="expense-filters">
                   <label>
-                    Năm
+                    {tr("Năm")}
                     <select
                       value={selectedYear}
                       onChange={(e) => {
@@ -316,19 +330,19 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                           <option key={value} value={value}>
                             {value}
                             {entry?.closedAt
-                              ? " · Đã chốt"
+                              ? tr(" · Đã chốt")
                               : !entry
-                                ? " · Chưa có dữ liệu"
+                                ? tr(" · Chưa có dữ liệu")
                                 : value === currentYear
-                                  ? " · Hiện tại"
-                                  : " · Chưa chốt"}
+                                  ? tr(" · Hiện tại")
+                                  : tr(" · Chưa chốt")}
                           </option>
                         );
                       })}
                     </select>
                   </label>
                   <label>
-                    Tháng
+                    {tr("Tháng")}
                     <select
                       value={month ?? 1}
                       onChange={(e) => setMonth(Number(e.target.value))}
@@ -342,39 +356,45 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                             view.book!.start
                           }
                         >
-                          Tháng {i + 1}
+                          {tr("Tháng")} {i + 1}
                         </option>
                       ))}
                     </select>
                   </label>
                 </div>
-                <div
+                <ScrollTabs
                   className="expense-segment"
                   role="group"
-                  aria-label="Nội dung chi tiêu"
+                  aria-label={tr("Nội dung chi tiêu")}
                 >
                   <button
                     aria-pressed={tab === "month"}
                     onClick={() => setTab("month")}
                   >
-                    Theo tháng
+                    {tr("Theo tháng")}
                   </button>
                   <button
                     aria-pressed={tab === "reports"}
                     disabled={selectedYear !== currentYear}
                     onClick={() => setTab("reports")}
                   >
-                    Báo cáo năm
+                    {tr("Báo cáo năm")}
                   </button>
-                </div>
+                </ScrollTabs>
               </div>
               {selectedYear < currentYear && !outsideYears && (
                 <div className="expense-notice expense-archive-note">
                   <Archive size={20} aria-hidden="true" />
                   <p>
                     {readonly
-                      ? `Năm ${selectedYear} đã chốt. Bạn có thể xem lịch sử. Sao lưu toàn bộ dữ liệu trong Cài đặt.`
-                      : `Năm ${selectedYear} chưa chốt. Hoàn tất dữ liệu trước khi lưu trữ; số dư năm mới sẽ được cập nhật theo.`}
+                      ? tr(
+                          "Năm {0} đã chốt. Bạn có thể xem lịch sử. Sao lưu toàn bộ dữ liệu trong Cài đặt.",
+                          { 0: selectedYear },
+                        )
+                      : tr(
+                          "Năm {0} chưa chốt. Hoàn tất dữ liệu trước khi lưu trữ; số dư năm mới sẽ được cập nhật theo.",
+                          { 0: selectedYear },
+                        )}
                   </p>
                   {!readonly && (
                     <button
@@ -383,7 +403,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                         openEditor({ mode: "closeYear", year: selectedYear })
                       }
                     >
-                      Chốt năm {selectedYear}
+                      {tr("Chốt năm")} {selectedYear}
                     </button>
                   )}
                 </div>
@@ -391,26 +411,30 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
               {selectedYear < currentYear && !outsideYears && (
                 <details className="panel expense-archive-summary">
                   <summary>
-                    Tổng kết năm {selectedYear}
-                    {readonly ? " · Đã lưu" : " · Chưa chốt"}
+                    {tr("Tổng kết năm")} {selectedYear}
+                    {readonly ? tr(" · Đã lưu") : tr(" · Chưa chốt")}
                   </summary>
                   <p className="expense-muted">
-                    Tổng hợp toàn bộ hũ của năm, không áp dụng bộ lọc bên dưới.
+                    {tr(
+                      "Tổng hợp toàn bộ hũ của năm, không áp dụng bộ lọc bên dưới.",
+                    )}
                   </p>
                   {archivedTotals && (
                     <div className="expense-report-totals">
                       <span>
-                        Đầu năm:{" "}
+                        {tr("Đầu năm:")}{" "}
                         <strong>{money(archivedTotals.opening)}</strong>
                       </span>
                       <span>
-                        Bỏ hũ: <strong>{money(archivedTotals.funding)}</strong>
+                        {tr("Bỏ hũ:")}{" "}
+                        <strong>{money(archivedTotals.funding)}</strong>
                       </span>
                       <span>
-                        Thực chi: <strong>{money(archivedTotals.spent)}</strong>
+                        {tr("Thực chi:")}{" "}
+                        <strong>{money(archivedTotals.spent)}</strong>
                       </span>
                       <span>
-                        Cuối năm:{" "}
+                        {tr("Cuối năm:")}{" "}
                         <strong>{money(archivedTotals.closing)}</strong>
                       </span>
                     </div>
@@ -418,20 +442,21 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   <div className="expense-table-scroll">
                     <ColumnTable tableId="expenses-workspace-1">
                       <caption className="sr-only">
-                        Tổng kết từng tháng năm {selectedYear}, đơn vị VND
+                        {tr("Tổng kết từng tháng năm")} {selectedYear}
+                        {tr(", đơn vị VND")}
                       </caption>
                       <thead>
                         <tr>
-                          <th>Tháng</th>
-                          <th>Bỏ hũ</th>
-                          <th>Thực chi</th>
-                          <th>Còn lại</th>
+                          <th>{tr("Tháng")}</th>
+                          <th>{tr("Bỏ hũ")}</th>
+                          <th>{tr("Thực chi")}</th>
+                          <th>{tr("Còn lại")}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {archivedMonths.map((item) => (
                           <tr key={item.key}>
-                            <th>{monthName(item.key)}</th>
+                            <th>{monthName(item.key, locale)}</th>
                             <td>{money(item.funding)}</td>
                             <td>{money(item.spent)}</td>
                             <td>{money(item.closing)}</td>
@@ -444,35 +469,35 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
               )}
               <div className="expense-filters expense-filter-panel">
                 <label>
-                  Loại hũ
+                  {tr("Loại hũ")}
                   <select
                     value={kind}
                     onChange={(e) => setKind(e.target.value)}
                   >
-                    <option value="">Tất cả</option>
-                    <option value="monthly">Chi trong tháng</option>
-                    <option value="accumulation">Tích lũy</option>
+                    <option value="">{tr("Tất cả")}</option>
+                    <option value="monthly">{tr("Chi trong tháng")}</option>
+                    <option value="accumulation">{tr("Tích lũy")}</option>
                   </select>
                 </label>
                 <label>
-                  Phương thức
+                  {tr("Phương thức")}
                   <select
                     value={method}
                     onChange={(e) => setMethod(e.target.value)}
                   >
-                    <option value="">Tất cả</option>
+                    <option value="">{tr("Tất cả")}</option>
                     {methods.map((m) => (
                       <option key={m}>{m}</option>
                     ))}
                   </select>
                 </label>
                 <label>
-                  Nhóm mục đích
+                  {tr("Nhóm mục đích")}
                   <select
                     value={group}
                     onChange={(e) => setGroup(e.target.value)}
                   >
-                    <option value="">Tất cả</option>
+                    <option value="">{tr("Tất cả")}</option>
                     {groups.map((g) => (
                       <option key={g}>{g}</option>
                     ))}
@@ -484,7 +509,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                     checked={inactive}
                     onChange={(e) => setInactive(e.target.checked)}
                   />{" "}
-                  Gồm hũ đã ngừng
+                  {tr("Gồm hũ đã ngừng")}
                 </label>
               </div>
               {tab === "reports" ? (
@@ -493,25 +518,32 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                 <>
                   <section
                     className="expense-metrics"
-                    aria-label={`Tổng hợp ${monthName(selectedMonth)}`}
+                    aria-label={tr("Tổng hợp {0}", {
+                      0: monthName(selectedMonth, locale),
+                    })}
                   >
                     {[
-                      { name: "Mức tháng", value: total("target") },
-                      { name: "Cần thêm mặc định", value: total("required") },
+                      { name: tr("Mức tháng"), value: total("target") },
                       {
-                        name: future ? "Dự kiến bỏ hũ" : "Đã ghi nhận bỏ hũ",
+                        name: tr("Cần thêm mặc định"),
+                        value: total("required"),
+                      },
+                      {
+                        name: future
+                          ? tr("Dự kiến bỏ hũ")
+                          : tr("Đã ghi nhận bỏ hũ"),
                         value: funding,
                       },
                       {
                         name: future
-                          ? "Thực chi chưa phát sinh"
+                          ? tr("Thực chi chưa phát sinh")
                           : selectedMonth === view.today.slice(0, 7)
-                            ? "Thực chi · tạm tính"
-                            : "Thực chi",
+                            ? tr("Thực chi · tạm tính")
+                            : tr("Thực chi"),
                         value: total("spent"),
                       },
                       {
-                        name: future ? "Số dư dự kiến" : "Số còn lại",
+                        name: future ? tr("Số dư dự kiến") : tr("Số còn lại"),
                         value: total("closing"),
                       },
                     ].map((metric) => (
@@ -522,26 +554,27 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                     ))}
                   </section>
                   <div className="expense-section-heading">
-                    <h2>{monthName(selectedMonth)}</h2>
+                    <h2>{monthName(selectedMonth, locale)}</h2>
                     <div className="expense-section-tools">
                       <span className="expense-muted">
-                        {rows.length} hũ{future ? " · Kế hoạch" : ""}
-                        {readonly ? " · Chỉ xem" : ""}
+                        {rows.length} {tr("hũ")}
+                        {future ? tr(" · Kế hoạch") : ""}
+                        {readonly ? tr(" · Chỉ xem") : ""}
                       </span>
                       {rows.length > 0 && (
                         <ColumnPicker
                           tableId="expenses-workspace-2"
                           columns={[
-                            { id: "Khoản chi", fixed: true },
+                            { id: tr("Khoản chi"), fixed: true },
                             ...[
-                              "Mức tháng",
-                              "Chuyển sang",
-                              "Cần thêm",
-                              future ? "Dự kiến bỏ" : "Đã bỏ hũ",
-                              "Thực chi",
-                              "Còn lại",
+                              tr("Mức tháng"),
+                              tr("Chuyển sang"),
+                              tr("Cần thêm"),
+                              future ? tr("Dự kiến bỏ") : tr("Đã bỏ hũ"),
+                              tr("Thực chi"),
+                              tr("Còn lại"),
                             ].map((id) => ({ id })),
-                            { id: "Thao tác", fixed: true },
+                            { id: tr("Thao tác"), fixed: true },
                           ]}
                         />
                       )}
@@ -549,9 +582,9 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   </div>
                   {selectedMonth === view.today.slice(0, 7) && (
                     <p className="expense-notice">
-                      Hũ chi tháng mặc định số dư bằng 0, nên thực chi hiện tại
-                      là tạm tính. Nhập số dư nếu còn tiền; ứng dụng sẽ tính lại
-                      tiền cần thêm của tháng sau.
+                      {tr(
+                        "Hũ chi tháng mặc định số dư bằng 0, nên thực chi hiện tại là tạm tính. Nhập số dư nếu còn tiền; ứng dụng sẽ tính lại tiền cần thêm của tháng sau.",
+                      )}
                     </p>
                   )}
                   {rows.length ? (
@@ -562,18 +595,22 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                           showColumnPicker={false}
                         >
                           <caption className="sr-only">
-                            Các hũ trong {monthName(selectedMonth)}, đơn vị VND
+                            {tr("Các hũ trong")}{" "}
+                            {monthName(selectedMonth, locale)}
+                            {tr(", đơn vị VND")}
                           </caption>
                           <thead>
                             <tr>
-                              <th>Khoản chi</th>
-                              <th>Mức tháng</th>
-                              <th>Chuyển sang</th>
-                              <th>Cần thêm</th>
-                              <th>{future ? "Dự kiến bỏ" : "Đã bỏ hũ"}</th>
-                              <th>Thực chi</th>
-                              <th>Còn lại</th>
-                              <th>Thao tác</th>
+                              <th>{tr("Khoản chi")}</th>
+                              <th>{tr("Mức tháng")}</th>
+                              <th>{tr("Chuyển sang")}</th>
+                              <th>{tr("Cần thêm")}</th>
+                              <th>
+                                {future ? tr("Dự kiến bỏ") : tr("Đã bỏ hũ")}
+                              </th>
+                              <th>{tr("Thực chi")}</th>
+                              <th>{tr("Còn lại")}</th>
+                              <th>{tr("Thao tác")}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -616,7 +653,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                   {money(row.spent)}
                                   {BigInt(row.over) > 0n && (
                                     <small className="expense-over">
-                                      Vượt {money(row.over)}
+                                      {tr("Vượt")} {money(row.over)}
                                     </small>
                                   )}
                                 </td>
@@ -626,7 +663,9 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                     {!readonly && (
                                       <button
                                         className="expense-icon-button"
-                                        aria-label={`Điều chỉnh ${row.name}`}
+                                        aria-label={tr("Điều chỉnh {0}", {
+                                          0: row.name,
+                                        })}
                                         onClick={() =>
                                           openEditor({ mode: "month", row })
                                         }
@@ -643,7 +682,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                             openEditor({ mode: "spend", row })
                                           }
                                         >
-                                          Dùng tiền
+                                          {tr("Dùng tiền")}
                                         </button>
                                       )}
                                   </div>
@@ -677,26 +716,28 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                             </div>
                             <div className="jar-balance">
                               <span>
-                                {future ? "Số dư dự kiến" : "Còn trong hũ"}
+                                {future
+                                  ? tr("Số dư dự kiến")
+                                  : tr("Còn trong hũ")}
                               </span>
                               <strong>{money(row.closing)}</strong>
                             </div>
                             <JarProgress row={row} />
                             <details className="jar-details">
-                              <summary>Các khoản trong hũ</summary>
+                              <summary>{tr("Các khoản trong hũ")}</summary>
                               <dl>
                                 {[
-                                  ["Mức tháng", row.target],
-                                  ["Chuyển sang", row.opening],
-                                  ["Cần thêm", row.required],
+                                  [tr("Mức tháng"), row.target],
+                                  [tr("Chuyển sang"), row.opening],
+                                  [tr("Cần thêm"), row.required],
                                   [
-                                    future ? "Dự kiến bỏ" : "Đã bỏ hũ",
+                                    future ? tr("Dự kiến bỏ") : tr("Đã bỏ hũ"),
                                     (
                                       BigInt(row.funding) + BigInt(row.extra)
                                     ).toString(),
                                   ],
-                                  ["Thực chi", row.spent],
-                                  ["Còn lại", row.closing],
+                                  [tr("Thực chi"), row.spent],
+                                  [tr("Còn lại"), row.closing],
                                 ]
                                   .filter(([label]) => !hidden.includes(label))
                                   .map(([label, value]) => (
@@ -709,7 +750,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                             </details>
                             {BigInt(row.over) > 0n && (
                               <p className="expense-over">
-                                Vượt mức {money(row.over)}
+                                {tr("Vượt mức")} {money(row.over)}
                               </p>
                             )}
                             {!readonly && (
@@ -720,7 +761,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                     openEditor({ mode: "month", row })
                                   }
                                 >
-                                  Điều chỉnh
+                                  {tr("Điều chỉnh")}
                                 </button>
                                 {row.kind === "accumulation" && !future && (
                                   <button
@@ -729,7 +770,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                       openEditor({ mode: "spend", row })
                                     }
                                   >
-                                    Dùng tiền
+                                    {tr("Dùng tiền")}
                                   </button>
                                 )}
                               </div>
@@ -741,17 +782,18 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   ) : (
                     <section className="panel expense-empty">
                       <Garden variant="sprout" />
-                      <h3>Chưa có hũ trong tháng hoặc bộ lọc này</h3>
+                      <h3>{tr("Chưa có hũ trong tháng hoặc bộ lọc này")}</h3>
                       <p>
-                        Thêm một hũ chi tiêu hoặc thay đổi bộ lọc để xem các
-                        khoản đã tạo.
+                        {tr(
+                          "Thêm một hũ chi tiêu hoặc thay đổi bộ lọc để xem các khoản đã tạo.",
+                        )}
                       </p>
                       {!readonly && (
                         <button
                           className="expense-primary"
                           onClick={() => openEditor({ mode: "create" })}
                         >
-                          <Plus size={17} /> Thêm hũ chi tiêu
+                          <Plus size={17} /> {tr("Thêm hũ chi tiêu")}
                         </button>
                       )}
                     </section>
@@ -797,27 +839,30 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
 }
 
 function JarProgress({ row }: { row: ExpenseRow }) {
+  const { t: tr, numberLocale } = useI18n("expenses");
+
   if (row.kind === "accumulation")
     return (
       <p className="jar-growth">
         <ThemeIcon size={16} kind="sprout" />{" "}
         {row.status === "planned" ? (
-          "Dành sẵn cho tương lai"
+          tr("Dành sẵn cho tương lai")
         ) : (
           <ThemeText name="accumulation" />
         )}
       </p>
     );
   if (row.status === "planned")
-    return <p className="jar-growth">Kế hoạch cho tháng tới</p>;
+    return <p className="jar-growth">{tr("Kế hoạch cho tháng tới")}</p>;
   if (BigInt(row.target) === 0n)
-    return <p className="jar-growth">Chưa đặt mức tháng</p>;
+    return <p className="jar-growth">{tr("Chưa đặt mức tháng")}</p>;
   const used = ratio(row.spent, row.target);
   return (
     <div className={`jar-progress ${used > 100 ? "is-over" : ""}`}>
       <span>
-        Đã dùng {used.toLocaleString("vi-VN", { maximumFractionDigits: 1 })}%
-        mức tháng
+        {tr("Đã dùng")}{" "}
+        {used.toLocaleString(numberLocale, { maximumFractionDigits: 1 })}
+        {tr("% mức tháng")}
       </span>
       <div aria-hidden="true">
         <span style={{ width: `${Math.min(100, used)}%` }} />

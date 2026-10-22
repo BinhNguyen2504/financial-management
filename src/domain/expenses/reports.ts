@@ -1,5 +1,5 @@
-import type { ExpenseRow, Money } from "./types";
 import { ExpenseError } from "./engine";
+import type { ExpenseRow, Money } from "./types";
 
 export interface ReportFilter {
   year: number;
@@ -13,6 +13,7 @@ export interface ReportFilter {
 export interface ReportItem {
   key: string;
   label: string;
+  labelKey?: string;
   target: Money;
   required: Money;
   funding: Money;
@@ -110,7 +111,13 @@ export function buildReport(
     byMonth,
     byJar: namedJars(selected),
     byMethod: summarize(selected, (r) => r.method),
-    byGroup: summarize(selected, (r) => r.group || "Chưa phân nhóm"),
+    byGroup: summarize(selected, (r) => r.group || "Chưa phân nhóm").map(
+      (item) =>
+        item.key === "Chưa phân nhóm" &&
+        !selected.some((row) => row.group === item.key)
+          ? { ...item, labelKey: "Chưa phân nhóm" }
+          : item,
+    ),
     accumulation: namedJars(selected.filter((r) => r.kind === "accumulation")),
   };
 }

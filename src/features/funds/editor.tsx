@@ -1,31 +1,25 @@
 "use client";
-import { useVisualTheme } from "@/components/ui-preferences";
-import { visualThemes } from "@/components/visual-theme";
-import { HelpButton } from "@/features/help/provider";
-import { fieldErrorsFromIssues } from "@/lib/field-errors";
-import { MoneyHint } from "@/components/money-hint";
+import {
+  LocalizedInput,
+  focusInvalidNumber,
+} from "@/components/localized-input";
+import { formatMonth } from "@/i18n/format";
+import { useI18n } from "@/i18n/provider";
+
+import type { FundCommandResult } from "@/application/funds";
 import { focusFirstInvalid } from "@/components/form-feedback";
-import { useToast } from "@/components/toast";
+import { LoadingSpinner } from "@/components/loading";
+import { MoneyHint } from "@/components/money-hint";
 import {
-  cloneElement,
-  useId,
-  useRef,
-  useState,
-  type ReactElement,
-} from "react";
-import { z } from "zod";
-import Link from "next/link";
-import { comparable, normalizeInteger, integerInput } from "@/lib/form-values";
-import { Save, X, ScanEye } from "lucide-react";
-import { ArrowUp, ArrowDown } from "lucide-react";
-import { ExpenseModal } from "@/features/expenses/modal";
-import {
-  PrivacyScope,
   PrivacyReveal,
+  PrivacyScope,
   useMoney,
   useMoneyHidden,
 } from "@/components/privacy";
-import { LoadingSpinner } from "@/components/loading";
+import { useToast } from "@/components/toast";
+import { useVisualTheme } from "@/components/ui-preferences";
+import { visualThemes } from "@/components/visual-theme";
+import { selectLiving } from "@/domain/funds/engine";
 import {
   actionSchema,
   fundIds,
@@ -35,15 +29,27 @@ import {
   type FundId,
   type FundTransaction,
 } from "@/domain/funds/schema";
-import { selectLiving } from "@/domain/funds/engine";
 import type { FundView } from "@/domain/funds/types";
-import type { FundCommandResult } from "@/application/funds";
-import { fundsJSON, FundAPIError } from "./api";
+import { ExpenseModal } from "@/features/expenses/modal";
+import { HelpButton } from "@/features/help/provider";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import { comparable, normalizeInteger } from "@/lib/form-values";
+import { ArrowDown, ArrowUp, Save, ScanEye, X } from "lucide-react";
+import Link from "next/link";
+import {
+  cloneElement,
+  useId,
+  useRef,
+  useState,
+  type ReactElement,
+} from "react";
+import { z } from "zod";
+import { FundAPIError, fundsJSON } from "./api";
 import {
   displayTime,
   fundNames,
   localDateTime,
-  transactionNames,
+  transactionNames as transactionNamesSource,
 } from "./content";
 export type EditorMode =
   | { type: "configure" }
@@ -73,6 +79,8 @@ function Editor({
   onClose,
   onAuthLost,
 }: Props) {
+  const { t: tr, locale, config: localize } = useI18n("funds");
+
   const toast = useToast();
   const [view, setView] = useState(initial),
     config = initial.book?.configurations.at(-1),
@@ -151,17 +159,17 @@ function Editor({
   const title =
     mode.type === "configure"
       ? config
-        ? "Điều chỉnh Quỹ an toàn"
-        : visualThemes[theme].copy.configureFunds
+        ? tr("Điều chỉnh Quỹ an toàn")
+        : localize(visualThemes)[theme].copy.configureFunds
       : mode.type === "location"
         ? location
-          ? "Sửa nơi giữ tiền"
-          : "Thêm nơi giữ tiền"
+          ? tr("Sửa nơi giữ tiền")
+          : tr("Thêm nơi giữ tiền")
         : mode.type === "cancel"
-          ? "Hủy giao dịch"
+          ? tr("Hủy giao dịch")
           : mode.type === "revise"
-            ? "Sửa giao dịch"
-            : "Ghi giao dịch";
+            ? tr("Sửa giao dịch")
+            : tr("Ghi giao dịch");
   function invalidate() {
     setPreview(null);
     pending.current = null;
@@ -176,19 +184,21 @@ function Editor({
   function report(e: unknown) {
     if (e instanceof z.ZodError) {
       setFieldErrors(fieldErrorsFromIssues(e.issues, true));
-      setError("Kiểm tra các trường được đánh dấu.");
+      setError(tr("Kiểm tra các trường được đánh dấu."));
     } else if (e instanceof FundAPIError && e.fieldErrors) {
       setFieldErrors(e.fieldErrors);
-      setError("Kiểm tra các trường được đánh dấu.");
+      setError(tr("Kiểm tra các trường được đánh dấu."));
     } else
-      setError(e instanceof Error ? e.message : "Chưa hoàn tất. Hãy thử lại.");
+      setError(
+        e instanceof Error ? e.message : tr("Chưa hoàn tất. Hãy thử lại."),
+      );
     focusFirstInvalid(
       document.querySelector(".expense-dialog[open]:not([inert]) .dialog-body"),
       errorRef.current,
     );
     toast(
       "error",
-      e instanceof Error ? e.message : "Chưa hoàn tất. Hãy thử lại.",
+      e instanceof Error ? e.message : tr("Chưa hoàn tất. Hãy thử lại."),
     );
   }
   function action(): FundAction {
@@ -223,7 +233,7 @@ function Editor({
         {
           code: "custom",
           path: ["occurredAt"],
-          message: "Nhập thời điểm giao dịch hợp lệ.",
+          message: tr("Nhập thời điểm giao dịch hợp lệ."),
         },
       ]);
     const transaction = {
@@ -253,6 +263,7 @@ function Editor({
     );
   }
   async function submit() {
+    if (focusInvalidNumber(document.getElementById(`${id}-fields`))) return;
     if (hidden) return;
     setBusy(true);
     setError("");
@@ -272,7 +283,7 @@ function Editor({
       else {
         writing = true;
         await fundsJSON("/commands", command);
-        toast("success", "Đã lưu thay đổi.");
+        toast("success", tr("Đã lưu thay đổi."));
         onSaved();
       }
     } catch (e) {
@@ -287,7 +298,9 @@ function Editor({
       if (unknownWrite)
         toast(
           "warning",
-          "Chưa xác nhận được kết quả lưu. Kiểm tra hoặc thử lại cùng yêu cầu.",
+          tr(
+            "Chưa xác nhận được kết quả lưu. Kiểm tra hoặc thử lại cùng yêu cầu.",
+          ),
         );
       else report(e);
       setConflict(
@@ -300,10 +313,11 @@ function Editor({
     }
   }
   function next() {
+    if (focusInvalidNumber(document.getElementById(`${id}-fields`))) return;
     try {
       if (step === 0) {
         if (applyLiving || !config) selectLiving(view.source, jarIds);
-        else if (!jarIds.length) throw new Error("Chọn hũ sinh hoạt.");
+        else if (!jarIds.length) throw new Error(tr("Chọn hũ sinh hoạt."));
       }
       if (step === 1)
         z.object({ multipliers: multipliersSchema }).parse({ multipliers });
@@ -353,7 +367,7 @@ function Editor({
         )}
         {err && (
           <small id={`${fieldId(key)}-error`} className="fund-field-error">
-            {err}
+            {tr(err)}
           </small>
         )}
       </div>
@@ -366,15 +380,12 @@ function Editor({
     return field(
       key,
       label,
-      <input
+      <LocalizedInput
         id={fieldId(key)}
         value={f[key]}
         required={key !== "note"}
-        onChange={(e) => {
-          const value =
-            key === "amount" ? integerInput(e.target.value) : e.target.value;
-          if (value !== null) set(key, value);
-        }}
+        numberKind={key === "amount" ? "integer" : undefined}
+        onValueChange={(value) => set(key, value)}
         onBlur={() => {
           if (key === "amount") set(key, normalizeInteger(f.amount));
         }}
@@ -387,7 +398,7 @@ function Editor({
         }
         inputMode={key === "amount" ? "numeric" : undefined}
         readOnly={key === "amount" && hidden}
-        maxLength={key === "amount" ? 24 : 1000}
+        maxLength={key === "amount" ? 40 : 1000}
         max={
           key === "occurredAt"
             ? localDateTime(new Date().toISOString())
@@ -426,13 +437,13 @@ function Editor({
         value={f[key]}
         onChange={(e) => set(key, e.target.value)}
       >
-        <option value="">Chọn nơi giữ</option>
+        <option value="">{tr("Chọn nơi giữ")}</option>
         {view.book?.locations
           .filter((l) => l.active || l.id === f[key])
           .map((l) => (
             <option key={l.id} value={l.id}>
               {l.name}
-              {!l.active ? " · Đã ngừng" : ""}
+              {!l.active ? tr(" · Đã ngừng") : ""}
             </option>
           ))}
       </select>,
@@ -460,12 +471,12 @@ function Editor({
         if (!before) return [];
         return [
           {
-            label: `${fundNames[after.id]} · Số dư`,
+            label: tr("{0} · Số dư", { 0: fundNames[after.id] }),
             before: before.balance,
             after: after.balance,
           },
           {
-            label: `${fundNames[after.id]} · Mục tiêu`,
+            label: tr("{0} · Mục tiêu", { 0: fundNames[after.id] }),
             before: before.target,
             after: after.target,
           },
@@ -483,7 +494,7 @@ function Editor({
         const [fund, locationId] = key.split(":");
         return [
           {
-            label: `${fundNames[fund as FundId]} · ${view.book?.locations.find((item) => item.id === locationId)?.name ?? "Nơi giữ tiền"}`,
+            label: `${fundNames[fund as FundId]} · ${view.book?.locations.find((item) => item.id === locationId)?.name ?? tr("Nơi giữ tiền")}`,
             before,
             after,
           },
@@ -505,7 +516,7 @@ function Editor({
             onClick={onClose}
           >
             <X size={17} aria-hidden="true" />
-            Hủy
+            {tr("Hủy")}
           </button>
           {mode.type === "configure" && step > 0 && !preview && (
             <button
@@ -513,12 +524,12 @@ function Editor({
               disabled={busy || uncertain}
               onClick={() => setStep((s) => s - 1)}
             >
-              Quay lại
+              {tr("Quay lại")}
             </button>
           )}
           {mode.type === "configure" && step < 2 && !preview ? (
             <button className="expense-primary" disabled={busy} onClick={next}>
-              Tiếp tục
+              {tr("Tiếp tục")}
             </button>
           ) : (
             <button
@@ -534,7 +545,7 @@ function Editor({
               ) : (
                 <ScanEye size={17} aria-hidden="true" />
               )}
-              {preview ? "Xác nhận lưu" : "Xem trước thay đổi"}
+              {preview ? tr("Xác nhận lưu") : tr("Xem trước thay đổi")}
             </button>
           )}
         </div>
@@ -544,7 +555,7 @@ function Editor({
         <span className="required-mark" aria-hidden="true">
           *
         </span>{" "}
-        là thông tin cần nhập.
+        {tr("là thông tin cần nhập.")}
       </p>
       <PrivacyReveal />
       <HelpButton
@@ -556,7 +567,7 @@ function Editor({
               ? "locations"
               : "transactions"
         }
-        label="Hiểu mục tiêu và số dư quỹ"
+        label={tr("Hiểu mục tiêu và số dư quỹ")}
       />
       {error && (
         <div
@@ -565,7 +576,7 @@ function Editor({
           tabIndex={-1}
           ref={errorRef}
         >
-          {error}
+          {tr(error)}
           {Object.keys(fieldErrors).length > 0 && (
             <ul>
               {Object.entries(fieldErrors).map(([key, message]) => (
@@ -573,7 +584,7 @@ function Editor({
                   <a
                     href={`#${fieldId(key.startsWith("multipliers.") ? key : key.split(".").at(-1)!)}`}
                   >
-                    {message}
+                    {tr(message)}
                   </a>
                 </li>
               ))}
@@ -583,8 +594,9 @@ function Editor({
       )}
       {uncertain && (
         <p role="status">
-          Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu để
-          kiểm tra lại cùng yêu cầu.
+          {tr(
+            "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu để kiểm tra lại cùng yêu cầu.",
+          )}
         </p>
       )}
       {conflict && (
@@ -604,31 +616,35 @@ function Editor({
             }
           }}
         >
-          Tải dữ liệu mới, giữ nội dung nhập
+          {tr("Tải dữ liệu mới, giữ nội dung nhập")}
         </button>
       )}
-      <fieldset className="fund-fields" disabled={busy || uncertain}>
+      <fieldset
+        id={`${id}-fields`}
+        className="fund-fields"
+        disabled={busy || uncertain}
+      >
         {mode.type === "configure" ? (
           <>
             <p className="eyebrow">
-              Bước {step + 1}/3 ·{" "}
+              {tr("Bước")} {step + 1}/3 ·{" "}
               {step === 0
-                ? "Chi phí sinh hoạt"
+                ? tr("Chi phí sinh hoạt")
                 : step === 1
-                  ? "Quy mô dự phòng"
-                  : "Thứ tự ưu tiên"}
+                  ? tr("Quy mô dự phòng")
+                  : tr("Thứ tự ưu tiên")}
             </p>
             {step === 0 && (
               <>
                 <p>
-                  Living expense là chi phí thiết yếu để duy trì cuộc sống mỗi
-                  tháng. Chọn những hũ bạn cần tiếp tục chi ngay cả khi thu nhập
-                  bị gián đoạn.
+                  {tr(
+                    "Living expense là chi phí thiết yếu để duy trì cuộc sống mỗi tháng. Chọn những hũ bạn cần tiếp tục chi ngay cả khi thu nhập bị gián đoạn.",
+                  )}
                 </p>
                 <p className="fund-note">
-                  Dùng mức cấu hình của tháng{" "}
-                  {view.source.month.split("-").reverse().join("/")}; bỏ qua
-                  điều chỉnh riêng từng tháng và hũ tích lũy.
+                  {tr("Dùng mức cấu hình của tháng")}{" "}
+                  {view.source.month.split("-").reverse().join("/")}
+                  {tr("; bỏ qua điều chỉnh riêng từng tháng và hũ tích lũy.")}
                 </p>
                 {config && (
                   <label className="fund-check">
@@ -641,14 +657,14 @@ function Editor({
                         invalidate();
                       }}
                     />
-                    Cập nhật mức sinh hoạt từ Chi tiêu hiện tại
+                    {tr("Cập nhật mức sinh hoạt từ Chi tiêu hiện tại")}
                   </label>
                 )}
                 {!view.source.items.length && (
                   <p>
-                    Chưa có hũ chi tháng đang hoạt động.{" "}
-                    <Link href="/budgets">Thiết lập tại Chi tiêu</Link>, sau đó
-                    tải lại dữ liệu.
+                    {tr("Chưa có hũ chi tháng đang hoạt động.")}{" "}
+                    <Link href="/budgets">{tr("Thiết lập tại Chi tiêu")}</Link>
+                    {tr(", sau đó tải lại dữ liệu.")}
                   </p>
                 )}
                 {options.map((item) => (
@@ -669,37 +685,44 @@ function Editor({
                     <span>
                       {item.name}
                       {!view.source.items.some((i) => i.jarId === item.jarId)
-                        ? " · Không còn hoạt động"
+                        ? tr(" · Không còn hoạt động")
                         : ""}
                     </span>
                     <strong>{money(item.amount)}</strong>
                   </label>
                 ))}
                 <p className="fund-total">
-                  Mức sinh hoạt: <strong>{money(livingTotal)}/tháng</strong>
+                  {tr("Mức sinh hoạt:")}{" "}
+                  <strong>
+                    {money(livingTotal)}
+                    {tr("/tháng")}
+                  </strong>
                 </p>
               </>
             )}
             {step === 1 && (
               <>
                 <p>
-                  Nhập số tháng muốn dự phòng cho từng quỹ. Ví dụ phép tính: 2
-                  tháng × mức sinh hoạt. Chọn hệ số phù hợp hoàn cảnh của bạn.
+                  {tr(
+                    "Nhập số tháng muốn dự phòng cho từng quỹ. Ví dụ phép tính: 2 tháng × mức sinh hoạt. Chọn hệ số phù hợp hoàn cảnh của bạn.",
+                  )}
                 </p>
                 {fundIds.map((k) =>
                   field(
                     `multipliers.${k}`,
-                    `${fundNames[k]} — hệ số x`,
-                    <input
+                    tr("{0} — hệ số x", { 0: fundNames[k] }),
+                    <LocalizedInput
+                      numberKind="decimal"
+                      precision={2}
                       key={k}
                       id={fieldId(`multipliers.${k}`)}
                       inputMode="decimal"
                       autoComplete="off"
                       value={multipliers[k]}
-                      onChange={(e) => {
+                      onValueChange={(value) => {
                         setMultipliers((s) => ({
                           ...s,
-                          [k]: e.target.value.replace(",", "."),
+                          [k]: value,
                         }));
                         invalidate();
                       }}
@@ -707,16 +730,18 @@ function Editor({
                   ),
                 )}
                 <p className="fund-note">
-                  Mục tiêu bằng mức sinh hoạt đã xác nhận nhân x; số tiền làm
-                  tròn lên đồng VND.
+                  {tr(
+                    "Mục tiêu bằng mức sinh hoạt đã xác nhận nhân x; số tiền làm tròn lên đồng VND.",
+                  )}
                 </p>
               </>
             )}
             {step === 2 && (
               <>
                 <p>
-                  Quỹ chưa đủ đầu tiên trong thứ tự này sẽ là bước tiếp theo của
-                  bạn. Bạn có thể đổi thứ tự sau.
+                  {tr(
+                    "Quỹ chưa đủ đầu tiên trong thứ tự này sẽ là bước tiếp theo của bạn. Bạn có thể đổi thứ tự sau.",
+                  )}
                 </p>
                 <ol className="fund-priorities">
                   {priority.map((k, i) => (
@@ -724,7 +749,7 @@ function Editor({
                       <span>{fundNames[k]}</span>
                       <button
                         className="expense-icon-button"
-                        aria-label={`Ưu tiên ${fundNames[k]} lên`}
+                        aria-label={tr("Ưu tiên {0} lên", { 0: fundNames[k] })}
                         disabled={i === 0}
                         onClick={() => {
                           setPriority((s) => {
@@ -739,7 +764,9 @@ function Editor({
                       </button>
                       <button
                         className="expense-icon-button"
-                        aria-label={`Ưu tiên ${fundNames[k]} xuống`}
+                        aria-label={tr("Ưu tiên {0} xuống", {
+                          0: fundNames[k],
+                        })}
                         disabled={i === 2}
                         onClick={() => {
                           setPriority((s) => {
@@ -760,7 +787,7 @@ function Editor({
           </>
         ) : mode.type === "location" ? (
           <>
-            {input("name", "Tên nơi giữ tiền")}
+            {input("name", tr("Tên nơi giữ tiền"))}
             {location && (
               <label className="fund-check">
                 <input
@@ -768,11 +795,13 @@ function Editor({
                   checked={f.active}
                   onChange={(e) => set("active", e.target.checked)}
                 />
-                Đang sử dụng
+                {tr("Đang sử dụng")}
               </label>
             )}
             <p className="fund-note">
-              Nơi giữ là nhãn ghi sổ trong Fund. Số dư được tách cho từng quỹ.
+              {tr(
+                "Nơi giữ là nhãn ghi sổ trong Fund. Số dư được tách cho từng quỹ.",
+              )}
             </p>
           </>
         ) : (
@@ -781,7 +810,7 @@ function Editor({
               <>
                 {field(
                   "kind",
-                  "Loại giao dịch",
+                  tr("Loại giao dịch"),
                   <select
                     id={fieldId("kind")}
                     value={f.kind}
@@ -789,65 +818,76 @@ function Editor({
                       set("kind", e.target.value as FundTransaction["kind"])
                     }
                   >
-                    {Object.entries(transactionNames).map(([k, v]) => (
-                      <option key={k} value={k}>
-                        {v}
-                      </option>
-                    ))}
+                    {Object.entries(localize(transactionNamesSource)).map(
+                      ([k, v]) => (
+                        <option key={k} value={k}>
+                          {v}
+                        </option>
+                      ),
+                    )}
                   </select>,
                 )}
                 <div className="fund-form-grid">
                   {fundSelect(
                     "fundId",
-                    f.kind === "transfer" ? "Quỹ nguồn" : "Quỹ",
+                    f.kind === "transfer" ? tr("Quỹ nguồn") : tr("Quỹ"),
                   )}
                   {locationSelect(
                     "locationId",
-                    f.kind === "transfer" ? "Nơi nguồn" : "Nơi giữ tiền",
+                    f.kind === "transfer"
+                      ? tr("Nơi nguồn")
+                      : tr("Nơi giữ tiền"),
                   )}
                 </div>
                 {f.kind === "transfer" && (
                   <div className="fund-form-grid">
-                    {fundSelect("toFundId", "Quỹ nhận")}
-                    {locationSelect("toLocationId", "Nơi nhận")}
+                    {fundSelect("toFundId", tr("Quỹ nhận"))}
+                    {locationSelect("toLocationId", tr("Nơi nhận"))}
                   </div>
                 )}
-                {input("amount", "Số tiền (VND)")}
-                {input("occurredAt", "Thời điểm giao dịch (giờ Việt Nam)")}
+                {input("amount", tr("Số tiền (VND)"))}
+                {input("occurredAt", tr("Thời điểm giao dịch (giờ Việt Nam)"))}
                 {input(
                   "note",
                   f.kind === "withdraw" || f.kind === "transfer"
-                    ? "Lý do giao dịch"
-                    : "Ghi chú",
+                    ? tr("Lý do giao dịch")
+                    : tr("Ghi chú"),
                 )}
                 {!view.book?.locations.some((l) => l.active) && (
-                  <p>Thêm nơi giữ tiền trước khi ghi giao dịch.</p>
+                  <p>{tr("Thêm nơi giữ tiền trước khi ghi giao dịch.")}</p>
                 )}
               </>
             )}
             {mode.type === "cancel" && old && (
               <p>
-                Hủy {transactionNames[old.kind].toLowerCase()}{" "}
-                {money(old.amount)} · {displayTime(old.occurredAt)}. Bản gốc vẫn
-                được giữ trong lịch sử.
+                {tr("Hủy giao dịch")}{" "}
+                {localize(transactionNamesSource)[old.kind].toLowerCase()}{" "}
+                {money(old.amount)} · {displayTime(old.occurredAt, locale)}
+                {tr(". Bản gốc vẫn được giữ trong lịch sử.")}
               </p>
             )}
             {(mode.type === "revise" || mode.type === "cancel") &&
-              input("reason", "Lý do sửa hoặc hủy")}
+              input("reason", tr("Lý do sửa hoặc hủy"))}
           </>
         )}
       </fieldset>
       {preview && (
-        <section className="fund-preview" aria-label="Xem trước thay đổi">
-          <h3>Kiểm tra thay đổi</h3>
+        <section className="fund-preview" aria-label={tr("Xem trước thay đổi")}>
+          <h3>{tr("Kiểm tra thay đổi")}</h3>
           <p className="fund-preview-summary">
             {mode.type === "configure"
-              ? "Điều chỉnh mục tiêu Quỹ an toàn"
+              ? tr("Điều chỉnh mục tiêu Quỹ an toàn")
               : mode.type === "location"
-                ? `${location?.name ?? "Thêm nơi giữ tiền"} → ${f.name} · ${f.active ? "Đang sử dụng" : "Ngừng sử dụng"}`
+                ? `${location?.name ?? tr("Thêm nơi giữ tiền")} → ${f.name} · ${f.active ? tr("Đang sử dụng") : tr("Ngừng sử dụng")}`
                 : mode.type === "cancel"
-                  ? `Hủy ${old ? transactionNames[old.kind].toLowerCase() : "giao dịch"}`
-                  : `${transactionNames[f.kind]} · ${fundNames[f.fundId as FundId]} · ${money(f.amount)}`}
+                  ? tr("Hủy {0}", {
+                      0: old
+                        ? localize(transactionNamesSource)[
+                            old.kind
+                          ].toLowerCase()
+                        : tr("giao dịch"),
+                    })
+                  : `${localize(transactionNamesSource)[f.kind]} · ${fundNames[f.fundId as FundId]} · ${money(f.amount)}`}
           </p>
           <FundChangeTable
             rows={[
@@ -856,7 +896,7 @@ function Editor({
                 preview.result.afterConfig.living.total
                 ? [
                     {
-                      label: "Mức sinh hoạt / tháng",
+                      label: tr("Mức sinh hoạt / tháng"),
                       before: preview.result.beforeConfig?.living.total ?? "0",
                       after: preview.result.afterConfig.living.total,
                     },
@@ -871,18 +911,23 @@ function Editor({
             mode.type === "configure" ||
             old) && (
             <details className="fund-preview-details">
-              <summary>Chi tiết giao dịch và nơi giữ tiền</summary>
+              <summary>{tr("Chi tiết giao dịch và nơi giữ tiền")}</summary>
               {old && (
                 <p>
-                  Giao dịch trước: {transactionNames[old.kind]} ·{" "}
+                  {tr("Giao dịch trước:")}{" "}
+                  {localize(transactionNamesSource)[old.kind]} ·{" "}
                   {fundNames[old.fundId]} · {money(old.amount)} ·{" "}
-                  {displayTime(old.occurredAt)}
+                  {displayTime(old.occurredAt, locale)}
                 </p>
               )}
               {mode.type === "configure" && (
                 <p>
-                  Nguồn tháng {preview.result.afterConfig.living.month} · Ưu
-                  tiên:{" "}
+                  {tr("Nguồn tháng")}{" "}
+                  {formatMonth(
+                    preview.result.afterConfig.living.month!,
+                    locale,
+                  )}{" "}
+                  {tr("· Ưu tiên:")}{" "}
                   {preview.result.afterConfig.priority
                     .map((key) => fundNames[key])
                     .join(" → ")}
@@ -898,7 +943,7 @@ function Editor({
             </details>
           )}
           <p className="fund-note">
-            Chưa ghi dữ liệu. Kiểm tra nội dung rồi xác nhận lưu.
+            {tr("Chưa ghi dữ liệu. Kiểm tra nội dung rồi xác nhận lưu.")}
           </p>
         </section>
       )}
@@ -915,21 +960,25 @@ function FundChangeTable({
   money: (value: string) => string;
   hidden: boolean;
 }) {
+  const { t: tr, locale } = useI18n("funds");
+
   if (!rows.length)
     return (
-      <p className="fund-note">Không có số dư hoặc mục tiêu nào thay đổi.</p>
+      <p className="fund-note">
+        {tr("Không có số dư hoặc mục tiêu nào thay đổi.")}
+      </p>
     );
   return (
     <div
       className="fund-change-table"
       role="table"
-      aria-label="Các giá trị thay đổi"
+      aria-label={tr("Các giá trị thay đổi")}
     >
       <div className="fund-change-row fund-change-header" role="row">
-        <span role="columnheader">Thông tin</span>
-        <span role="columnheader">Trước</span>
+        <span role="columnheader">{tr("Thông tin")}</span>
+        <span role="columnheader">{tr("Trước")}</span>
         <span role="columnheader">Sau</span>
-        <span role="columnheader">Chênh lệch</span>
+        <span role="columnheader">{tr("Chênh lệch")}</span>
       </div>
       {rows.map((row) => {
         const difference = BigInt(row.after) - BigInt(row.before);

@@ -83,3 +83,11 @@ Bảng rộng có lựa chọn cột lưu trên trình duyệt. Form có dấu b
 ## Dòng đọc tiền và kết quả ghi — 21/10/2026
 
 Dialog Ghi giao dịch cùng các form giá/phí/thuế đọc giá trị VND dưới từng ô; lượng vàng giữ đơn vị lượng, không định dạng thành tiền. Dấu `*` sát nhãn và lỗi tại trường có liên kết truy cập. Toast chỉ báo thành công sau ghi nhận, nêu riêng kết quả ghi chưa rõ hoặc lỗi tải lại; footer thao tác cố định khi cuộn nội dung.
+
+## Anh/Việt — 22/10/2026
+
+Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định dạng vi-VN/en-GB, vẫn VND và giờ Việt Nam. Tên/ghi chú và dữ liệu tài chính giữ nguyên. CSV nhận `locale=vi|en` (mặc định vi), dịch tên cột/nhãn hệ thống nhưng giữ số/ngày dạng chuẩn và chống công thức CSV. Không có migration hay đổi cấu trúc backup. Xem [đặc tả ngôn ngữ](localization.md).
+
+## Bố cục và cuộn — 23/10/2026
+
+Tab workspace một hàng cuộn ngang, tự đưa mục đang chọn vào tầm nhìn. Bảng báo cáo dùng scroller chung; toolbar không trôi khi cuộn dữ liệu. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).

@@ -1,7 +1,9 @@
 "use client";
+import { ScrollTabs } from "@/components/scroll-tabs";
+import { useI18n } from "@/i18n/provider";
 
-import { useEffect, useId, useState } from "react";
 import { CheckCircle2, Monitor, Smartphone } from "lucide-react";
+import { useEffect, useId, useState } from "react";
 
 const guides = {
   ios: {
@@ -95,10 +97,14 @@ function InstallIllustration({
   step: number;
   desktop: boolean;
 }) {
+  const { t: tr } = useI18n("settings");
+
   const id = useId();
   return (
     <svg viewBox="0 0 320 180" role="img" aria-labelledby={id}>
-      <title id={id}>{`Minh họa bước ${step}: ${action}`}</title>
+      <title id={id}>
+        {tr("Minh họa bước {0}: {1}", { 0: step, 1: action })}
+      </title>
       <rect
         x={desktop ? 12 : 65}
         y="5"
@@ -171,6 +177,9 @@ function InstallIllustration({
 }
 
 export function InstallGuide() {
+  const { t: tr, config: localize } = useI18n("settings");
+  const localizedGuides = localize(guides);
+
   const [platform, setPlatform] = useState<Platform>("ios");
   const [installed, setInstalled] = useState(false);
   useEffect(() => {
@@ -193,21 +202,21 @@ export function InstallGuide() {
     media.addEventListener("change", sync);
     return () => media.removeEventListener("change", sync);
   }, []);
-  const guide = guides[platform];
+  const guide = localizedGuides[platform];
   return (
     <div>
       {installed && (
         <p className="status-badge">
           <CheckCircle2 size={18} aria-hidden="true" />
-          Bạn đang mở ứng dụng đã cài.
+          {tr("Bạn đang mở ứng dụng đã cài.")}
         </p>
       )}
-      <div
+      <ScrollTabs
         className="install-platforms"
         role="group"
-        aria-label="Thiết bị muốn cài"
+        aria-label={tr("Thiết bị muốn cài")}
       >
-        {Object.entries(guides).map(([key, item]) => (
+        {Object.entries(localizedGuides).map(([key, item]) => (
           <button
             className="expense-secondary"
             key={key}
@@ -223,7 +232,7 @@ export function InstallGuide() {
             {item.name}
           </button>
         ))}
-      </div>
+      </ScrollTabs>
       <ol className="install-steps">
         {guide.steps.map(([title, description, action], index) => (
           <li key={title}>
@@ -238,15 +247,17 @@ export function InstallGuide() {
         ))}
       </ol>
       <p className="expense-muted">
-        Hình minh họa thao tác; vị trí và tên menu có thể khác theo phiên bản
-        trình duyệt.{" "}
+        {tr(
+          "Hình minh họa thao tác; vị trí và tên menu có thể khác theo phiên bản trình duyệt.",
+        )}{" "}
         <a href={guide.source} target="_blank" rel="noreferrer">
-          Xem hướng dẫn chính thức ↗
+          {tr("Xem hướng dẫn chính thức ↗")}
         </a>
       </p>
       <p>
-        Cần kết nối mạng để xem và lưu dữ liệu. Việc cài lên màn hình chính
-        không bật tính năng nhập ngoại tuyến.
+        {tr(
+          "Cần kết nối mạng để xem và lưu dữ liệu. Việc cài lên màn hình chính không bật tính năng nhập ngoại tuyến.",
+        )}
       </p>
     </div>
   );

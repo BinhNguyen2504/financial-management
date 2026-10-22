@@ -78,3 +78,7 @@ Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành (`fm-visual-theme`) 
 ## Phản hồi khôi phục — 21/10/2026
 
 File không hợp lệ báo lỗi ngay gần vùng chọn file và liên kết lỗi với nút chọn. Khôi phục tài chính thành công mới hiện toast thành công; nếu tiếp theo lưu hồ sơ lỗi, báo riêng phần hồ sơ và giữ kết quả tài chính đã ghi. Mất xác nhận hoặc lỗi nhập có thông báo tại Cài đặt, không tự kết luận thành công. Giữ bản xem trước và tùy chọn hồ sơ khi có thể thử lại.
+
+## Ngôn ngữ — 22/10/2026
+
+UI sao lưu/khôi phục hỗ trợ Tiếng Việt/English. JSON V1/V2, tên trường, số tiền, ngày và tên do người dùng nhập giữ dạng chuẩn. Lựa chọn `fm-locale`, cookie cùng tên, theme và tùy chọn cột không vào backup. Tùy chọn hồ sơ không bao gồm ngôn ngữ. Xem [ngôn ngữ](localization.md).

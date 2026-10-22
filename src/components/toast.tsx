@@ -1,5 +1,7 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
 
+import { AlertCircle, CheckCircle2, Info, X } from "lucide-react";
 import {
   createContext,
   useContext,
@@ -9,7 +11,6 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { AlertCircle, CheckCircle2, Info, X } from "lucide-react";
 
 type ToastKind = "success" | "error" | "warning";
 type Toast = { id: number; kind: ToastKind; message: string };
@@ -69,6 +70,8 @@ export function ToastViewport({
 }: {
   dialogRef?: RefObject<HTMLDialogElement | null>;
 }) {
+  const { t: tr } = useI18n();
+
   const context = useContext(ToastContext);
   if (
     !context?.toast ||
@@ -94,8 +97,12 @@ export function ToastViewport({
         data-toast-kind={toast.kind}
       >
         <Icon size={20} aria-hidden="true" />
-        <span>{toast.message}</span>
-        <button type="button" onClick={dismiss} aria-label="Đóng thông báo">
+        <span>{tr(toast.message)}</span>
+        <button
+          type="button"
+          onClick={dismiss}
+          aria-label={tr("Đóng thông báo")}
+        >
           <X size={18} aria-hidden="true" />
         </button>
       </div>

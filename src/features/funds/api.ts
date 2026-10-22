@@ -1,3 +1,4 @@
+import { responseFieldErrors, responseMessage } from "@/i18n/error-messages";
 export class FundAPIError extends Error {
   constructor(
     message: string,
@@ -40,10 +41,10 @@ export async function fundsJSON<T>(path = "", body?: unknown): Promise<T> {
   }
   if (!response.ok)
     throw new FundAPIError(
-      data.error ?? "Không thể truy cập Quỹ an toàn.",
+      responseMessage(data, "Không thể truy cập Quỹ an toàn."),
       data.code ?? "REQUEST_FAILED",
       response.status,
-      data.fieldErrors,
+      responseFieldErrors(data),
     );
   return data as T;
 }

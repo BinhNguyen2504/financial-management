@@ -1,6 +1,6 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
 
-import { useEffect, useSyncExternalStore } from "react";
 import {
   Check,
   Monitor,
@@ -9,14 +9,15 @@ import {
   PanelLeftOpen,
   Sun,
 } from "lucide-react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { Garden } from "./garden";
 import {
   displayMode,
-  visualTheme,
-  visualThemes,
-  visualThemeKeys,
   VISUAL_THEME_KEY,
+  visualTheme,
+  visualThemeKeys,
+  visualThemes as visualThemesSource,
 } from "./visual-theme";
 
 const CHANGE = "fm-preference-change";
@@ -74,7 +75,7 @@ export function PreferenceSync() {
   const [storedVisual] = usePreference(VISUAL_THEME_KEY, "forest");
   const theme = displayMode(storedMode);
   const visual = visualTheme(storedVisual);
-  const colors = visualThemes[visual].browserColors;
+  const colors = visualThemesSource[visual].browserColors;
   const [sidebar] = usePreference("fm-sidebar", "expanded");
   useEffect(() => {
     // Read the live snapshot on hydration: the server fallback must not undo
@@ -122,6 +123,8 @@ export function PreferenceSync() {
 }
 
 export function SidebarToggle() {
+  const { t: tr } = useI18n();
+
   const [value, set] = usePreference("fm-sidebar", "expanded");
   const collapsed = value === "collapsed";
   const Icon = collapsed ? PanelLeftOpen : PanelLeftClose;
@@ -129,8 +132,8 @@ export function SidebarToggle() {
     <button
       type="button"
       className="sidebar-toggle icon-action"
-      aria-label={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
-      title={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
+      aria-label={collapsed ? tr("Mở rộng menu") : tr("Thu gọn menu")}
+      title={collapsed ? tr("Mở rộng menu") : tr("Thu gọn menu")}
       aria-expanded={!collapsed}
       aria-controls="app-sidebar"
       onClick={() => set(collapsed ? "expanded" : "collapsed")}
@@ -141,6 +144,8 @@ export function SidebarToggle() {
 }
 
 export function ThemePicker() {
+  const { t: tr, config: localize } = useI18n();
+
   const [storedMode, setMode] = usePreference("fm-theme", "system");
   const [storedVisual, setVisual] = usePreference(VISUAL_THEME_KEY, "forest");
   const value = displayMode(storedMode);
@@ -151,15 +156,17 @@ export function ThemePicker() {
   }
   return (
     <div className="appearance-picker">
-      <h2>Giao diện</h2>
+      <h2>{tr("Giao diện")}</h2>
       <p>
-        Chọn màu phù hợp với bạn. Tùy chọn được ghi nhớ trên trình duyệt này.
+        {tr(
+          "Chọn màu phù hợp với bạn. Tùy chọn được ghi nhớ trên trình duyệt này.",
+        )}
       </p>
       <fieldset className="theme-picker visual-theme-picker">
-        <legend>Chủ đề</legend>
+        <legend>{tr("Chủ đề")}</legend>
         <div className="visual-theme-options">
           {visualThemeKeys.map((key) => {
-            const option = visualThemes[key];
+            const option = localize(visualThemesSource)[key];
             return (
               <label className="visual-theme-card" key={key}>
                 <input
@@ -168,6 +175,7 @@ export function ThemePicker() {
                   value={key}
                   aria-label={`${option.name} — ${option.colorName}`}
                   checked={selected === key}
+                  tabIndex={selected === key ? 0 : -1}
                   onChange={() => changePreference(setVisual, key)}
                 />
                 <div className="theme-card-art">
@@ -187,18 +195,19 @@ export function ThemePicker() {
         </div>
       </fieldset>
       <fieldset className="theme-picker mode-picker">
-        <legend>Chế độ hiển thị</legend>
+        <legend>{tr("Chế độ hiển thị")}</legend>
         <div className="theme-options">
           {[
-            { value: "light", title: "Sáng", Icon: Sun },
-            { value: "dark", title: "Tối", Icon: Moon },
-            { value: "system", title: "Theo hệ thống", Icon: Monitor },
+            { value: "light", title: tr("Sáng"), Icon: Sun },
+            { value: "dark", title: tr("Tối"), Icon: Moon },
+            { value: "system", title: tr("Theo hệ thống"), Icon: Monitor },
           ].map(({ value: option, title, Icon }) => (
             <label key={option}>
               <input
                 type="radio"
                 name="theme"
                 value={option}
+                tabIndex={value === option ? 0 : -1}
                 checked={
                   (value === "light" || value === "dark" ? value : "system") ===
                   option

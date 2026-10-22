@@ -1,20 +1,24 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
+
 import { LoadingSpinner } from "@/components/loading";
 
+import { focusPointerControl } from "@/components/pointer-focus";
+import { initials, profileFields } from "@/features/profile/fields";
+import { useUser } from "@/features/profile/user-provider";
+import { browserAuth } from "@/lib/supabase/browser";
+import { ChevronDown, LogOut, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useId, useEffect, useRef, useState } from "react";
-import { ChevronDown, LogOut, UserRound } from "lucide-react";
-import { browserAuth } from "@/lib/supabase/browser";
-import { useUser } from "@/features/profile/user-provider";
-import { initials, profileFields } from "@/features/profile/fields";
-import { focusPointerControl } from "@/components/pointer-focus";
+import { useEffect, useId, useRef, useState } from "react";
 
 export function UserMenu({
   showSignInLabel = false,
 }: {
   showSignInLabel?: boolean;
 }) {
+  const { t: tr } = useI18n();
+
   const pathname = usePathname();
   const { user, loading, error, reload, setSigningOut } = useUser();
   const [open, setOpen] = useState(false);
@@ -57,7 +61,7 @@ export function UserMenu({
       window.location.replace("/");
     } catch {
       setSigningOut(false);
-      setLogoutError("Chưa thể đăng xuất. Kiểm tra kết nối và thử lại.");
+      setLogoutError(tr("Chưa thể đăng xuất. Kiểm tra kết nối và thử lại."));
       setBusy(false);
     }
   }
@@ -66,7 +70,7 @@ export function UserMenu({
       <span
         className="user-avatar user-loading"
         role="status"
-        aria-label="Đang tải thông tin cá nhân"
+        aria-label={tr("Đang tải thông tin cá nhân")}
       >
         <LoadingSpinner />
       </span>
@@ -75,8 +79,8 @@ export function UserMenu({
     return (
       <button
         className="user-trigger"
-        aria-label="Thử tải thông tin cá nhân"
-        title={error}
+        aria-label={tr("Thử tải thông tin cá nhân")}
+        title={tr(error)}
         onClick={() => void reload()}
       >
         <UserRound size={19} aria-hidden="true" />
@@ -87,14 +91,16 @@ export function UserMenu({
       <Link
         href="/login"
         className="user-trigger"
-        aria-label={showSignInLabel ? "Đăng nhập" : "Đăng nhập tài khoản"}
-        title="Đăng nhập"
+        aria-label={
+          showSignInLabel ? tr("Đăng nhập") : tr("Đăng nhập tài khoản")
+        }
+        title={tr("Đăng nhập")}
       >
         <UserRound size={19} aria-hidden="true" />
-        {showSignInLabel && <span>Đăng nhập</span>}
+        {showSignInLabel && <span>{tr("Đăng nhập")}</span>}
       </Link>
     );
-  const name = profileFields(user.user_metadata).full_name || "Bạn";
+  const name = profileFields(user.user_metadata).full_name || tr("Bạn");
   return (
     <div
       className="user-menu"
@@ -107,7 +113,7 @@ export function UserMenu({
       <button
         ref={trigger}
         className="user-trigger"
-        aria-label={`Tài khoản của ${name}`}
+        aria-label={tr("Tài khoản của {0}", { 0: name })}
         aria-expanded={open}
         aria-controls={id}
         onKeyDown={(event) => {
@@ -142,7 +148,7 @@ export function UserMenu({
             onClick={() => setOpen(false)}
           >
             <UserRound size={18} aria-hidden="true" />
-            Thông tin cá nhân
+            {tr("Thông tin cá nhân")}
           </Link>
           <div className="user-logout">
             <button
@@ -155,12 +161,12 @@ export function UserMenu({
               ) : (
                 <LogOut size={18} aria-hidden="true" />
               )}
-              {busy ? "Đang đăng xuất…" : "Đăng xuất"}
+              {busy ? tr("Đang đăng xuất…") : tr("Đăng xuất")}
             </button>
           </div>
           {logoutError && (
             <p role="alert" className="expense-error">
-              {logoutError}
+              {tr(logoutError)}
             </p>
           )}
         </div>

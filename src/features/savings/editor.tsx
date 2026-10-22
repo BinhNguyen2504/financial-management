@@ -1,25 +1,34 @@
 "use client";
-import { HelpButton } from "@/features/help/provider";
-import { fieldErrorsFromIssues } from "@/lib/field-errors";
-import { Save, X, ScanEye } from "lucide-react";
+import { LocalizedInput } from "@/components/localized-input";
+import { formatDate } from "@/i18n/format";
+import { useI18n } from "@/i18n/provider";
+
+import type { CommandResult } from "@/application/savings";
 import {
-  comparable,
-  normalizedMoneyFields,
-  normalizeInteger,
-  integerInput,
-} from "@/lib/form-values";
-import { FormErrorSummary } from "@/components/form-feedback";
-import { focusFirstInvalid } from "@/components/form-feedback";
-import { MoneyHint } from "@/components/money-hint";
-import { useToast } from "@/components/toast";
-import { LoadingSpinner } from "@/components/loading";
-import {
+  decimalLabel,
   DialogChanges,
   DialogPreview,
-  decimalLabel,
 } from "@/components/dialog-content";
-import { useRef, useId, useState, type FormEvent, type ReactNode } from "react";
-import { ZodError } from "zod";
+import {
+  focusFirstInvalid,
+  FormErrorSummary,
+} from "@/components/form-feedback";
+import { LoadingSpinner } from "@/components/loading";
+import { MoneyHint } from "@/components/money-hint";
+import {
+  PrivacyReveal,
+  PrivacyScope,
+  useMoney,
+  useMoneyHidden,
+} from "@/components/privacy";
+import { useToast } from "@/components/toast";
+import {
+  nextMonth,
+  quantity,
+  quantityText,
+  replay,
+  ruleAt,
+} from "@/domain/savings/engine";
 import {
   actionSchema,
   transactionSchema,
@@ -28,22 +37,18 @@ import {
   type SavingsTransaction,
 } from "@/domain/savings/schema";
 import type { SavingsCategory, SavingsView } from "@/domain/savings/types";
-import {
-  nextMonth,
-  ruleAt,
-  quantity,
-  quantityText,
-  replay,
-} from "@/domain/savings/engine";
-import type { CommandResult } from "@/application/savings";
 import { ExpenseModal } from "@/features/expenses/modal";
+import { HelpButton } from "@/features/help/provider";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
 import {
-  PrivacyReveal,
-  PrivacyScope,
-  useMoney,
-  useMoneyHidden,
-} from "@/components/privacy";
-import { savingsJSON, SavingsAPIError } from "./api";
+  comparable,
+  normalizedMoneyFields,
+  normalizeInteger,
+} from "@/lib/form-values";
+import { Save, ScanEye, X } from "lucide-react";
+import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { ZodError } from "zod";
+import { SavingsAPIError, savingsJSON } from "./api";
 export const transactionNames: Record<SavingsTransaction["kind"], string> = {
   openingCash: "Số dư tiền mở đầu",
   openingDeposit: "Sổ tiền gửi mở đầu",
@@ -109,6 +114,11 @@ function EditorForm({
   onSaved(): Promise<void>;
   onReload(): Promise<unknown>;
 }) {
+  const { t: tr, locale, config: localize } = useI18n("savings");
+  const localizedTitles = localize(titles);
+  const localizedKindNames = localize(kindNames);
+  const localizedTransactionNames = localize(transactionNames);
+
   const toast = useToast();
   const hidden = useMoneyHidden(),
     money = useMoney(),
@@ -229,7 +239,8 @@ function EditorForm({
   function suggestLots() {
     try {
       let remaining = quantity(saleQuantity);
-      if (remaining <= 0n) throw new Error("Nhập lượng muốn bán lớn hơn 0.");
+      if (remaining <= 0n)
+        throw new Error(tr("Nhập lượng muốn bán lớn hơn 0."));
       const next: Record<string, string> = {};
       for (const lot of saleLots) {
         const q = quantity(lot.quantity),
@@ -240,12 +251,14 @@ function EditorForm({
         }
       }
       if (remaining > 0n)
-        throw new Error("Lượng muốn bán vượt lượng vàng còn giữ.");
+        throw new Error(tr("Lượng muốn bán vượt lượng vàng còn giữ."));
       setAllocations(next);
       setPreview(null);
       setError("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Kiểm tra số lượng muốn bán.");
+      setError(
+        e instanceof Error ? e.message : tr("Kiểm tra số lượng muốn bán."),
+      );
     }
   }
   const txAsset = txKind.includes("Gold")
@@ -494,7 +507,7 @@ function EditorForm({
       else {
         writing = true;
         await savingsJSON("/commands", command);
-        toast("success", "Đã lưu thay đổi.");
+        toast("success", tr("Đã lưu thay đổi."));
         await onSaved();
       }
     } catch (e) {
@@ -509,10 +522,10 @@ function EditorForm({
         setFieldErrors(e.fieldErrors);
       setError(
         e instanceof ZodError
-          ? "Kiểm tra các trường được đánh dấu."
+          ? tr("Kiểm tra các trường được đánh dấu.")
           : e instanceof Error
             ? e.message
-            : "Không thể lưu.",
+            : tr("Không thể lưu."),
       );
       if (e instanceof SavingsAPIError && e.code === "VERSION_CONFLICT") {
         setConflict(true);
@@ -527,10 +540,10 @@ function EditorForm({
       toast(
         unknownWrite ? "warning" : "error",
         unknownWrite
-          ? "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu."
+          ? tr("Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.")
           : e instanceof Error
             ? e.message
-            : "Chưa hoàn tất. Hãy thử lại.",
+            : tr("Chưa hoàn tất. Hãy thử lại."),
       );
     } finally {
       setBusy(false);
@@ -552,7 +565,7 @@ function EditorForm({
             *
           </span>
         )}
-        <input
+        <LocalizedInput
           aria-label={label}
           id={`savings-field-${key}`}
           name={key}
@@ -569,13 +582,10 @@ function EditorForm({
           inputMode={secret ? "decimal" : undefined}
           value={secret && hidden ? "••••••" : f[key]}
           disabled={busy || (secret && hidden)}
-          onChange={(e) => {
-            const value =
-              secret && key !== "quantity"
-                ? integerInput(e.target.value)
-                : e.target.value;
-            if (value !== null) set(key, value);
-          }}
+          numberKind={
+            secret ? (key === "quantity" ? "decimal" : "integer") : undefined
+          }
+          onValueChange={(value) => set(key, value)}
           onBlur={() => {
             if (secret && key !== "quantity")
               set(key, normalizeInteger(f[key]));
@@ -593,7 +603,7 @@ function EditorForm({
         )}
         {fieldErrors[key] && (
           <small id={`savings-error-${key}`} className="field-error">
-            {fieldErrors[key]}
+            {tr(fieldErrors[key])}
           </small>
         )}
       </label>
@@ -645,7 +655,7 @@ function EditorForm({
         </select>
         {fieldErrors[key] && (
           <small id={`savings-error-${key}`} className="field-error">
-            {fieldErrors[key]}
+            {tr(fieldErrors[key])}
           </small>
         )}
       </label>
@@ -656,8 +666,8 @@ function EditorForm({
     <ExpenseModal
       title={
         old && mode.type === "transaction"
-          ? "Sửa giao dịch có lịch sử"
-          : titles[mode.type]
+          ? tr("Sửa giao dịch có lịch sử")
+          : localizedTitles[mode.type]
       }
       onClose={onClose}
       busy={busy || uncertain}
@@ -671,7 +681,7 @@ function EditorForm({
             onClick={onClose}
             disabled={busy || uncertain}
           >
-            <X size={17} aria-hidden="true" /> Hủy
+            <X size={17} aria-hidden="true" /> {tr("Hủy")}
           </button>
           <button
             form={formId}
@@ -687,10 +697,10 @@ function EditorForm({
               <ScanEye size={17} aria-hidden="true" />
             )}
             {busy
-              ? "Đang xử lý…"
+              ? tr("Đang xử lý…")
               : preview
-                ? "Xác nhận lưu"
-                : "Xem trước thay đổi"}
+                ? tr("Xác nhận lưu")
+                : tr("Xem trước thay đổi")}
           </button>
         </div>
       }
@@ -705,12 +715,13 @@ function EditorForm({
           <span className="required-mark" aria-hidden="true">
             *
           </span>{" "}
-          là thông tin cần nhập.
+          {tr("là thông tin cần nhập.")}
         </p>
         {uncertain && (
           <p role="status" className="expense-notice">
-            Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu
-            để kiểm tra lại cùng yêu cầu.
+            {tr(
+              "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu để kiểm tra lại cùng yêu cầu.",
+            )}
           </p>
         )}
         <PrivacyReveal />
@@ -725,7 +736,7 @@ function EditorForm({
                   ? "tasks"
                   : "assets"
           }
-          label="Hiểu tài sản và giao dịch"
+          label={tr("Hiểu tài sản và giao dịch")}
         />
         <FormErrorSummary errors={fieldErrors} prefix="savings-field-" />
         {error && (
@@ -735,7 +746,7 @@ function EditorForm({
             tabIndex={-1}
             ref={errorRef}
           >
-            {error}
+            {tr(error)}
           </div>
         )}
         {conflict && (
@@ -750,28 +761,30 @@ function EditorForm({
                 pending.current = null;
                 setPreview(null);
                 setConflict(false);
-                setError("Đã tải phiên bản mới. Kiểm tra rồi xem trước lại.");
+                setError(
+                  tr("Đã tải phiên bản mới. Kiểm tra rồi xem trước lại."),
+                );
               } catch (e) {
                 setError(
-                  e instanceof Error ? e.message : "Chưa tải được dữ liệu.",
+                  e instanceof Error ? e.message : tr("Chưa tải được dữ liệu."),
                 );
               } finally {
                 setBusy(false);
               }
             }}
           >
-            Tải dữ liệu mới, giữ nội dung nhập
+            {tr("Tải dữ liệu mới, giữ nội dung nhập")}
           </button>
         )}
         <fieldset className="dialog-form-section" disabled={busy || uncertain}>
-          <legend>Thông tin giao dịch / danh mục</legend>
+          <legend>{tr("Thông tin giao dịch / danh mục")}</legend>
           {["create", "configure"].includes(mode.type) && (
             <>
-              {input("name", "Tên danh mục")}
-              {input("description", "Mô tả", "text", false, false)}
+              {input("name", tr("Tên danh mục"))}
+              {input("description", tr("Mô tả"), "text", false, false)}
               {select(
                 "emoji",
-                "Biểu tượng",
+                tr("Biểu tượng"),
                 ["🌱", "💰", "🏦", "🪙", "💛", "🏡", "✈️", "🎯"].map((v) => (
                   <option key={v}>{v}</option>
                 )),
@@ -780,8 +793,8 @@ function EditorForm({
                 <>
                   {select(
                     "kind",
-                    "Loại tài sản",
-                    Object.entries(kindNames).map(([k, v]) => (
+                    tr("Loại tài sản"),
+                    Object.entries(localizedKindNames).map(([k, v]) => (
                       <option key={k} value={k}>
                         {v}
                       </option>
@@ -790,11 +803,13 @@ function EditorForm({
                   {f.kind === "gold" &&
                     select(
                       "unit",
-                      "Đơn vị vàng",
+                      tr("Đơn vị vàng"),
                       <>
-                        <option value="">Chọn đơn vị</option>
+                        <option value="">{tr("Chọn đơn vị")}</option>
                         {["chỉ", "lượng/cây", "gram"].map((v) => (
-                          <option key={v}>{v}</option>
+                          <option key={v} value={v}>
+                            {tr(v)}
+                          </option>
                         ))}
                       </>,
                     )}
@@ -812,19 +827,23 @@ function EditorForm({
           ].includes(mode.type) &&
             input(
               "month",
-              mode.type === "create" ? "Tháng bắt đầu" : "Tháng hiệu lực",
+              mode.type === "create"
+                ? tr("Tháng bắt đầu")
+                : tr("Tháng hiệu lực"),
               "month",
             )}
           {mode.type === "archive" && (
             <p className="expense-notice">
-              Chỉ lưu trữ sau khi xử lý hết tiền, vàng và sổ tiền gửi. Chọn
-              tháng sau lần giao dịch cuối; lịch sử và báo cáo vẫn được giữ.
+              {tr(
+                "Chỉ lưu trữ sau khi xử lý hết tiền, vàng và sổ tiền gửi. Chọn tháng sau lần giao dịch cuối; lịch sử và báo cáo vẫn được giữ.",
+              )}
             </p>
           )}
           {mode.type === "reopen" && (
             <p className="expense-notice">
-              Tháng được chọn và các tháng đã chốt sau đó sẽ cần chốt lại.
-              Snapshot cũ vẫn được giữ.
+              {tr(
+                "Tháng được chọn và các tháng đã chốt sau đó sẽ cần chốt lại. Snapshot cũ vẫn được giữ.",
+              )}
             </p>
           )}
           {mode.type === "close" && (
@@ -836,29 +855,31 @@ function EditorForm({
                   set("acceptStalePrices", String(e.target.checked))
                 }
               />
-              Chấp nhận giá vàng mang từ tháng trước
+              {tr("Chấp nhận giá vàng mang từ tháng trước")}
             </label>
           )}
           {mode.type === "price" && (
             <>
               {select(
                 "categoryId",
-                "Danh mục vàng",
+                tr("Danh mục vàng"),
                 <>
-                  <option value="">Chọn danh mục</option>
+                  <option value="">{tr("Chọn danh mục")}</option>
                   {categories
                     .filter((c) => c.kind === "gold")
                     .map((c) => (
                       <option key={c.id} value={c.id}>
-                        {names(c)} · {c.unit}
+                        {names(c)} · {tr(c.unit ?? "")}
                       </option>
                     ))}
                 </>,
               )}
-              {input("date", "Ngày giá", "date")}
+              {input("date", tr("Ngày giá"), "date")}
               {input(
                 "unitPrice",
-                `Giá bán lại dự kiến (VND/${selectedCategory?.unit ?? "đơn vị"})`,
+                tr("Giá bán lại dự kiến (VND/{0})", {
+                  0: tr(selectedCategory?.unit ?? "đơn vị"),
+                }),
                 "text",
                 true,
               )}
@@ -868,8 +889,8 @@ function EditorForm({
             <>
               {select(
                 "transactionKind",
-                "Loại giao dịch",
-                Object.entries(transactionNames).map(([k, v]) => (
+                tr("Loại giao dịch"),
+                Object.entries(localizedTransactionNames).map(([k, v]) => (
                   <option key={k} value={k}>
                     {v}
                   </option>
@@ -877,9 +898,9 @@ function EditorForm({
               )}
               {select(
                 "categoryId",
-                "Danh mục",
+                tr("Danh mục"),
                 <>
-                  <option value="">Chọn danh mục</option>
+                  <option value="">{tr("Chọn danh mục")}</option>
                   {categories
                     .filter((c) => c.kind === txAsset)
                     .map((c) => (
@@ -889,28 +910,31 @@ function EditorForm({
                     ))}
                 </>,
               )}
-              {input("date", "Ngày giao dịch", "date")}
+              {input("date", tr("Ngày giao dịch"), "date")}
               {txKind.startsWith("opening") && (
                 <p className="expense-notice">
-                  Tài sản có sẵn tại ngày bắt đầu theo dõi, không tính là tiền
-                  nạp mới.
+                  {tr(
+                    "Tài sản có sẵn tại ngày bắt đầu theo dõi, không tính là tiền nạp mới.",
+                  )}
                 </p>
               )}
               {hasAmount &&
                 input(
                   "amount",
                   txKind === "openingGold"
-                    ? "Giá vốn mở đầu (VND)"
+                    ? tr("Giá vốn mở đầu (VND)")
                     : txKind === "withdrawDeposit"
-                      ? "Gốc rút (VND)"
-                      : "Số tiền (VND)",
+                      ? tr("Gốc rút (VND)")
+                      : tr("Số tiền (VND)"),
                   "text",
                   true,
                 )}
               {["openingGold", "buyGold"].includes(txKind) &&
                 input(
                   "quantity",
-                  `Số lượng (${selectedCategory?.unit ?? "đơn vị"})`,
+                  tr("Số lượng ({0})", {
+                    0: tr(selectedCategory?.unit ?? "đơn vị"),
+                  }),
                   "text",
                   true,
                 )}
@@ -918,17 +942,17 @@ function EditorForm({
                 input(
                   "unitPrice",
                   txKind === "buyGold"
-                    ? "Giá mua mỗi đơn vị (VND)"
-                    : "Giá bán lại mỗi đơn vị (VND)",
+                    ? tr("Giá mua mỗi đơn vị (VND)")
+                    : tr("Giá bán lại mỗi đơn vị (VND)"),
                   "text",
                   true,
                 )}
               {hasContract &&
                 select(
                   "contractId",
-                  "Sổ tiền gửi",
+                  tr("Sổ tiền gửi"),
                   <>
-                    <option value="">Chọn sổ</option>
+                    <option value="">{tr("Chọn sổ")}</option>
                     {inventory.contracts
                       .filter((c) => c.categoryId === f.categoryId)
                       .map((c) => (
@@ -940,27 +964,33 @@ function EditorForm({
                 )}
               {opensContract && (
                 <>
-                  {input("name", "Tên sổ")}
-                  {input("maturity", "Ngày đáo hạn", "date")}
-                  {input("term", "Kỳ hạn / ghi chú sổ", "text", false, false)}
+                  {input("name", tr("Tên sổ"))}
+                  {input("maturity", tr("Ngày đáo hạn"), "date")}
+                  {input(
+                    "term",
+                    tr("Kỳ hạn / ghi chú sổ"),
+                    "text",
+                    false,
+                    false,
+                  )}
                 </>
               )}
               {["withdrawDeposit", "rollover"].includes(txKind) &&
-                input("interest", "Lãi thực nhận (VND)", "text", true)}
+                input("interest", tr("Lãi thực nhận (VND)"), "text", true)}
               {txKind === "rollover" &&
                 input(
                   "reinvestInterest",
-                  "Lãi nhập sổ mới (VND)",
+                  tr("Lãi nhập sổ mới (VND)"),
                   "text",
                   true,
                 )}
               {txKind === "interest" &&
                 select(
                   "capitalize",
-                  "Cách nhận lãi",
+                  tr("Cách nhận lãi"),
                   <>
-                    <option value="true">Nhập gốc sổ hiện tại</option>
-                    <option value="false">Nhận tiền</option>
+                    <option value="true">{tr("Nhập gốc sổ hiện tại")}</option>
+                    <option value="false">{tr("Nhận tiền")}</option>
                   </>,
                 )}
               {hasWallet &&
@@ -968,13 +998,13 @@ function EditorForm({
                 select(
                   "cashCategoryId",
                   ["buyGold", "openDeposit"].includes(txKind)
-                    ? "Nguồn tiền"
-                    : "Ví nhận tiền",
+                    ? tr("Nguồn tiền")
+                    : tr("Ví nhận tiền"),
                   <>
                     <option value="">
                       {txKind === "transfer"
-                        ? "Chọn ví nhận"
-                        : "Bên ngoài Tiết kiệm"}
+                        ? tr("Chọn ví nhận")
+                        : tr("Bên ngoài Tiết kiệm")}
                     </option>
                     {categories
                       .filter((c) => c.kind === "cash" && c.id !== f.categoryId)
@@ -987,24 +1017,27 @@ function EditorForm({
                 )}
               {hasCharges && (
                 <fieldset className="dialog-form-section">
-                  <legend>Phí và thuế</legend>
+                  <legend>{tr("Phí và thuế")}</legend>
                   <div className="savings-form-grid">
-                    {input("fee", "Phí (VND)", "text", true)}
-                    {input("tax", "Thuế (VND)", "text", true)}
+                    {input("fee", tr("Phí (VND)"), "text", true)}
+                    {input("tax", tr("Thuế (VND)"), "text", true)}
                   </div>
                 </fieldset>
               )}
               {txKind === "sellGold" && (
                 <fieldset>
-                  <legend>Chọn đợt mua để bán · ưu tiên đợt cũ nhất</legend>
+                  <legend>
+                    {tr("Chọn đợt mua để bán · ưu tiên đợt cũ nhất")}
+                  </legend>
                   <label>
-                    Tổng lượng muốn bán (để gợi ý)
-                    <input
+                    {tr("Tổng lượng muốn bán (để gợi ý)")}
+                    <LocalizedInput
+                      numberKind="decimal"
                       type={hidden ? "password" : "text"}
                       inputMode="decimal"
                       disabled={hidden || busy}
                       value={hidden ? "••••••" : saleQuantity}
-                      onChange={(e) => setSaleQuantity(e.target.value)}
+                      onValueChange={setSaleQuantity}
                     />
                   </label>
                   <button
@@ -1013,23 +1046,28 @@ function EditorForm({
                     disabled={hidden || busy || !saleQuantity}
                     onClick={suggestLots}
                   >
-                    Gợi ý theo đợt cũ nhất
+                    {tr("Gợi ý theo đợt cũ nhất")}
                   </button>
                   {saleLots.map((l) => (
                     <label key={l.id}>
-                      Đợt {l.date} · còn {hidden ? "••••••" : l.quantity}{" "}
-                      {selectedCategory?.unit}
-                      <input
-                        aria-label={`Lượng bán đợt ${l.date} ${l.id.slice(0, 4)}`}
+                      {tr("Đợt")} {formatDate(l.date!, locale)} {tr("· còn")}{" "}
+                      {hidden ? "••••••" : decimalLabel(l.quantity, locale)}{" "}
+                      {tr(selectedCategory?.unit ?? "")}
+                      <LocalizedInput
+                        numberKind="decimal"
+                        aria-label={tr("Lượng bán đợt {0} {1}", {
+                          0: l.date,
+                          1: l.id.slice(0, 4),
+                        })}
                         type={hidden ? "password" : "text"}
                         inputMode="decimal"
                         disabled={busy || hidden}
                         value={hidden ? "••••••" : (allocations[l.id] ?? "")}
                         placeholder="0"
-                        onChange={(e) => {
+                        onValueChange={(value) => {
                           setAllocations((a) => ({
                             ...a,
-                            [l.id]: e.target.value,
+                            [l.id]: value,
                           }));
                           setPreview(null);
                         }}
@@ -1037,35 +1075,36 @@ function EditorForm({
                     </label>
                   ))}
                   <p className="expense-muted">
-                    Nhập lượng bán vào một hoặc nhiều đợt; để trống những đợt
-                    không bán.
+                    {tr(
+                      "Nhập lượng bán vào một hoặc nhiều đợt; để trống những đợt không bán.",
+                    )}
                   </p>
                 </fieldset>
               )}
-              {input("note", "Ghi chú", "text", false, false)}
+              {input("note", tr("Ghi chú"), "text", false, false)}
             </>
           )}
           {(mode.type === "reopen" ||
             mode.type === "void" ||
             (old && mode.type === "transaction")) &&
-            input("reason", "Lý do thay đổi")}
+            input("reason", tr("Lý do thay đổi"))}
         </fieldset>
         {preview && (
           <DialogPreview className="savings-preview">
-            <h3>Xem trước thay đổi</h3>
+            <h3>{tr("Xem trước thay đổi")}</h3>
             <DialogChanges
               numeric
               rows={[
                 {
                   key: "total",
-                  label: "Tài sản tiết kiệm",
+                  label: tr("Tài sản tiết kiệm"),
                   before:
                     preview.result.before.total === null
-                      ? "Thiếu định giá"
+                      ? tr("Thiếu định giá")
                       : money(preview.result.before.total),
                   after:
                     preview.result.after.total === null
-                      ? "Thiếu định giá"
+                      ? tr("Thiếu định giá")
                       : money(preview.result.after.total),
                 },
                 ...preview.result.after.positions.flatMap((p) => {
@@ -1080,18 +1119,18 @@ function EditorForm({
                     .filter((field) => before?.[field] !== p[field])
                     .map((field) => ({
                       key: `${p.id}/${field}`,
-                      label: `${p.name} · ${{ value: "Giá trị", cost: "Giá vốn", quantity: "Khối lượng" }[field]}`,
+                      label: `${p.name} · ${{ value: tr("Giá trị"), cost: tr("Giá vốn"), quantity: tr("Khối lượng") }[field]}`,
                       before:
                         field === "quantity"
-                          ? `${hidden ? "••••••" : decimalLabel(before?.quantity ?? "0")} ${p.unit}`
+                          ? `${hidden ? "••••••" : decimalLabel(before?.quantity ?? "0", locale)} ${tr(p.unit ?? "")}`
                           : before?.[field] === null
-                            ? "Thiếu định giá"
+                            ? tr("Thiếu định giá")
                             : money(before?.[field] ?? "0"),
                       after:
                         field === "quantity"
-                          ? `${hidden ? "••••••" : decimalLabel(p.quantity)} ${p.unit}`
+                          ? `${hidden ? "••••••" : decimalLabel(p.quantity, locale)} ${tr(p.unit ?? "")}`
                           : p[field] === null
-                            ? "Thiếu định giá"
+                            ? tr("Thiếu định giá")
                             : money(p[field]),
                     }));
                 }),

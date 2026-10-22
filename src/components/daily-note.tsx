@@ -1,9 +1,16 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
+
+import { vietnamClock } from "@/domain/expenses/engine";
 import { useEffect, useState } from "react";
 import { ThemeIcon } from "./theme-decoration";
-import { visualThemeKeys, visualThemes } from "./visual-theme";
-import { vietnamClock } from "@/domain/expenses/engine";
+import {
+  visualThemeKeys,
+  visualThemes as visualThemesSource,
+} from "./visual-theme";
 export function DailyNote() {
+  const { t: tr, config: localize } = useI18n();
+
   const [index, setIndex] = useState(0);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -11,7 +18,7 @@ export function DailyNote() {
       const day = vietnamClock().today;
       setIndex(
         Math.floor(Date.parse(`${day}T00:00:00Z`) / 86400000) %
-          visualThemes.forest.notes.length,
+          localize(visualThemesSource).forest.notes.length,
       );
       clearTimeout(timer);
       const midnight = Date.parse(`${day}T00:00:00+07:00`) + 86400000;
@@ -28,14 +35,14 @@ export function DailyNote() {
     <aside className="daily-note">
       <ThemeIcon size={21} kind="sprout" />
       <p>
-        <span>MỘT CHÚT BÌNH YÊN</span>
+        <span>{tr("MỘT CHÚT BÌNH YÊN")}</span>
         {visualThemeKeys.map((theme) => (
           <span
             key={theme}
             className="daily-note-message"
             data-visual-only={theme}
           >
-            {visualThemes[theme].notes[index]}
+            {localize(visualThemesSource)[theme].notes[index]}
           </span>
         ))}
       </p>

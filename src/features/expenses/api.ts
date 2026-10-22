@@ -1,3 +1,4 @@
+import { responseFieldErrors, responseMessage } from "@/i18n/error-messages";
 export class RequestError extends Error {
   constructor(
     message: string,
@@ -33,9 +34,9 @@ export async function apiJSON<T>(path: string, init?: RequestInit): Promise<T> {
   }
   if (!response.ok)
     throw new RequestError(
-      result.error ?? "Không thể tải dữ liệu.",
+      responseMessage(result, "Không thể tải dữ liệu."),
       result.code ?? "UNKNOWN",
-      result.fieldErrors,
+      responseFieldErrors(result),
       response.status,
     );
   return result as T;

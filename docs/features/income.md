@@ -69,3 +69,11 @@ Giải thích nguồn cố định khác số tiền cố định, thu phát sin
 ## Phản hồi nhập liệu — 21/10/2026
 
 Số tiền thực nhận có dòng đọc VND dưới ô; dấu `*` đặt sát nhãn. Lỗi từ kiểm tra và API xuất hiện tại trường, có focus khi gửi. Toast xác nhận kết quả ghi; mất phản hồi ghi được mô tả là chưa rõ kết quả, giữ nội dung và mã yêu cầu để thử lại.
+
+## Anh/Việt — 22/10/2026
+
+Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định dạng vi-VN/en-GB, vẫn VND và giờ Việt Nam. Tên/ghi chú và dữ liệu tài chính giữ nguyên. CSV nhận `locale=vi|en` (mặc định vi), dịch tên cột/nhãn hệ thống nhưng giữ số/ngày dạng chuẩn và chống công thức CSV. Không có migration hay đổi cấu trúc backup. Xem [đặc tả ngôn ngữ](localization.md).
+
+## Bố cục và cuộn — 23/10/2026
+
+Bộ chọn kỳ hiển thị mũi tên hai đầu, tab một hàng cuộn ngang khi thiếu chỗ. Bảng có hàng cơ sở 48px; ô chưa nhập giữ vùng chạm 44px và không cộng padding dọc. Nút chọn cột đứng ngoài vùng cuộn ngang. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).

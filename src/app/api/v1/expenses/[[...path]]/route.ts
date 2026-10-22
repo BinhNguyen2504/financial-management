@@ -1,13 +1,14 @@
-import { fieldErrorsFromIssues } from "@/lib/field-errors";
-import { NextResponse } from "next/server";
-import { ZodError } from "zod";
-import { authenticatedOwner } from "@/server/auth";
-import { expenseRepository } from "@/server/database";
 import { readExpenseView, runExpenseCommand } from "@/application/expenses";
 import { ExpenseError, vietnamClock } from "@/domain/expenses/engine";
 import { buildReport } from "@/domain/expenses/reports";
 import { commandSchema } from "@/domain/expenses/schema";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import { authenticatedOwner } from "@/server/auth";
+import { expenseRepository } from "@/server/database";
+import { jsonResponse } from "@/server/json-response";
 import { sameOrigin } from "@/server/request-origin";
+import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,7 +36,7 @@ const fieldNames: Record<string, string> = {
 };
 function failure(error: unknown) {
   if (error instanceof ExpenseError)
-    return NextResponse.json(
+    return jsonResponse(
       {
         error: error.message,
         code: error.code,
@@ -44,7 +45,7 @@ function failure(error: unknown) {
       { status: error.status, headers },
     );
   if (error instanceof ZodError)
-    return NextResponse.json(
+    return jsonResponse(
       {
         error: Object.values(fieldErrorsFromIssues(error.issues)).join("; "),
         code: "INVALID_INPUT",
@@ -56,7 +57,7 @@ function failure(error: unknown) {
   console.error("Expense API failed", {
     name: error instanceof Error ? error.name : "UnknownError",
   });
-  return NextResponse.json(
+  return jsonResponse(
     {
       error:
         "Không thể truy cập dữ liệu. Hãy kiểm tra kết nối và thử lại; nội dung đang nhập vẫn được giữ.",
@@ -72,7 +73,7 @@ export async function GET(request: Request, context: Context) {
     const clock = vietnamClock();
     const view = await readExpenseView(expenseRepository(), owner, clock);
     const url = new URL(request.url);
-    if (!path.length) return NextResponse.json(view, { headers });
+    if (!path.length) return jsonResponse(view, { headers });
     if (path.join("/") === "reports") {
       const report = buildReport(
         view.rows,
@@ -87,7 +88,7 @@ export async function GET(request: Request, context: Context) {
         },
         view.currentYear,
       );
-      return NextResponse.json(report, { headers });
+      return jsonResponse(report, { headers });
     }
     if (path.length === 3 && path[0] === "years" && path[2] === "backup") {
       const year = Number(path[1]);
@@ -178,7 +179,7 @@ export async function POST(request: Request, context: Context) {
       vietnamClock(),
       path === "preview",
     );
-    return NextResponse.json(result, { headers });
+    return jsonResponse(result, { headers });
   } catch (error) {
     return failure(error);
   }

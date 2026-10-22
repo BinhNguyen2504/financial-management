@@ -1,19 +1,19 @@
-import { describe, expect, it } from "vitest";
-import { createElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+import { EarthScene } from "../src/components/earth-scene";
 import { preferenceScript } from "../src/components/ui-preferences";
 import {
   displayMode,
   visualTheme,
-  visualThemes,
   visualThemeKeys,
+  visualThemes,
 } from "../src/components/visual-theme";
-import { ProgressScene } from "../src/features/funds/progress-scene";
-import { EarthScene } from "../src/components/earth-scene";
 import { EarthProgressScene } from "../src/features/funds/earth-progress-scene";
 import { FireProgressScene } from "../src/features/funds/fire-progress-scene";
+import { ProgressScene } from "../src/features/funds/progress-scene";
 import { WaterProgressScene } from "../src/features/funds/water-progress-scene";
 
 describe("visual theme compatibility and bootstrap", () => {
@@ -24,12 +24,7 @@ describe("visual theme compatibility and bootstrap", () => {
     expect(displayMode("dark")).toBe("dark");
     expect(displayMode("light")).toBe("light");
     expect(displayMode("invalid")).toBe("system");
-    expect(Object.keys(visualThemes)).toEqual([
-      "forest",
-      "water",
-      "gold",
-      "fire",
-    ]);
+    expect(Object.keys(visualThemes)).toEqual(visualThemeKeys);
   });
   it("applies independent preferences before hydration and tolerates blocked storage", () => {
     for (const visual of [...visualThemeKeys, "invalid"])

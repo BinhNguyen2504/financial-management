@@ -1,3 +1,5 @@
+"use client";
+import { useI18n } from "@/i18n/provider";
 import {
   Coins,
   Droplets,
@@ -18,11 +20,12 @@ import {
 
 /** All variants render identically on the server and client; CSS selects before paint. */
 export function ThemeText({ name }: { name: ThemeCopyKey }) {
+  const { t: tr } = useI18n();
   return (
     <>
       {visualThemeKeys.map((theme) => (
         <span key={theme} data-visual-only={theme}>
-          {visualThemes[theme].copy[name]}
+          {tr(visualThemes[theme].copy[name])}
         </span>
       ))}
     </>

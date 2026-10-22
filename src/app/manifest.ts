@@ -9,8 +9,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Quản lý tài chính cá nhân trên điện thoại và máy tính.",
     start_url: "/overview",
     display: "standalone",
-    background_color: "#F7F3EB",
-    theme_color: "#506B50",
+    background_color: "#292724",
+    theme_color: "#292724",
     icons: [
       {
         src: "/icons/icon-192.png",

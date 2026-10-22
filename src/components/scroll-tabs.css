@@ -1,0 +1,36 @@
+/* Bound the strip, not its labels. Focus and selection scroll only this region. */
+.scroll-tabs:not(.preview-tabs) {
+  display: flex;
+  flex-wrap: nowrap;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  scroll-padding-inline: 4px;
+}
+.scroll-tabs:not(.preview-tabs) > button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  white-space: nowrap;
+}
+.scroll-tabs > button:focus-visible {
+  outline-offset: -2px;
+}
+@media (max-width: 800px) {
+  .preview-tabs.scroll-tabs,
+  .marketing-shell .preview-tabs.scroll-tabs {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    scroll-padding-inline: 4px;
+  }
+  .preview-tabs.scroll-tabs > button,
+  .marketing-shell .preview-tabs.scroll-tabs > button {
+    flex: 0 0 auto;
+    flex-direction: row;
+    min-height: 44px;
+    white-space: nowrap;
+  }
+}

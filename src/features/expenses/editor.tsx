@@ -1,42 +1,52 @@
 "use client";
-import { HelpButton } from "@/features/help/provider";
-import { fieldErrorsFromIssues } from "@/lib/field-errors";
-import { createContext, useContext } from "react";
-import { Save, ScanEye, X, Plus, Tag } from "lucide-react";
-import { ZodError } from "zod";
+import { LocalizedInput } from "@/components/localized-input";
+import { formatDate } from "@/i18n/format";
+import { useI18n } from "@/i18n/provider";
+
+import type { CommandResult } from "@/application/expenses";
+import { DialogChanges } from "@/components/dialog-content";
 import {
+  focusFirstInvalid,
   FormErrorSummary,
   nativeErrors,
-  focusFirstInvalid,
 } from "@/components/form-feedback";
-import { useToast } from "@/components/toast";
-import { comparable, normalizeInteger, integerInput } from "@/lib/form-values";
-import { expenseActionSchema } from "@/domain/expenses/schema";
-import { paymentBrands, suggestedBrand } from "@/domain/expenses/label-visuals";
-import { LabelSelect, LabelVisual, labelIcons } from "./label-visual";
 import { LoadingSpinner } from "@/components/loading";
-import { DialogChanges } from "@/components/dialog-content";
-import { useId, useRef, useState, type FormEvent } from "react";
+import {
+  PrivacyReveal,
+  PrivacyScope,
+  useMoney,
+  useMoneyHidden,
+} from "@/components/privacy";
+import { useToast } from "@/components/toast";
+import { jarEmoji, type JarEmoji } from "@/domain/expenses/emoji";
+import { ruleAt } from "@/domain/expenses/engine";
+import { paymentBrands, suggestedBrand } from "@/domain/expenses/label-visuals";
 import type { ExpenseAction, ExpenseCommand } from "@/domain/expenses/schema";
+import { expenseActionSchema } from "@/domain/expenses/schema";
 import type {
   ExpenseRow,
   ExpenseView,
   Label,
   Spend,
 } from "@/domain/expenses/types";
-import type { CommandResult } from "@/application/expenses";
-import { ruleAt } from "@/domain/expenses/engine";
-import { ExpenseModal } from "./modal";
-import { monthName } from "./format";
+import { HelpButton } from "@/features/help/provider";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import { comparable, normalizeInteger } from "@/lib/form-values";
+import { Plus, Save, ScanEye, Tag, X } from "lucide-react";
 import {
-  PrivacyScope,
-  PrivacyReveal,
-  useMoney,
-  useMoneyHidden,
-} from "@/components/privacy";
-import { EmojiPicker } from "./emoji-picker";
-import { jarEmoji, type JarEmoji } from "@/domain/expenses/emoji";
+  createContext,
+  useContext,
+  useId,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
+import { ZodError } from "zod";
 import { apiJSON, RequestError } from "./api";
+import { EmojiPicker } from "./emoji-picker";
+import { monthName } from "./format";
+import { labelIcons, LabelSelect, LabelVisual } from "./label-visual";
+import { ExpenseModal } from "./modal";
 
 export type EditorMode =
   | { mode: "initialize" | "create" }
@@ -75,6 +85,8 @@ function Amount({
   optional?: boolean;
   hint?: string;
 }) {
+  const { t: tr, locale } = useI18n("expenses");
+
   const id = `expense-field-${field}`;
   const errors = useContext(ExpenseErrors);
   const hidden = useMoneyHidden();
@@ -99,33 +111,30 @@ function Amount({
           autoComplete="off"
         />
       ) : (
-        <input
+        <LocalizedInput
           id={id}
           aria-label={label}
           aria-describedby={`${id}-hint${errors[field] ? ` ${id}-error` : ""}`}
           name={field}
           aria-invalid={!!errors[field]}
           inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={24}
+          maxLength={40}
           value={value}
           required={!optional}
-          onChange={(e) => {
-            const next = integerInput(e.target.value);
-            if (next !== null) onChange(next);
-          }}
+          numberKind="integer"
+          onValueChange={onChange}
           onBlur={() => onChange(normalizeInteger(value))}
         />
       )}
       {errors[field] && (
         <small id={`${id}-error`} className="field-error">
-          {errors[field]}
+          {tr(errors[field])}
         </small>
       )}
       <small id={`${id}-hint`}>
         {value && /^[0-9]{1,24}$/.test(value)
           ? money(value)
-          : (hint ?? "Nhập số tiền VND")}
+          : (hint ?? tr("Nhập số tiền VND"))}
         {value && hint ? ` · ${hint}` : ""}
       </small>
     </div>
@@ -154,6 +163,9 @@ function ExpenseEditorForm({
   onSaved: () => Promise<void>;
   onReload: () => Promise<ExpenseView>;
 }) {
+  const { t: tr, locale, config: localize } = useI18n("expenses");
+  const localizedTitles = localize(titles);
+
   const toast = useToast();
   const money = useMoney();
   const hidden = useMoneyHidden();
@@ -311,10 +323,10 @@ function ExpenseEditorForm({
     event.preventDefault();
     if (unchanged || (moneyForm && hidden)) return;
     const formElement = event.currentTarget;
-    const invalid = nativeErrors(formElement);
+    const invalid = nativeErrors(formElement, locale);
     setFieldErrors(invalid);
     if (Object.keys(invalid).length) {
-      toast("error", "Kiểm tra các ô được đánh dấu.");
+      toast("error", tr("Kiểm tra các ô được đánh dấu."));
       focusFirstInvalid(
         formElement,
         formElement.querySelector<HTMLElement>(".form-error-summary"),
@@ -349,15 +361,15 @@ function ExpenseEditorForm({
       setFieldErrors(e.fieldErrors);
     setError(
       e instanceof ZodError
-        ? "Kiểm tra các trường được đánh dấu."
+        ? tr("Kiểm tra các trường được đánh dấu.")
         : e instanceof Error
           ? e.message
-          : "Không thể lưu. Vui lòng thử lại.",
+          : tr("Không thể lưu. Vui lòng thử lại."),
     );
     setConflict(e instanceof RequestError && e.code === "VERSION_CONFLICT");
     toast(
       "error",
-      e instanceof Error ? e.message : "Chưa hoàn tất. Hãy thử lại.",
+      e instanceof Error ? e.message : tr("Chưa hoàn tất. Hãy thử lại."),
     );
     focusFirstInvalid(
       document.querySelector(".expense-dialog[open]:not([inert]) .dialog-body"),
@@ -373,7 +385,7 @@ function ExpenseEditorForm({
         method: "POST",
         body: JSON.stringify(command.current),
       });
-      toast("success", "Đã lưu thay đổi.");
+      toast("success", tr("Đã lưu thay đổi."));
       await onSaved();
     } catch (e) {
       const unknownWrite =
@@ -385,11 +397,13 @@ function ExpenseEditorForm({
       if (unknownWrite) {
         setUncertain(true);
         setError(
-          "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và xác nhận lại cùng yêu cầu.",
+          tr(
+            "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và xác nhận lại cùng yêu cầu.",
+          ),
         );
         toast(
           "warning",
-          "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.",
+          tr("Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu."),
         );
       } else reportError(e);
     } finally {
@@ -415,7 +429,7 @@ function ExpenseEditorForm({
   return (
     <>
       <ExpenseModal
-        title={titles[editor.mode]}
+        title={localizedTitles[editor.mode]}
         onClose={onClose}
         busy={busy || uncertain}
         size={
@@ -433,7 +447,7 @@ function ExpenseEditorForm({
               onClick={onClose}
             >
               <X size={17} aria-hidden="true" />
-              Hủy
+              {tr("Hủy")}
             </button>
             {preview && (
               <button
@@ -452,10 +466,10 @@ function ExpenseEditorForm({
                   <Save size={17} aria-hidden="true" />
                 )}
                 {busy
-                  ? "Đang lưu…"
+                  ? tr("Đang lưu…")
                   : editor.mode === "closeYear"
-                    ? "Xác nhận chốt năm"
-                    : "Xác nhận lưu"}
+                    ? tr("Xác nhận chốt năm")
+                    : tr("Xác nhận lưu")}
               </button>
             )}
             {!preview && (
@@ -470,7 +484,7 @@ function ExpenseEditorForm({
                 ) : (
                   <ScanEye size={17} aria-hidden="true" />
                 )}
-                {busy ? "Đang kiểm tra…" : "Xem trước thay đổi"}
+                {busy ? tr("Đang kiểm tra…") : tr("Xem trước thay đổi")}
               </button>
             )}
           </div>
@@ -499,12 +513,13 @@ function ExpenseEditorForm({
               <span className="required-mark" aria-hidden="true">
                 *
               </span>{" "}
-              là thông tin cần nhập.
+              {tr("là thông tin cần nhập.")}
             </p>
             {uncertain && (
               <p role="status" className="expense-notice">
-                Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận
-                lưu để kiểm tra lại cùng yêu cầu.
+                {tr(
+                  "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu để kiểm tra lại cùng yêu cầu.",
+                )}
               </p>
             )}
             <PrivacyReveal />
@@ -519,30 +534,31 @@ function ExpenseEditorForm({
                       ? "closed-year"
                       : "jar-types"
               }
-              label="Hiểu hũ và cách tính tiền"
+              label={tr("Hiểu hũ và cách tính tiền")}
             />
             <FormErrorSummary errors={fieldErrors} prefix="expense-field-" />
             <fieldset
               className="dialog-form-section"
               disabled={busy || uncertain}
             >
-              <legend>Thông tin cần nhập</legend>
+              <legend>{tr("Thông tin cần nhập")}</legend>
               {["create", "configure", "label"].includes(editor.mode) && (
                 <HelpButton
                   pageId="budgets"
                   sectionId="classification"
-                  label="Phương thức và nhóm mục đích"
+                  label={tr("Phương thức và nhóm mục đích")}
                 />
               )}
               {row && (
                 <p className="expense-muted">
-                  <strong>{row.name}</strong> · {monthName(row.month)}
+                  <strong>{row.name}</strong> · {monthName(row.month, locale)}
                 </p>
               )}
               {editor.mode === "initialize" && (
                 <p>
-                  Chọn tháng bắt đầu. Những tháng trước đó sẽ không được tự tạo
-                  thực chi. Bạn nhập số dư đầu kỳ khi thêm từng hũ.
+                  {tr(
+                    "Chọn tháng bắt đầu. Những tháng trước đó sẽ không được tự tạo thực chi. Bạn nhập số dư đầu kỳ khi thêm từng hũ.",
+                  )}
                 </p>
               )}
               {["initialize", "create", "configure", "stop", "emoji"].includes(
@@ -550,8 +566,8 @@ function ExpenseEditorForm({
               ) && (
                 <label>
                   {editor.mode === "initialize" || editor.mode === "create"
-                    ? "Tháng bắt đầu"
-                    : "Áp dụng từ tháng"}
+                    ? tr("Tháng bắt đầu")
+                    : tr("Áp dụng từ tháng")}
                   <span className="required-mark" aria-hidden="true">
                     *
                   </span>
@@ -559,8 +575,8 @@ function ExpenseEditorForm({
                     type="month"
                     aria-label={
                       editor.mode === "initialize" || editor.mode === "create"
-                        ? "Tháng bắt đầu"
-                        : "Áp dụng từ tháng"
+                        ? tr("Tháng bắt đầu")
+                        : tr("Áp dụng từ tháng")
                     }
                     name={
                       editor.mode === "initialize" || editor.mode === "create"
@@ -604,7 +620,7 @@ function ExpenseEditorForm({
                       }
                       className="field-error"
                     >
-                      {fieldErrors.start || fieldErrors.month}
+                      {tr(fieldErrors.start || fieldErrors.month)}
                     </small>
                   )}
                 </label>
@@ -624,14 +640,14 @@ function ExpenseEditorForm({
               {(editor.mode === "create" || editor.mode === "configure") && (
                 <>
                   <label>
-                    Tên hũ
+                    {tr("Tên hũ")}
                     <span className="required-mark" aria-hidden="true">
                       *
                     </span>
                     <input
                       required
                       maxLength={100}
-                      aria-label="Tên hũ"
+                      aria-label={tr("Tên hũ")}
                       id="expense-field-name"
                       name="name"
                       aria-invalid={!!fieldErrors.name}
@@ -643,12 +659,12 @@ function ExpenseEditorForm({
                     />
                     {fieldErrors.name && (
                       <small id="expense-error-name" className="field-error">
-                        {fieldErrors.name}
+                        {tr(fieldErrors.name)}
                       </small>
                     )}
                   </label>
                   <label>
-                    Mô tả
+                    {tr("Mô tả")}
                     <textarea
                       rows={2}
                       maxLength={1000}
@@ -658,23 +674,23 @@ function ExpenseEditorForm({
                   </label>
                   {editor.mode === "create" ? (
                     <label>
-                      Loại hũ
+                      {tr("Loại hũ")}
                       <select
                         value={kind}
                         onChange={(e) => setKind(e.target.value as typeof kind)}
                       >
-                        <option value="monthly">Chi trong tháng</option>
-                        <option value="accumulation">Tích lũy</option>
+                        <option value="monthly">{tr("Chi trong tháng")}</option>
+                        <option value="accumulation">{tr("Tích lũy")}</option>
                       </select>
                     </label>
                   ) : (
                     <p className="expense-muted">
-                      Loại hũ được giữ nguyên để bảo toàn lịch sử.
+                      {tr("Loại hũ được giữ nguyên để bảo toàn lịch sử.")}
                     </p>
                   )}
                   <div className="expense-form-grid">
                     <LabelSelect
-                      name="Phương thức"
+                      name={tr("Phương thức")}
                       value={method}
                       onChange={setMethod}
                       labels={selectionView.book?.labels ?? []}
@@ -682,7 +698,7 @@ function ExpenseEditorForm({
                       error={fieldErrors.method}
                     />
                     <LabelSelect
-                      name="Nhóm mục đích (tùy chọn)"
+                      name={tr("Nhóm mục đích (tùy chọn)")}
                       value={group}
                       onChange={setGroup}
                       labels={selectionView.book?.labels ?? []}
@@ -696,26 +712,29 @@ function ExpenseEditorForm({
                     onClick={() => setClassifying(true)}
                   >
                     <Plus size={17} aria-hidden="true" />
-                    Thêm phương thức / nhóm
+                    {tr("Thêm phương thức / nhóm")}
                   </button>
                   <Amount
-                    label="Mức mặc định mỗi tháng"
+                    label={tr("Mức mặc định mỗi tháng")}
                     value={amount}
                     onChange={setAmount}
                   />
                   {editor.mode === "create" && (
                     <Amount
-                      label="Số dư đầu kỳ"
+                      label={tr("Số dư đầu kỳ")}
                       field="opening"
                       value={opening}
                       onChange={setOpening}
-                      hint="Tiền đã có, không tính là góp mới hoặc thực chi."
+                      hint={tr(
+                        "Tiền đã có, không tính là góp mới hoặc thực chi.",
+                      )}
                     />
                   )}
                   {editor.mode === "configure" && (
                     <p className="expense-notice">
-                      Cấu hình mới có hiệu lực từ tháng đã chọn. Các ngoại lệ
-                      riêng của tháng khác vẫn được giữ.
+                      {tr(
+                        "Cấu hình mới có hiệu lực từ tháng đã chọn. Các ngoại lệ riêng của tháng khác vẫn được giữ.",
+                      )}
                     </p>
                   )}
                 </>
@@ -723,11 +742,12 @@ function ExpenseEditorForm({
               {editor.mode === "month" && (
                 <>
                   <p>
-                    Mức mặc định: {money(rule?.amount ?? "0")}. Cần thêm theo số
-                    dư chuyển tiếp: {money(row!.required)}.
+                    {tr("Mức mặc định:")} {money(rule?.amount ?? "0")}
+                    {tr(". Cần thêm theo số dư chuyển tiếp:")}{" "}
+                    {money(row!.required)}.
                   </p>
                   <Amount
-                    label="Mức riêng tháng này (để trống = mặc định)"
+                    label={tr("Mức riêng tháng này (để trống = mặc định)")}
                     optional
                     field="target"
                     value={target}
@@ -736,29 +756,31 @@ function ExpenseEditorForm({
                   {!future && (
                     <>
                       <Amount
-                        label="Tiền thêm theo tháng (để trống = tự tính)"
+                        label={tr("Tiền thêm theo tháng (để trống = tự tính)")}
                         optional
                         field="funding"
                         value={funding}
                         onChange={setFunding}
                       />
                       <Amount
-                        label="Tiền bổ sung ngoài mức tháng"
+                        label={tr("Tiền bổ sung ngoài mức tháng")}
                         field="extra"
                         value={extra}
                         onChange={setExtra}
                       />
                       {row?.kind === "monthly" && (
                         <Amount
-                          label="Số dư cuối tháng"
+                          label={tr("Số dư cuối tháng")}
                           optional
                           field="closing"
                           value={closing}
                           onChange={setClosing}
                           hint={
                             row.active
-                              ? "Để trống mặc định là 0."
-                              : "Hũ đã ngừng: để trống giữ nguyên tiền còn lại."
+                              ? tr("Để trống mặc định là 0.")
+                              : tr(
+                                  "Hũ đã ngừng: để trống giữ nguyên tiền còn lại.",
+                                )
                           }
                         />
                       )}
@@ -766,7 +788,9 @@ function ExpenseEditorForm({
                   )}
                   {future && (
                     <p className="expense-notice">
-                      Đây là tháng tương lai. Chỉ mức kế hoạch được thay đổi.
+                      {tr(
+                        "Đây là tháng tương lai. Chỉ mức kế hoạch được thay đổi.",
+                      )}
                     </p>
                   )}
                 </>
@@ -774,17 +798,18 @@ function ExpenseEditorForm({
               {editor.mode === "spend" && (
                 <>
                   <p>
-                    Góp vào đầu tháng; mỗi lần sử dụng sẽ được kiểm tra theo thứ
-                    tự ngày phát sinh.
+                    {tr(
+                      "Góp vào đầu tháng; mỗi lần sử dụng sẽ được kiểm tra theo thứ tự ngày phát sinh.",
+                    )}
                   </p>
                   <label>
-                    Ngày sử dụng
+                    {tr("Ngày sử dụng")}
                     <span className="required-mark" aria-hidden="true">
                       *
                     </span>
                     <input
                       type="date"
-                      aria-label="Ngày sử dụng"
+                      aria-label={tr("Ngày sử dụng")}
                       id="expense-field-date"
                       name="date"
                       aria-invalid={!!fieldErrors.date}
@@ -799,17 +824,17 @@ function ExpenseEditorForm({
                     />
                     {fieldErrors.date && (
                       <small id="expense-error-date" className="field-error">
-                        {fieldErrors.date}
+                        {tr(fieldErrors.date)}
                       </small>
                     )}
                   </label>
                   <Amount
-                    label="Số tiền sử dụng"
+                    label={tr("Số tiền sử dụng")}
                     value={amount}
                     onChange={setAmount}
                   />
                   <label>
-                    Ghi chú
+                    {tr("Ghi chú")}
                     <textarea
                       rows={2}
                       maxLength={1000}
@@ -822,7 +847,7 @@ function ExpenseEditorForm({
               {editor.mode === "label" && (
                 <>
                   <label>
-                    Loại
+                    {tr("Loại")}
                     <select
                       value={labelKind}
                       disabled={Boolean(label)}
@@ -830,19 +855,19 @@ function ExpenseEditorForm({
                         setLabelKind(e.target.value as typeof labelKind)
                       }
                     >
-                      <option value="method">Phương thức</option>
-                      <option value="group">Nhóm mục đích</option>
+                      <option value="method">{tr("Phương thức")}</option>
+                      <option value="group">{tr("Nhóm mục đích")}</option>
                     </select>
                   </label>
                   <label>
-                    Tên
+                    {tr("Tên")}
                     <span className="required-mark" aria-hidden="true">
                       *
                     </span>
                     <input
                       required
                       maxLength={100}
-                      aria-label="Tên"
+                      aria-label={tr("Tên")}
                       id="expense-field-name"
                       name="name"
                       aria-invalid={!!fieldErrors.name}
@@ -854,22 +879,22 @@ function ExpenseEditorForm({
                     />
                     {fieldErrors.name && (
                       <small id="expense-error-name" className="field-error">
-                        {fieldErrors.name}
+                        {tr(fieldErrors.name)}
                       </small>
                     )}
                   </label>
                   {labelKind === "method" && (
                     <label>
-                      Thương hiệu
+                      {tr("Thương hiệu")}
                       <select
-                        aria-label="Thương hiệu"
+                        aria-label={tr("Thương hiệu")}
                         value={brandKey}
                         onChange={(e) => {
                           setBrandKey(e.target.value);
                           if (e.target.value) setIconKey("");
                         }}
                       >
-                        <option value="">Không chọn thương hiệu</option>
+                        <option value="">{tr("Không chọn thương hiệu")}</option>
                         {paymentBrands.map((brand) => (
                           <option key={brand.key} value={brand.key}>
                             {brand.name}
@@ -890,23 +915,25 @@ function ExpenseEditorForm({
                         }}
                       >
                         <Tag size={17} aria-hidden="true" />
-                        Dùng logo {suggestedBrand(name)!.name}
+                        {tr("Dùng logo")} {suggestedBrand(name)!.name}
                       </button>
                     )}
                   {!brandKey && (
                     <label>
-                      Biểu tượng
+                      {tr("Biểu tượng")}
                       <select
-                        aria-label="Biểu tượng"
+                        aria-label={tr("Biểu tượng")}
                         value={iconKey}
                         onChange={(e) => setIconKey(e.target.value)}
                       >
-                        <option value="">Tự động theo tên</option>
-                        {Object.entries(labelIcons).map(([key, item]) => (
-                          <option value={key} key={key}>
-                            {item.name}
-                          </option>
-                        ))}
+                        <option value="">{tr("Tự động theo tên")}</option>
+                        {Object.entries(localize(labelIcons)).map(
+                          ([key, item]) => (
+                            <option value={key} key={key}>
+                              {item.name}
+                            </option>
+                          ),
+                        )}
                       </select>
                     </label>
                   )}
@@ -922,39 +949,44 @@ function ExpenseEditorForm({
                       }}
                       kind={labelKind}
                     />
-                    {name || "Xem trước biểu tượng"}
+                    {name || tr("Xem trước biểu tượng")}
                   </p>
                   <p className="expense-muted">
-                    Chỉ các lựa chọn trong danh sách này được dùng khi thêm hũ.
-                    Sửa tên không đổi phân loại đã lưu của những tháng trước.
+                    {tr(
+                      "Chỉ các lựa chọn trong danh sách này được dùng khi thêm hũ. Sửa tên không đổi phân loại đã lưu của những tháng trước.",
+                    )}
                   </p>
                 </>
               )}
               {editor.mode === "stop" && (
                 <p>
-                  Ngừng tự cấp tiền từ tháng đã chọn. Số dư, lịch sử và các lần
-                  sử dụng vẫn được giữ; có thể khôi phục bằng cách sửa cấu hình
-                  từ một tháng chưa chốt.
+                  {tr(
+                    "Ngừng tự cấp tiền từ tháng đã chọn. Số dư, lịch sử và các lần sử dụng vẫn được giữ; có thể khôi phục bằng cách sửa cấu hình từ một tháng chưa chốt.",
+                  )}
                 </p>
               )}
               {editor.mode === "deleteSpend" && (
                 <p>
-                  Xóa lần sử dụng {money(editor.spend.amount)} ngày{" "}
-                  {editor.spend.date}. Số dư từ ngày này sẽ được tính lại; lịch
-                  sử xóa vẫn được giữ.
+                  {tr("Xóa lần sử dụng")} {money(editor.spend.amount)}{" "}
+                  {tr("ngày")} {formatDate(editor.spend.date!, locale)}
+                  {tr(
+                    ". Số dư từ ngày này sẽ được tính lại; lịch sử xóa vẫn được giữ.",
+                  )}
                 </p>
               )}
               {editor.mode === "deleteLabel" && (
                 <p>
-                  Xóa lựa chọn “{editor.label.name}”. Phân loại trong lịch sử
-                  các hũ không bị xóa.
+                  {tr("Xóa lựa chọn “")}
+                  {editor.label.name}
+                  {tr("”. Phân loại trong lịch sử các hũ không bị xóa.")}
                 </p>
               )}
               {editor.mode === "closeYear" && (
                 <p>
-                  Năm {editor.year} sẽ được khóa để lưu trữ. Số dư đã chuyển
-                  tiếp được giữ; sau chốt chỉ có thể xem và xuất backup. Hãy
-                  hoàn tất số dư tháng 12 và các lần sử dụng trước khi chốt.
+                  {tr("Năm")} {editor.year}{" "}
+                  {tr(
+                    "sẽ được khóa để lưu trữ. Số dư đã chuyển tiếp được giữ; sau chốt chỉ có thể xem và xuất backup. Hãy hoàn tất số dư tháng 12 và các lần sử dụng trước khi chốt.",
+                  )}
                 </p>
               )}
               <p
@@ -963,7 +995,7 @@ function ExpenseEditorForm({
                 tabIndex={-1}
                 className="expense-error"
               >
-                {error}
+                {tr(error)}
               </p>
               {conflict && (
                 <button
@@ -972,7 +1004,7 @@ function ExpenseEditorForm({
                   disabled={busy}
                   onClick={updateVersion}
                 >
-                  Tải dữ liệu mới, giữ nội dung đang nhập
+                  {tr("Tải dữ liệu mới, giữ nội dung đang nhập")}
                 </button>
               )}
             </fieldset>
@@ -981,15 +1013,23 @@ function ExpenseEditorForm({
                 className="expense-preview"
                 ref={previewRef}
                 tabIndex={-1}
-                aria-label="Xem trước thay đổi"
+                aria-label={tr("Xem trước thay đổi")}
               >
-                <h3>Xem trước trước khi lưu</h3>
+                <h3>{tr("Xem trước trước khi lưu")}</h3>
                 <p>
                   {editor.mode === "emoji"
-                    ? `Biểu tượng mới: ${jarEmoji(name, row?.kind, emoji)}. Mức tháng và số dư được giữ nguyên.`
+                    ? tr(
+                        "Biểu tượng mới: {0}. Mức tháng và số dư được giữ nguyên.",
+                        { 0: jarEmoji(name, row?.kind, emoji) },
+                      )
                     : preview.changes.length
-                      ? `${preview.changes.length} dòng tháng được cập nhật. Số dư các tháng sau đã được kiểm tra.`
-                      : "Thay đổi hợp lệ. Không có số tiền tháng nào bị thay đổi."}
+                      ? tr(
+                          "{0} dòng tháng được cập nhật. Số dư các tháng sau đã được kiểm tra.",
+                          { 0: preview.changes.length },
+                        )
+                      : tr(
+                          "Thay đổi hợp lệ. Không có số tiền tháng nào bị thay đổi.",
+                        )}
                 </p>
                 {preview.changes.length > 0 && editor.mode !== "emoji" && (
                   <DialogChanges
@@ -1001,13 +1041,13 @@ function ExpenseEditorForm({
                         (["funding", "spent", "closing"] as const).map(
                           (field) => ({
                             key: `${change.jarId}/${change.month}/${field}`,
-                            label: `${change.name} · ${monthName(change.month)} · ${{ funding: "Tiền thêm", spent: "Thực chi", closing: "Số dư" }[field]}`,
+                            label: `${change.name} · ${monthName(change.month, locale)} · ${{ funding: tr("Tiền thêm"), spent: tr("Thực chi"), closing: tr("Số dư") }[field]}`,
                             before: change.before
                               ? money(change.before[field])
-                              : "Chưa có",
+                              : tr("Chưa có"),
                             after: change.after
                               ? money(change.after[field])
-                              : "Đã bỏ dòng",
+                              : tr("Đã bỏ dòng"),
                           }),
                         ),
                       )}
@@ -1032,7 +1072,7 @@ function ExpenseEditorForm({
             } catch {
               toast(
                 "warning",
-                "Đã lưu phân loại nhưng chưa tải lại được dữ liệu.",
+                tr("Đã lưu phân loại nhưng chưa tải lại được dữ liệu."),
               );
               setClassifying(false);
               return;

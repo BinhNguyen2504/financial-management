@@ -44,3 +44,7 @@ Browser tests trong `tests/browser/help.spec.ts` bao phủ đủ trang, không g
 ## Chủ đề — 21/10/2026
 
 Hướng dẫn Cài đặt giải thích năm chủ đề, chế độ sáng/tối dùng chung và phạm vi lưu theo trình duyệt. Bảng hướng dẫn kế thừa màu, icon trang trí theo chủ đề; cấu trúc, thao tác và quy tắc tài chính giữ nguyên.
+
+## Anh/Việt — 22/10/2026
+
+Help trong app dùng lựa chọn Tiếng Việt/English của Cài đặt. Hai bản giữ cùng ID bài, mục và tác vụ; bản tiếng Anh tải bằng dynamic import khi cần. Cài đặt có hướng dẫn đổi ngôn ngữ, định dạng số và giới hạn lưu trên trình duyệt. Không tra cứu API tài chính hoặc dịch nội dung người dùng. Xem [ngôn ngữ](localization.md).

@@ -1,8 +1,16 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
+
+import {
+  paymentBrands,
+  suggestedBrand,
+  type LabelIconKey,
+} from "@/domain/expenses/label-visuals";
+import type { ExpenseRow, Label } from "@/domain/expenses/types";
 import {
   Banknote,
-  Building2,
   BriefcaseBusiness,
+  Building2,
   CircleEllipsis,
   CreditCard,
   Gift,
@@ -12,18 +20,12 @@ import {
   PiggyBank,
   Plane,
   ShoppingBag,
-  Users,
   UserRound,
+  Users,
   Utensils,
   Wallet,
 } from "lucide-react";
 import { useState } from "react";
-import type { Label, ExpenseRow } from "@/domain/expenses/types";
-import {
-  paymentBrands,
-  suggestedBrand,
-  type LabelIconKey,
-} from "@/domain/expenses/label-visuals";
 
 export const labelIcons = {
   wallet: { Icon: Wallet, name: "Ví tiền" },
@@ -52,6 +54,9 @@ export function LabelVisual({
   label?: Label;
   kind?: "method" | "group";
 }) {
+  const { config: localize } = useI18n("expenses");
+  const localizedLabelIcons = localize(labelIcons);
+
   const [failed, setFailed] = useState<string | null>(null);
   const brand =
     kind === "method" && label?.brandKey
@@ -70,7 +75,7 @@ export function LabelVisual({
           : /bản thân/i.test(name)
             ? "personal"
             : "other");
-  const Icon = labelIcons[key as LabelIconKey]?.Icon ?? Wallet;
+  const Icon = localizedLabelIcons[key as LabelIconKey]?.Icon ?? Wallet;
   return (
     <span className="label-visual" aria-hidden="true">
       {brand && failed !== brand.key ? (
@@ -114,14 +119,18 @@ export function JarClassification({
   row: ExpenseRow;
   labels?: Label[];
 }) {
+  const { t: tr } = useI18n("expenses");
+
   return (
     <div className="expense-jar-meta">
       <span className="expense-kind-label">
-        {row.kind === "monthly" ? "Chi tháng" : "Tích lũy"}
+        {row.kind === "monthly" ? tr("Chi tháng") : tr("Tích lũy")}
       </span>
       <LabelName name={row.method} labels={labels} />
       {row.group && <LabelName name={row.group} labels={labels} kind="group" />}
-      {!row.active && <span className="expense-inactive-label">Đã ngừng</span>}
+      {!row.active && (
+        <span className="expense-inactive-label">{tr("Đã ngừng")}</span>
+      )}
     </div>
   );
 }
@@ -140,6 +149,8 @@ export function LabelSelect({
   kind: "method" | "group";
   error?: string;
 }) {
+  const { t: tr } = useI18n("expenses");
+
   const id = `expense-field-${kind}`;
   const available = labels.filter((item) => item.kind === kind);
   const legacy = value && !available.some((item) => item.name === value);
@@ -170,9 +181,13 @@ export function LabelSelect({
           aria-describedby={error ? `${id}-error` : `${id}-hint`}
         >
           <option value="">
-            {kind === "method" ? "Chọn phương thức" : "Không chọn nhóm"}
+            {kind === "method" ? tr("Chọn phương thức") : tr("Không chọn nhóm")}
           </option>
-          {legacy && <option value={value}>{value} · đã lưu trước đây</option>}
+          {legacy && (
+            <option value={value}>
+              {value} {tr("· đã lưu trước đây")}
+            </option>
+          )}
           {available.map((item) => (
             <option key={item.id} value={item.name}>
               {item.name}
@@ -182,13 +197,15 @@ export function LabelSelect({
       </div>
       {error && (
         <small className="field-error" id={`${id}-error`}>
-          {error}
+          {tr(error)}
         </small>
       )}
       <small id={`${id}-hint`} className="expense-muted">
         {available.length
-          ? "Chỉ chọn từ danh sách đã tạo trong Phân loại."
-          : "Chưa có lựa chọn. Thêm phương thức hoặc nhóm trong Phân loại trước khi lưu hũ."}
+          ? tr("Chỉ chọn từ danh sách đã tạo trong Phân loại.")
+          : tr(
+              "Chưa có lựa chọn. Thêm phương thức hoặc nhóm trong Phân loại trước khi lưu hũ.",
+            )}
       </small>
     </div>
   );

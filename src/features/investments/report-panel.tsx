@@ -1,13 +1,16 @@
 "use client";
+import { formatDate, formatMonth } from "@/i18n/format";
+import { useI18n } from "@/i18n/provider";
+
 import { ColumnTable } from "@/components/column-table";
-import { useState } from "react";
+import { useMoney } from "@/components/privacy";
+import { endOfMonth, ruleAt } from "@/domain/investments/engine";
 import type {
   InvestmentReport,
   ReportFilter,
 } from "@/domain/investments/reports";
-import { useMoney } from "@/components/privacy";
 import type { InvestmentCategory } from "@/domain/investments/types";
-import { endOfMonth, ruleAt } from "@/domain/investments/engine";
+import { useState } from "react";
 import { transactionNames } from "./editor";
 export function InvestmentReports({
   report,
@@ -24,12 +27,19 @@ export function InvestmentReports({
   today: string;
   onExport: () => void;
 }) {
+  const {
+    t: tr,
+    numberLocale,
+    config: localize,
+    locale,
+  } = useI18n("investments");
+
   const money = useMoney(),
     [chart, setChart] = useState("value"),
     [period, setPeriod] = useState("custom"),
     [anchor, setAnchor] = useState(today.slice(0, 7));
   const display = (v: string | null) =>
-    v === null ? "Thiếu định giá" : money(v);
+    v === null ? tr("Thiếu định giá") : money(v);
   function range(p: string, a: string) {
     setPeriod(p);
     setAnchor(a);
@@ -65,22 +75,25 @@ export function InvestmentReports({
   const total = report?.after.total;
   return (
     <>
-      <section className="panel investment-filters" aria-label="Bộ lọc báo cáo">
+      <section
+        className="panel investment-filters"
+        aria-label={tr("Bộ lọc báo cáo")}
+      >
         <label>
-          Kỳ báo cáo
+          {tr("Kỳ báo cáo")}
           <select
             value={period}
             onChange={(e) => range(e.target.value, anchor)}
           >
-            <option value="custom">Khoảng ngày</option>
-            <option value="month">Tháng</option>
-            <option value="quarter">Quý</option>
-            <option value="year">Năm</option>
+            <option value="custom">{tr("Khoảng ngày")}</option>
+            <option value="month">{tr("Tháng")}</option>
+            <option value="quarter">{tr("Quý")}</option>
+            <option value="year">{tr("Năm")}</option>
           </select>
         </label>
         {period !== "custom" && (
           <label>
-            Tháng tham chiếu
+            {tr("Tháng tham chiếu")}
             <input
               type="month"
               value={anchor}
@@ -92,7 +105,7 @@ export function InvestmentReports({
           </label>
         )}
         <label>
-          Từ ngày
+          {tr("Từ ngày")}
           <input
             type="date"
             value={filter.from}
@@ -104,7 +117,7 @@ export function InvestmentReports({
           />
         </label>
         <label>
-          Đến ngày
+          {tr("Đến ngày")}
           <input
             type="date"
             value={filter.to}
@@ -115,14 +128,14 @@ export function InvestmentReports({
           />
         </label>
         <label>
-          Danh mục / ví báo cáo
+          {tr("Danh mục / ví báo cáo")}
           <select
             value={filter.categoryId ?? ""}
             onChange={(e) =>
               onFilter({ ...filter, categoryId: e.target.value || undefined })
             }
           >
-            <option value="">Tất cả danh mục và ví</option>
+            <option value="">{tr("Tất cả danh mục và ví")}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {ruleAt(c, today)?.name ?? c.rules[0].name}
@@ -131,7 +144,7 @@ export function InvestmentReports({
           </select>
         </label>
         <label>
-          Loại giao dịch báo cáo
+          {tr("Loại giao dịch báo cáo")}
           <select
             value={filter.transactionKind ?? ""}
             onChange={(e) =>
@@ -141,8 +154,8 @@ export function InvestmentReports({
               })
             }
           >
-            <option value="">Tất cả loại</option>
-            {Object.entries(transactionNames).map(([id, name]) => (
+            <option value="">{tr("Tất cả loại")}</option>
+            {Object.entries(localize(transactionNames)).map(([id, name]) => (
               <option key={id} value={id}>
                 {name}
               </option>
@@ -154,53 +167,56 @@ export function InvestmentReports({
           onClick={onExport}
           disabled={!report}
         >
-          Xuất CSV
+          {tr("Xuất CSV")}
         </button>
       </section>
       {!report ? (
         <p role="alert" className="expense-error">
-          Chọn khoảng ngày hợp lệ, bắt đầu không muộn hơn hôm nay.
+          {tr("Chọn khoảng ngày hợp lệ, bắt đầu không muộn hơn hôm nay.")}
         </p>
       ) : (
         <>
           <p className="expense-muted">
-            Số liệu đến {report.asOf}
-            {report.provisional ? " · kỳ hiện tại tạm tính" : ""}. Lọc loại giao
-            dịch chỉ áp dụng hoạt động; số dư và kết quả kỳ luôn dùng đầy đủ
-            giao dịch.
+            {tr("Số liệu đến")} {formatDate(report.asOf!, locale)}
+            {report.provisional ? tr(" · kỳ hiện tại tạm tính") : ""}
+            {tr(
+              ". Lọc loại giao dịch chỉ áp dụng hoạt động; số dư và kết quả kỳ luôn dùng đầy đủ giao dịch.",
+            )}
           </p>
           <div className="investment-metrics">
             <article className="panel metric">
-              <span>Tài sản đầu kỳ</span>
+              <span>{tr("Tài sản đầu kỳ")}</span>
               <strong>{display(report.before.total)}</strong>
             </article>
             <article className="panel metric">
-              <span>Tài sản cuối kỳ</span>
+              <span>{tr("Tài sản cuối kỳ")}</span>
               <strong>{display(report.after.total)}</strong>
             </article>
             <article className="panel metric">
-              <span>Kết quả trong kỳ</span>
+              <span>{tr("Kết quả trong kỳ")}</span>
               <strong>{display(report.result)}</strong>
-              <p>Đã loại vốn mở đầu, nạp/rút và dòng chuyển ròng.</p>
+              <p>{tr("Đã loại vốn mở đầu, nạp/rút và dòng chuyển ròng.")}</p>
             </article>
             <article className="panel metric">
-              <span>Lãi/lỗ bán trong hoạt động lọc</span>
+              <span>{tr("Lãi/lỗ bán trong hoạt động lọc")}</span>
               <strong>{money(report.activity.realized)}</strong>
-              <p>Phí/thuế: {money(report.activity.fees)}</p>
+              <p>
+                {tr("Phí/thuế:")} {money(report.activity.fees)}
+              </p>
             </article>
           </div>
           <div className="investment-chart-grid">
             <section className="panel investment-chart">
-              <h2>Diễn biến theo tháng</h2>
+              <h2>{tr("Diễn biến theo tháng")}</h2>
               <label>
-                Nội dung biểu đồ
+                {tr("Nội dung biểu đồ")}
                 <select
                   value={chart}
                   onChange={(e) => setChart(e.target.value)}
                 >
-                  <option value="value">Tài sản cuối tháng</option>
-                  <option value="flow">Nạp và rút bên ngoài</option>
-                  <option value="result">Kết quả trong tháng</option>
+                  <option value="value">{tr("Tài sản cuối tháng")}</option>
+                  <option value="flow">{tr("Nạp và rút bên ngoài")}</option>
+                  <option value="result">{tr("Kết quả trong tháng")}</option>
                 </select>
               </label>
               {months.length && values.some((v) => v !== null) ? (
@@ -209,10 +225,12 @@ export function InvestmentReports({
                   role="img"
                   aria-label={
                     chart === "flow"
-                      ? "Biểu đồ nạp và rút bên ngoài theo tháng, đơn vị VND"
+                      ? tr(
+                          "Biểu đồ nạp và rút bên ngoài theo tháng, đơn vị VND",
+                        )
                       : chart === "result"
-                        ? "Biểu đồ kết quả theo tháng, đơn vị VND"
-                        : "Biểu đồ tài sản cuối tháng, đơn vị VND"
+                        ? tr("Biểu đồ kết quả theo tháng, đơn vị VND")
+                        : tr("Biểu đồ tài sản cuối tháng, đơn vị VND")
                   }
                 >
                   <line
@@ -226,7 +244,7 @@ export function InvestmentReports({
                     const v = values[i],
                       o = others[i];
                     if (v === null) return null;
-                    const text = `${m.month}: ${chart === "flow" ? `nạp ${money(v)}, rút ${money(o ?? "0")}` : money(v)}${m.provisional ? ", tạm tính" : ""}`;
+                    const text = `${m.month}: ${chart === "flow" ? tr("nạp {0}, rút {1}", { 0: money(v), 1: money(o ?? "0") }) : money(v)}${m.provisional ? tr(", tạm tính") : ""}`;
                     return (
                       <g key={m.month}>
                         {chart === "value" &&
@@ -296,7 +314,7 @@ export function InvestmentReports({
                             fill="var(--muted)"
                             fontSize="11"
                           >
-                            {m.month}
+                            {formatMonth(m.month!, locale)}
                           </text>
                         )}
                       </g>
@@ -304,23 +322,25 @@ export function InvestmentReports({
                   })}
                 </svg>
               ) : (
-                <p>Chưa có số liệu trong khoảng ngày này.</p>
+                <p>{tr("Chưa có số liệu trong khoảng ngày này.")}</p>
               )}
               <p className="expense-muted">
-                {chart === "flow" ? "Cột trái: nạp · cột phải: rút. " : ""}Định
-                giá gần nhất được mang tiếp, kèm ngày ở bảng bên dưới. Không vẽ
-                số thực tế cho tháng tương lai.
+                {chart === "flow" ? tr("Cột trái: nạp · cột phải: rút. ") : ""}
+                {tr(
+                  "Định giá gần nhất được mang tiếp, kèm ngày ở bảng bên dưới. Không vẽ số thực tế cho tháng tương lai.",
+                )}
               </p>
             </section>
             <section className="panel investment-chart">
-              <h2>Cơ cấu tài sản</h2>
+              <h2>{tr("Cơ cấu tài sản")}</h2>
               <p className="expense-muted">
-                Gồm tài sản đầu tư và tiền chờ tại {report.asOf}.
+                {tr("Gồm tài sản đầu tư và tiền chờ tại")}{" "}
+                {formatDate(report.asOf!, locale)}.
               </p>
               {total === null ? (
-                <p>Thiếu định giá để tính tỷ trọng đầy đủ.</p>
+                <p>{tr("Thiếu định giá để tính tỷ trọng đầy đủ.")}</p>
               ) : !total || BigInt(total) === 0n ? (
-                <p>Chưa có tài sản để tính tỷ trọng.</p>
+                <p>{tr("Chưa có tài sản để tính tỷ trọng.")}</p>
               ) : (
                 report.categories
                   .filter((c) => BigInt(c.value ?? "0") > 0n)
@@ -333,7 +353,7 @@ export function InvestmentReports({
                           <span>
                             {c.emoji} {c.name}
                           </span>
-                          <strong>{pct.toLocaleString("vi-VN")}%</strong>
+                          <strong>{pct.toLocaleString(numberLocale)}%</strong>
                         </div>
                         <div className="investment-track">
                           <i
@@ -351,7 +371,7 @@ export function InvestmentReports({
             </section>
           </div>
           <section className="panel">
-            <h2>Số liệu theo danh mục</h2>
+            <h2>{tr("Số liệu theo danh mục")}</h2>
             <div className="investment-table-scroll">
               <ColumnTable
                 tableId="investments-report-panel-1"
@@ -359,14 +379,14 @@ export function InvestmentReports({
               >
                 <thead>
                   <tr>
-                    <th>Danh mục</th>
-                    <th>Đầu kỳ</th>
-                    <th>Cuối kỳ</th>
-                    <th>Vốn còn lại</th>
-                    <th>Đã chốt trong kỳ</th>
-                    <th>Chưa chốt</th>
-                    <th>Kết quả kỳ</th>
-                    <th>Định giá</th>
+                    <th>{tr("Danh mục")}</th>
+                    <th>{tr("Đầu kỳ")}</th>
+                    <th>{tr("Cuối kỳ")}</th>
+                    <th>{tr("Vốn còn lại")}</th>
+                    <th>{tr("Đã chốt trong kỳ")}</th>
+                    <th>{tr("Chưa chốt")}</th>
+                    <th>{tr("Kết quả kỳ")}</th>
+                    <th>{tr("Định giá")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -381,8 +401,8 @@ export function InvestmentReports({
                       <td>{display(c.result)}</td>
                       <td>
                         {c.kind === "cash"
-                          ? "Theo giao dịch"
-                          : `${c.valueDate ?? "Chưa có"}${c.stale ? " · cũ" : ""}`}
+                          ? tr("Theo giao dịch")
+                          : `${c.valueDate ?? tr("Chưa có")}${c.stale ? tr(" · cũ") : ""}`}
                       </td>
                     </tr>
                   ))}
@@ -391,7 +411,7 @@ export function InvestmentReports({
             </div>
           </section>
           <section className="panel">
-            <h2>Bảng diễn biến</h2>
+            <h2>{tr("Bảng diễn biến")}</h2>
             <div className="investment-table-scroll">
               <ColumnTable
                 tableId="investments-report-panel-2"
@@ -399,20 +419,20 @@ export function InvestmentReports({
               >
                 <thead>
                   <tr>
-                    <th>Tháng</th>
-                    <th>Tài sản cuối tháng</th>
-                    <th>Nạp ngoài</th>
-                    <th>Rút ngoài</th>
-                    <th>Kết quả tháng</th>
-                    <th>Mốc định giá tài sản</th>
+                    <th>{tr("Tháng")}</th>
+                    <th>{tr("Tài sản cuối tháng")}</th>
+                    <th>{tr("Nạp ngoài")}</th>
+                    <th>{tr("Rút ngoài")}</th>
+                    <th>{tr("Kết quả tháng")}</th>
+                    <th>{tr("Mốc định giá tài sản")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {report.months.map((m) => (
                     <tr key={m.month}>
                       <th scope="row">
-                        {m.month}
-                        {m.provisional ? " · tạm tính" : ""}
+                        {formatMonth(m.month!, locale)}
+                        {m.provisional ? tr(" · tạm tính") : ""}
                       </th>
                       <td>{m.value === null ? "—" : money(m.value)}</td>
                       <td>{m.inflow === null ? "—" : money(m.inflow)}</td>
@@ -421,8 +441,8 @@ export function InvestmentReports({
                       <td>
                         {m.valuationDates.map((p) => (
                           <small key={p.name}>
-                            {p.name}: {p.date ?? "Chưa có"}
-                            {p.stale ? " · cũ" : ""}
+                            {p.name}: {p.date ?? tr("Chưa có")}
+                            {p.stale ? tr(" · cũ") : ""}
                           </small>
                         ))}
                       </td>

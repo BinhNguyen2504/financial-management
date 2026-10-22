@@ -1,16 +1,20 @@
 "use client";
-import Link from "next/link";
+import { useI18n } from "@/i18n/provider";
+
+import { useUser } from "@/features/profile/user-provider";
 import {
   createRefreshController,
   subscribeToForegroundRefresh,
 } from "@/lib/foreground-refresh";
-import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { useUser } from "@/features/profile/user-provider";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { dataRequest, type DataStatus } from "./api";
 import "./settings.css";
 
 export function ImportSuggestion() {
+  const { t: tr } = useI18n("settings");
+
   const { user } = useUser();
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -52,19 +56,20 @@ export function ImportSuggestion() {
   return (
     <aside
       className="panel import-suggestion"
-      aria-label="Khôi phục dữ liệu cũ"
+      aria-label={tr("Khôi phục dữ liệu cũ")}
     >
       <div>
-        <h2>Bạn đã có bản sao lưu?</h2>
+        <h2>{tr("Bạn đã có bản sao lưu?")}</h2>
         <p>
-          Tài khoản chưa có dữ liệu. Bạn có thể khôi phục toàn bộ dữ liệu cũ
-          trong Cài đặt.
+          {tr(
+            "Tài khoản chưa có dữ liệu. Bạn có thể khôi phục toàn bộ dữ liệu cũ trong Cài đặt.",
+          )}
         </p>
-        <Link href="/settings#import">Đến phần nhập bản sao lưu</Link>
+        <Link href="/settings#import">{tr("Đến phần nhập bản sao lưu")}</Link>
       </div>
       <button
         className="expense-secondary"
-        aria-label="Đóng gợi ý khôi phục"
+        aria-label={tr("Đóng gợi ý khôi phục")}
         onClick={() => {
           setVisible(false);
           try {

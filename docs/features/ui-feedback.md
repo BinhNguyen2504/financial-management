@@ -104,3 +104,26 @@ Thêm chủ đề đỏ gạch/san hô với đủ sáng/tối, lời dẫn/icon
 ## Bổ sung Đất lành — 22/10/2026
 
 Hoàn thành bộ năm chủ đề bằng Nâu — Đất lành với sáng/tối riêng, lời dẫn/icon, tám cảnh SVG và ba cảnh Quỹ. Địa hình, tầng đất, đá cuội, đất nung và ruộng bậc thang tạo khác biệt với Khu vườn. Bộ chọn ba cột desktop, hai cột 561–900px và một cột dưới 561px. Theme lưu theo trình duyệt, áp dụng ngay cho app/login/offline/landing thành viên, giữ bản nháp và chế độ hiển thị. Landing marketing khách giữ palette riêng. Xem [themes](themes.md) và [validation](../07-validation.md).
+
+## Đổi ngôn ngữ — 22/10/2026
+
+Phản hồi, nhãn accessibility, tooltip và lỗi trường hỗ trợ Anh/Việt trong app; giữ riêng trạng thái chưa xác nhận kết quả ghi. `LocalizedInput` bảo toàn bản nháp lỗi với định dạng lúc nhập khi tab khác đổi ngôn ngữ; chặn gửi và focus ô lỗi. Khóa bộ lọc dialog và tùy chọn cột ổn định qua ngôn ngữ. Xem [ngôn ngữ và logo](localization.md).
+
+## Bố cục mobile và vùng cuộn — 23/10/2026
+
+Thanh chuyển nội dung dùng chung `ScrollTabs`: nhãn một dòng, nút không co ép, cuộn ngang trong thanh khi thiếu chỗ. Mục đang chọn được đưa vào phần nhìn thấy sau khi chọn, đổi ngôn ngữ, tải font hoặc đổi kích thước. Khi điều hướng bàn phím, ưu tiên đưa nút đang focus vào tầm nhìn để không cuộn ngược về mục cũ. Chỉ thay đổi `scrollLeft` của thanh; không gọi `scrollIntoView` trên trang/dialog. Tab dialog tiếp tục giữ panel, bộ lọc và vị trí đọc. Preview desktop giữ điều hướng dọc; preview mobile dùng thanh ngang.
+
+`ColumnTable` tách toolbar và `.column-table-scroll` thành hai phần cùng cấp. Nút Cột hiển thị canh phải theo khung, không di chuyển khi cuộn dữ liệu ngang; vùng cuộn có nhãn truy cập và nhận focus bàn phím. Khung ngoài chỉ giữ border/bố cục, tránh hai vùng cuộn ngang lồng nhau. Cột đầu cố định, tùy chọn cột, popover và khôi phục focus giữ hành vi cũ. Bảng biểu đồ không dùng `ColumnTable` vẫn có vùng cuộn riêng.
+
+Thu nhập đặt mũi tên ở hai đầu bộ chọn Năm/Tháng, cùng hàng và cùng đáy; mỗi mũi tên có vùng chạm 44px. Hàng bảng có chiều cao cơ sở 48px, ô nhập thiếu không cộng padding dọc vào nút 44px. Tên dài và nội dung nhiều dòng vẫn được tăng chiều cao tự nhiên.
+
+Checklist bắt lỗi theo nhóm, áp dụng cả các màn hình không được nêu trong phản ánh:
+
+- Kiểm tra nội dung ngắn/dài, trống/có dữ liệu, chưa nhập/0, Việt/Anh và chữ lớn; không ép nhãn quan trọng xuống dòng trong nút.
+- So sánh các hàng tương đương có/không có điều khiển; kiểm tra padding cộng dồn, vùng chạm và căn giữa theo chiều dọc.
+- Cuộn ngang từ đầu đến cuối; phân biệt điều khiển của khung với dữ liệu bên trong. Kiểm tra sticky, focus và popover khi cuộn.
+- Thử cùng thành phần ở workspace, báo cáo, dialog, preview và sau điều hướng qua module khác; đo hình học thay vì chỉ kiểm tra phần tử có tồn tại.
+
+Phạm vi rà soát và bằng chứng: [ma trận bố cục](layout-scroll-2026-10-23.md), [lịch sử validation](../07-validation.md).
+
+Hồi quy cùng lượt phát hiện ô số hợp lệ giữ số 0 đầu sau blur khi form đã có giá trị chuẩn. Sửa đồng bộ hiển thị trong `LocalizedInput` dùng chung; bản nháp lỗi vẫn được giữ nguyên. Xem [ngôn ngữ và bản nháp](localization.md).

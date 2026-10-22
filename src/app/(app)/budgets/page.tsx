@@ -1,8 +1,11 @@
+import { ExpenseWorkspace } from "@/features/expenses/workspace";
+import { localizedMetadata } from "@/i18n/server";
+import { authConfigured } from "@/server/auth";
 import { pageAccess } from "@/server/page-auth";
 import type { Metadata } from "next";
-import { ExpenseWorkspace } from "@/features/expenses/workspace";
-import { authConfigured } from "@/server/auth";
-export const metadata: Metadata = { title: "Chi tiêu" };
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedMetadata("Chi tiêu");
+}
 export const dynamic = "force-dynamic";
 export default async function BudgetsPage() {
   const denied = await pageAccess("/budgets");

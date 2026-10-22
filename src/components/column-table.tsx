@@ -1,5 +1,8 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
+import { translate } from "@/i18n/translate";
 
+import { Columns3, LockKeyhole, RotateCcw, X } from "lucide-react";
 import {
   Children,
   cloneElement,
@@ -11,10 +14,9 @@ import {
   useState,
   type CSSProperties,
   type HTMLAttributes,
-  type ReactNode,
   type ReactElement,
+  type ReactNode,
 } from "react";
-import { Columns3, LockKeyhole, RotateCcw, X } from "lucide-react";
 import { usePreference } from "./ui-preferences";
 
 function nodes(children: ReactNode): ReactElement<{
@@ -61,22 +63,32 @@ export function hiddenColumns(raw: string): string[] {
 export function ColumnTable({
   tableId,
   showColumnPicker = true,
+  scrollClassName,
+  scrollLabel,
   children,
   ...props
 }: HTMLAttributes<HTMLTableElement> & {
   tableId: string;
   showColumnPicker?: boolean;
+  scrollClassName?: string;
+  scrollLabel?: string;
 }) {
+  const { t: tr } = useI18n();
+
   const [raw] = usePreference(`fm-columns:${tableId}`, "[]");
   const hidden = hiddenColumns(raw);
   const sections = nodes(children);
+  const caption = sections.find((node) => node.type === "caption");
   const head = sections.find((node) => node.type === "thead");
   const cells = nodes(nodes(head?.props.children)[0]?.props.children);
   const columns = cells.map((cell, index) => ({
     id:
-      label(cell.props.children).replace(/[↕↑↓]/g, "").trim() ||
-      `Cột ${index + 1}`,
-    fixed: index === 0 || /thao tác/i.test(label(cell.props.children)),
+      translate(
+        "vi",
+        label(cell.props.children).replace(/[↕↑↓]/g, "").trim(),
+      ) || tr("Cột {0}", { 0: index + 1 }),
+    label: label(cell.props.children).replace(/[↕↑↓]/g, "").trim(),
+    fixed: index === 0 || /thao tác|actions/i.test(label(cell.props.children)),
   }));
   const visible = columns.map(
     (column) => column.fixed || !hidden.includes(column.id),
@@ -137,27 +149,43 @@ export function ColumnTable({
             <ColumnPicker tableId={tableId} columns={columns} />
           </div>
         )}
-      <table
-        {...props}
-        style={
-          {
-            "--visible-columns": visible.filter(Boolean).length,
-            ...props.style,
-          } as CSSProperties
+      <div
+        className={`column-table-scroll${scrollClassName ? ` ${scrollClassName}` : ""}`}
+        role="region"
+        aria-label={
+          scrollLabel || label(caption?.props.children) || tr("Bảng dữ liệu")
         }
+        tabIndex={0}
       >
-        {sections.map(sectionContent)}
-      </table>
+        <table
+          {...props}
+          style={
+            {
+              "--visible-columns": visible.filter(Boolean).length,
+              ...props.style,
+            } as CSSProperties
+          }
+        >
+          {sections.map(sectionContent)}
+        </table>
+      </div>
     </div>
   );
 }
 export function ColumnPicker({
   tableId,
-  columns,
+  columns: sourceColumns,
 }: {
   tableId: string;
-  columns: { id: string; fixed?: boolean }[];
+  columns: { id: string; label?: string; fixed?: boolean }[];
 }) {
+  const { t: tr } = useI18n();
+
+  const columns = sourceColumns.map((column) => ({
+    ...column,
+    id: translate("vi", column.id),
+    label: column.label ?? column.id,
+  }));
   const [raw, set] = usePreference(`fm-columns:${tableId}`, "[]");
   const hidden = hiddenColumns(raw);
   const id = useId();
@@ -216,7 +244,7 @@ export function ColumnPicker({
         onClick={() => requestAnimationFrame(position)}
       >
         <Columns3 size={17} aria-hidden="true" />
-        Cột hiển thị
+        {tr("Cột hiển thị")}
       </button>
       <div
         ref={panel}
@@ -244,15 +272,15 @@ export function ColumnPicker({
       >
         <div className="column-picker-heading">
           <div>
-            <h3 id={`${id}-title`}>Cột hiển thị</h3>
+            <h3 id={`${id}-title`}>{tr("Cột hiển thị")}</h3>
             <p>
-              {selected}/{selectable.length} cột tùy chọn đang hiện
+              {selected}/{selectable.length} {tr("cột tùy chọn đang hiện")}
             </p>
           </div>
           <button
             type="button"
             className="icon-action"
-            aria-label="Đóng tùy chọn cột"
+            aria-label={tr("Đóng tùy chọn cột")}
             onClick={close}
           >
             <X size={18} aria-hidden="true" />
@@ -261,14 +289,16 @@ export function ColumnPicker({
         <div
           className="column-picker-list"
           role="group"
-          aria-label="Các cột tùy chọn"
+          aria-label={tr("Các cột tùy chọn")}
         >
           {selectable.map((column, index) => (
             <label key={`${column.id}-${index}`} className="column-picker-row">
-              <span>{column.id}</span>
+              <span>{column.label ?? column.id}</span>
               <input
                 type="checkbox"
-                aria-label={`Hiện cột ${column.id}`}
+                aria-label={tr("Hiện cột {0}", {
+                  0: column.label ?? column.id,
+                })}
                 checked={!hidden.includes(column.id)}
                 onChange={() =>
                   set(
@@ -287,7 +317,8 @@ export function ColumnPicker({
           <p className="column-picker-fixed">
             <LockKeyhole size={14} aria-hidden="true" />
             <span>
-              Luôn hiện: {fixed.map((column) => column.id).join(", ")}
+              {tr("Luôn hiện:")}{" "}
+              {fixed.map((column) => column.label ?? column.id).join(", ")}
             </span>
           </p>
         )}
@@ -306,7 +337,7 @@ export function ColumnPicker({
             }}
           >
             <RotateCcw size={16} aria-hidden="true" />
-            Khôi phục mặc định
+            {tr("Khôi phục mặc định")}
           </button>
         </div>
       </div>

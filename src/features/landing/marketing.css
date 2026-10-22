@@ -1,5 +1,7 @@
 /* Guest-only brand palette. Never writes or overrides saved app preferences. */
 .public-shell.marketing-shell {
+  --logo-bg: #292724;
+  --logo-fg: #f7f3eb;
   --canvas: #faf9f6;
   --surface: #ffffff;
   --surface-alt: #f0ede7;

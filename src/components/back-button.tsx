@@ -1,10 +1,13 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
 
+import { safeReturnPath } from "@/lib/auth-return";
 import { ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { safeReturnPath } from "@/lib/auth-return";
 
 export function BackButton() {
+  const { t: tr } = useI18n();
+
   const router = useRouter();
   const params = useSearchParams();
   const destination =
@@ -18,7 +21,7 @@ export function BackButton() {
       }
     >
       <ArrowLeft size={18} aria-hidden="true" />
-      Quay lại
+      {tr("Quay lại")}
     </button>
   );
 }

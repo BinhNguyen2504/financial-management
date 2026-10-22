@@ -1,3 +1,4 @@
+import { responseFieldErrors, responseMessage } from "@/i18n/error-messages";
 export class SavingsAPIError extends Error {
   constructor(
     message: string,
@@ -40,10 +41,10 @@ export async function savingsJSON<T>(path: string, body?: unknown): Promise<T> {
   }
   if (!response.ok)
     throw new SavingsAPIError(
-      data.error ?? "Không thể tải dữ liệu.",
+      responseMessage(data, "Không thể tải dữ liệu."),
       data.code ?? "REQUEST_FAILED",
       response.status,
-      data.fieldErrors,
+      responseFieldErrors(data),
     );
   return data as T;
 }

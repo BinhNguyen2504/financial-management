@@ -1,7 +1,13 @@
 "use client";
+import { ScrollTabs } from "@/components/scroll-tabs";
+import { useI18n } from "@/i18n/provider";
 
-import { ColumnTable } from "./column-table";
+import { formatDate, formatDecimal } from "@/i18n/format";
+import type { Locale } from "@/i18n/locale";
+import { translate } from "@/i18n/translate";
+
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { ColumnTable } from "./column-table";
 
 export function DialogPreview({
   children,
@@ -10,6 +16,8 @@ export function DialogPreview({
   children: ReactNode;
   className: string;
 }) {
+  const { t: tr } = useI18n();
+
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     ref.current?.focus({ preventScroll: true });
@@ -21,22 +29,18 @@ export function DialogPreview({
       tabIndex={-1}
       className={className}
       role="region"
-      aria-label="Xem trước thay đổi"
+      aria-label={tr("Xem trước thay đổi")}
     >
       {children}
     </section>
   );
 }
 
-export function dateLabel(value: string) {
-  const [year, month, day] = value.slice(0, 10).split("-");
-  return day ? `${day}/${month}/${year}` : `${month}/${year}`;
+export function dateLabel(value: string, locale: Locale = "vi") {
+  return formatDate(value, locale);
 }
-
-// Keep decimal quantities exact; Intl.NumberFormat(Number(value)) loses precision.
-export function decimalLabel(value: string) {
-  const [whole, fraction] = value.split(".");
-  return `${BigInt(whole).toLocaleString("vi-VN")}${fraction ? `,${fraction.replace(/0+$/, "")}`.replace(/,$/, "") : ""}`;
+export function decimalLabel(value: string, locale: Locale = "vi") {
+  return formatDecimal(value, locale);
 }
 
 export function DialogSummary({
@@ -48,8 +52,10 @@ export function DialogSummary({
   value: ReactNode;
   children?: ReactNode;
 }) {
+  const { t: tr } = useI18n();
+
   return (
-    <section className="dialog-summary" aria-label="Tóm tắt">
+    <section className="dialog-summary" aria-label={tr("Tóm tắt")}>
       <p className="dialog-summary-label">{label}</p>
       <strong className="dialog-summary-value">{value}</strong>
       {children}
@@ -75,10 +81,12 @@ export function DialogFacts({
 }
 
 export function DialogNote({ text }: { text?: string }) {
+  const { t: tr } = useI18n();
+
   if (!text) return null;
   return text.length > 140 ? (
     <details className="dialog-note">
-      <summary>Xem ghi chú</summary>
+      <summary>{tr("Xem ghi chú")}</summary>
       <p>{text}</p>
     </details>
   ) : (
@@ -91,6 +99,8 @@ export function DialogTabs({
 }: {
   tabs: { id: string; label: string; count?: number; content: ReactNode }[];
 }) {
+  const { t: tr } = useI18n();
+
   const uid = useId();
   const [active, setActive] = useState(tabs[0]?.id);
   const root = useRef<HTMLDivElement>(null);
@@ -106,9 +116,9 @@ export function DialogTabs({
   }
   return (
     <div ref={root} className="dialog-tabs-content">
-      <div
+      <ScrollTabs
         role="tablist"
-        aria-label="Nội dung chi tiết"
+        aria-label={tr("Nội dung chi tiết")}
         className="dialog-tabs"
       >
         {tabs.map((tab, index) => (
@@ -147,7 +157,7 @@ export function DialogTabs({
             )}
           </button>
         ))}
-      </div>
+      </ScrollTabs>
       {tabs.map((tab) => (
         <section
           key={tab.id}
@@ -171,6 +181,7 @@ export interface DialogColumn<T> {
   width?: string;
 }
 export interface DialogFilter<T> {
+  id?: string;
   label: string;
   options: { value: string; label: string }[];
   value: (item: T) => string;
@@ -195,6 +206,8 @@ export function DialogList<T>({
   empty?: string;
   label?: string;
 }) {
+  const { t: tr } = useI18n();
+
   const [query, setQuery] = useState("");
   const [values, setValues] = useState<Record<string, string>>({});
   const [from, setFrom] = useState("");
@@ -213,8 +226,8 @@ export function DialogList<T>({
         normalize(searchText?.(item) ?? "").includes(
           normalize(query.trim()),
         )) &&
-      filters.every((f) => {
-        const v = values[f.label] ?? f.initial ?? "";
+      filters.every((f, index) => {
+        const v = values[f.id ?? String(index)] ?? f.initial ?? "";
         return !v || f.value(item) === v;
       }) &&
       (!getDate ||
@@ -231,19 +244,19 @@ export function DialogList<T>({
   return (
     <div
       className="dialog-collection"
-      aria-label={label}
+      aria-label={tr(label)}
       onChange={(event) => event.stopPropagation()}
     >
       <div className="dialog-list-start" ref={start} tabIndex={-1}>
-        <h3>{label}</h3>
+        <h3>{tr(label)}</h3>
         <div className="dialog-filters">
           {searchText && (
             <label>
-              Tìm kiếm
+              {tr("Tìm kiếm")}
               <input
                 type="search"
                 value={query}
-                placeholder="Tên, nội dung, ghi chú…"
+                placeholder={tr("Tên, nội dung, ghi chú…")}
                 onChange={(e) => {
                   setQuery(e.target.value);
                   setPage(0);
@@ -251,13 +264,18 @@ export function DialogList<T>({
               />
             </label>
           )}
-          {filters.map((filter) => (
-            <label key={filter.label}>
+          {filters.map((filter, index) => (
+            <label key={filter.id ?? index}>
               {filter.label}
               <select
-                value={values[filter.label] ?? filter.initial ?? ""}
+                value={
+                  values[filter.id ?? String(index)] ?? filter.initial ?? ""
+                }
                 onChange={(e) => {
-                  setValues({ ...values, [filter.label]: e.target.value });
+                  setValues({
+                    ...values,
+                    [filter.id ?? String(index)]: e.target.value,
+                  });
                   setPage(0);
                 }}
               >
@@ -272,7 +290,7 @@ export function DialogList<T>({
           {getDate && (
             <>
               <label>
-                Từ ngày
+                {tr("Từ ngày")}
                 <input
                   type="date"
                   value={from}
@@ -283,7 +301,7 @@ export function DialogList<T>({
                 />
               </label>
               <label>
-                Đến ngày
+                {tr("Đến ngày")}
                 <input
                   type="date"
                   value={to}
@@ -298,20 +316,20 @@ export function DialogList<T>({
           )}
         </div>
         <p className="dialog-result-count" role="status">
-          {filtered.length} / {items.length} kết quả
+          {filtered.length} / {items.length} {tr("kết quả")}
           {filtered.length > 0
             ? ` · ${current * 20 + 1}–${Math.min((current + 1) * 20, filtered.length)}`
             : ""}
         </p>
         {from && to && from > to && (
           <p role="alert" className="expense-error">
-            Ngày kết thúc phải từ ngày bắt đầu.
+            {tr("Ngày kết thúc phải từ ngày bắt đầu.")}
           </p>
         )}
       </div>
       {visible.length ? (
         <ColumnTable
-          tableId={`dialog:${columns.map((column) => column.label).join("/")}`}
+          tableId={`dialog:${columns.map((column) => translate("vi", column.label)).join("/")}`}
           className="dialog-data-table"
         >
           <caption className="sr-only">{label}</caption>
@@ -325,10 +343,10 @@ export function DialogList<T>({
                     column.numeric
                       ? "is-numeric"
                       : column.kind === "date" ||
-                          /^(Tháng|Ngày)$/.test(column.label)
+                          /^(Tháng|Ngày|Month|Date)$/.test(column.label)
                         ? "is-date"
                         : column.kind === "actions" ||
-                            column.label === "Thao tác"
+                            column.label === tr("Thao tác")
                           ? "is-actions"
                           : ""
                   }
@@ -349,10 +367,10 @@ export function DialogList<T>({
                       column.numeric
                         ? "is-numeric"
                         : column.kind === "date" ||
-                            /^(Tháng|Ngày)$/.test(column.label)
+                            /^(Tháng|Ngày|Month|Date)$/.test(column.label)
                           ? "is-date"
                           : column.kind === "actions" ||
-                              column.label === "Thao tác"
+                              column.label === tr("Thao tác")
                             ? "is-actions"
                             : ""
                     }
@@ -371,19 +389,22 @@ export function DialogList<T>({
       ) : (
         <p className="dialog-empty">
           {items.length
-            ? "Không có kết quả phù hợp. Hãy đổi bộ lọc hoặc từ khóa."
+            ? tr("Không có kết quả phù hợp. Hãy đổi bộ lọc hoặc từ khóa.")
             : empty}
         </p>
       )}
       {pages > 1 && (
-        <nav className="dialog-pagination" aria-label={`Phân trang ${label}`}>
+        <nav
+          className="dialog-pagination"
+          aria-label={tr("Phân trang {0}", { 0: label })}
+        >
           <button
             type="button"
             className="expense-secondary"
             disabled={current === 0}
             onClick={() => navigate(current - 1)}
           >
-            Trang trước
+            {tr("Trang trước")}
           </button>
           <span>
             Trang {current + 1} / {pages}
@@ -409,26 +430,30 @@ export function DialogChanges({
   numeric?: boolean;
   rows: { key: string; label: string; before: ReactNode; after: ReactNode }[];
 }) {
+  const { t: tr } = useI18n();
+
   const changedRows = rows.filter((row) => row.before !== row.after);
   if (!changedRows.length)
     return (
       <p className="expense-muted">
-        Cập nhật thông tin cấu hình; số liệu đã ghi nhận được giữ nguyên.
+        {tr(
+          "Cập nhật thông tin cấu hình; số liệu đã ghi nhận được giữ nguyên.",
+        )}
       </p>
     );
   return (
     <DialogList
       items={changedRows}
       rowKey={(r) => r.key}
-      label="Ảnh hưởng trước và sau"
+      label={tr("Ảnh hưởng trước và sau")}
       columns={[
         {
-          label: "Thông tin",
+          label: tr("Thông tin"),
           render: (r) => r.label,
           width: numeric ? "44%" : "20%",
         },
-        { label: "Trước", render: (r) => r.before, numeric },
-        { label: "Sau", render: (r) => r.after, numeric },
+        { label: tr("Trước"), render: (r) => r.before, numeric },
+        { label: tr("Sau"), render: (r) => r.after, numeric },
       ]}
     />
   );

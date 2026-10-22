@@ -1,19 +1,20 @@
 "use client";
+import { ScrollTabs } from "@/components/scroll-tabs";
+import { AppLogo } from "@/components/app-logo";
 import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 
-import { useId, useRef, useState, type KeyboardEvent } from "react";
+import { ModuleIcon } from "@/components/module-icon";
+import { modules } from "@/features/catalog";
+import { LabelName } from "@/features/expenses/label-visual";
+import { ProgressScene } from "@/features/funds/progress-scene";
 import {
   ArrowDownLeft,
   ArrowUpRight,
   ChevronDown,
   Eye,
   EyeOff,
-  WalletCards,
 } from "lucide-react";
-import { modules } from "@/features/catalog";
-import { ProgressScene } from "@/features/funds/progress-scene";
-import { ModuleIcon } from "@/components/module-icon";
-import { LabelName } from "@/features/expenses/label-visual";
+import { useId, useRef, useState, type KeyboardEvent } from "react";
 
 const tabs = modules.filter((item) =>
   ["income", "budgets", "savings", "investments", "funds"].includes(item.slug),
@@ -202,7 +203,7 @@ export function ProductPreview({
     else return;
     event.preventDefault();
     setActive(tabs[next].slug as PreviewKey);
-    buttons.current[next]?.focus();
+    buttons.current[next]?.focus({ preventScroll: true });
   };
   return (
     <div className="product-preview">
@@ -218,10 +219,10 @@ export function ProductPreview({
       <div className="preview-body">
         <aside className="preview-sidebar" aria-label="Các mục trong preview">
           <span className="preview-logo">
-            <WalletCards size={20} aria-hidden="true" /> Financial Manager
+            <AppLogo size={24} /> Financial Manager
           </span>
           <p>KHÔNG GIAN CÁ NHÂN</p>
-          <div
+          <ScrollTabs
             className="preview-tabs"
             role="tablist"
             aria-label="Khám phá các tính năng"
@@ -244,7 +245,7 @@ export function ProductPreview({
                 {item.title}
               </button>
             ))}
-          </div>
+          </ScrollTabs>
           <div className="preview-sidebar-note">
             <span className="status-dot" />
             {neutral ? (
@@ -253,6 +254,9 @@ export function ProductPreview({
               <ThemeText name="storyNote" />
             )}
             <small>Tải bản sao dữ liệu của bạn trong Cài đặt.</small>
+            <small>
+              Trong app: Tiếng Việt / English. Bản xem thử dùng tiếng Việt.
+            </small>
           </div>
         </aside>
         <div className="preview-workspace">

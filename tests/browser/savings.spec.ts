@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { savingsClock } from "../../src/domain/savings/engine";
@@ -340,11 +340,11 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
   const v = await view(page);
   const cash = v.book!.categories.find((c) => c.kind === "cash")!;
   await page.getByLabel("Ví nhận tiền", { exact: true }).selectOption(cash.id);
-  await page.getByLabel("Tổng lượng muốn bán (để gợi ý)").fill("0.5");
+  await page.getByLabel("Tổng lượng muốn bán (để gợi ý)").fill("0,5");
   await page
     .getByRole("button", { name: "Gợi ý theo đợt cũ nhất", exact: true })
     .click();
-  await expect(page.getByLabel(/Lượng bán đợt/)).toHaveValue("0.5");
+  await expect(page.getByLabel(/Lượng bán đợt/)).toHaveValue("0,5");
   await page
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();

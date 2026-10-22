@@ -1,23 +1,27 @@
 "use client";
-import { HelpButton, HelpPageTitle } from "@/features/help/provider";
+import { useI18n } from "@/i18n/provider";
+
+import { DailyNote } from "@/components/daily-note";
+import { Garden } from "@/components/garden";
+import { LoadingSpinner, LoadingStatus } from "@/components/loading";
+import { useMoney } from "@/components/privacy";
+import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 import { useForegroundRefresh } from "@/components/use-foreground-refresh";
-import { LoadingStatus, LoadingSpinner } from "@/components/loading";
+import { jarEmoji } from "@/domain/expenses/emoji";
+import { buildReport, summarize } from "@/domain/expenses/reports";
+import type { ExpenseView } from "@/domain/expenses/types";
+import { HelpButton, HelpPageTitle } from "@/features/help/provider";
+import { ImportSuggestion } from "@/features/settings/import-suggestion";
+import { ArrowRight, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
-import { ArrowRight, Wallet } from "lucide-react";
-import type { ExpenseView } from "@/domain/expenses/types";
-import { summarize, buildReport } from "@/domain/expenses/reports";
-import { jarEmoji } from "@/domain/expenses/emoji";
-import { useMoney } from "@/components/privacy";
-import { Garden } from "@/components/garden";
-import { ImportSuggestion } from "@/features/settings/import-suggestion";
-import { DailyNote } from "@/components/daily-note";
-import { DonutChart } from "./charts";
 import { apiJSON, RequestError } from "./api";
+import { DonutChart } from "./charts";
 import { monthName } from "./format";
 
 export function ExpenseOverview({ configured }: { configured: boolean }) {
+  const { t: tr, locale } = useI18n("expenses");
+
   const money = useMoney();
   const [view, setView] = useState<ExpenseView | null>(null);
   const [error, setError] = useState("");
@@ -43,7 +47,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
         setError(
           e instanceof Error
             ? e.message
-            : "Chưa tải được dữ liệu. Hãy thử lại.",
+            : tr("Chưa tải được dữ liệu. Hãy thử lại."),
         );
         throw e;
       } finally {
@@ -96,18 +100,19 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
     <div className="zen-overview">
       <section className="welcome-garden" aria-labelledby="welcome-title">
         <div>
-          <p className="eyebrow">KHÔNG GIAN TÀI CHÍNH CỦA BẠN</p>
+          <p className="eyebrow">{tr("KHÔNG GIAN TÀI CHÍNH CỦA BẠN")}</p>
           <HelpPageTitle id="welcome-title">
-            Bình tâm hôm nay.
+            {tr("Bình tâm hôm nay.")}
             <br />
-            <span>Vun đắp ngày mai.</span>
+            <span>{tr("Vun đắp ngày mai.")}</span>
           </HelpPageTitle>
           <p className="lead">
-            Một chút quan tâm mỗi ngày, để tiền bạc trở thành điểm tựa cho những
-            điều bạn yêu.
+            {tr(
+              "Một chút quan tâm mỗi ngày, để tiền bạc trở thành điểm tựa cho những điều bạn yêu.",
+            )}
           </p>
           <Link className="expense-primary" href="/budgets">
-            Chăm sóc các hũ <ArrowRight size={17} aria-hidden="true" />
+            {tr("Chăm sóc các hũ")} <ArrowRight size={17} aria-hidden="true" />
           </Link>
         </div>
         <Garden />
@@ -116,23 +121,23 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
       <HelpButton
         pageId="overview"
         sectionId="terms"
-        label="Đọc các chỉ số tháng"
+        label={tr("Đọc các chỉ số tháng")}
       />
       {configured && <ImportSuggestion />}
       <section aria-labelledby="month-overview-title">
         <div className="section-title">
           <div>
-            <p className="eyebrow">TỪNG BƯỚC NHỎ, MỖI THÁNG</p>
+            <p className="eyebrow">{tr("TỪNG BƯỚC NHỎ, MỖI THÁNG")}</p>
             <h2 id="month-overview-title">
               {current
-                ? `Các hũ của bạn · ${monthName(current)}`
-                : "Bức tranh tháng này"}
+                ? tr("Các hũ của bạn · {0}", { 0: monthName(current, locale) })
+                : tr("Bức tranh tháng này")}
             </h2>
           </div>
           {total && (
             <span>
-              {rows.length} hũ ·{" "}
-              {total.provisional ? "Có số tạm tính" : "Đã ghi nhận"}
+              {rows.length} {tr("hũ ·")}{" "}
+              {total.provisional ? tr("Có số tạm tính") : tr("Đã ghi nhận")}
             </span>
           )}
         </div>
@@ -143,10 +148,12 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
         )}
         {error && (
           <div className="expense-notice expense-feedback" role="alert">
-            <p>{login ? "Đăng nhập để trở về với các hũ của bạn." : error}</p>
+            <p>
+              {login ? tr("Đăng nhập để trở về với các hũ của bạn.") : error}
+            </p>
             {login ? (
               <Link className="expense-secondary" href="/login">
-                Đăng nhập
+                {tr("Đăng nhập")}
               </Link>
             ) : (
               <button
@@ -156,7 +163,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
                 aria-busy={loading}
                 onClick={() => void reload().catch(() => {})}
               >
-                {loading && <LoadingSpinner />} Thử tải lại
+                {loading && <LoadingSpinner />} {tr("Thử tải lại")}
               </button>
             )}
           </div>
@@ -166,23 +173,23 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
             <div className="overview-metrics">
               {[
                 {
-                  label: "Mức tháng",
+                  label: tr("Mức tháng"),
                   value: total.target,
-                  hint: "Những khoản bạn dự định dành sẵn",
+                  hint: tr("Những khoản bạn dự định dành sẵn"),
                   Icon: Wallet,
                 },
                 {
-                  label: "Thực chi",
+                  label: tr("Thực chi"),
                   value: total.spent,
                   hint: total.provisional
-                    ? "Tạm tính · cập nhật số dư để chính xác hơn"
-                    : "Những khoản đã sử dụng",
+                    ? tr("Tạm tính · cập nhật số dư để chính xác hơn")
+                    : tr("Những khoản đã sử dụng"),
                   Icon: ThemeIcon,
                 },
                 {
-                  label: "Còn trong hũ",
+                  label: tr("Còn trong hũ"),
                   value: total.closing,
-                  hint: "Tiếp tục dành cho những điều sắp tới",
+                  hint: tr("Tiếp tục dành cho những điều sắp tới"),
                   Icon: ThemeIcon,
                 },
               ].map(({ label, value, hint, Icon }) => (
@@ -199,8 +206,8 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
             <div className="overview-detail-grid">
               <section className="panel">
                 <div className="section-title">
-                  <h2>Tiền đã đi đâu?</h2>
-                  <span>Theo nhóm mục đích</span>
+                  <h2>{tr("Tiền đã đi đâu?")}</h2>
+                  <span>{tr("Theo nhóm mục đích")}</span>
                 </div>
                 {report && <DonutChart items={report.byGroup} table />}
               </section>
@@ -210,7 +217,8 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
                     <ThemeText name="overviewJars" />
                   </h2>
                   <Link href="/budgets" className="text-link">
-                    Xem tất cả <ArrowRight size={15} aria-hidden="true" />
+                    {tr("Xem tất cả")}{" "}
+                    <ArrowRight size={15} aria-hidden="true" />
                   </Link>
                 </div>
                 {rows.slice(0, 5).map((row) => (
@@ -226,18 +234,18 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
                       <strong>{row.name}</strong>
                       <small>
                         {row.kind === "accumulation"
-                          ? "Đang tích lũy"
-                          : "Chi trong tháng"}
+                          ? tr("Đang tích lũy")
+                          : tr("Chi trong tháng")}
                       </small>
                     </span>
                     <span>
-                      <small>Còn lại</small>
+                      <small>{tr("Còn lại")}</small>
                       <strong>{money(row.closing)}</strong>
                     </span>
                   </Link>
                 ))}
                 <p className="expense-muted">
-                  Mỗi hũ là một khoảng dành riêng cho điều bạn quan tâm.
+                  {tr("Mỗi hũ là một khoảng dành riêng cho điều bạn quan tâm.")}
                 </p>
               </section>
             </div>
@@ -249,18 +257,22 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
               <div>
                 <h3>
                   {!configured
-                    ? "Chuẩn bị một góc nhỏ cho tài chính"
+                    ? tr("Chuẩn bị một góc nhỏ cho tài chính")
                     : !view?.book
-                      ? "Gieo hạt đầu tiên cho tháng của bạn"
-                      : "Tháng này đang chờ những hũ đầu tiên"}
+                      ? tr("Gieo hạt đầu tiên cho tháng của bạn")
+                      : tr("Tháng này đang chờ những hũ đầu tiên")}
                 </h3>
                 <p>
                   {!configured
-                    ? "Kết nối dịch vụ đăng nhập và lưu trữ để bắt đầu. Các khoản tiền của bạn sẽ được giữ riêng và đồng bộ khi kết nối hoàn tất."
-                    : "Bắt đầu bằng một hũ chi tiêu hoặc khoản tích lũy nhỏ. Bức tranh tháng này sẽ dần hiện ra từ dữ liệu bạn ghi nhận."}
+                    ? tr(
+                        "Kết nối dịch vụ đăng nhập và lưu trữ để bắt đầu. Các khoản tiền của bạn sẽ được giữ riêng và đồng bộ khi kết nối hoàn tất.",
+                      )
+                    : tr(
+                        "Bắt đầu bằng một hũ chi tiêu hoặc khoản tích lũy nhỏ. Bức tranh tháng này sẽ dần hiện ra từ dữ liệu bạn ghi nhận.",
+                      )}
                 </p>
                 <Link href="/budgets" className="expense-primary">
-                  {!configured ? "Chuẩn bị không gian" : "Mở Chi tiêu"}
+                  {!configured ? tr("Chuẩn bị không gian") : tr("Mở Chi tiêu")}
                   <ArrowRight size={17} aria-hidden="true" />
                 </Link>
               </div>
@@ -269,20 +281,23 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
         )}
       </section>
       <section className="next-chapters">
-        <h2>Những mảnh ghép tiếp theo</h2>
+        <h2>{tr("Những mảnh ghép tiếp theo")}</h2>
         <p>
-          Theo dõi tiền, sổ tiết kiệm và vàng trong Tiết kiệm. Tài khoản dùng
-          chung và mục tiêu sẽ tiếp tục được phát triển.
+          {tr(
+            "Theo dõi tiền, sổ tiết kiệm và vàng trong Tiết kiệm. Tài khoản dùng chung và mục tiêu sẽ tiếp tục được phát triển.",
+          )}
         </p>
         <div className="expense-actions">
           <Link href="/income" className="text-link">
-            Theo dõi Thu nhập <ArrowRight size={16} aria-hidden="true" />
+            {tr("Theo dõi Thu nhập")}{" "}
+            <ArrowRight size={16} aria-hidden="true" />
           </Link>
           <Link href="/savings" className="text-link">
-            Theo dõi Tiết kiệm <ArrowRight size={16} aria-hidden="true" />
+            {tr("Theo dõi Tiết kiệm")}{" "}
+            <ArrowRight size={16} aria-hidden="true" />
           </Link>
           <Link href="/goals" className="text-link">
-            Khám phá hướng phát triển{" "}
+            {tr("Khám phá hướng phát triển")}{" "}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>

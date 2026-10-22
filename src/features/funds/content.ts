@@ -57,10 +57,4 @@ export const guides: Record<
 export function localDateTime(iso: string) {
   return new Date(Date.parse(iso) + 7 * 3600000).toISOString().slice(0, 16);
 }
-export function displayTime(iso: string) {
-  return new Intl.DateTimeFormat("vi-VN", {
-    timeZone: "Asia/Ho_Chi_Minh",
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(new Date(iso));
-}
+export { formatTime as displayTime } from "@/i18n/format";

@@ -7,6 +7,7 @@ export interface ChartSlice {
 }
 export function donutSlices(
   items: { key: string; label: string; spent: string }[],
+  otherLabel = "Khác",
 ): ChartSlice[] {
   const positive = items
     .filter((r) => BigInt(r.spent) > 0n)
@@ -25,7 +26,7 @@ export function donutSlices(
           ...positive.slice(0, 4),
           {
             key: otherKey,
-            label: "Khác",
+            label: otherLabel,
             spent: positive
               .slice(4)
               .reduce((sum, r) => sum + BigInt(r.spent), 0n)

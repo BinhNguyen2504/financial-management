@@ -1,5 +1,11 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
 
+import { focusPointerControl } from "@/components/pointer-focus";
+import { ThemeIcon } from "@/components/theme-decoration";
+import { ExpenseModal } from "@/features/expenses/modal";
+import { BookOpen, Check, CircleHelp, Lightbulb } from "lucide-react";
+import { usePathname } from "next/navigation";
 import {
   createContext,
   useCallback,
@@ -9,15 +15,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { usePathname } from "next/navigation";
-import { ThemeIcon } from "@/components/theme-decoration";
-import { BookOpen, CircleHelp, Lightbulb, Check } from "lucide-react";
-import { ExpenseModal } from "@/features/expenses/modal";
-import { focusPointerControl } from "@/components/pointer-focus";
-import { helpPageForPath, helpPages } from "./registry";
-import type { HelpArticle, HelpPageId } from "./types";
-import { HelpText } from "./text";
 import "./help.css";
+import { helpPageForPath, helpPages as helpPagesSource } from "./registry";
+import { HelpText } from "./text";
+import type { HelpArticle, HelpPageId } from "./types";
 
 type HelpRequest = { pageId: HelpPageId; sectionId?: string; pathname: string };
 type HelpController = {
@@ -62,12 +63,14 @@ export function HelpButton({
   sectionId?: string;
   label: string;
 }) {
+  const { t: tr } = useI18n();
+
   const { openHelp } = useHelp();
   return (
     <button
       type="button"
       className="help-context"
-      aria-label={`Giải thích: ${label}`}
+      aria-label={tr("Giải thích: {0}", { 0: label })}
       aria-haspopup="dialog"
       onMouseDown={focusPointerControl}
       onClick={() => openHelp(pageId, sectionId)}
@@ -79,6 +82,8 @@ export function HelpButton({
 }
 
 export function PageHelpButton() {
+  const { t: tr } = useI18n();
+
   const page = helpPageForPath(usePathname());
   const { openHelp } = useHelp();
   if (!page) return null;
@@ -91,7 +96,7 @@ export function PageHelpButton() {
       onClick={() => openHelp(page.id)}
     >
       <BookOpen size={17} aria-hidden="true" />
-      <span>Hướng dẫn</span>
+      <span>{tr("Hướng dẫn")}</span>
     </button>
   );
 }
@@ -118,16 +123,20 @@ function HelpPanel({
   request: HelpRequest;
   onClose: () => void;
 }) {
+  const { t: tr, locale, config: localize } = useI18n();
+
   const [article, setArticle] = useState<HelpArticle | null>(null);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const root = useRef<HTMLDivElement>(null);
-  const page = helpPages.find((page) => page.id === request.pageId)!;
+  const page = localize(helpPagesSource).find(
+    (page) => page.id === request.pageId,
+  )!;
   useEffect(() => {
     let active = true;
     setArticle(null);
     setError(false);
-    import("./content")
+    (locale === "en" ? import("./content-en") : import("./content"))
       .then(({ articles }) => {
         if (active) setArticle(articles[request.pageId]);
       })
@@ -137,7 +146,7 @@ function HelpPanel({
     return () => {
       active = false;
     };
-  }, [request.pageId, attempt]);
+  }, [request.pageId, attempt, locale]);
 
   function jump(id: string) {
     const target = root.current?.querySelector<HTMLElement>(
@@ -153,32 +162,33 @@ function HelpPanel({
 
   return (
     <ExpenseModal
-      title={`Hướng dẫn · ${page.title}`}
+      title={tr("Hướng dẫn · {0}", { 0: page.title })}
       description={page.status}
       size="help"
       onClose={onClose}
     >
       <div className="help-content" ref={root}>
-        {!article && !error && <p role="status">Đang tải hướng dẫn…</p>}
+        {!article && !error && <p role="status">{tr("Đang tải hướng dẫn…")}</p>}
         {error && (
           <div role="alert">
             <p>
-              Chưa tải được hướng dẫn. Bạn có thể thử lại hoặc đóng để tiếp tục
-              công việc.
+              {tr(
+                "Chưa tải được hướng dẫn. Bạn có thể thử lại hoặc đóng để tiếp tục công việc.",
+              )}
             </p>
             <button
               type="button"
               className="expense-secondary"
               onClick={() => setAttempt((value) => value + 1)}
             >
-              Thử lại hướng dẫn
+              {tr("Thử lại hướng dẫn")}
             </button>
           </div>
         )}
         {article && (
           <>
-            <nav aria-label="Mục lục hướng dẫn" className="help-toc">
-              <p className="help-eyebrow">NỘI DUNG HƯỚNG DẪN</p>
+            <nav aria-label={tr("Mục lục hướng dẫn")} className="help-toc">
+              <p className="help-eyebrow">{tr("NỘI DUNG HƯỚNG DẪN")}</p>
               <ol>
                 {article.sections.map((section, index) => (
                   <li key={section.id}>
@@ -207,12 +217,13 @@ function HelpPanel({
                   <div className="help-section-copy">
                     {section.id === "mindset" && (
                       <p className="help-callout-label">
-                        <ThemeIcon size={18} /> Nguyên tắc cốt lõi
+                        <ThemeIcon size={18} /> {tr("Nguyên tắc cốt lõi")}
                       </p>
                     )}
                     {section.id === "pitfalls" && (
                       <p className="help-callout-label">
-                        <Lightbulb size={18} aria-hidden="true" /> Cần nhớ
+                        <Lightbulb size={18} aria-hidden="true" />{" "}
+                        {tr("Cần nhớ")}
                       </p>
                     )}
                     {section.paragraphs.map((text) => (

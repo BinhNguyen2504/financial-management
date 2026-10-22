@@ -1,5 +1,6 @@
+import type { Locale } from "@/i18n/locale";
+import { translator } from "@/i18n/translate";
 import { z } from "zod";
-import { dateSchema, kindSchema, transactionSchema } from "./schema";
 import {
   emptyBook,
   endOfMonth,
@@ -8,6 +9,7 @@ import {
   replay,
   SavingsError,
 } from "./engine";
+import { dateSchema, kindSchema, transactionSchema } from "./schema";
 import type {
   Clock,
   SavingsBook,
@@ -213,35 +215,37 @@ export function buildReport(
   };
 }
 export type SavingsReport = ReturnType<typeof buildReport>;
-export function reportCSV(r: SavingsReport) {
+export function reportCSV(r: SavingsReport, locale: Locale = "vi") {
+  const tr = translator(locale, "errors");
+
   const cell = (v: string) =>
     `"${(/^[=+@\-\t\r\n]/.test(v) ? "'" : "") + v.replaceAll('"', '""')}"`;
   const lines: string[][] = [
     [
-      "Loại",
-      "Ngày / tháng",
-      "Danh mục / ID",
-      "Đầu kỳ VND",
-      "Cuối kỳ / giá trị VND",
-      "Số lượng",
-      "Giá vốn VND",
-      "Giá VND/đơn vị",
-      "Ngày giá",
-      "Nạp ròng / kết quả VND",
-      "Ghi chú",
-      "Nạp ngoài VND",
-      "Rút ngoài VND",
-      "Chuyển ròng VND",
-      "Vốn mở đầu VND",
-      "Lãi nhận VND",
-      "Lãi/lỗ đã chốt VND",
-      "Lãi/lỗ chưa chốt VND",
-      "Phí/thuế VND",
+      tr("Loại"),
+      tr("Ngày / tháng"),
+      tr("Danh mục / ID"),
+      tr("Đầu kỳ VND"),
+      tr("Cuối kỳ / giá trị VND"),
+      tr("Số lượng"),
+      tr("Giá vốn VND"),
+      tr("Giá VND/đơn vị"),
+      tr("Ngày giá"),
+      tr("Nạp ròng / kết quả VND"),
+      tr("Ghi chú"),
+      tr("Nạp ngoài VND"),
+      tr("Rút ngoài VND"),
+      tr("Chuyển ròng VND"),
+      tr("Vốn mở đầu VND"),
+      tr("Lãi nhận VND"),
+      tr("Lãi/lỗ đã chốt VND"),
+      tr("Lãi/lỗ chưa chốt VND"),
+      tr("Phí/thuế VND"),
     ],
   ];
   for (const c of r.categories)
     lines.push([
-      "Tài sản",
+      tr("Tài sản"),
       r.asOf,
       c.name,
       c.startValue ?? "",
@@ -251,7 +255,11 @@ export function reportCSV(r: SavingsReport) {
       c.price ?? "",
       c.priceDate ?? "",
       c.result ?? "",
-      c.value === null ? "Thiếu định giá" : c.stale ? "Giá từ tháng trước" : "",
+      c.value === null
+        ? tr("Thiếu định giá")
+        : c.stale
+          ? tr("Giá từ tháng trước")
+          : "",
       c.inflow,
       c.outflow,
       c.internal,
@@ -263,7 +271,7 @@ export function reportCSV(r: SavingsReport) {
     ]);
   for (const m of r.months)
     lines.push([
-      "Tổng tháng",
+      tr("Tổng tháng"),
       m.month,
       "",
       "",
@@ -273,7 +281,11 @@ export function reportCSV(r: SavingsReport) {
       "",
       "",
       m.result ?? "",
-      m.provisional ? "Tạm tính" : m.missing.length ? "Thiếu định giá" : "",
+      m.provisional
+        ? tr("Tạm tính")
+        : m.missing.length
+          ? tr("Thiếu định giá")
+          : "",
       m.inflow ?? "",
       m.outflow ?? "",
       "",
@@ -306,7 +318,7 @@ export function reportCSV(r: SavingsReport) {
       e.fees,
     ]);
   lines.push([
-    "Tổng kỳ",
+    tr("Tổng kỳ"),
     r.asOf,
     "",
     r.before.total ?? "",
@@ -317,7 +329,7 @@ export function reportCSV(r: SavingsReport) {
     "",
     r.result ?? "",
     r.activityFiltered
-      ? "Lọc loại giao dịch chỉ áp dụng hoạt động; số dư giữ đầy đủ"
+      ? tr("Lọc loại giao dịch chỉ áp dụng hoạt động; số dư giữ đầy đủ")
       : "",
     r.activity.inflow,
     r.activity.outflow,

@@ -1,11 +1,14 @@
-import { test, expect, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import postgres from "postgres";
 import {
-  visualThemeKeys,
-  visualThemes,
-  type VisualTheme,
-} from "../../src/components/visual-theme";
+  buildFundReviewData,
+  buildFundReviewSQL,
+} from "../../scripts/lib/fund-review-data";
+import {
+  addInvestmentReviewData,
+  buildInvestmentCloudReviewSQL,
+} from "../../scripts/lib/investment-cloud-review.mjs";
 import {
   buildReviewData,
   buildReviewSQL,
@@ -15,13 +18,10 @@ import {
   buildSavingsReviewSQL,
 } from "../../scripts/lib/savings-review-data.mjs";
 import {
-  addInvestmentReviewData,
-  buildInvestmentCloudReviewSQL,
-} from "../../scripts/lib/investment-cloud-review.mjs";
-import {
-  buildFundReviewData,
-  buildFundReviewSQL,
-} from "../../scripts/lib/fund-review-data";
+  visualThemeKeys,
+  visualThemes,
+  type VisualTheme,
+} from "../../src/components/visual-theme";
 // Default runs every identity; targeted additions may select the workspace matrix.
 // Preference, contrast, thumbnail and system-mode checks still cover all themes.
 const requestedMatrix =
@@ -171,9 +171,24 @@ test("theme cards support keyboard, shared display mode, reload and cross-tab sy
     page.locator('meta[name="theme-color"][content="#241F1A"]'),
   ).not.toHaveAttribute("media");
   await page.keyboard.press("Tab");
-  await expect(
-    page.getByRole("radio", { name: "Tối", exact: true }),
-  ).toBeFocused();
+  // Native engines may enter a radio group at a different member. Verify that
+  // Tab reaches the display group and Space selects the focused mode.
+  const focusedMode = page.locator('input[name="theme"]:focus');
+  await expect(focusedMode).toHaveCount(1);
+  const entryMode = await focusedMode.inputValue();
+  await page.keyboard.press("ArrowLeft");
+  await expect(focusedMode).toHaveCount(1);
+  await expect(focusedMode).not.toHaveValue(entryMode);
+  const keyboardMode = await focusedMode.inputValue();
+  await page.keyboard.press("Space");
+  await expect(focusedMode).toBeChecked();
+  if (keyboardMode === "system")
+    await expect(page.locator("html")).not.toHaveAttribute("data-theme");
+  else
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-theme",
+      keyboardMode,
+    );
   await page.reload();
   await expect(earth).toBeChecked();
   const other = await context.newPage();
@@ -636,7 +651,7 @@ test("service worker serves the selected earth theme offline and caches only the
         ).flat(),
       };
     });
-    expect(cache.keys).toEqual(["fm-offline-v6"]);
+    expect(cache.keys).toEqual(["fm-offline-v7"]);
     expect(cache.paths).toEqual(["/offline.html"]);
     await context.setOffline(true);
     await page.goto("/overview");

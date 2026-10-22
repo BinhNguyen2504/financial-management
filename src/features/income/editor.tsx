@@ -1,32 +1,35 @@
 "use client";
-import { HelpButton } from "@/features/help/provider";
-import { fieldErrorsFromIssues } from "@/lib/field-errors";
-import { Save, X, ScanEye, Trash2 } from "lucide-react";
-import { normalizeInteger, integerInput } from "@/lib/form-values";
-import { LoadingSpinner } from "@/components/loading";
-import { focusFirstInvalid } from "@/components/form-feedback";
-import { MoneyHint } from "@/components/money-hint";
-import { useToast } from "@/components/toast";
+import { LocalizedInput } from "@/components/localized-input";
+import { useI18n } from "@/i18n/provider";
+
+import type { CommandResult } from "@/application/income";
 import { DialogChanges, DialogPreview } from "@/components/dialog-content";
-import { useRef, useId, useState, type FormEvent } from "react";
-import { ZodError } from "zod";
-import type { IncomeCategory, IncomeRow } from "@/domain/income/types";
+import { focusFirstInvalid } from "@/components/form-feedback";
+import { LoadingSpinner } from "@/components/loading";
+import { MoneyHint } from "@/components/money-hint";
+import {
+  PrivacyReveal,
+  PrivacyScope,
+  useMoney,
+  useMoneyHidden,
+} from "@/components/privacy";
+import { useToast } from "@/components/toast";
+import { ruleAt } from "@/domain/income/engine";
 import {
   incomeActionSchema,
   type IncomeAction,
   type IncomeCommand,
 } from "@/domain/income/schema";
-import { ruleAt } from "@/domain/income/engine";
-import type { CommandResult } from "@/application/income";
-import { ExpenseModal } from "@/features/expenses/modal";
+import type { IncomeCategory, IncomeRow } from "@/domain/income/types";
 import { monthName } from "@/features/expenses/format";
-import {
-  PrivacyScope,
-  PrivacyReveal,
-  useMoney,
-  useMoneyHidden,
-} from "@/components/privacy";
-import { incomeJSON, IncomeAPIError } from "./api";
+import { ExpenseModal } from "@/features/expenses/modal";
+import { HelpButton } from "@/features/help/provider";
+import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import { normalizeInteger } from "@/lib/form-values";
+import { Save, ScanEye, Trash2, X } from "lucide-react";
+import { useId, useRef, useState, type FormEvent } from "react";
+import { ZodError } from "zod";
+import { IncomeAPIError, incomeJSON } from "./api";
 export type EditorMode =
   | { type: "create" }
   | { type: "configure" | "stop" | "deleteCategory"; category: IncomeCategory }
@@ -67,6 +70,9 @@ function IncomeEditorForm({
   onSaved(): Promise<void>;
   onReload(): Promise<unknown>;
 }) {
+  const { t: tr, locale, config: localize } = useI18n("income");
+  const localizedTitles = localize(titles);
+
   const toast = useToast();
   const money = useMoney();
   const hidden = useMoneyHidden();
@@ -203,7 +209,7 @@ function IncomeEditorForm({
       } else {
         writing = true;
         await incomeJSON("/commands", command);
-        toast("success", "Đã lưu thay đổi.");
+        toast("success", tr("Đã lưu thay đổi."));
         await onSaved();
       }
     } catch (e) {
@@ -214,15 +220,15 @@ function IncomeEditorForm({
       if (unknownWrite) setUncertain(true);
       if (e instanceof ZodError) {
         setFieldErrors(fieldErrorsFromIssues(e.issues));
-        setError("Kiểm tra các trường được đánh dấu bên dưới.");
+        setError(tr("Kiểm tra các trường được đánh dấu bên dưới."));
       } else if (e instanceof IncomeAPIError && e.fieldErrors) {
         setFieldErrors(e.fieldErrors);
-        setError("Kiểm tra các trường được đánh dấu bên dưới.");
+        setError(tr("Kiểm tra các trường được đánh dấu bên dưới."));
       } else
         setError(
           e instanceof Error
             ? e.message
-            : "Không thể lưu. Kiểm tra kết nối và thử lại.",
+            : tr("Không thể lưu. Kiểm tra kết nối và thử lại."),
         );
       if (e instanceof IncomeAPIError && e.code === "VERSION_CONFLICT") {
         setConflict(true);
@@ -237,10 +243,10 @@ function IncomeEditorForm({
       toast(
         unknownWrite ? "warning" : "error",
         unknownWrite
-          ? "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu."
+          ? tr("Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.")
           : e instanceof Error
             ? e.message
-            : "Chưa hoàn tất. Hãy thử lại.",
+            : tr("Chưa hoàn tất. Hãy thử lại."),
       );
     } finally {
       setBusy(false);
@@ -260,13 +266,13 @@ function IncomeEditorForm({
   const fieldError = (key: string) =>
     fieldErrors[key] ? (
       <span className="expense-error" id={`income-error-${key}`}>
-        {fieldErrors[key]}
+        {tr(fieldErrors[key])}
       </span>
     ) : null;
   const formId = useId();
   return (
     <ExpenseModal
-      title={titles[mode.type]}
+      title={localizedTitles[mode.type]}
       onClose={onClose}
       busy={busy || uncertain}
       size={deleting ? "confirm" : "form"}
@@ -280,7 +286,7 @@ function IncomeEditorForm({
             disabled={busy || uncertain}
           >
             <X size={17} aria-hidden="true" />
-            Hủy
+            {tr("Hủy")}
           </button>
           <button
             form={formId}
@@ -298,14 +304,14 @@ function IncomeEditorForm({
               <Save size={17} aria-hidden="true" />
             )}
             {busy
-              ? "Đang xử lý…"
+              ? tr("Đang xử lý…")
               : needsPreview && !preview
-                ? "Xem trước thay đổi"
+                ? tr("Xem trước thay đổi")
                 : deleting
-                  ? "Xác nhận xóa"
+                  ? tr("Xác nhận xóa")
                   : needsPreview
-                    ? "Xác nhận lưu"
-                    : "Lưu"}
+                    ? tr("Xác nhận lưu")
+                    : tr("Lưu")}
           </button>
         </div>
       }
@@ -322,13 +328,14 @@ function IncomeEditorForm({
             <span className="required-mark" aria-hidden="true">
               *
             </span>{" "}
-            là thông tin cần nhập.
+            {tr("là thông tin cần nhập.")}
           </p>
         )}
         {uncertain && (
           <p role="status" className="expense-notice">
-            Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Lưu lại để
-            kiểm tra cùng yêu cầu.
+            {tr(
+              "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Lưu lại để kiểm tra cùng yêu cầu.",
+            )}
           </p>
         )}
         <PrivacyReveal />
@@ -341,7 +348,7 @@ function IncomeEditorForm({
                 ? "monthly-amount"
                 : "fixed"
           }
-          label="Hiểu khoản thu đang nhập"
+          label={tr("Hiểu khoản thu đang nhập")}
         />
         {error && (
           <div
@@ -350,12 +357,12 @@ function IncomeEditorForm({
             role="alert"
             className="form-error-summary"
           >
-            {error}
+            {tr(error)}
             {Object.entries(fieldErrors).length > 0 && (
               <ul>
                 {Object.entries(fieldErrors).map(([key, message]) => (
                   <li key={key}>
-                    <a href={`#income-field-${key}`}>{message}</a>
+                    <a href={`#income-field-${key}`}>{tr(message)}</a>
                   </li>
                 ))}
               </ul>
@@ -375,41 +382,50 @@ function IncomeEditorForm({
                 setPreview(null);
                 pending.current = null;
                 setError(
-                  "Đã tải dữ liệu mới. Kiểm tra nội dung trước khi lưu lại.",
+                  tr(
+                    "Đã tải dữ liệu mới. Kiểm tra nội dung trước khi lưu lại.",
+                  ),
                 );
               } catch {
-                setError("Chưa tải lại được dữ liệu. Hãy thử lại.");
+                setError(tr("Chưa tải lại được dữ liệu. Hãy thử lại."));
               } finally {
                 setBusy(false);
               }
             }}
           >
-            Tải dữ liệu mới, giữ nội dung nhập
+            {tr("Tải dữ liệu mới, giữ nội dung nhập")}
           </button>
         )}
         <fieldset className="dialog-form-section" disabled={busy || uncertain}>
-          <legend>Thông tin thu nhập</legend>
+          <legend>{tr("Thông tin thu nhập")}</legend>
           {initialRow && (
             <p>
-              <strong>{initialRow.name}</strong> · {monthName(initialRow.month)}
+              <strong>{initialRow.name}</strong> ·{" "}
+              {monthName(initialRow.month, locale)}
             </p>
           )}
           {deleting ? (
             <p className="expense-notice">
               {mode.type === "deleteCategory"
-                ? `Xóa danh mục “${config?.name}” chưa có số thu.`
-                : `Xóa số thu ${money(initialRow!.amount!)} của ${monthName(initialRow!.month)}? Tổng đã ghi nhận sẽ được tính lại. Lịch sử thay đổi vẫn được giữ.`}
+                ? tr("Xóa danh mục “{0}” chưa có số thu.", { 0: config?.name })
+                : tr(
+                    "Xóa số thu {0} của {1}? Tổng đã ghi nhận sẽ được tính lại. Lịch sử thay đổi vẫn được giữ.",
+                    {
+                      0: money(initialRow!.amount!),
+                      1: monthName(initialRow!.month, locale),
+                    },
+                  )}
             </p>
           ) : (
             <>
               {hasName && (
                 <label>
-                  Tên
+                  {tr("Tên")}
                   <span className="required-mark" aria-hidden="true">
                     *
                   </span>
                   <input
-                    aria-label="Tên"
+                    aria-label={tr("Tên")}
                     id="income-field-name"
                     required
                     maxLength={100}
@@ -426,7 +442,7 @@ function IncomeEditorForm({
               )}
               {hasName && (
                 <label>
-                  Mô tả (tùy chọn)
+                  {tr("Mô tả (tùy chọn)")}
                   <textarea
                     maxLength={1000}
                     value={description}
@@ -437,20 +453,20 @@ function IncomeEditorForm({
               )}
               <label>
                 {mode.type === "create"
-                  ? "Tháng bắt đầu"
+                  ? tr("Tháng bắt đầu")
                   : needsPreview
-                    ? "Tháng hiệu lực"
-                    : "Tháng"}
+                    ? tr("Tháng hiệu lực")
+                    : tr("Tháng")}
                 <span className="required-mark" aria-hidden="true">
                   *
                 </span>
                 <input
                   aria-label={
                     mode.type === "create"
-                      ? "Tháng bắt đầu"
+                      ? tr("Tháng bắt đầu")
                       : needsPreview
-                        ? "Tháng hiệu lực"
-                        : "Tháng"
+                        ? tr("Tháng hiệu lực")
+                        : tr("Tháng")
                   }
                   id={
                     mode.type === "create"
@@ -478,34 +494,31 @@ function IncomeEditorForm({
               </label>
               {hasAmount && (
                 <label>
-                  Số tiền thực nhận (VND)
+                  {tr("Số tiền thực nhận (VND)")}
                   <span className="required-mark" aria-hidden="true">
                     *
                   </span>
                   {hidden ? (
                     <input
-                      aria-label="Số tiền thực nhận (VND)"
+                      aria-label={tr("Số tiền thực nhận (VND)")}
                       id="income-field-amount"
                       value="••••••"
                       readOnly
                       autoComplete="off"
                     />
                   ) : (
-                    <input
-                      aria-label="Số tiền thực nhận (VND)"
+                    <LocalizedInput
+                      aria-label={tr("Số tiền thực nhận (VND)")}
                       id="income-field-amount"
                       required
                       inputMode="numeric"
-                      pattern="[0-9]+"
-                      maxLength={24}
+                      maxLength={40}
                       value={amount}
                       disabled={busy}
                       aria-invalid={!!fieldErrors.amount}
                       aria-describedby={`income-hint-amount${fieldErrors.amount ? " income-error-amount" : ""}`}
-                      onChange={(e) => {
-                        const next = integerInput(e.target.value);
-                        if (next !== null) setAmount(next);
-                      }}
+                      numberKind="integer"
+                      onValueChange={setAmount}
                       onBlur={() => setAmount(normalizeInteger(amount))}
                     />
                   )}
@@ -515,7 +528,7 @@ function IncomeEditorForm({
               )}
               {mode.type === "monthly" && (
                 <label>
-                  Ghi chú (tùy chọn)
+                  {tr("Ghi chú (tùy chọn)")}
                   <textarea
                     maxLength={1000}
                     value={note}
@@ -526,8 +539,11 @@ function IncomeEditorForm({
               )}
               {mode.type === "stop" && (
                 <p className="expense-notice">
-                  Ngừng “{config?.name}” từ tháng hiệu lực, gồm các năm sau. Số
-                  thu đã ghi vẫn được giữ và có thể sửa.
+                  {tr("Ngừng “")}
+                  {config?.name}
+                  {tr(
+                    "” từ tháng hiệu lực, gồm các năm sau. Số thu đã ghi vẫn được giữ và có thể sửa.",
+                  )}
                 </p>
               )}
             </>
@@ -535,13 +551,19 @@ function IncomeEditorForm({
         </fieldset>
         {preview && (
           <DialogPreview className="income-preview">
-            <h3>Ảnh hưởng từ {monthName(preview.result.effectiveFrom!)}</h3>
+            <h3>
+              {tr("Ảnh hưởng từ")}{" "}
+              {monthName(preview.result.effectiveFrom!, locale)}
+            </h3>
             <p>
               {preview.result.changes.length > 0
-                ? `${preview.result.changes.length} dòng thay đổi trong các năm đang`
-                : "Cập nhật cấu hình trong các năm đang"}
-              có cấu hình hoặc dữ liệu; cấu hình tiếp tục áp dụng cho những năm
-              sau. Tổng tiền đã ghi không thay đổi.
+                ? tr("{0} dòng thay đổi trong các năm đang", {
+                    0: preview.result.changes.length,
+                  })
+                : tr("Cập nhật cấu hình trong các năm đang")}
+              {tr(
+                "có cấu hình hoặc dữ liệu; cấu hình tiếp tục áp dụng cho những năm sau. Tổng tiền đã ghi không thay đổi.",
+              )}
             </p>
             {preview.result.changes.length > 0 && (
               <DialogChanges
@@ -550,9 +572,9 @@ function IncomeEditorForm({
                   .sort((a, b) => b.month.localeCompare(a.month))
                   .map((r) => ({
                     key: `${r.kind}/${r.key}/${r.month}`,
-                    label: monthName(r.month),
-                    before: r.beforeName ?? "Chưa có",
-                    after: `${r.afterName ?? "Không còn dòng trống"}${r.afterActive === false ? " · Đã ngừng; giữ số đã ghi" : ""}`,
+                    label: monthName(r.month, locale),
+                    before: r.beforeName ?? tr("Chưa có"),
+                    after: `${r.afterName ?? tr("Không còn dòng trống")}${r.afterActive === false ? tr(" · Đã ngừng; giữ số đã ghi") : ""}`,
                   }))}
               />
             )}

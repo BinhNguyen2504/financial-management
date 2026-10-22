@@ -2,7 +2,7 @@
 
 ## Trải nghiệm
 
-Trong Cài đặt → Giao diện, chọn **Khu vườn — Xanh lục**, **Dòng nước — Xanh lam**, **Kim ngân — Vàng**, **Lửa ấm — Đỏ** hoặc **Đất lành — Nâu**. Năm thẻ có minh họa, mô tả, radio và dấu chọn; ba cột trên desktop, hai cột ở 561–900px, một cột dưới 561px. Chọn áp dụng ngay. Nhóm chế độ hiển thị riêng có Sáng/Tối/Theo hệ thống, dùng chung cho cả năm chủ đề. Chủ đề mặc định là Khu vườn, giữ lựa chọn chế độ cũ; chưa chọn thì Theo hệ thống.
+Trong Cài đặt → Giao diện, chọn **Khu vườn — Xanh lục**, **Dòng nước — Xanh lam**, **Kim ngân — Vàng**, **Lửa ấm — Đỏ** hoặc **Đất lành — Nâu**. Năm thẻ có minh họa, mô tả, radio và dấu chọn; ba cột trên desktop, hai cột ở 561–900px, một cột dưới 561px. Chọn áp dụng ngay. Mỗi nhóm radio có một điểm Tab tại lựa chọn đang chọn; dùng phím mũi tên và Space để thao tác, gồm WebKit. Nhóm chế độ hiển thị riêng có Sáng/Tối/Theo hệ thống, dùng chung cho cả năm chủ đề. Chủ đề mặc định là Khu vườn, giữ lựa chọn chế độ cũ; chưa chọn thì Theo hệ thống.
 
 Phạm vi gồm toàn bộ module, trạng thái trống, biểu đồ, dialog, Help, landing sau đăng nhập, login và trang mất kết nối. Landing dành cho khách tại `/` dùng nhận diện marketing sáng riêng, độc lập theme/mode; không ghi đè tùy chọn đã lưu. Minh họa, icon trang trí và lời dẫn gợi hình đi theo chủ đề. Tên module, hướng dẫn nghiệp vụ, màu cảnh báo/lỗi, emoji người dùng và logo thanh toán giữ nguyên. Logo, favicon, manifest và Open Graph giữ nhận diện thương hiệu.
 
@@ -83,7 +83,7 @@ Quỹ: Emergency Fund có nền đá cao dần; Rainy Day Fund có mái trú đ�
 - Không remount workspace, giữ state, bộ lọc và bản nháp. Không ghi dữ liệu tài chính vào localStorage.
 - Storage bị chặn: vẫn đổi trong phiên của tab. Giá trị chủ đề lạ về forest, chế độ lạ về system.
 - Script parser chọn trước paint. Cùng markup SVG/text ở server/client, CSS chỉ hiện nhánh đúng. React quản lý metadata theme-color; lựa chọn system theo media query.
-- Trang offline đọc cùng tùy chọn và theo thay đổi hệ điều hành. Cache `fm-offline-v6` vẫn chỉ chứa `/offline.html`; không hỗ trợ nhập/đồng bộ tài chính ngoại tuyến.
+- Trang offline đọc cùng tùy chọn và theo thay đổi hệ điều hành. Cache `fm-offline-v7` vẫn chỉ chứa `/offline.html`; không hỗ trợ nhập/đồng bộ tài chính ngoại tuyến.
 
 ## Bộ năm chủ đề
 
@@ -92,3 +92,7 @@ Khu vườn, Dòng nước, Kim ngân, Lửa ấm và Đất lành đều đã c
 ## Kiểm chứng
 
 Xem [lịch sử validation](../07-validation.md). Kiểm thử trình duyệt local, dữ liệu tổng hợp và Auth contract double không xác nhận cloud/deployment, Auth thật hoặc thiết bị vật lý.
+
+## Logo và lời dẫn đa ngôn ngữ — 22/10/2026
+
+Logo ứng dụng đổi sang hũ tích lũy/đồng xu dùng than `#292724` và ngà `#F7F3EB`, đảo theo sáng/tối. SVG và PNG/favicon/PWA dùng cùng hình, không gắn màu riêng với forest hoặc theme khác. Icon cài app dùng nền than. Copy của cả năm theme trong app có Anh/Việt; minh họa và công thức tiến độ giữ nguyên. Ngôn ngữ độc lập theme/mode, xem [đặc tả](localization.md).

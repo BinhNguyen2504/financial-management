@@ -161,3 +161,11 @@ Tùy chọn lưu theo origin trình duyệt, dùng storage event để cập nh�
 ## Popover chọn cột — 21/10/2026
 
 `ColumnPicker` dùng Popover API (`popover="auto"`, invoker `popoverTarget`) để giữ DOM trong đúng dialog/section mà vẫn nằm trên top layer, tránh clipping bởi overflow của bảng. Tọa độ fixed được tính theo nút mở, giới hạn viewport và cập nhật khi scroll/resize; danh sách bên trong có vùng cuộn riêng. Không portal sang body ngoài dialog đang modal. Trạng thái cột vẫn dùng `usePreference`; `ColumnTable.showColumnPicker=false` cho phép đặt nút bên ngoài bảng mà giữ cùng cơ chế lọc header/body/footer. Escape được xử lý ở popover để không lan sang dialog cha.
+
+## Locale trong app — 22/10/2026
+
+Layout app đọc cookie `fm-locale` bằng async `cookies()` và cung cấp cho `LocaleProvider`; từng page vẫn await kiểm tra quyền server. UI là `AppShell` client và các workspace giữ state qua context. Từ điển TypeScript tách module, có namespace; Help tiếng Anh tải khi mở. Formatter/parser nhận locale, giữ tiền nguyên/số lượng dạng chuẩn. API lỗi thêm metadata dịch tương thích; CSV nhận `locale`, JSON/backup không đổi. Không thêm bảng hoặc migration. Xem [ngôn ngữ và logo](features/localization.md).
+
+## Vùng cuộn bảng và thanh tab — 23/10/2026
+
+`ColumnTable` sở hữu `.column-table-scroll` nằm cạnh toolbar, nhận `scrollClassName` và `scrollLabel`; fallback nhãn lấy từ caption hoặc chuỗi Bảng dữ liệu đã dịch. Props của table và khóa `tableId` vẫn giữ nguyên. Các khung module chỉ giữ trình bày, không tạo thêm scroller. `ScrollTabs` giữ semantics của div/nav, dùng MutationObserver/ResizeObserver để đưa mục được chọn vào vùng nhìn thấy bằng cuộn ngang nội bộ, ưu tiên nút đang focus khi điều hướng bàn phím và cập nhật theo kích thước các nhãn sau đổi ngôn ngữ. Không sửa API tài chính hay schema. Xem [quy chuẩn UI](features/ui-feedback.md).

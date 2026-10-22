@@ -1,5 +1,8 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
 
+import { browserAuth } from "@/lib/supabase/browser";
+import type { User } from "@supabase/supabase-js";
 import {
   createContext,
   useCallback,
@@ -8,8 +11,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { User } from "@supabase/supabase-js";
-import { browserAuth } from "@/lib/supabase/browser";
 
 const configured = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -36,6 +37,8 @@ const UserContext = createContext<{
 });
 
 export function UserProvider({ children }: { children: ReactNode }) {
+  const { t: tr } = useI18n("profile");
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(configured);
   const [error, setError] = useState("");
@@ -59,7 +62,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
       setUser(result.data.user);
     } catch {
-      setError("Chưa tải được thông tin cá nhân. Kiểm tra kết nối và thử lại.");
+      setError(
+        tr("Chưa tải được thông tin cá nhân. Kiểm tra kết nối và thử lại."),
+      );
     } finally {
       setLoading(false);
     }
@@ -77,7 +82,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [reload]);
   return (
     <UserContext.Provider
-      value={{ user, loading, error, configured, signingOut, setSigningOut, reload, update: setUser }}
+      value={{
+        user,
+        loading,
+        error,
+        configured,
+        signingOut,
+        setSigningOut,
+        reload,
+        update: setUser,
+      }}
     >
       {children}
     </UserContext.Provider>

@@ -173,8 +173,8 @@ svg {
   height: 45px;
   display: grid;
   place-items: center;
-  background: var(--brand-primary);
-  color: var(--brand-on-primary);
+  background: #292724;
+  color: #f7f3eb;
   border-radius: 12px;
 }
 .brand-sub {
@@ -897,4 +897,49 @@ svg {
 }
 :root[data-theme="light"] {
   color-scheme: light;
+}
+
+/* The logo identity is shared by all five palettes. */
+:root {
+  --logo-bg: #292724;
+  --logo-fg: #f7f3eb;
+}
+:root[data-theme="dark"] {
+  --logo-bg: #f7f3eb;
+  --logo-fg: #292724;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --logo-bg: #f7f3eb;
+    --logo-fg: #292724;
+  }
+}
+.brand-icon,
+.public-brand-mark {
+  background: var(--logo-bg);
+  color: var(--logo-fg);
+  flex-shrink: 0;
+}
+.locale-scope {
+  min-width: 0;
+}
+.language-picker {
+  margin-bottom: 32px;
+}
+.language-picker p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+body:has(.app-shell) > .skip-link {
+  display: none;
+}
+
+:where(label, .expense-amount, .fund-field):has(
+    input[data-number-invalid="true"]
+  )
+  > .money-input-hint,
+.expense-amount:has(input[data-number-invalid="true"])
+  > small:not(.field-error) {
+  display: none;
 }

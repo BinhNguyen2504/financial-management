@@ -1,3 +1,4 @@
+import { responseFieldErrors, responseMessage } from "@/i18n/error-messages";
 export class InvestmentAPIError extends Error {
   constructor(
     message: string,
@@ -43,10 +44,10 @@ export async function investmentsJSON<T>(
   }
   if (!response.ok)
     throw new InvestmentAPIError(
-      data.error ?? "Không thể tải dữ liệu.",
+      responseMessage(data, "Không thể tải dữ liệu."),
       data.code ?? "REQUEST_FAILED",
       response.status,
-      data.fieldErrors,
+      responseFieldErrors(data),
     );
   return data as T;
 }

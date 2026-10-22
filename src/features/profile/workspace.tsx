@@ -1,61 +1,66 @@
 "use client";
-import { HelpPageTitle } from "@/features/help/provider";
-import { LoadingStatus, LoadingSpinner } from "@/components/loading";
+import { useI18n } from "@/i18n/provider";
 
+import { LoadingSpinner, LoadingStatus } from "@/components/loading";
+import { HelpPageTitle } from "@/features/help/provider";
+
+import { BackButton } from "@/components/back-button";
+import { useToast } from "@/components/toast";
+import { comparable } from "@/lib/form-values";
+import { browserAuth } from "@/lib/supabase/browser";
+import type { User } from "@supabase/supabase-js";
+import { Save } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
-import type { User } from "@supabase/supabase-js";
-import { BackButton } from "@/components/back-button";
-import { comparable } from "@/lib/form-values";
-import { Save } from "lucide-react";
-import { useToast } from "@/components/toast";
-import { browserAuth } from "@/lib/supabase/browser";
-import { useUser } from "./user-provider";
 import {
   initials,
   profileFields,
   profileSchema,
   type ProfileFields,
 } from "./fields";
+import { useUser } from "./user-provider";
 
 export function ProfileWorkspace() {
+  const { t: tr } = useI18n("profile");
+
   const { user, configured, loading, error, reload } = useUser();
   return (
     <div className="profile-workspace">
       <div className="expense-page-heading">
         <div>
-          <p className="eyebrow">KHÔNG GIAN CỦA BẠN</p>
-          <HelpPageTitle>Thông tin cá nhân</HelpPageTitle>
+          <p className="eyebrow">{tr("KHÔNG GIAN CỦA BẠN")}</p>
+          <HelpPageTitle>{tr("Thông tin cá nhân")}</HelpPageTitle>
           <p className="lead">
-            Một vài thông tin cơ bản để làm quen và giữ liên lạc.
+            {tr("Một vài thông tin cơ bản để làm quen và giữ liên lạc.")}
           </p>
         </div>
         <BackButton />
       </div>
       {loading ? (
-        <LoadingStatus>Đang tải thông tin cá nhân…</LoadingStatus>
+        <LoadingStatus>{tr("Đang tải thông tin cá nhân…")}</LoadingStatus>
       ) : error ? (
         <div className="panel">
           <p className="expense-error" role="alert">
-            {error}
+            {tr(error)}
           </p>
           <button className="expense-secondary" onClick={() => void reload()}>
-            Thử tải lại
+            {tr("Thử tải lại")}
           </button>
         </div>
       ) : !configured ? (
         <section className="panel">
-          <h2>Chưa kết nối dịch vụ đăng nhập</h2>
+          <h2>{tr("Chưa kết nối dịch vụ đăng nhập")}</h2>
           <p>
-            Thông tin cá nhân sẽ được lưu cùng tài khoản khi dịch vụ đăng nhập
-            được kết nối.
+            {tr(
+              "Thông tin cá nhân sẽ được lưu cùng tài khoản khi dịch vụ đăng nhập được kết nối.",
+            )}
           </p>
         </section>
       ) : !user ? (
         <section className="panel">
-          <h2>Đăng nhập để xem thông tin cá nhân</h2>
+          <h2>{tr("Đăng nhập để xem thông tin cá nhân")}</h2>
           <Link className="expense-primary" href="/login?next=/profile">
-            Đăng nhập
+            {tr("Đăng nhập")}
           </Link>
         </section>
       ) : (
@@ -66,6 +71,8 @@ export function ProfileWorkspace() {
 }
 
 function ProfileForm({ user }: { user: User }) {
+  const { t: tr } = useI18n("profile");
+
   const { update } = useUser();
   const toast = useToast();
   const [fields, setFields] = useState(() => profileFields(user.user_metadata));
@@ -104,7 +111,7 @@ function ProfileForm({ user }: { user: User }) {
       if (error || !data.user) throw error ?? new Error("Missing user");
       update(data.user);
       setFields(profileFields(data.user.user_metadata));
-      toast("success", "Đã lưu thông tin cá nhân.");
+      toast("success", tr("Đã lưu thông tin cá nhân."));
     } catch (failure) {
       const status =
         failure && typeof failure === "object" && "status" in failure
@@ -113,22 +120,26 @@ function ProfileForm({ user }: { user: User }) {
       const uncertain = !status || status >= 500;
       setError(
         uncertain
-          ? "Chưa xác nhận kết quả lưu. Nội dung đang nhập được giữ lại; hãy kiểm tra hồ sơ rồi thử lại."
-          : "Chưa lưu được thông tin. Nội dung đang nhập được giữ lại; hãy thử lại.",
+          ? tr(
+              "Chưa xác nhận kết quả lưu. Nội dung đang nhập được giữ lại; hãy kiểm tra hồ sơ rồi thử lại.",
+            )
+          : tr(
+              "Chưa lưu được thông tin. Nội dung đang nhập được giữ lại; hãy thử lại.",
+            ),
       );
       toast(
         uncertain ? "warning" : "error",
         uncertain
-          ? "Chưa xác nhận kết quả lưu hồ sơ. Hãy kiểm tra rồi thử lại."
-          : "Chưa lưu được thông tin cá nhân.",
+          ? tr("Chưa xác nhận kết quả lưu hồ sơ. Hãy kiểm tra rồi thử lại.")
+          : tr("Chưa lưu được thông tin cá nhân."),
       );
     } finally {
       setBusy(false);
     }
   }
-  const name = profileFields(user.user_metadata).full_name || "Bạn";
+  const name = profileFields(user.user_metadata).full_name || tr("Bạn");
   return (
-    <section className="panel profile-panel" aria-label="Hồ sơ của bạn">
+    <section className="panel profile-panel" aria-label={tr("Hồ sơ của bạn")}>
       <div className="profile-identity">
         <span className="user-avatar profile-avatar" aria-hidden="true">
           {initials(name)}
@@ -149,19 +160,19 @@ function ProfileForm({ user }: { user: User }) {
           <span className="required-mark" aria-hidden="true">
             *
           </span>{" "}
-          là thông tin cần nhập.
+          {tr("là thông tin cần nhập.")}
         </p>
         <fieldset disabled={busy}>
           <div className="profile-field">
             <label htmlFor="profile-name">
-              Họ và tên
+              {tr("Họ và tên")}
               <span className="required-mark" aria-hidden="true">
                 *
               </span>
             </label>
             <input
               id="profile-name"
-              aria-label="Họ và tên"
+              aria-label={tr("Họ và tên")}
               name="full_name"
               autoComplete="name"
               maxLength={100}
@@ -175,7 +186,7 @@ function ProfileForm({ user }: { user: User }) {
             />
             {errors.full_name && (
               <span id="profile-name-error" className="profile-field-error">
-                {errors.full_name}
+                {tr(errors.full_name)}
               </span>
             )}
           </div>
@@ -190,12 +201,12 @@ function ProfileForm({ user }: { user: User }) {
               aria-describedby="profile-email-hint"
             />
             <span id="profile-email-hint" className="profile-hint">
-              Email dùng để đăng nhập tài khoản.
+              {tr("Email dùng để đăng nhập tài khoản.")}
             </span>
           </div>
           <div className="profile-form-grid">
             <div className="profile-field">
-              <label htmlFor="profile-birth">Ngày sinh</label>
+              <label htmlFor="profile-birth">{tr("Ngày sinh")}</label>
               <input
                 id="profile-birth"
                 name="birth_date"
@@ -211,12 +222,12 @@ function ProfileForm({ user }: { user: User }) {
               />
               {errors.birth_date && (
                 <span id="profile-birth-error" className="profile-field-error">
-                  {errors.birth_date}
+                  {tr(errors.birth_date)}
                 </span>
               )}
             </div>
             <div className="profile-field">
-              <label htmlFor="profile-gender">Giới tính</label>
+              <label htmlFor="profile-gender">{tr("Giới tính")}</label>
               <select
                 id="profile-gender"
                 name="gender"
@@ -225,17 +236,19 @@ function ProfileForm({ user }: { user: User }) {
                   change("gender", e.target.value as ProfileFields["gender"])
                 }
               >
-                <option value="">Chưa cung cấp</option>
-                <option value="female">Nữ</option>
-                <option value="male">Nam</option>
-                <option value="other">Khác</option>
-                <option value="prefer_not_to_say">Không muốn chia sẻ</option>
+                <option value="">{tr("Chưa cung cấp")}</option>
+                <option value="female">{tr("Nữ")}</option>
+                <option value="male">{tr("Nam")}</option>
+                <option value="other">{tr("Khác")}</option>
+                <option value="prefer_not_to_say">
+                  {tr("Không muốn chia sẻ")}
+                </option>
               </select>
             </div>
           </div>
         </fieldset>
         <p className="profile-hint">
-          Ngày sinh và giới tính là thông tin tùy chọn.
+          {tr("Ngày sinh và giới tính là thông tin tùy chọn.")}
         </p>
         <div className="expense-actions">
           <button
@@ -248,11 +261,11 @@ function ProfileForm({ user }: { user: User }) {
             }
           >
             {busy ? <LoadingSpinner /> : <Save size={18} aria-hidden="true" />}
-            {busy ? "Đang lưu…" : "Lưu thông tin"}
+            {busy ? tr("Đang lưu…") : tr("Lưu thông tin")}
           </button>
         </div>
         <p role="alert" className="expense-error">
-          {error}
+          {tr(error)}
         </p>
       </form>
     </section>

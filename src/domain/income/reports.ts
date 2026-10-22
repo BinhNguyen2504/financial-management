@@ -1,3 +1,5 @@
+import type { Locale } from "@/i18n/locale";
+import { translator } from "@/i18n/translate";
 import { z } from "zod";
 import { yearSchema } from "./schema";
 import type { IncomeRow, IncomeView } from "./types";
@@ -81,44 +83,48 @@ export function buildReport(view: IncomeView, input: ReportFilter) {
   };
 }
 export type IncomeReport = ReturnType<typeof buildReport>;
-export function reportCSV(report: IncomeReport) {
+export function reportCSV(report: IncomeReport, locale: Locale = "vi") {
+  const tr = translator(locale, "errors");
+
   const cell = (v: string) =>
     `"${(/^[=+@\-\t\r\n]/.test(v) ? "'" : "") + v.replaceAll('"', '""')}"`;
   const lines: string[][] = [
     [
-      "Loại",
+      tr("Loại"),
       "ID",
-      "Tên",
-      "Tháng",
-      "Số tiền VND",
-      "Trạng thái",
-      "Mô tả / ghi chú",
+      tr("Tên"),
+      tr("Tháng"),
+      tr("Số tiền VND"),
+      tr("Trạng thái"),
+      tr("Mô tả / ghi chú"),
     ],
   ];
   for (const m of report.months)
     lines.push([
-      "Tổng tháng",
+      tr("Tổng tháng"),
       "",
-      "Tổng đã ghi nhận",
+      tr("Tổng đã ghi nhận"),
       m.month,
       m.total ?? "",
-      m.total === null ? "Chưa có dữ liệu" : `${m.missing} danh mục chưa nhập`,
+      m.total === null
+        ? tr("Chưa có dữ liệu")
+        : tr("{0} danh mục chưa nhập", { 0: m.missing }),
       "",
     ]);
   for (const r of report.rows)
     lines.push([
-      r.kind === "fixed" ? "Cố định" : "Phát sinh",
+      r.kind === "fixed" ? tr("Cố định") : tr("Phát sinh"),
       r.key,
       r.name,
       r.month,
       r.amount ?? "",
-      r.amount === null ? "Chưa nhập" : "Đã ghi nhận",
+      r.amount === null ? tr("Chưa nhập") : tr("Đã ghi nhận"),
       [r.description, r.note].filter(Boolean).join("; "),
     ]);
   lines.push([
-    "Tổng kỳ",
+    tr("Tổng kỳ"),
     "",
-    "Tổng đã ghi nhận",
+    tr("Tổng đã ghi nhận"),
     `${report.filter.year}/${report.filter.from}-${report.filter.to}`,
     report.total ?? "",
     "",

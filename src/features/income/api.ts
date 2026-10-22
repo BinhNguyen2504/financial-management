@@ -1,3 +1,4 @@
+import { responseFieldErrors, responseMessage } from "@/i18n/error-messages";
 export class IncomeAPIError extends Error {
   constructor(
     message: string,
@@ -40,10 +41,10 @@ export async function incomeJSON<T>(path: string, body?: unknown): Promise<T> {
   }
   if (!response.ok)
     throw new IncomeAPIError(
-      value.error ?? "Không thể tải dữ liệu.",
+      responseMessage(value, "Không thể tải dữ liệu."),
       value.code ?? "REQUEST_FAILED",
       response.status,
-      value.fieldErrors,
+      responseFieldErrors(value),
     );
   return value as T;
 }

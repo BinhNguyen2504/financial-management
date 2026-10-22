@@ -23,6 +23,32 @@
               theme = visual;
           } catch (e) {}
           var root = document.documentElement;
+          var language = "vi";
+          if (
+            /^\/(overview|budgets|income|savings|investments|funds|goals|settings|transactions|accounts|reports|profile)(?:\/|$)/.test(
+              location.pathname,
+            )
+          ) {
+            var savedLocale = null;
+            try {
+              var match = document.cookie.match(
+                /(?:^|;\s*)fm-locale=(vi|en)(?:;|$)/,
+              );
+              if (match) savedLocale = match[1];
+            } catch (e) {}
+            if (!savedLocale) {
+              try {
+                savedLocale = localStorage.getItem("fm-locale");
+              } catch (e) {}
+            }
+            if (savedLocale === "en") language = "en";
+          }
+          root.dataset.locale = language;
+          root.lang = language;
+          document.title =
+            language === "en"
+              ? "Offline · Financial Manager"
+              : "Mất kết nối · Financial Manager";
           root.dataset.visualTheme = theme;
           if (mode === "system") delete root.dataset.theme;
           else root.dataset.theme = mode;
@@ -49,6 +75,15 @@
       })();
     </script>
     <style>
+      [data-locale-only="en"] {
+        display: none;
+      }
+      :root[data-locale="en"] [data-locale-only="en"] {
+        display: block;
+      }
+      :root[data-locale="en"] [data-locale-only="vi"] {
+        display: none;
+      }
       :root {
         color-scheme: light dark;
         --bg: #f7f3eb;
@@ -347,29 +382,61 @@
         </g>
       </svg>
       <p>FINANCIAL MANAGER</p>
-      <h1>Tạm dừng một nhịp.</h1>
+      <h1 data-locale-only="vi">Tạm dừng một nhịp.</h1>
+      <h1 data-locale-only="en">Pause for a moment.</h1>
       <p data-visual-only="forest">
-        Bạn đang mất kết nối. Khi có mạng trở lại, các hũ của bạn sẽ sẵn sàng để
-        tiếp tục chăm sóc.
+        <span data-locale-only="vi"
+          >Bạn đang mất kết nối. Khi có mạng trở lại, các hũ của bạn sẽ sẵn sàng
+          để tiếp tục chăm sóc.</span
+        ><span data-locale-only="en"
+          >You are offline. When your connection returns, your jars will be
+          ready to tend again.</span
+        >
       </p>
       <p data-visual-only="water">
-        Bạn đang mất kết nối. Khi có mạng trở lại, bạn có thể tiếp tục dòng tích
-        lũy của mình.
+        <span data-locale-only="vi"
+          >Bạn đang mất kết nối. Khi có mạng trở lại, bạn có thể tiếp tục dòng
+          tích lũy của mình.</span
+        ><span data-locale-only="en"
+          >You are offline. When your connection returns, you can continue your
+          flow of savings.</span
+        >
       </p>
       <p data-visual-only="gold">
-        Bạn đang mất kết nối. Khi có mạng trở lại, bạn có thể tiếp tục vun đầy
-        kho tích lũy của mình.
+        <span data-locale-only="vi"
+          >Bạn đang mất kết nối. Khi có mạng trở lại, bạn có thể tiếp tục vun
+          đầy kho tích lũy của mình.</span
+        ><span data-locale-only="en"
+          >You are offline. When your connection returns, you can continue
+          building your savings store.</span
+        >
       </p>
       <p data-visual-only="fire">
-        Bạn đang mất kết nối. Khi có mạng trở lại, bạn có thể tiếp tục giữ lửa
-        cho những khoản tích lũy của mình.
+        <span data-locale-only="vi"
+          >Bạn đang mất kết nối. Khi có mạng trở lại, bạn có thể tiếp tục giữ
+          lửa cho những khoản tích lũy của mình.</span
+        ><span data-locale-only="en"
+          >You are offline. When your connection returns, you can keep your
+          savings glowing.</span
+        >
       </p>
       <p data-visual-only="earth">
-        Bạn đang mất kết nối. Khi có mạng trở lại, bạn có thể tiếp tục bồi đắp
-        nền tảng tích lũy của mình.
+        <span data-locale-only="vi"
+          >Bạn đang mất kết nối. Khi có mạng trở lại, bạn có thể tiếp tục bồi
+          đắp nền tảng tích lũy của mình.</span
+        ><span data-locale-only="en"
+          >You are offline. When your connection returns, you can continue
+          building your savings foundation.</span
+        >
       </p>
-      <p>Hiện ứng dụng chưa hỗ trợ nhập hoặc đồng bộ giao dịch ngoại tuyến.</p>
-      <a href="/overview">Thử kết nối lại →</a>
+      <p data-locale-only="vi">
+        Hiện ứng dụng chưa hỗ trợ nhập hoặc đồng bộ giao dịch ngoại tuyến.
+      </p>
+      <p data-locale-only="en">
+        Offline transaction entry and synchronisation are not available.
+      </p>
+      <a data-locale-only="vi" href="/overview">Thử kết nối lại →</a>
+      <a data-locale-only="en" href="/overview">Try reconnecting →</a>
     </main>
   </body>
 </html>

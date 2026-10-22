@@ -165,7 +165,7 @@ Các điểm Giải thích nằm cạnh tiêu đề và trong form, không lặp
 
 ## Hai chủ đề, cùng nhịp sử dụng — 21/10/2026
 
-Giao diện trong Cài đặt gồm thẻ Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành và nhóm Sáng/Tối/Theo hệ thống. Thẻ có radio, minh họa đúng chủ đề, mô tả và dấu chọn; desktop ba cột, tablet 561–900px hai cột, dưới 561px một cột. Đổi tức thời, giữ bộ lọc và bản nháp. Xanh lục giữ thiết kế hiện có; xanh lam dùng nền trắng xanh/xanh đêm, suối, hợp lưu và hồ tích nước. Kim ngân dùng nền kem, vàng mật ong/vàng champagne, đồng xu, thỏi vàng, túi tiền và rương tích lũy. Lửa ấm dùng đỏ gạch/đỏ san hô, bếp lửa, đèn lồng và than hồng; cảnh núi lửa là hình tĩnh cách điệu. Đất lành lấy địa hình làm đặc trưng: tầng đất, đồi núi, đá cuội, đất nung và ruộng bậc thang, khác hình cây lá của Khu vườn. Cảnh Quỹ phản ánh tỷ lệ thật, che tiền vẫn giữ tỷ lệ.
+Giao diện trong Cài đặt gồm thẻ Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành và nhóm Sáng/Tối/Theo hệ thống. Thẻ có radio, minh họa đúng chủ đề, mô tả và dấu chọn; desktop ba cột, tablet 561–900px hai cột, dưới 561px một cột. Đổi tức thời, giữ bộ lọc và bản nháp. Mỗi nhóm radio có một điểm Tab trên lựa chọn đang chọn; các mục còn lại đi bằng phím mũi tên, giữ focus rõ trên WebKit. Xanh lục giữ thiết kế hiện có; xanh lam dùng nền trắng xanh/xanh đêm, suối, hợp lưu và hồ tích nước. Kim ngân dùng nền kem, vàng mật ong/vàng champagne, đồng xu, thỏi vàng, túi tiền và rương tích lũy. Lửa ấm dùng đỏ gạch/đỏ san hô, bếp lửa, đèn lồng và than hồng; cảnh núi lửa là hình tĩnh cách điệu. Đất lành lấy địa hình làm đặc trưng: tầng đất, đồi núi, đá cuội, đất nung và ruộng bậc thang, khác hình cây lá của Khu vườn. Cảnh Quỹ phản ánh tỷ lệ thật, che tiền vẫn giữ tỷ lệ.
 
 Lời dẫn và icon trang trí theo chủ đề; thuật ngữ nghiệp vụ, màu cảnh báo/lỗi, logo thanh toán và emoji người dùng giữ nguyên. Chỉ chuyển màu 180ms sau thao tác và phản hồi Quỹ ngắn; không hoạt ảnh nền lặp, reduced motion tắt hiệu ứng. Chủ đề áp dụng cả public/login/offline. Chi tiết: [themes](features/themes.md).
 
@@ -183,3 +183,11 @@ Các luồng tạo, sửa, hủy/ngừng và khôi phục cho biết kết quả
 Khách chưa đăng nhập có nhận diện marketing riêng được người dùng chọn: sáng, tinh tế, nền ngà `#FAF9F6`, chữ `#242420`, điểm nhấn cam đồng `#A74425`. Typography lớn, khoảng thở, thẻ tài chính tĩnh và nội dung hướng đến lợi ích; không dùng cây/nước/vàng/lửa. Trình tự lợi ích → preview → khả năng sản phẩm → câu chuyện → FAQ → CTA. Không thêm số người dùng, lời chứng thực hoặc kết quả tài chính chưa có bằng chứng.
 
 Trang thành viên giữ nguyên giao diện theo theme hiện tại. Marketing là HTML mặc định; khi provider xác nhận user, đổi cả shell và nội dung. Tải lỗi Auth vẫn đọc được marketing và thử lại qua nút tài khoản. Theme và mode đã lưu không bị ghi đè. Preview khách có cùng số liệu/keyboard/ẩn tiền, dùng biểu đồ trung tính. Màn hình hẹp xếp hero và feature thành một cột; FAQ dùng details/summary, CTA là link thật; không có chuyển động nền lặp.
+
+## Logo trung tính và Anh/Việt — 22/10/2026
+
+Logo hũ/đồng xu dùng than–ngà, đảo sáng/tối và phù hợp năm theme. Cài đặt có radio Tiếng Việt/English, tiếng Việt mặc định; đổi ngay kèm toast. English dùng en-GB, tiền VND và giờ Việt Nam. Không gian app/Help có hai ngôn ngữ, trang công khai/login vẫn tiếng Việt. Khi đổi, giữ bản nháp, bộ lọc, vị trí và lựa chọn cột. Ô số lỗi giữ nguyên chữ cùng định dạng lúc nhập, báo tại chỗ và chặn lưu thay vì bỏ tùy ý dấu chấm/phẩy. Xem [đặc tả](features/localization.md).
+
+## Bố cục gọn và điều khiển ổn định — 23/10/2026
+
+Tab giữ nguyên nhãn trên một hàng và cuộn trong thanh khi thiếu chỗ; mục đang chọn luôn nhìn thấy, không làm nhảy trang/dialog. Toolbar bảng đứng ngoài vùng dữ liệu cuộn ngang. Thu nhập có mũi tên hai đầu bộ chọn kỳ, hàng bảng cơ sở 48px và nút nhập thiếu 44px không cộng thêm padding dọc. Audit theo nhóm lỗi trên toàn ứng dụng được ghi tại [ma trận bố cục](features/layout-scroll-2026-10-23.md).

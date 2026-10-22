@@ -1,10 +1,14 @@
+import { parseInteger } from "@/i18n/format";
+import type { Locale } from "@/i18n/locale";
 // Keep form comparison and monetary normalization independent of floating point.
 export function normalizeInteger(value: string) {
   return /^\d+$/.test(value) ? value.replace(/^0+(?=\d)/, "") : value;
 }
-export function integerInput(value: string): string | null {
-  const clean = value.replace(/[.,\s₫]/g, "");
-  return /^\d*$/.test(clean) ? clean : null;
+export function integerInput(
+  value: string,
+  locale: Locale = "vi",
+): string | null {
+  return parseInteger(value, locale);
 }
 export function comparable(value: unknown): string {
   if (typeof value === "string") return JSON.stringify(value.trim());

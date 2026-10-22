@@ -104,3 +104,11 @@ Copy landing và chú thích Help trong preview nêu rõ ứng dụng báo lỗi
 Catalog bổ sung `publicHomeSummary`, giữ nguyên trạng thái triển khai module. FAQ dùng catalog để phân biệt hiện có/một phần/đang phát triển. Đăng xuất trở về marketing; tùy chọn giao diện vẫn được giữ để lần đăng nhập sau tiếp tục dùng.
 
 Metadata và ảnh Open Graph công khai dùng cùng thông điệp/cam đồng của trang marketing; logo ứng dụng và favicon giữ nguyên.
+
+## Logo và phạm vi ngôn ngữ — 22/10/2026
+
+Trang công khai, preview và login tiếp tục bằng tiếng Việt; FAQ giải thích Anh/Việt trong app và Cài đặt. Preview có chú thích phạm vi ngôn ngữ, số liệu vẫn cố định và không đọc API tài chính. Logo header/mobile/preview, favicon và icon PWA đồng bộ biểu tượng hũ/đồng xu màu than–ngà, độc lập màu theme. Xem [đặc tả](localization.md).
+
+## Bố cục và cuộn — 23/10/2026
+
+Preview mobile dùng thanh tính năng một hàng cuộn ngang, chọn bằng bàn phím không làm nhảy trang. Preview desktop giữ điều hướng dọc. FAQ mô tả tab/bảng trên mobile; số liệu minh họa vẫn cố định, không có yêu cầu API tài chính. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).

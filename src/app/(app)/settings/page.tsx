@@ -1,7 +1,10 @@
-import type { Metadata } from "next";
-import { pageAccess } from "@/server/page-auth";
 import { SettingsWorkspace } from "@/features/settings/workspace";
-export const metadata: Metadata = { title: "Cài đặt" };
+import { localizedMetadata } from "@/i18n/server";
+import { pageAccess } from "@/server/page-auth";
+import type { Metadata } from "next";
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedMetadata("Cài đặt");
+}
 export const dynamic = "force-dynamic";
 export default async function SettingsPage() {
   const denied = await pageAccess("/settings");

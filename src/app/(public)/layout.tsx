@@ -1,9 +1,10 @@
-import Link from "next/link";
-import { WalletCards, ArrowUpRight } from "lucide-react";
+import { AppLogo } from "@/components/app-logo";
 import { PublicAccount } from "@/features/landing/account-actions";
 import { PublicShell } from "@/features/landing/landing-audience";
 import "@/features/landing/landing.css";
 import "@/features/landing/marketing.css";
+import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 
 export default function PublicLayout({
   children,
@@ -19,7 +20,7 @@ export default function PublicLayout({
           aria-label="Financial Manager — Trang giới thiệu"
         >
           <span className="public-brand-mark">
-            <WalletCards size={22} aria-hidden="true" />
+            <AppLogo size={26} />
           </span>
           <span>
             Financial<span className="public-brand-sub">Manager</span>

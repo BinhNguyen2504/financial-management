@@ -1,3 +1,4 @@
+import { responseMessage } from "@/i18n/error-messages";
 export class DataRequestError extends Error {
   constructor(
     message: string,
@@ -23,7 +24,7 @@ export async function dataRequest(path: string, init?: RequestInit) {
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     throw new DataRequestError(
-      body.error ?? "Chưa kết nối được dữ liệu. Hãy thử lại.",
+      responseMessage(body, "Chưa kết nối được dữ liệu. Hãy thử lại."),
       response.status,
     );
   }

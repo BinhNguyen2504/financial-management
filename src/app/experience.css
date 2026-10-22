@@ -473,6 +473,15 @@ textarea[aria-invalid="true"],
 }
 .column-table {
   min-width: 0;
+  max-width: 100%;
+}
+.column-table-scroll {
+  max-width: 100%;
+  overflow: auto;
+}
+.column-table-scroll:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
 }
 .column-table-toolbar {
   display: flex;
@@ -889,7 +898,7 @@ textarea[aria-invalid="true"],
   width: 100%;
 }
 
-.income-table-wrap {
+.income-table-wrap .column-table-scroll {
   scroll-padding-inline: 170px 16px;
 }
 .income-table :is(button, a) {
@@ -897,7 +906,7 @@ textarea[aria-invalid="true"],
   scroll-margin-inline: 170px 24px;
 }
 @media (max-width: 650px) {
-  .income-table-wrap {
+  .income-table-wrap .column-table-scroll {
     scroll-padding-inline-start: 150px;
   }
 }
@@ -908,18 +917,6 @@ textarea[aria-invalid="true"],
 }
 .income-chart .expense-section-heading {
   align-items: end;
-}
-@media (max-width: 400px) {
-  .income-workspace .income-period-controls {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-  .income-period-controls > button {
-    grid-row: 2;
-    width: 44px;
-  }
-  .income-period-controls > button:nth-last-child(2) {
-    justify-self: end;
-  }
 }
 
 .income-table small.status-missing {

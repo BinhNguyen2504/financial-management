@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { vietnamClock } from "../../src/domain/expenses/engine";
 import type { FundView } from "../../src/domain/funds/types";
@@ -134,7 +134,7 @@ test("onboarding links living expense, requires user x, previews without writing
   await expect(emergency).toHaveValue("");
   await emergency.fill("6");
   await page.getByLabel("Rainy Day Fund — hệ số x", { exact: true }).fill("1");
-  await page.getByLabel("Sinking Fund — hệ số x", { exact: true }).fill("2.5");
+  await page.getByLabel("Sinking Fund — hệ số x", { exact: true }).fill("2,5");
   await page.getByRole("button", { name: "Tiếp tục", exact: true }).click();
   await page
     .getByRole("button", { name: "Ưu tiên Rainy Day Fund lên", exact: true })
@@ -495,7 +495,9 @@ test("locations archive only at zero; canceled entries remain in history and lis
   await expect(page.locator(".fund-transaction")).toHaveCount(20);
   await page.getByRole("button", { name: "Trang sau", exact: true }).click();
   await expect(page.locator(".fund-transaction")).toHaveCount(1);
-  await page.getByRole("button", { name: "Hủy", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Hủy giao dịch", exact: true })
+    .click();
   await page
     .getByLabel("Lý do sửa hoặc hủy", { exact: true })
     .fill("Ghi trùng");

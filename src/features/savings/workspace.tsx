@@ -1,12 +1,10 @@
 "use client";
-import { HelpButton, HelpPageTitle } from "@/features/help/provider";
-import { Trash2 as DeleteCommandGlyph } from "lucide-react";
-import { Pencil as EditActionIcon } from "lucide-react";
-import { LoadingStatus } from "@/components/loading";
-import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { Download, Plus, RefreshCw } from "lucide-react";
+import { ScrollTabs } from "@/components/scroll-tabs";
+import { formatDate, formatMonth } from "@/i18n/format";
+import { useI18n } from "@/i18n/provider";
+
 import { Garden } from "@/components/garden";
+import { LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
 import { useToast } from "@/components/toast";
@@ -15,10 +13,22 @@ import {
   endOfMonth,
   ruleAt,
 } from "@/domain/savings/engine";
-import { monthSchema } from "@/domain/savings/schema";
-import type { SavingsView, CategoryPosition } from "@/domain/savings/types";
 import { buildReport, type ReportFilter } from "@/domain/savings/reports";
-import { savingsJSON, SavingsAPIError, downloadSavings } from "./api";
+import { monthSchema } from "@/domain/savings/schema";
+import type { CategoryPosition, SavingsView } from "@/domain/savings/types";
+import { HelpButton, HelpPageTitle } from "@/features/help/provider";
+import { formatDecimal } from "@/i18n/format";
+import {
+  Trash2 as DeleteCommandGlyph,
+  Download,
+  Pencil as EditActionIcon,
+  Plus,
+  RefreshCw,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { SavingsAPIError, downloadSavings, savingsJSON } from "./api";
+import { SavingsDetails } from "./details";
 import {
   SavingsEditor,
   kindNames,
@@ -26,7 +36,6 @@ import {
   type EditorMode,
 } from "./editor";
 import { SavingsReports } from "./report-panel";
-import { SavingsDetails } from "./details";
 export function SavingsWorkspace({
   configured,
   initialToday,
@@ -34,6 +43,8 @@ export function SavingsWorkspace({
   configured: boolean;
   initialToday: string;
 }) {
+  const { t: tr, locale, config: localize } = useI18n("savings");
+
   const toast = useToast();
   const money = useMoney(),
     hidden = useMoneyHidden();
@@ -65,7 +76,7 @@ export function SavingsWorkspace({
       return v;
     } catch (e) {
       if (request.current === n) {
-        setError(e instanceof Error ? e.message : "Chưa tải được dữ liệu.");
+        setError(e instanceof Error ? e.message : tr("Chưa tải được dữ liệu."));
         setStatus(e instanceof SavingsAPIError ? e.status : 0);
       }
       throw e;
@@ -111,12 +122,12 @@ export function SavingsWorkspace({
     ? view?.state.positions.find((p) => p.id === details)
     : undefined;
   const display = (v: string | null) =>
-    v === null ? "Thiếu định giá" : money(v);
+    v === null ? tr("Thiếu định giá") : money(v);
   async function download(path: string, name: string) {
     try {
       await downloadSavings(path, name);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Chưa xuất được dữ liệu.");
+      setError(e instanceof Error ? e.message : tr("Chưa xuất được dữ liệu."));
     }
   }
   function position(p: CategoryPosition) {
@@ -127,8 +138,8 @@ export function SavingsWorkspace({
             <span aria-hidden="true">{p.emoji}</span> {p.name}
           </h3>
           <p className="expense-muted">
-            {kindNames[p.kind]}
-            {!p.active ? " · đã lưu trữ" : ""}
+            {localize(kindNames)[p.kind]}
+            {!p.active ? tr(" · đã lưu trữ") : ""}
           </p>
         </div>
         <strong className="savings-value">{display(p.value)}</strong>
@@ -136,27 +147,34 @@ export function SavingsWorkspace({
           {p.kind === "gold" ? (
             <>
               <span>
-                {hidden ? "••••••" : p.quantity} {p.unit}
+                {hidden ? "••••••" : formatDecimal(p.quantity, locale)}{" "}
+                {tr(p.unit ?? "")}
               </span>
-              <span>Giá vốn {money(p.cost)}</span>
-              <span>Lãi/lỗ {display(p.unrealized)}</span>
               <span>
-                Giá {p.priceDate ?? "chưa có"}
-                {p.stale ? " · cần cập nhật" : ""}
+                {tr("Giá vốn")} {money(p.cost)}
+              </span>
+              <span>
+                {tr("Lãi/lỗ")} {display(p.unrealized)}
+              </span>
+              <span>
+                {tr("Giá")} {p.priceDate ?? tr("chưa có")}
+                {p.stale ? tr(" · cần cập nhật") : ""}
               </span>
             </>
           ) : (
             <span>
-              {p.kind === "deposit" ? "Gốc đang gửi" : "Số dư theo giao dịch"}
+              {p.kind === "deposit"
+                ? tr("Gốc đang gửi")
+                : tr("Số dư theo giao dịch")}
             </span>
           )}
         </div>
         <button
           className="expense-secondary"
           onClick={() => setDetails(p.id)}
-          aria-label={`Chi tiết ${p.name}`}
+          aria-label={tr("Chi tiết {0}", { 0: p.name })}
         >
-          Chi tiết
+          {tr("Chi tiết")}
         </button>
       </>
     );
@@ -184,17 +202,19 @@ export function SavingsWorkspace({
         return (
           <article className="savings-activity" key={t.id}>
             <div>
-              <h3>{transactionNames[t.kind]}</h3>
+              <h3>{localize(transactionNames)[t.kind]}</h3>
               <p>
                 {c ? (ruleAt(c, t.date.slice(0, 7)) ?? c.rules[0]).name : ""} ·{" "}
-                {t.date}
+                {formatDate(t.date!, locale)}
               </p>
               {t.note && <p>{t.note}</p>}
             </div>
             <div>
               <strong>{effect ? money(effect.net) : "—"}</strong>
               {effect?.kind === "sellGold" && (
-                <p>Lãi/lỗ đã chốt: {money(effect.realized)}</p>
+                <p>
+                  {tr("Lãi/lỗ đã chốt:")} {money(effect.realized)}
+                </p>
               )}
             </div>
             <div className="expense-actions">
@@ -203,18 +223,18 @@ export function SavingsWorkspace({
                 onClick={() =>
                   setEditor({ type: "transaction", transaction: t })
                 }
-                aria-label={`Sửa giao dịch ${t.id}`}
-                title="Sửa"
+                aria-label={tr("Sửa giao dịch {0}", { 0: t.id })}
+                title={tr("Sửa")}
               >
                 <EditActionIcon size={18} aria-hidden="true" />
               </button>
               <button
                 className="expense-secondary"
                 onClick={() => setEditor({ type: "void", transaction: t })}
-                aria-label={`Hủy giao dịch ${t.id}`}
+                aria-label={tr("Hủy giao dịch {0}", { 0: t.id })}
               >
                 <DeleteCommandGlyph size={17} aria-hidden="true" />
-                Hủy giao dịch
+                {tr("Hủy giao dịch")}
               </button>
             </div>
           </article>
@@ -225,52 +245,56 @@ export function SavingsWorkspace({
     <div className="savings-workspace" onMouseDownCapture={focusPointerControl}>
       <div className="expense-page-heading">
         <div>
-          <p className="eyebrow">TÍCH LŨY CÓ LỊCH SỬ</p>
+          <p className="eyebrow">{tr("TÍCH LŨY CÓ LỊCH SỬ")}</p>
           <HelpPageTitle>
-            Chăm chút <span>ngày mai.</span>
+            {tr("Chăm chút")} <span>{tr("ngày mai.")}</span>
           </HelpPageTitle>
           <p className="lead">
-            Tiền, sổ tiết kiệm và vàng — từng bước vun đắp theo tháng.
+            {tr("Tiền, sổ tiết kiệm và vàng — từng bước vun đắp theo tháng.")}
           </p>
         </div>
         <Garden variant="grove" />
       </div>
       {!configured ? (
         <section className="panel">
-          <h2>Chưa kết nối dữ liệu Tiết kiệm</h2>
+          <h2>{tr("Chưa kết nối dữ liệu Tiết kiệm")}</h2>
           <p>
-            Cấu hình Supabase và PostgreSQL theo hướng dẫn dự án để sử dụng.
+            {tr(
+              "Cấu hình Supabase và PostgreSQL theo hướng dẫn dự án để sử dụng.",
+            )}
           </p>
         </section>
       ) : (
         <>
           {error && (
             <div role="alert" className="expense-error expense-feedback">
-              <p>{error}</p>
+              <p>{tr(error)}</p>
               {status === 401 ? (
                 <Link href="/login?next=/savings" className="expense-primary">
-                  Đăng nhập
+                  {tr("Đăng nhập")}
                 </Link>
               ) : (
                 <button
                   className="expense-secondary"
                   onClick={() => void load().catch(() => {})}
                 >
-                  Thử lại
+                  {tr("Thử lại")}
                 </button>
               )}
             </div>
           )}
           {loading && (
             <LoadingStatus>
-              {view ? "Đang cập nhật sổ tiết kiệm…" : "Đang mở sổ tiết kiệm…"}
+              {view
+                ? tr("Đang cập nhật sổ tiết kiệm…")
+                : tr("Đang mở sổ tiết kiệm…")}
             </LoadingStatus>
           )}
           {view && (
             <>
               <div className="savings-toolbar">
                 <label>
-                  Tháng đang xem
+                  {tr("Tháng đang xem")}
                   <input
                     type="month"
                     value={month}
@@ -287,10 +311,10 @@ export function SavingsWorkspace({
                 </label>
                 <span className="pill">
                   {view.closed.includes(month)
-                    ? "Đã chốt"
+                    ? tr("Đã chốt")
                     : month === today.slice(0, 7)
-                      ? "Tạm tính"
-                      : "Chưa chốt"}
+                      ? tr("Tạm tính")
+                      : tr("Chưa chốt")}
                 </span>
                 <div className="expense-actions">
                   <button
@@ -299,7 +323,7 @@ export function SavingsWorkspace({
                     disabled={loading}
                   >
                     <RefreshCw size={16} aria-hidden="true" />
-                    Tải lại
+                    {tr("Tải lại")}
                   </button>
                   <button
                     className="expense-secondary"
@@ -310,8 +334,8 @@ export function SavingsWorkspace({
                     }
                   >
                     {view.closed.includes(month)
-                      ? "Mở lại tháng"
-                      : "Chốt tháng"}
+                      ? tr("Mở lại tháng")
+                      : tr("Chốt tháng")}
                   </button>
                 </div>
               </div>
@@ -322,32 +346,32 @@ export function SavingsWorkspace({
                   disabled={!categories.length || loading}
                 >
                   <Plus size={17} aria-hidden="true" />
-                  Ghi giao dịch
+                  {tr("Ghi giao dịch")}
                 </button>
                 <button
                   className="expense-secondary"
                   onClick={() => setEditor({ type: "create" })}
                 >
-                  Thêm danh mục
+                  {tr("Thêm danh mục")}
                 </button>
                 <button
                   className="expense-secondary"
                   onClick={() => setEditor({ type: "price" })}
                   disabled={!categories.some((c) => c.kind === "gold")}
                 >
-                  Cập nhật giá vàng
+                  {tr("Cập nhật giá vàng")}
                 </button>
               </div>
-              <div
+              <ScrollTabs
                 className="savings-tabs"
                 role="tablist"
-                aria-label="Tiết kiệm"
+                aria-label={tr("Tiết kiệm")}
               >
                 {Object.entries({
-                  overview: "Tổng quan",
-                  transactions: "Giao dịch",
-                  reports: "Báo cáo",
-                  categories: "Danh mục",
+                  overview: tr("Tổng quan"),
+                  transactions: tr("Giao dịch"),
+                  reports: tr("Báo cáo"),
+                  categories: tr("Danh mục"),
                 }).map(([id, label], i) => (
                   <button
                     id={`savings-tab-${id}`}
@@ -379,14 +403,14 @@ export function SavingsWorkspace({
                         setTab(ids[next]);
                         document
                           .getElementById(`savings-tab-${ids[next]}`)
-                          ?.focus();
+                          ?.focus({ preventScroll: true });
                       }
                     }}
                   >
                     {label}
                   </button>
                 ))}
-              </div>
+              </ScrollTabs>
               <div
                 role="tabpanel"
                 id="savings-tabpanel"
@@ -397,18 +421,23 @@ export function SavingsWorkspace({
                   <>
                     <div className="savings-metrics">
                       <article className="metric">
-                        <h3>Tài sản tiết kiệm · {view.state.asOf}</h3>
+                        <h3>
+                          {tr("Tài sản tiết kiệm ·")}{" "}
+                          {formatDate(view.state.asOf!, locale)}
+                        </h3>
                         <strong>{display(view.state.total)}</strong>
                         {view.state.total === null && (
-                          <p>Đã định giá {money(view.state.knownValue)}</p>
+                          <p>
+                            {tr("Đã định giá")} {money(view.state.knownValue)}
+                          </p>
                         )}
                       </article>
                       <article className="metric">
-                        <h3>Biến động tháng</h3>
+                        <h3>{tr("Biến động tháng")}</h3>
                         <strong>
                           {monthly.before.total === null ||
                           monthly.after.total === null
-                            ? "Thiếu dữ liệu"
+                            ? tr("Thiếu dữ liệu")
                             : money(
                                 (
                                   BigInt(monthly.after.total) -
@@ -418,46 +447,50 @@ export function SavingsWorkspace({
                         </strong>
                       </article>
                       <article className="metric">
-                        <h3>Vốn nạp ròng tháng</h3>
+                        <h3>{tr("Vốn nạp ròng tháng")}</h3>
                         <strong>{money(monthly.activity.external)}</strong>
-                        <p>Không gồm chuyển nội bộ / mở đầu</p>
+                        <p>{tr("Không gồm chuyển nội bộ / mở đầu")}</p>
                       </article>
                       <article className="metric">
-                        <h3>Kết quả tháng</h3>
+                        <h3>{tr("Kết quả tháng")}</h3>
                         <strong>{display(monthly.result)}</strong>
-                        <p>Đã loại vốn mở đầu và nạp/rút</p>
+                        <p>{tr("Đã loại vốn mở đầu và nạp/rút")}</p>
                       </article>
                     </div>
                     {view.due.length > 0 && (
                       <section className="panel savings-alert">
-                        <h2>Sổ đã đến hạn / sắp đến hạn trong 7 ngày</h2>
+                        <h2>
+                          {tr("Sổ đã đến hạn / sắp đến hạn trong 7 ngày")}
+                        </h2>
                         {view.due.map((c) => (
                           <p key={c.id}>
-                            {c.name} · {c.maturity} · {money(c.principal)}
+                            {c.name} · {formatDate(c.maturity!, locale)} ·{" "}
+                            {money(c.principal)}
                           </p>
                         ))}
                       </section>
                     )}
                     {view.state.positions.some((p) => p.stale) && (
                       <p className="expense-notice">
-                        Cần cập nhật giá:{" "}
+                        {tr("Cần cập nhật giá:")}{" "}
                         {view.state.positions
                           .filter((p) => p.stale)
                           .map((p) => p.name)
                           .join(", ")}
-                        . Giá cũ đang được mang tiếp đến {view.state.asOf}.
+                        {tr(". Giá cũ đang được mang tiếp đến")}{" "}
+                        {formatDate(view.state.asOf!, locale)}.
                       </p>
                     )}
                     <section className="panel">
                       <div className="expense-section-heading">
-                        <h2>Các khoản đang tích lũy</h2>
+                        <h2>{tr("Các khoản đang tích lũy")}</h2>
                         <HelpButton
                           pageId="savings"
                           sectionId="valuation"
-                          label="Vốn và lãi/lỗ"
+                          label={tr("Vốn và lãi/lỗ")}
                         />
                         <span className="expense-muted">
-                          Mỗi tài sản được tính một lần
+                          {tr("Mỗi tài sản được tính một lần")}
                         </span>
                       </div>
                       <div className="savings-positions">
@@ -472,10 +505,11 @@ export function SavingsWorkspace({
                       {!categories.length && (
                         <div className="expense-empty">
                           <Garden variant="jar" />
-                          <h3>Bắt đầu bằng một khoản nhỏ</h3>
+                          <h3>{tr("Bắt đầu bằng một khoản nhỏ")}</h3>
                           <p>
-                            Thêm danh mục, rồi ghi số dư mở đầu hoặc giao dịch
-                            đầu tiên.
+                            {tr(
+                              "Thêm danh mục, rồi ghi số dư mở đầu hoặc giao dịch đầu tiên.",
+                            )}
                           </p>
                         </div>
                       )}
@@ -485,22 +519,26 @@ export function SavingsWorkspace({
                       compact
                     />
                     <p className="expense-muted">
-                      Xem tab Báo cáo để đọc bảng số liệu và xuất dữ liệu.
+                      {tr(
+                        "Xem tab Báo cáo để đọc bảng số liệu và xuất dữ liệu.",
+                      )}
                     </p>
                   </>
                 )}
                 {tab === "transactions" && (
                   <section className="panel">
-                    <h2>Giao dịch tháng {month}</h2>
+                    <h2>
+                      {tr("Giao dịch tháng")} {month}
+                    </h2>
                     <div className="savings-filters">
                       <label>
-                        Danh mục giao dịch
+                        {tr("Danh mục giao dịch")}
                         <select
-                          aria-label="Danh mục giao dịch"
+                          aria-label={tr("Danh mục giao dịch")}
                           value={activityCategory}
                           onChange={(e) => setActivityCategory(e.target.value)}
                         >
-                          <option value="">Tất cả</option>
+                          <option value="">{tr("Tất cả")}</option>
                           {categories.map((c) => (
                             <option key={c.id} value={c.id}>
                               {(ruleAt(c, month) ?? c.rules[0]).name}
@@ -509,18 +547,20 @@ export function SavingsWorkspace({
                         </select>
                       </label>
                       <label>
-                        Loại giao dịch lọc
+                        {tr("Loại giao dịch lọc")}
                         <select
-                          aria-label="Loại giao dịch lọc"
+                          aria-label={tr("Loại giao dịch lọc")}
                           value={activityKind}
                           onChange={(e) => setActivityKind(e.target.value)}
                         >
-                          <option value="">Tất cả</option>
-                          {Object.entries(transactionNames).map(([k, v]) => (
-                            <option key={k} value={k}>
-                              {v}
-                            </option>
-                          ))}
+                          <option value="">{tr("Tất cả")}</option>
+                          {Object.entries(localize(transactionNames)).map(
+                            ([k, v]) => (
+                              <option key={k} value={k}>
+                                {v}
+                              </option>
+                            ),
+                          )}
                         </select>
                       </label>
                     </div>
@@ -528,12 +568,13 @@ export function SavingsWorkspace({
                       activityRows(`${month}-01`, endOfMonth(month))
                     ) : (
                       <p className="expense-empty">
-                        Chưa có giao dịch trong bộ lọc này.
+                        {tr("Chưa có giao dịch trong bộ lọc này.")}
                       </p>
                     )}
                     <details>
                       <summary>
-                        Lịch sử thay đổi ({view.book?.audit.length ?? 0})
+                        {tr("Lịch sử thay đổi (")}
+                        {view.book?.audit.length ?? 0})
                       </summary>
                       {[...(view.book?.audit ?? [])].reverse().map((a) => (
                         <p key={a.version}>
@@ -546,9 +587,11 @@ export function SavingsWorkspace({
                 )}
                 {tab === "categories" && (
                   <section className="panel">
-                    <h2>Danh mục tiết kiệm</h2>
+                    <h2>{tr("Danh mục tiết kiệm")}</h2>
                     <p className="expense-muted">
-                      Thay đổi theo tháng hiệu lực. Lưu trữ giữ nguyên lịch sử.
+                      {tr(
+                        "Thay đổi theo tháng hiệu lực. Lưu trữ giữ nguyên lịch sử.",
+                      )}
                     </p>
                     {categories.map((c) => {
                       const r = ruleAt(c, month) ?? c.rules[0];
@@ -559,26 +602,29 @@ export function SavingsWorkspace({
                               {r.emoji} {r.name}
                             </h3>
                             <p>
-                              {kindNames[c.kind]}
-                              {c.unit ? ` · ${c.unit}` : ""} · từ {c.start} ·{" "}
-                              {r.active ? "Đang hoạt động" : "Đã lưu trữ"}
+                              {localize(kindNames)[c.kind]}
+                              {c.unit ? ` · ${tr(c.unit ?? "")}` : ""}{" "}
+                              {tr("· từ")} {formatMonth(c.start!, locale)} ·{" "}
+                              {r.active
+                                ? tr("Đang hoạt động")
+                                : tr("Đã lưu trữ")}
                             </p>
                             <p>{r.description}</p>
                           </div>
                           <div className="expense-actions">
                             <button
                               className="expense-secondary icon-action action-edit"
-                              aria-label={`Sửa danh mục ${r.name}`}
+                              aria-label={tr("Sửa danh mục {0}", { 0: r.name })}
                               onClick={() =>
                                 setEditor({ type: "configure", category: c })
                               }
-                              title="Sửa"
+                              title={tr("Sửa")}
                             >
                               <EditActionIcon size={18} aria-hidden="true" />
                             </button>
                             <button
                               className="expense-secondary"
-                              aria-label={`${r.active ? "Lưu trữ" : "Khôi phục"} ${r.name}`}
+                              aria-label={`${r.active ? tr("Lưu trữ") : tr("Khôi phục")} ${r.name}`}
                               onClick={() =>
                                 setEditor({
                                   type: r.active ? "archive" : "restore",
@@ -586,7 +632,7 @@ export function SavingsWorkspace({
                                 })
                               }
                             >
-                              {r.active ? "Lưu trữ / xóa" : "Khôi phục"}
+                              {r.active ? tr("Lưu trữ / xóa") : tr("Khôi phục")}
                             </button>
                           </div>
                         </article>
@@ -598,9 +644,9 @@ export function SavingsWorkspace({
                   <>
                     <section className="panel savings-filters">
                       <label>
-                        Kỳ báo cáo
+                        {tr("Kỳ báo cáo")}
                         <select
-                          aria-label="Kỳ báo cáo"
+                          aria-label={tr("Kỳ báo cáo")}
                           defaultValue="custom"
                           onChange={(e) => {
                             const y = month.slice(0, 4),
@@ -631,14 +677,16 @@ export function SavingsWorkspace({
                               }));
                           }}
                         >
-                          <option value="custom">Khoảng tùy chọn</option>
-                          <option value="month">Tháng đang xem</option>
-                          <option value="quarter">Quý đang xem</option>
-                          <option value="year">Năm đang xem</option>
+                          <option value="custom">
+                            {tr("Khoảng tùy chọn")}
+                          </option>
+                          <option value="month">{tr("Tháng đang xem")}</option>
+                          <option value="quarter">{tr("Quý đang xem")}</option>
+                          <option value="year">{tr("Năm đang xem")}</option>
                         </select>
                       </label>
                       <label>
-                        Từ ngày
+                        {tr("Từ ngày")}
                         <input
                           type="date"
                           value={filter.from}
@@ -649,7 +697,7 @@ export function SavingsWorkspace({
                         />
                       </label>
                       <label>
-                        Đến ngày
+                        {tr("Đến ngày")}
                         <input
                           type="date"
                           value={filter.to}
@@ -659,9 +707,9 @@ export function SavingsWorkspace({
                         />
                       </label>
                       <label>
-                        Danh mục báo cáo
+                        {tr("Danh mục báo cáo")}
                         <select
-                          aria-label="Danh mục báo cáo"
+                          aria-label={tr("Danh mục báo cáo")}
                           value={filter.categoryId ?? ""}
                           onChange={(e) =>
                             setFilter((f) => ({
@@ -670,7 +718,7 @@ export function SavingsWorkspace({
                             }))
                           }
                         >
-                          <option value="">Tất cả</option>
+                          <option value="">{tr("Tất cả")}</option>
                           {categories.map((c) => (
                             <option key={c.id} value={c.id}>
                               {
@@ -682,9 +730,9 @@ export function SavingsWorkspace({
                         </select>
                       </label>
                       <label>
-                        Loại tài sản lọc
+                        {tr("Loại tài sản lọc")}
                         <select
-                          aria-label="Loại tài sản lọc"
+                          aria-label={tr("Loại tài sản lọc")}
                           value={filter.kind ?? ""}
                           onChange={(e) =>
                             setFilter((f) => ({
@@ -695,8 +743,8 @@ export function SavingsWorkspace({
                             }))
                           }
                         >
-                          <option value="">Tất cả</option>
-                          {Object.entries(kindNames).map(([k, v]) => (
+                          <option value="">{tr("Tất cả")}</option>
+                          {Object.entries(localize(kindNames)).map(([k, v]) => (
                             <option value={k} key={k}>
                               {v}
                             </option>
@@ -704,9 +752,9 @@ export function SavingsWorkspace({
                         </select>
                       </label>
                       <label>
-                        Loại giao dịch báo cáo
+                        {tr("Loại giao dịch báo cáo")}
                         <select
-                          aria-label="Loại giao dịch báo cáo"
+                          aria-label={tr("Loại giao dịch báo cáo")}
                           value={filter.transactionKind ?? ""}
                           onChange={(e) =>
                             setFilter((f) => ({
@@ -715,12 +763,14 @@ export function SavingsWorkspace({
                             }))
                           }
                         >
-                          <option value="">Tất cả</option>
-                          {Object.entries(transactionNames).map(([k, v]) => (
-                            <option key={k} value={k}>
-                              {v}
-                            </option>
-                          ))}
+                          <option value="">{tr("Tất cả")}</option>
+                          {Object.entries(localize(transactionNames)).map(
+                            ([k, v]) => (
+                              <option key={k} value={k}>
+                                {v}
+                              </option>
+                            ),
+                          )}
                         </select>
                       </label>
                       <button
@@ -733,22 +783,22 @@ export function SavingsWorkspace({
                             ) as Record<string, string>,
                           );
                           void download(
-                            `/reports?${p}&format=csv`,
+                            `/reports?${p}&format=csv&locale=${locale}`,
                             `savings-${filter.from}-${filter.to}.csv`,
                           );
                         }}
                       >
                         <Download size={16} aria-hidden="true" />
-                        Xuất CSV
+                        {tr("Xuất CSV")}
                       </button>
                     </section>
                     {report ? (
                       <>
                         <SavingsReports report={report} />
                         <section className="panel">
-                          <h2>Giao dịch nguồn trong kỳ</h2>
+                          <h2>{tr("Giao dịch nguồn trong kỳ")}</h2>
                           {report.effects.length === 0 ? (
-                            <p>Chưa có giao dịch.</p>
+                            <p>{tr("Chưa có giao dịch.")}</p>
                           ) : (
                             report.effects.map((e) => {
                               const t = transactions.find(
@@ -760,9 +810,11 @@ export function SavingsWorkspace({
                                   key={e.id}
                                 >
                                   <div>
-                                    <h3>{transactionNames[t.kind]}</h3>
+                                    <h3>
+                                      {localize(transactionNames)[t.kind]}
+                                    </h3>
                                     <p>
-                                      {e.date} ·{" "}
+                                      {formatDate(e.date!, locale)} ·{" "}
                                       {(() => {
                                         const c = categories.find(
                                           (c) => c.id === e.categoryId,
@@ -787,7 +839,7 @@ export function SavingsWorkspace({
                                       })
                                     }
                                   >
-                                    Xem / sửa
+                                    {tr("Xem / sửa")}
                                   </button>
                                 </article>
                               );
@@ -797,7 +849,7 @@ export function SavingsWorkspace({
                       </>
                     ) : (
                       <p role="alert" className="expense-error">
-                        Kiểm tra khoảng ngày báo cáo.
+                        {tr("Kiểm tra khoảng ngày báo cáo.")}
                       </p>
                     )}
                   </>
@@ -826,7 +878,7 @@ export function SavingsWorkspace({
                     } catch {
                       toast(
                         "warning",
-                        "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.",
+                        tr("Đã lưu thay đổi nhưng chưa tải lại được dữ liệu."),
                       );
                     }
                   }}

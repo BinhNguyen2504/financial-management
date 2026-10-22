@@ -1,26 +1,30 @@
 "use client";
-import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
-import { HelpButton, HelpPageTitle } from "@/features/help/provider";
-import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowRight, ShieldCheck } from "lucide-react";
-import { useUser } from "@/features/profile/user-provider";
+import { useI18n } from "@/i18n/provider";
+
 import { LoadingStatus } from "@/components/loading";
-import { useMoney } from "@/components/privacy";
-import { useForegroundRefresh } from "@/components/use-foreground-refresh";
 import { focusPointerControl } from "@/components/pointer-focus";
-import { ExpenseModal } from "@/features/expenses/modal";
+import { useMoney } from "@/components/privacy";
+import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 import { useToast } from "@/components/toast";
+import { useForegroundRefresh } from "@/components/use-foreground-refresh";
 import type { FundId } from "@/domain/funds/schema";
 import type { FundView } from "@/domain/funds/types";
-import { FundEditor, type EditorMode } from "./editor";
+import { ExpenseModal } from "@/features/expenses/modal";
+import { HelpButton, HelpPageTitle } from "@/features/help/provider";
+import { useUser } from "@/features/profile/user-provider";
+import { ArrowRight, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FundAPIError, fundsJSON } from "./api";
+import { fundNames, guides } from "./content";
 import { FundDetails, FundGuide, FundLocations } from "./details";
+import { FundEditor, type EditorMode } from "./editor";
 import { FundLedger } from "./ledger";
 import { ProgressScene } from "./progress-scene";
-import { fundNames, guides } from "./content";
-import { fundsJSON, FundAPIError } from "./api";
 export function FundsWorkspace() {
+  const { t: tr } = useI18n("funds");
+
   const toast = useToast();
   const { user } = useUser(),
     router = useRouter(),
@@ -58,7 +62,9 @@ export function FundsWorkspace() {
       if (ticket === request.current && session.current === owner) {
         if (e instanceof FundAPIError && e.status === 401) authLost();
         else
-          setError(e instanceof Error ? e.message : "Không thể tải dữ liệu.");
+          setError(
+            e instanceof Error ? e.message : tr("Không thể tải dữ liệu."),
+          );
       }
       throw e;
     } finally {
@@ -95,7 +101,10 @@ export function FundsWorkspace() {
     void reload()
       .then(() => setCelebration((n) => n + 1))
       .catch(() =>
-        toast("warning", "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu."),
+        toast(
+          "warning",
+          tr("Đã lưu thay đổi nhưng chưa tải lại được dữ liệu."),
+        ),
       );
   };
   return (
@@ -105,8 +114,10 @@ export function FundsWorkspace() {
           <p className="eyebrow">
             <ThemeIcon size={16} /> <ThemeText name="fundsEyebrow" />
           </p>
-          <HelpPageTitle>Vững vàng trước những ngày bất ngờ.</HelpPageTitle>
-          <p>Từng khoản dự phòng nhỏ, một nền tảng an tâm hơn.</p>
+          <HelpPageTitle>
+            {tr("Vững vàng trước những ngày bất ngờ.")}
+          </HelpPageTitle>
+          <p>{tr("Từng khoản dự phòng nhỏ, một nền tảng an tâm hơn.")}</p>
         </div>
         {view?.book && (
           <div className="fund-actions">
@@ -114,13 +125,13 @@ export function FundsWorkspace() {
               className="expense-secondary"
               onClick={() => setDetail("locations")}
             >
-              Nơi giữ tiền
+              {tr("Nơi giữ tiền")}
             </button>
             <button
               className="expense-secondary"
               onClick={() => setEditor({ type: "configure" })}
             >
-              Điều chỉnh mục tiêu
+              {tr("Điều chỉnh mục tiêu")}
             </button>
           </div>
         )}
@@ -132,12 +143,12 @@ export function FundsWorkspace() {
       )}
       {error && (
         <div role="alert" className="expense-error">
-          {error}
+          {tr(error)}
           <button
             className="expense-secondary"
             onClick={() => void reload().catch(() => {})}
           >
-            Thử tải lại
+            {tr("Thử tải lại")}
           </button>
         </div>
       )}
@@ -146,24 +157,26 @@ export function FundsWorkspace() {
           <section className="fund-welcome panel">
             <div>
               <span className="pill">
-                <ShieldCheck size={16} aria-hidden="true" /> Chuẩn bị theo nhịp
-                của bạn
+                <ShieldCheck size={16} aria-hidden="true" />{" "}
+                {tr("Chuẩn bị theo nhịp của bạn")}
               </span>
-              <h2>Hiểu trước, bắt đầu từng chút.</h2>
+              <h2>{tr("Hiểu trước, bắt đầu từng chút.")}</h2>
               <p>
-                Chọn chi phí sinh hoạt từ Chi tiêu, tự đặt quy mô cho ba quỹ rồi
-                ghi lại tiền đã dành riêng. Mỗi quỹ có một vai trò, một hành
-                trình lớn lên.
+                {tr(
+                  "Chọn chi phí sinh hoạt từ Chi tiêu, tự đặt quy mô cho ba quỹ rồi ghi lại tiền đã dành riêng. Mỗi quỹ có một vai trò, một hành trình lớn lên.",
+                )}
               </p>
               <button
                 className="expense-primary"
                 onClick={() => setEditor({ type: "configure" })}
               >
-                Bắt đầu xây quỹ <ArrowRight size={17} aria-hidden="true" />
+                {tr("Bắt đầu xây quỹ")}{" "}
+                <ArrowRight size={17} aria-hidden="true" />
               </button>
               <p className="fund-note">
-                Tiền trong Fund được ghi độc lập; Financial Goals có không gian
-                riêng.
+                {tr(
+                  "Tiền trong Fund được ghi độc lập; Financial Goals có không gian riêng.",
+                )}
               </p>
             </div>
             <ProgressScene fund="emergency" percent="35" />
@@ -178,7 +191,7 @@ export function FundsWorkspace() {
                 <h2>{fundNames[id]}</h2>
                 <p>{guides[id].concept}</p>
                 <details>
-                  <summary>Tìm hiểu cách xây quỹ</summary>
+                  <summary>{tr("Tìm hiểu cách xây quỹ")}</summary>
                   <FundGuide fund={id} />
                 </details>
               </article>
@@ -188,67 +201,75 @@ export function FundsWorkspace() {
       )}
       {view?.book && config && (
         <>
-          <section className="fund-health" aria-label="Sức đệm tài chính">
+          <section className="fund-health" aria-label={tr("Sức đệm tài chính")}>
             <div>
-              <span>Tổng dự phòng</span>
+              <span>{tr("Tổng dự phòng")}</span>
               <strong>{money(view.state.total)}</strong>
             </div>
             <div>
-              <span>Tổng mục tiêu</span>
+              <span>{tr("Tổng mục tiêu")}</span>
               <strong>{money(view.state.target)}</strong>
             </div>
             <div>
-              <span>Còn thiếu từng quỹ cộng lại</span>
+              <span>{tr("Còn thiếu từng quỹ cộng lại")}</span>
               <strong>{money(view.state.missing)}</strong>
             </div>
             <div>
-              <span>Emergency đủ trang trải</span>
+              <span>{tr("Emergency đủ trang trải")}</span>
               <strong>
-                {view.state.emergencyMonths.replace(".", ",")} tháng
+                {view.state.emergencyMonths.replace(".", ",")} {tr("tháng")}
               </strong>
             </div>
           </section>
           <section className="fund-living panel">
             <div>
-              <h2>Nền tảng sinh hoạt</h2>
+              <h2>{tr("Nền tảng sinh hoạt")}</h2>
               <HelpButton
                 pageId="funds"
                 sectionId="living"
-                label="Mức sinh hoạt và mục tiêu"
+                label={tr("Mức sinh hoạt và mục tiêu")}
               />
               <p>
-                <strong>{money(config.living.total)}/tháng</strong> · Mức đã xác
-                nhận từ tháng{" "}
+                <strong>
+                  {money(config.living.total)}
+                  {tr("/tháng")}
+                </strong>{" "}
+                {tr("· Mức đã xác nhận từ tháng")}{" "}
                 {config.living.month.split("-").reverse().join("/")}
               </p>
               <p className="fund-note">
-                Số tháng Emergency dùng mức sinh hoạt này.
+                {tr("Số tháng Emergency dùng mức sinh hoạt này.")}
               </p>
             </div>
             <details>
-              <summary>Xem các hũ cấu thành</summary>
+              <summary>{tr("Xem các hũ cấu thành")}</summary>
               {config.living.items.map((i) => (
                 <p key={i.jarId}>
                   {i.name} <strong>{money(i.amount)}</strong>
                 </p>
               ))}
-              <Link href="/budgets">Mở Chi tiêu →</Link>
+              <Link href="/budgets">{tr("Mở Chi tiêu →")}</Link>
             </details>
           </section>
           {view.sourceChanged && (
             <section className="fund-source-change" role="status">
-              <strong>Chi phí sinh hoạt có thay đổi.</strong>
+              <strong>{tr("Chi phí sinh hoạt có thay đổi.")}</strong>
               <p>
                 {view.sourceUnavailable
-                  ? "Một số hũ đã ngừng hoạt động hoặc mức sinh hoạt không còn phù hợp. Hãy chọn lại nguồn."
-                  : `Mức hiện tại từ Chi tiêu: ${money(view.proposedLiving!.total)}/tháng. Xem chênh lệch trước khi áp dụng.`}{" "}
-                Mục tiêu đã xác nhận đang được giữ.
+                  ? tr(
+                      "Một số hũ đã ngừng hoạt động hoặc mức sinh hoạt không còn phù hợp. Hãy chọn lại nguồn.",
+                    )
+                  : tr(
+                      "Mức hiện tại từ Chi tiêu: {0}/tháng. Xem chênh lệch trước khi áp dụng.",
+                      { 0: money(view.proposedLiving!.total) },
+                    )}{" "}
+                {tr("Mục tiêu đã xác nhận đang được giữ.")}
               </p>
               <button
                 className="expense-secondary"
                 onClick={() => setEditor({ type: "configure" })}
               >
-                Xem lại mức sinh hoạt
+                {tr("Xem lại mức sinh hoạt")}
               </button>
             </section>
           )}
@@ -257,25 +278,29 @@ export function FundsWorkspace() {
               <ThemeIcon size={24} />
             </span>
             <div>
-              <p className="eyebrow">BƯỚC TIẾP THEO CỦA BẠN</p>
+              <p className="eyebrow">{tr("BƯỚC TIẾP THEO CỦA BẠN")}</p>
               {next ? (
                 <>
                   <h2>
                     <ThemeText name="nextFund" /> {fundNames[next]}.
                   </h2>
                   <p>
-                    Còn{" "}
+                    {tr("Còn")}{" "}
                     {money(
                       view.state.funds.find((f) => f.id === next)!.missing,
                     )}{" "}
-                    theo mục tiêu bạn chọn. Bắt đầu bằng một khoản vừa sức.
+                    {tr(
+                      "theo mục tiêu bạn chọn. Bắt đầu bằng một khoản vừa sức.",
+                    )}
                   </p>
                 </>
               ) : (
                 <>
-                  <h2>Ba quỹ đã đủ mức bạn đặt.</h2>
+                  <h2>{tr("Ba quỹ đã đủ mức bạn đặt.")}</h2>
                   <p>
-                    Duy trì dự phòng và xem lại khi nhu cầu sinh hoạt thay đổi.
+                    {tr(
+                      "Duy trì dự phòng và xem lại khi nhu cầu sinh hoạt thay đổi.",
+                    )}
                   </p>
                 </>
               )}
@@ -291,7 +316,7 @@ export function FundsWorkspace() {
                   })
                 }
               >
-                Thêm tiền
+                {tr("Thêm tiền")}
               </button>
             )}
           </section>
@@ -315,14 +340,17 @@ export function FundsWorkspace() {
                 <h2>{fundNames[f.id]}</h2>
                 <p className="fund-balance">{money(f.balance)}</p>
                 <p>
-                  Mục tiêu {money(f.target)} · {config.multipliers[f.id]} tháng
+                  {tr("Mục tiêu")} {money(f.target)} ·{" "}
+                  {config.multipliers[f.id]} {tr("tháng")}
                 </p>
                 <p className="fund-note">
                   {BigInt(f.excess) > 0n
-                    ? `Vượt mục tiêu ${money(f.excess)}`
+                    ? tr("Vượt mục tiêu {0}", { 0: money(f.excess) })
                     : BigInt(f.missing) > 0n
-                      ? `Còn ${money(f.missing)} để đủ mức bạn chọn`
-                      : "Đã đủ mức dự phòng"}
+                      ? tr("Còn {0} để đủ mức bạn chọn", {
+                          0: money(f.missing),
+                        })
+                      : tr("Đã đủ mức dự phòng")}
                 </p>
                 <div className="fund-actions">
                   <button
@@ -330,7 +358,7 @@ export function FundsWorkspace() {
                     aria-label={`Xem ${fundNames[f.id]}`}
                     onClick={() => setDetail(f.id)}
                   >
-                    Chi tiết
+                    {tr("Chi tiết")}
                   </button>
                   <button
                     className="expense-primary"
@@ -342,7 +370,7 @@ export function FundsWorkspace() {
                       })
                     }
                   >
-                    Thêm tiền
+                    {tr("Thêm tiền")}
                   </button>
                 </div>
               </article>
@@ -357,7 +385,7 @@ export function FundsWorkspace() {
         detail &&
         (detail === "locations" ? (
           <ExpenseModal
-            title="Nơi giữ tiền"
+            title={tr("Nơi giữ tiền")}
             size="detail"
             onClose={() => setDetail(null)}
           >

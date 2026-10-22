@@ -1,14 +1,16 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
+
 import {
+  focusFirstInvalid,
   FormErrorSummary,
   nativeErrors,
-  focusFirstInvalid,
 } from "@/components/form-feedback";
-import { LoadingStatus, LoadingSpinner } from "@/components/loading";
+import { Garden } from "@/components/garden";
+import { LoadingSpinner, LoadingStatus } from "@/components/loading";
+import { browserAuth } from "@/lib/supabase/browser";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
-import { Garden } from "@/components/garden";
-import { browserAuth } from "@/lib/supabase/browser";
 
 export function Login({
   configured,
@@ -19,6 +21,8 @@ export function Login({
   confirmationError?: boolean;
   returnTo?: string;
 }) {
+  const { t: tr } = useI18n("auth");
+
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
@@ -30,7 +34,9 @@ export function Login({
   const [message, setMessage] = useState("");
   const [error, setError] = useState(
     confirmationError
-      ? "Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Hãy yêu cầu email mới."
+      ? tr(
+          "Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Hãy yêu cầu email mới.",
+        )
       : "",
   );
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -63,12 +69,16 @@ export function Login({
       else {
         setSent(true);
         setMessage(
-          "Kiểm tra email để mở liên kết đăng nhập, hoặc nhập mã xác nhận nếu email có mã.",
+          tr(
+            "Kiểm tra email để mở liên kết đăng nhập, hoặc nhập mã xác nhận nếu email có mã.",
+          ),
         );
       }
     } catch {
       setError(
-        "Không thể đăng nhập. Kiểm tra email, mã xác nhận hoặc thử lại sau.",
+        tr(
+          "Không thể đăng nhập. Kiểm tra email, mã xác nhận hoặc thử lại sau.",
+        ),
       );
     } finally {
       setBusy(false);
@@ -77,32 +87,36 @@ export function Login({
   return (
     <div className="public-login">
       <div className="login-story">
-        <p className="landing-kicker">KHÔNG GIAN CỦA BẠN</p>
+        <p className="landing-kicker">{tr("KHÔNG GIAN CỦA BẠN")}</p>
         <p className="login-story-title">
-          Trở về với một
+          {tr("Trở về với một")}
           <br />
-          bức tranh rõ ràng hơn.
+          {tr("bức tranh rõ ràng hơn.")}
         </p>
         <p>
-          Theo dõi thu nhập, chăm sóc những hũ chi tiêu và nhìn lại hành trình
-          tích lũy, theo nhịp của bạn.
+          {tr(
+            "Theo dõi thu nhập, chăm sóc những hũ chi tiêu và nhìn lại hành trình tích lũy, theo nhịp của bạn.",
+          )}
         </p>
         <Garden variant="garden" />
         <Link href="/" className="landing-text-link">
-          ← Về trang giới thiệu
+          {tr("← Về trang giới thiệu")}
         </Link>
       </div>
       <section className="panel auth-panel">
         <Garden variant="sprout" />
-        <p className="eyebrow">CHÀO MỪNG BẠN</p>
-        <h1>Đăng nhập</h1>
+        <p className="eyebrow">{tr("CHÀO MỪNG BẠN")}</p>
+        <h1>{tr("Đăng nhập")}</h1>
         <p className="lead">
-          Dữ liệu tài chính của bạn được lưu riêng và đồng bộ giữa các thiết bị.
+          {tr(
+            "Dữ liệu tài chính của bạn được lưu riêng và đồng bộ giữa các thiết bị.",
+          )}
         </p>
         {!configured ? (
           <p className="expense-notice">
-            Dịch vụ đăng nhập chưa được kết nối. Cần hoàn tất cấu hình cloud để
-            bắt đầu sử dụng.
+            {tr(
+              "Dịch vụ đăng nhập chưa được kết nối. Cần hoàn tất cấu hình cloud để bắt đầu sử dụng.",
+            )}
           </p>
         ) : (
           <form onSubmit={submit} className="expense-form" noValidate>
@@ -110,7 +124,7 @@ export function Login({
               <span className="required-mark" aria-hidden="true">
                 *
               </span>{" "}
-              là thông tin cần nhập.
+              {tr("là thông tin cần nhập.")}
             </p>
             <FormErrorSummary errors={fieldErrors} prefix="login-field-" />
             <label>
@@ -138,20 +152,20 @@ export function Login({
               />
               {fieldErrors.email && (
                 <small id="login-error-email" className="field-error">
-                  {fieldErrors.email}
+                  {tr(fieldErrors.email)}
                 </small>
               )}
             </label>
             {sent && (
               <label>
-                Mã xác nhận
+                {tr("Mã xác nhận")}
                 <span className="required-mark" aria-hidden="true">
                   *
                 </span>
                 <input
                   id="login-field-token"
                   name="token"
-                  aria-label="Mã xác nhận"
+                  aria-label={tr("Mã xác nhận")}
                   aria-invalid={!!fieldErrors.token}
                   aria-describedby={
                     fieldErrors.token ? "login-error-token" : undefined
@@ -169,7 +183,7 @@ export function Login({
                 />
                 {fieldErrors.token && (
                   <small id="login-error-token" className="field-error">
-                    {fieldErrors.token}
+                    {tr(fieldErrors.token)}
                   </small>
                 )}
               </label>
@@ -180,7 +194,11 @@ export function Login({
               disabled={!ready || busy}
             >
               {busy && <LoadingSpinner />}
-              {busy ? "Đang xử lý…" : sent ? "Đăng nhập" : "Gửi mã đăng nhập"}
+              {busy
+                ? tr("Đang xử lý…")
+                : sent
+                  ? tr("Đăng nhập")
+                  : tr("Gửi mã đăng nhập")}
             </button>
             {sent && (
               <button
@@ -192,16 +210,16 @@ export function Login({
                   setToken("");
                 }}
               >
-                Đổi email / gửi lại mã
+                {tr("Đổi email / gửi lại mã")}
               </button>
             )}
             {ready ? (
-              <p role="status">{message}</p>
+              <p role="status">{tr(message)}</p>
             ) : (
-              <LoadingStatus>Đang mở biểu mẫu đăng nhập…</LoadingStatus>
+              <LoadingStatus>{tr("Đang mở biểu mẫu đăng nhập…")}</LoadingStatus>
             )}
             <p role="alert" className="expense-error">
-              {error}
+              {tr(error)}
             </p>
           </form>
         )}

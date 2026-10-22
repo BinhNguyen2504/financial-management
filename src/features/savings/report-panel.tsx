@@ -1,12 +1,16 @@
 "use client";
+import { formatDate, formatMonth } from "@/i18n/format";
+import { useI18n } from "@/i18n/provider";
+
 import { ColumnTable } from "@/components/column-table";
-import { useState } from "react";
-import type { SavingsReport } from "@/domain/savings/reports";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
+import type { SavingsReport } from "@/domain/savings/reports";
 import { donutSlices } from "@/features/expenses/chart-data";
 import { ratio } from "@/features/expenses/format";
-import { kindNames } from "./editor";
+import { formatDecimal } from "@/i18n/format";
+import { useState } from "react";
 import { useChartTooltip } from "./chart-tooltip";
+import { kindNames } from "./editor";
 export function SavingsReports({
   report: r,
   compact = false,
@@ -14,6 +18,8 @@ export function SavingsReports({
   report: SavingsReport;
   compact?: boolean;
 }) {
+  const { t: tr, numberLocale, config: localize, locale } = useI18n("savings");
+
   const money = useMoney(),
     hidden = useMoneyHidden();
   const [chart, setChart] = useState("assets"),
@@ -21,7 +27,7 @@ export function SavingsReports({
   const timeline = useChartTooltip(),
     allocation = useChartTooltip();
   const display = (v: string | null) =>
-    v === null ? "Thiếu dữ liệu" : money(v);
+    v === null ? tr("Thiếu dữ liệu") : money(v);
   const groups =
     composition === "category"
       ? r.categories.map((c) => ({
@@ -29,7 +35,7 @@ export function SavingsReports({
           label: c.name,
           spent: c.value ?? "0",
         }))
-      : Object.entries(kindNames).map(([key, label]) => ({
+      : Object.entries(localize(kindNames)).map(([key, label]) => ({
           key,
           label,
           spent: r.categories
@@ -37,7 +43,7 @@ export function SavingsReports({
             .reduce((n, c) => n + BigInt(c.value ?? 0), 0n)
             .toString(),
         }));
-  const slices = donutSlices(groups);
+  const slices = donutSlices(groups, tr("Khác"));
   const max = r.months
     .reduce(
       (n, m) =>
@@ -57,16 +63,16 @@ export function SavingsReports({
       ).map((series) => {
         const label =
           series === "value"
-            ? "Tài sản cuối tháng"
+            ? tr("Tài sản cuối tháng")
             : series === "inflow"
-              ? "Nạp bên ngoài"
-              : "Rút bên ngoài";
+              ? tr("Nạp bên ngoài")
+              : tr("Rút bên ngoài");
         const value = m[series];
         const amount =
           value === null
             ? m.month > r.asOf.slice(0, 7)
-              ? "Chưa phát sinh"
-              : "Thiếu dữ liệu"
+              ? tr("Chưa phát sinh")
+              : tr("Thiếu dữ liệu")
             : money(value);
         return {
           key: `${m.month}-${series}`,
@@ -88,65 +94,74 @@ export function SavingsReports({
       {!compact && (
         <div className="savings-metrics">
           <article className="metric">
-            <h3>Tài sản cuối kỳ{r.provisional ? " · tạm tính" : ""}</h3>
+            <h3>
+              {tr("Tài sản cuối kỳ")}
+              {r.provisional ? tr(" · tạm tính") : ""}
+            </h3>
             <strong>{display(r.after.total)}</strong>
             {r.after.total === null && (
-              <p>Đã định giá: {money(r.after.knownValue)}</p>
+              <p>
+                {tr("Đã định giá:")} {money(r.after.knownValue)}
+              </p>
             )}
           </article>
           <article className="metric">
-            <h3>Vốn nạp ròng ngoài hệ thống</h3>
+            <h3>{tr("Vốn nạp ròng ngoài hệ thống")}</h3>
             <strong>{money(r.activity.external)}</strong>
             <p>
-              Nạp {money(r.activity.inflow)} · rút {money(r.activity.outflow)}
+              {tr("Nạp")} {money(r.activity.inflow)} {tr("· rút")}{" "}
+              {money(r.activity.outflow)}
             </p>
           </article>
           <article className="metric">
-            <h3>Kết quả trong kỳ</h3>
+            <h3>{tr("Kết quả trong kỳ")}</h3>
             <strong>{display(r.result)}</strong>
-            <p>Đã loại vốn mở đầu và dòng tiền chuyển</p>
+            <p>{tr("Đã loại vốn mở đầu và dòng tiền chuyển")}</p>
           </article>
           <article className="metric">
-            <h3>Lãi thực nhận / đã chốt</h3>
+            <h3>{tr("Lãi thực nhận / đã chốt")}</h3>
             <strong>
               {money(r.activity.interest)} / {money(r.activity.realized)}
             </strong>
-            <p>Phí và thuế: {money(r.activity.fees)}</p>
+            <p>
+              {tr("Phí và thuế:")} {money(r.activity.fees)}
+            </p>
           </article>
         </div>
       )}
       {r.activityFiltered && (
         <p className="expense-notice">
-          Bộ lọc loại giao dịch áp dụng dòng tiền, lãi/phí và danh sách giao
-          dịch. Tài sản và kết quả trong kỳ luôn đối chiếu toàn bộ giao dịch.
+          {tr(
+            "Bộ lọc loại giao dịch áp dụng dòng tiền, lãi/phí và danh sách giao dịch. Tài sản và kết quả trong kỳ luôn đối chiếu toàn bộ giao dịch.",
+          )}
         </p>
       )}
       {r.after.missing.length > 0 && (
         <p className="expense-notice">
-          Thiếu giá:{" "}
+          {tr("Thiếu giá:")}{" "}
           {r.categories
             .filter((c) => c.value === null)
             .map((c) => c.name)
             .join(", ")}
-          . Tổng tài sản và tỷ trọng chưa đầy đủ.
+          {tr(". Tổng tài sản và tỷ trọng chưa đầy đủ.")}
         </p>
       )}
       <div className="savings-chart-grid">
         <section className="panel savings-chart">
           <div className="expense-section-heading">
-            <h2>Diễn biến theo tháng</h2>
+            <h2>{tr("Diễn biến theo tháng")}</h2>
             <label>
-              Biểu đồ
+              {tr("Biểu đồ")}
               <select
-                aria-label="Biểu đồ"
+                aria-label={tr("Biểu đồ")}
                 value={chart}
                 onChange={(e) => {
                   timeline.close();
                   setChart(e.target.value);
                 }}
               >
-                <option value="assets">Tài sản cuối tháng</option>
-                <option value="flow">Tiền nạp / rút bên ngoài</option>
+                <option value="assets">{tr("Tài sản cuối tháng")}</option>
+                <option value="flow">{tr("Tiền nạp / rút bên ngoài")}</option>
               </select>
             </label>
           </div>
@@ -157,8 +172,8 @@ export function SavingsReports({
                 role="group"
                 aria-label={
                   chart === "assets"
-                    ? "Tài sản cuối từng tháng; bảng dữ liệu phía dưới"
-                    : "Tiền nạp và rút từng tháng; bảng dữ liệu phía dưới"
+                    ? tr("Tài sản cuối từng tháng; bảng dữ liệu phía dưới")
+                    : tr("Tiền nạp và rút từng tháng; bảng dữ liệu phía dưới")
                 }
               >
                 <line
@@ -201,7 +216,7 @@ export function SavingsReports({
                       className="savings-chart-mark"
                       {...timeline.trigger(
                         m.key,
-                        `${m.month}: ${m.label}, ${m.amount}${m.provisional ? ", tạm tính" : ""}`,
+                        `${m.month}: ${m.label}, ${m.amount}${m.provisional ? tr(", tạm tính") : ""}`,
                       )}
                     >
                       {m.series === "value" ? (
@@ -288,9 +303,9 @@ export function SavingsReports({
               selectedMark && (
                 <>
                   <strong>
-                    Tháng {selectedMark.month.slice(5)}/
+                    {tr("Tháng")} {selectedMark.month.slice(5)}/
                     {selectedMark.month.slice(0, 4)}
-                    {selectedMark.provisional ? " · tạm tính" : ""}
+                    {selectedMark.provisional ? tr(" · tạm tính") : ""}
                   </strong>
                   <span>{selectedMark.label}</span>
                   <b>{selectedMark.amount}</b>
@@ -300,7 +315,7 @@ export function SavingsReports({
           </div>
           {compact && (
             <details>
-              <summary>Xem bảng diễn biến</summary>
+              <summary>{tr("Xem bảng diễn biến")}</summary>
               <div className="savings-table-scroll">
                 <ColumnTable
                   tableId="savings-report-panel-1"
@@ -308,16 +323,16 @@ export function SavingsReports({
                 >
                   <thead>
                     <tr>
-                      <th>Tháng</th>
-                      <th>Tài sản cuối kỳ</th>
-                      <th>Nạp ngoài</th>
-                      <th>Rút ngoài</th>
+                      <th>{tr("Tháng")}</th>
+                      <th>{tr("Tài sản cuối kỳ")}</th>
+                      <th>{tr("Nạp ngoài")}</th>
+                      <th>{tr("Rút ngoài")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {r.months.map((m) => (
                       <tr key={m.month}>
-                        <th scope="row">{m.month}</th>
+                        <th scope="row">{formatMonth(m.month!, locale)}</th>
                         <td>{m.value === null ? "—" : money(m.value)}</td>
                         <td>{m.inflow === null ? "—" : money(m.inflow)}</td>
                         <td>{m.outflow === null ? "—" : money(m.outflow)}</td>
@@ -329,34 +344,37 @@ export function SavingsReports({
             </details>
           )}
           <p className="expense-muted">
-            {chart === "flow" ? "Cột trái: nạp · cột phải: rút. " : ""}Không nối
-            đường qua tháng thiếu giá hoặc tháng tương lai. Rê chuột, chạm hoặc
-            dùng Tab để xem số liệu; Escape để đóng chú thích.
+            {chart === "flow" ? tr("Cột trái: nạp · cột phải: rút. ") : ""}
+            {tr(
+              "Không nối đường qua tháng thiếu giá hoặc tháng tương lai. Rê chuột, chạm hoặc dùng Tab để xem số liệu; Escape để đóng chú thích.",
+            )}
           </p>
         </section>
         <section className="panel savings-chart">
           <div className="expense-section-heading">
-            <h2>Phân bố tài sản</h2>
+            <h2>{tr("Phân bố tài sản")}</h2>
             <label>
-              Phân bố theo
+              {tr("Phân bố theo")}
               <select
-                aria-label="Phân bố theo"
+                aria-label={tr("Phân bố theo")}
                 value={composition}
                 onChange={(e) => {
                   allocation.close();
                   setComposition(e.target.value);
                 }}
               >
-                <option value="category">Danh mục</option>
-                <option value="kind">Loại tài sản</option>
+                <option value="category">{tr("Danh mục")}</option>
+                <option value="kind">{tr("Loại tài sản")}</option>
               </select>
             </label>
           </div>
           {r.after.total === null ? (
-            <p className="expense-empty">Cần đủ giá để tính tỷ trọng.</p>
+            <p className="expense-empty">
+              {tr("Cần đủ giá để tính tỷ trọng.")}
+            </p>
           ) : !slices.length ? (
             <p className="expense-empty">
-              Chưa có tài sản để thể hiện tỷ trọng.
+              {tr("Chưa có tài sản để thể hiện tỷ trọng.")}
             </p>
           ) : (
             <div {...allocation.container}>
@@ -364,7 +382,9 @@ export function SavingsReports({
                 <svg
                   viewBox="0 0 220 220"
                   role="group"
-                  aria-label="Tỷ trọng tài sản cuối kỳ, chi tiết trong chú giải"
+                  aria-label={tr(
+                    "Tỷ trọng tài sản cuối kỳ, chi tiết trong chú giải",
+                  )}
                 >
                   <circle
                     cx="110"
@@ -393,7 +413,7 @@ export function SavingsReports({
                         className="savings-chart-slice"
                         {...allocation.trigger(
                           s.key,
-                          `${s.label}: ${money(s.value)}, ${s.percent.toLocaleString("vi-VN")}%`,
+                          `${s.label}: ${money(s.value)}, ${s.percent.toLocaleString(numberLocale)}%`,
                         )}
                       />
                     );
@@ -406,7 +426,7 @@ export function SavingsReports({
                       className="savings-chart-legend-item"
                       {...allocation.trigger(
                         s.key,
-                        `${s.label}: ${money(s.value)}, ${s.percent.toLocaleString("vi-VN")}%`,
+                        `${s.label}: ${money(s.value)}, ${s.percent.toLocaleString(numberLocale)}%`,
                       )}
                     >
                       <span
@@ -415,7 +435,7 @@ export function SavingsReports({
                         aria-hidden="true"
                       />
                       {s.label}
-                      <strong>{s.percent.toLocaleString("vi-VN")}%</strong>
+                      <strong>{s.percent.toLocaleString(numberLocale)}%</strong>
                       <span>{money(s.value)}</span>
                     </li>
                   ))}
@@ -427,8 +447,8 @@ export function SavingsReports({
                     <strong>{selectedSlice.label}</strong>
                     <b>{money(selectedSlice.value)}</b>
                     <span>
-                      {selectedSlice.percent.toLocaleString("vi-VN")}% tài sản
-                      cuối kỳ · {r.asOf}
+                      {selectedSlice.percent.toLocaleString(numberLocale)}
+                      {tr("% tài sản cuối kỳ ·")} {formatDate(r.asOf!, locale)}
                     </span>
                   </>
                 ),
@@ -440,35 +460,33 @@ export function SavingsReports({
       {!compact && (
         <>
           <section className="panel">
-            <h2>Tài sản theo danh mục · {r.asOf}</h2>
-            <div
-              className="savings-table-scroll"
-              role="region"
-              aria-label="Tài sản theo danh mục"
-              tabIndex={0}
-            >
+            <h2>
+              {tr("Tài sản theo danh mục ·")} {formatDate(r.asOf!, locale)}
+            </h2>
+            <div className="savings-table-scroll">
               <ColumnTable
                 tableId="savings-report-panel-2"
                 className="savings-table"
+                scrollLabel={tr("Tài sản theo danh mục")}
               >
                 <caption>
-                  VND · Giá trị cuối kỳ, không cộng số dư các tháng
+                  {tr("VND · Giá trị cuối kỳ, không cộng số dư các tháng")}
                 </caption>
                 <thead>
                   <tr>
-                    <th>Danh mục</th>
-                    <th>Đầu kỳ</th>
-                    <th>Cuối kỳ</th>
-                    <th>Số lượng</th>
-                    <th>Giá vốn còn lại</th>
-                    <th>Lãi/lỗ chưa chốt</th>
-                    <th>Kết quả kỳ</th>
-                    <th>Ngày giá</th>
-                    <th>Nạp ròng ngoài</th>
-                    <th>Chuyển ròng nội bộ</th>
-                    <th>Lãi thực nhận</th>
-                    <th>Lãi/lỗ đã chốt</th>
-                    <th>Phí / thuế</th>
+                    <th>{tr("Danh mục")}</th>
+                    <th>{tr("Đầu kỳ")}</th>
+                    <th>{tr("Cuối kỳ")}</th>
+                    <th>{tr("Số lượng")}</th>
+                    <th>{tr("Giá vốn còn lại")}</th>
+                    <th>{tr("Lãi/lỗ chưa chốt")}</th>
+                    <th>{tr("Kết quả kỳ")}</th>
+                    <th>{tr("Ngày giá")}</th>
+                    <th>{tr("Nạp ròng ngoài")}</th>
+                    <th>{tr("Chuyển ròng nội bộ")}</th>
+                    <th>{tr("Lãi thực nhận")}</th>
+                    <th>{tr("Lãi/lỗ đã chốt")}</th>
+                    <th>{tr("Phí / thuế")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -481,7 +499,7 @@ export function SavingsReports({
                       <td>{display(c.value)}</td>
                       <td>
                         {c.kind === "gold"
-                          ? `${hidden ? "••••••" : c.quantity} ${c.unit}`
+                          ? `${hidden ? "••••••" : formatDecimal(c.quantity, locale)} ${tr(c.unit ?? "")}`
                           : "—"}
                       </td>
                       <td>{money(c.cost)}</td>
@@ -489,7 +507,7 @@ export function SavingsReports({
                       <td>{display(c.result)}</td>
                       <td>
                         {c.priceDate ?? "—"}
-                        {c.stale ? " · giá cũ" : ""}
+                        {c.stale ? tr(" · giá cũ") : ""}
                       </td>
                       <td>{money(c.external)}</td>
                       <td>{money(c.internal)}</td>
@@ -501,53 +519,49 @@ export function SavingsReports({
                 </tbody>
                 <tfoot>
                   <tr>
-                    <th>Tổng</th>
+                    <th>{tr("Tổng")}</th>
                     <td>{display(r.before.total)}</td>
                     <td>{display(r.after.total)}</td>
-                    <td colSpan={10}>Giá trị tại cuối kỳ</td>
+                    <td colSpan={10}>{tr("Giá trị tại cuối kỳ")}</td>
                   </tr>
                 </tfoot>
               </ColumnTable>
             </div>
           </section>
           <section className="panel">
-            <h2>Bảng theo tháng</h2>
-            <div
-              className="savings-table-scroll"
-              tabIndex={0}
-              role="region"
-              aria-label="Bảng tiết kiệm theo tháng"
-            >
+            <h2>{tr("Bảng theo tháng")}</h2>
+            <div className="savings-table-scroll">
               <ColumnTable
                 tableId="savings-report-panel-3"
                 className="savings-table"
+                scrollLabel={tr("Bảng tiết kiệm theo tháng")}
               >
                 <thead>
                   <tr>
-                    <th>Tháng</th>
-                    <th>Tài sản cuối kỳ</th>
-                    <th>Nạp ngoài</th>
-                    <th>Rút ngoài</th>
-                    <th>Kết quả</th>
-                    <th>Trạng thái</th>
+                    <th>{tr("Tháng")}</th>
+                    <th>{tr("Tài sản cuối kỳ")}</th>
+                    <th>{tr("Nạp ngoài")}</th>
+                    <th>{tr("Rút ngoài")}</th>
+                    <th>{tr("Kết quả")}</th>
+                    <th>{tr("Trạng thái")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {r.months.map((m) => (
                     <tr key={m.month}>
-                      <th scope="row">{m.month}</th>
+                      <th scope="row">{formatMonth(m.month!, locale)}</th>
                       <td>{m.value === null ? "—" : money(m.value)}</td>
                       <td>{m.inflow === null ? "—" : money(m.inflow)}</td>
                       <td>{m.outflow === null ? "—" : money(m.outflow)}</td>
                       <td>{m.result === null ? "—" : money(m.result)}</td>
                       <td>
                         {m.provisional
-                          ? "Tạm tính"
+                          ? tr("Tạm tính")
                           : m.missing.length
-                            ? "Thiếu giá"
+                            ? tr("Thiếu giá")
                             : m.value === null
-                              ? "Chưa phát sinh"
-                              : "Đã ghi nhận"}
+                              ? tr("Chưa phát sinh")
+                              : tr("Đã ghi nhận")}
                       </td>
                     </tr>
                   ))}

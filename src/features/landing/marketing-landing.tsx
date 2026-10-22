@@ -1,4 +1,10 @@
-import Link from "next/link";
+import { ModuleIcon } from "@/components/module-icon";
+import {
+  languageSummary,
+  modules,
+  moduleStatusLabels,
+  publicHomeSummary,
+} from "@/features/catalog";
 import {
   ArrowDown,
   ArrowDownLeft,
@@ -11,12 +17,7 @@ import {
   MoveUpRight,
   WalletCards,
 } from "lucide-react";
-import { ModuleIcon } from "@/components/module-icon";
-import {
-  modules,
-  moduleStatusLabels,
-  publicHomeSummary,
-} from "@/features/catalog";
+import Link from "next/link";
 import { ProductPreview } from "./product-preview";
 
 function BeginLink({
@@ -392,12 +393,19 @@ export function MarketingLanding() {
             </div>
           </details>
           <details>
+            <summary>Có thể dùng tiếng Anh không?</summary>
+            <div className="marketing-answer">
+              <p>{languageSummary}</p>
+            </div>
+          </details>
+          <details>
             <summary>Có dùng được trên điện thoại không?</summary>
             <div className="marketing-answer">
               <p>
-                Giao diện được thiết kế cho điện thoại và máy tính. Bản triển
-                khai qua HTTPS hỗ trợ thêm vào màn hình chính. Hiện chưa hỗ trợ
-                nhập dữ liệu khi mất mạng.
+                Giao diện được thiết kế cho điện thoại và máy tính. Tab giữ nhãn
+                đầy đủ; bảng rộng cuộn trong vùng riêng. Bản triển khai qua
+                HTTPS hỗ trợ thêm vào màn hình chính. Hiện chưa hỗ trợ nhập dữ
+                liệu khi mất mạng.
               </p>
             </div>
           </details>

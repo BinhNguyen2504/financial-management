@@ -1,11 +1,14 @@
-import { pageAccess } from "@/server/page-auth";
-import type { Metadata } from "next";
-import { authConfigured } from "@/server/auth";
 import { incomeClock } from "@/domain/income/engine";
-import { IncomeWorkspace } from "@/features/income/workspace";
 import "@/features/expenses/expenses.css";
 import "@/features/income/income.css";
-export const metadata: Metadata = { title: "Thu nhập" };
+import { IncomeWorkspace } from "@/features/income/workspace";
+import { localizedMetadata } from "@/i18n/server";
+import { authConfigured } from "@/server/auth";
+import { pageAccess } from "@/server/page-auth";
+import type { Metadata } from "next";
+export async function generateMetadata(): Promise<Metadata> {
+  return localizedMetadata("Thu nhập");
+}
 export const dynamic = "force-dynamic";
 export default async function IncomePage() {
   const denied = await pageAccess("/income");

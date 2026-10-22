@@ -111,3 +111,11 @@ Bảng rộng cho chọn cột và giữ lựa chọn trên trình duyệt; cộ
 ## Phản hồi nhập liệu — 21/10/2026
 
 Tiền, giá theo đơn vị, phí và thuế đọc số VND dưới ô; số lượng và tỷ lệ giữ đơn vị riêng. Lỗi kiểm tra hoặc API ở đúng trường, kèm focus. Toast phân biệt ghi thành công, thất bại và chưa rõ kết quả; lỗi tải lại sau ghi có thông báo riêng. Footer dialog giữ vị trí khi nội dung dài.
+
+## Anh/Việt — 22/10/2026
+
+Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định dạng vi-VN/en-GB, vẫn VND và giờ Việt Nam. Tên/ghi chú và dữ liệu tài chính giữ nguyên. CSV nhận `locale=vi|en` (mặc định vi), dịch tên cột/nhãn hệ thống nhưng giữ số/ngày dạng chuẩn và chống công thức CSV. Không có migration hay đổi cấu trúc backup. Xem [đặc tả ngôn ngữ](localization.md).
+
+## Bố cục và cuộn — 23/10/2026
+
+Tab workspace một hàng cuộn ngang; điều hướng phím giữ vị trí trang. Bảng danh mục/báo cáo tách toolbar khỏi vùng dữ liệu cuộn ngang. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).

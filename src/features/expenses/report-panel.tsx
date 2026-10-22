@@ -1,9 +1,12 @@
 "use client";
+import { ScrollTabs } from "@/components/scroll-tabs";
+import { useI18n } from "@/i18n/provider";
+
 import { ColumnTable } from "@/components/column-table";
-import { useState } from "react";
-import type { ExpenseView } from "@/domain/expenses/types";
-import { buildReport } from "@/domain/expenses/reports";
 import { useMoney } from "@/components/privacy";
+import { buildReport } from "@/domain/expenses/reports";
+import type { ExpenseView } from "@/domain/expenses/types";
+import { useState } from "react";
 import { ReportChart } from "./charts";
 
 export function ExpenseReports({
@@ -13,6 +16,8 @@ export function ExpenseReports({
   view: ExpenseView;
   filters: { kind: string; method: string; group: string };
 }) {
+  const { t: tr } = useI18n("expenses");
+
   const money = useMoney();
   const [from, setFrom] = useState(1);
   const [to, setTo] = useState(12);
@@ -31,7 +36,7 @@ export function ExpenseReports({
         .map((r) => [r.jarId, r.name]),
     ).entries(),
   ];
-  const items =
+  const sourceItems =
     perspective === "methods" || perspective === "funding"
       ? report.byMethod
       : perspective === "groups"
@@ -41,6 +46,9 @@ export function ExpenseReports({
           : perspective === "accumulation"
             ? report.accumulation
             : report.byMonth;
+  const items = sourceItems.map((item) =>
+    item.labelKey ? { ...item, label: tr(item.labelKey) } : item,
+  );
   const field =
     perspective === "funding"
       ? "required"
@@ -55,31 +63,33 @@ export function ExpenseReports({
     >
       <div className="expense-section-heading">
         <div>
-          <p className="eyebrow">NĂM {view.currentYear}</p>
-          <h2 id="expense-report-title">Báo cáo chi tiêu</h2>
+          <p className="eyebrow">
+            {tr("NĂM")} {view.currentYear}
+          </p>
+          <h2 id="expense-report-title">{tr("Báo cáo chi tiêu")}</h2>
         </div>
-        <div
+        <ScrollTabs
           className="expense-segment"
           role="group"
-          aria-label="Cách trình bày báo cáo"
+          aria-label={tr("Cách trình bày báo cáo")}
         >
           <button
             aria-pressed={display === "table"}
             onClick={() => setDisplay("table")}
           >
-            Bảng
+            {tr("Bảng")}
           </button>
           <button
             aria-pressed={display === "chart"}
             onClick={() => setDisplay("chart")}
           >
-            Biểu đồ
+            {tr("Biểu đồ")}
           </button>
-        </div>
+        </ScrollTabs>
       </div>
       <div className="expense-filters">
         <label>
-          Kỳ báo cáo
+          {tr("Kỳ báo cáo")}
           <select
             value={`${from}-${to}`}
             onChange={(e) => {
@@ -90,17 +100,17 @@ export function ExpenseReports({
               }
             }}
           >
-            <option value="1-12">Cả năm</option>
+            <option value="1-12">{tr("Cả năm")}</option>
             {[1, 2, 3, 4].map((q) => (
               <option key={q} value={`${q * 3 - 2}-${q * 3}`}>
-                Quý {q}
+                {tr("Quý")} {q}
               </option>
             ))}
-            <option value={`${from}-${to}`}>Khoảng đang chọn</option>
+            <option value={`${from}-${to}`}>{tr("Khoảng đang chọn")}</option>
           </select>
         </label>
         <label>
-          Từ tháng
+          {tr("Từ tháng")}
           <select
             value={from}
             onChange={(e) => {
@@ -117,7 +127,7 @@ export function ExpenseReports({
           </select>
         </label>
         <label>
-          Đến tháng
+          {tr("Đến tháng")}
           <select
             value={to}
             onChange={(e) => {
@@ -134,9 +144,9 @@ export function ExpenseReports({
           </select>
         </label>
         <label>
-          Khoản chi
+          {tr("Khoản chi")}
           <select value={jarId} onChange={(e) => setJarId(e.target.value)}>
-            <option value="">Tất cả hũ</option>
+            <option value="">{tr("Tất cả hũ")}</option>
             {options.map(([id, name]) => (
               <option key={id} value={id}>
                 {name}
@@ -145,36 +155,38 @@ export function ExpenseReports({
           </select>
         </label>
         <label>
-          Góc nhìn
+          {tr("Góc nhìn")}
           <select
             value={perspective}
             onChange={(e) => setPerspective(e.target.value)}
           >
-            <option value="months">Tổng chi từng tháng</option>
-            <option value="trend">Diễn biến theo tháng</option>
-            <option value="jars">Theo khoản chi</option>
-            <option value="methods">Theo phương thức</option>
-            <option value="groups">Theo nhóm mục đích</option>
-            <option value="funding">Tiền cần thêm theo phương thức</option>
-            <option value="accumulation">Tích lũy và sử dụng</option>
+            <option value="months">{tr("Tổng chi từng tháng")}</option>
+            <option value="trend">{tr("Diễn biến theo tháng")}</option>
+            <option value="jars">{tr("Theo khoản chi")}</option>
+            <option value="methods">{tr("Theo phương thức")}</option>
+            <option value="groups">{tr("Theo nhóm mục đích")}</option>
+            <option value="funding">
+              {tr("Tiền cần thêm theo phương thức")}
+            </option>
+            <option value="accumulation">{tr("Tích lũy và sử dụng")}</option>
           </select>
         </label>
       </div>
       <p className="expense-notice">
-        Tiền góp vào hũ tích lũy được tính riêng với tiền đã sử dụng. Tháng hiện
-        tại có số tạm tính; tháng tương lai chỉ có kế hoạch. “Tiền cần thêm” là
-        đề xuất ban đầu, chưa bao gồm tiền bổ sung.
+        {tr(
+          "Tiền góp vào hũ tích lũy được tính riêng với tiền đã sử dụng. Tháng hiện tại có số tạm tính; tháng tương lai chỉ có kế hoạch. “Tiền cần thêm” là đề xuất ban đầu, chưa bao gồm tiền bổ sung.",
+        )}
       </p>
       {report.totals && (
         <div className="expense-report-totals">
           <span>
-            Thực chi: <strong>{money(report.totals.spent)}</strong>
+            {tr("Thực chi:")} <strong>{money(report.totals.spent)}</strong>
           </span>
           <span>
-            Đã bỏ hũ: <strong>{money(report.totals.funding)}</strong>
+            {tr("Đã bỏ hũ:")} <strong>{money(report.totals.funding)}</strong>
           </span>
           <span>
-            Mức kế hoạch: <strong>{money(report.totals.target)}</strong>
+            {tr("Mức kế hoạch:")} <strong>{money(report.totals.target)}</strong>
           </span>
         </div>
       )}
@@ -189,20 +201,27 @@ export function ExpenseReports({
         <div className="expense-table-scroll">
           <ColumnTable tableId="expenses-report-panel-1">
             <caption className="sr-only">
-              Báo cáo chi tiêu năm {view.currentYear}, tháng {from} đến {to},
-              đơn vị VND
+              {tr("Báo cáo chi tiêu năm")} {view.currentYear}
+              {tr(", tháng")} {from} {tr("đến")} {to}
+              {tr(", đơn vị VND")}
             </caption>
             <thead>
               <tr>
-                <th>Kỳ / khoản</th>
-                {accumulation && <th>Số đầu kỳ</th>}
+                <th>{tr("Kỳ / khoản")}</th>
+                {accumulation && <th>{tr("Số đầu kỳ")}</th>}
                 <th>
-                  {perspective === "funding" ? "Tiền cần thêm" : "Mức kế hoạch"}
+                  {perspective === "funding"
+                    ? tr("Tiền cần thêm")
+                    : tr("Mức kế hoạch")}
                 </th>
-                <th>Đã bỏ hũ</th>
-                <th>Thực chi</th>
-                {accumulation ? <th>Còn lại</th> : <th>Vượt mức</th>}
-                <th>Trạng thái</th>
+                <th>{tr("Đã bỏ hũ")}</th>
+                <th>{tr("Thực chi")}</th>
+                {accumulation ? (
+                  <th>{tr("Còn lại")}</th>
+                ) : (
+                  <th>{tr("Vượt mức")}</th>
+                )}
+                <th>{tr("Trạng thái")}</th>
               </tr>
             </thead>
             <tbody>
@@ -210,7 +229,7 @@ export function ExpenseReports({
                 <tr key={r.key}>
                   <th>
                     {/^20\d{2}-\d{2}$/.test(r.label)
-                      ? `Tháng ${Number(r.label.slice(5))}`
+                      ? tr("Tháng {0}", { 0: Number(r.label.slice(5)) })
                       : r.label}
                   </th>
                   {accumulation && <td>{money(r.opening)}</td>}
@@ -222,17 +241,19 @@ export function ExpenseReports({
                   <td>{money(accumulation ? r.closing : r.over)}</td>
                   <td>
                     {r.planned
-                      ? "Kế hoạch"
+                      ? tr("Kế hoạch")
                       : r.provisional
-                        ? "Có tạm tính"
-                        : "Đã kết thúc"}
+                        ? tr("Có tạm tính")
+                        : tr("Đã kết thúc")}
                   </td>
                 </tr>
               ))}
             </tbody>
           </ColumnTable>
           {!items.length && (
-            <p className="expense-empty">Chưa có dữ liệu cho bộ lọc này.</p>
+            <p className="expense-empty">
+              {tr("Chưa có dữ liệu cho bộ lọc này.")}
+            </p>
           )}
         </div>
       )}

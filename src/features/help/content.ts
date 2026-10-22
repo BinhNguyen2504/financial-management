@@ -1007,3 +1007,29 @@ export const articles: HelpArticles = {
     ],
   ),
 };
+
+// Browser preferences are separate from financial data and share stable help anchors.
+articles.settings.sections
+  .find((section) => section.id === "terms")!
+  .items!.push(
+    term(
+      "language",
+      "Ngôn ngữ và định dạng",
+      "Tiếng Việt là mặc định; English dùng dấu phẩy phân nhóm và dấu chấm thập phân. VND và giờ Việt Nam giữ nguyên. Tên, ghi chú của bạn không bị dịch.",
+    ),
+  );
+articles.settings.sections
+  .find((section) => section.id === "tasks")!
+  .items!.push(
+    task(
+      "change-language",
+      "Đổi ngôn ngữ",
+      "Khi muốn dùng không gian tài chính bằng Tiếng Việt hoặc English.",
+      [
+        "Trong Cài đặt → Ngôn ngữ / Language, chọn Tiếng Việt hoặc English.",
+        "Kiểm tra định dạng gợi ý dưới ô tiền: 1.000.000 ₫ trong tiếng Việt hoặc 1,000,000 ₫ trong English.",
+        "Nếu bản nháp đang có số chưa hợp lệ khi tab khác đổi ngôn ngữ, sửa theo định dạng được ghi tại ô; nội dung cũ không tự bị diễn giải lại.",
+      ],
+      "Kết quả: giao diện và Help đổi ngay, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong backup hoặc đồng bộ tài khoản; trang giới thiệu và đăng nhập vẫn bằng tiếng Việt.",
+    ),
+  );

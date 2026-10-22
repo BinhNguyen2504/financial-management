@@ -1,7 +1,9 @@
 "use client";
-import { AlertCircle, PlusCircle } from "lucide-react";
+import { useI18n } from "@/i18n/provider";
+
 import type { IncomeRow } from "@/domain/income/types";
 import { monthName } from "@/features/expenses/format";
+import { AlertCircle, PlusCircle } from "lucide-react";
 
 export function missingIncomeRows(rows: IncomeRow[], today: string) {
   return rows.filter(
@@ -21,11 +23,13 @@ export function MissingIncome({
   today: string;
   onEnter(row: IncomeRow): void;
 }) {
+  const { t: tr, locale } = useI18n("income");
+
   const missing = missingIncomeRows(rows, today);
   if (!missing.length)
     return (
       <p className="expense-muted">
-        Đã ghi nhận đủ các khoản thu cố định đến hạn trong kỳ.
+        {tr("Đã ghi nhận đủ các khoản thu cố định đến hạn trong kỳ.")}
       </p>
     );
   const months = [...new Set(missing.map((row) => row.month))].sort();
@@ -34,18 +38,18 @@ export function MissingIncome({
       <div className="data-warning" role="status">
         <AlertCircle size={20} aria-hidden="true" />
         <strong>
-          Còn {missing.length} khoản thu cố định chưa nhập trong {months.length}{" "}
-          tháng.
+          {tr("Còn")} {missing.length} {tr("khoản thu cố định chưa nhập trong")}{" "}
+          {months.length} {tr("tháng.")}
         </strong>
-        <span>Chọn khoản bên dưới để bổ sung.</span>
+        <span>{tr("Chọn khoản bên dưới để bổ sung.")}</span>
       </div>
       {months.map((month) => (
         <details key={month} open={months.length === 1}>
           <summary>
             <span className="status-badge status-missing">
-              {monthName(month)} ·{" "}
-              {missing.filter((row) => row.month === month).length} danh mục
-              chưa nhập
+              {monthName(month, locale)} ·{" "}
+              {missing.filter((row) => row.month === month).length}{" "}
+              {tr("danh mục chưa nhập")}
             </span>
           </summary>
           <div className="income-missing-actions">
@@ -59,7 +63,7 @@ export function MissingIncome({
                   onClick={() => onEnter(row)}
                 >
                   <PlusCircle size={17} aria-hidden="true" />
-                  Nhập {row.name} · {monthName(row.month)}
+                  {tr("Nhập")} {row.name} · {monthName(row.month, locale)}
                 </button>
               ))}
           </div>

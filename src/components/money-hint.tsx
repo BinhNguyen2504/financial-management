@@ -1,4 +1,5 @@
 "use client";
+import { useI18n } from "@/i18n/provider";
 
 import { useMoney, useMoneyHidden } from "./privacy";
 
@@ -11,6 +12,7 @@ export function MoneyHint({
   value: string;
   empty?: string;
 }) {
+  const { t } = useI18n();
   const money = useMoney();
   const hidden = useMoneyHidden();
   return (
@@ -19,7 +21,7 @@ export function MoneyHint({
         ? money(value)
         : hidden && value
           ? "•••••• ₫"
-          : empty}
+          : t(empty)}
     </small>
   );
 }
