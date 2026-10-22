@@ -2,6 +2,16 @@
 import { AlertCircle } from "lucide-react";
 
 export type FieldErrors = Record<string, string>;
+export function focusFirstInvalid(
+  scope: HTMLElement | null,
+  fallback?: HTMLElement | null,
+) {
+  requestAnimationFrame(() => {
+    const input = scope?.querySelector<HTMLElement>('[aria-invalid="true"]');
+    (input ?? fallback)?.focus();
+    input?.scrollIntoView({ block: "center", behavior: "instant" });
+  });
+}
 export function nativeErrors(form: HTMLFormElement): FieldErrors {
   const errors: FieldErrors = {};
   for (const input of Array.from(form.elements)) {

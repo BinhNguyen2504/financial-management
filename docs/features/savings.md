@@ -79,3 +79,7 @@ Hướng dẫn tiền/ví, sổ gửi, vàng, mở đầu, chuyển nội bộ, 
 ## Quy chuẩn giao diện dùng chung — 20/10/2026
 
 Bảng rộng có lựa chọn cột lưu trên trình duyệt. Form có dấu bắt buộc, lỗi tại trường và tổng hợp lỗi có thể đưa focus về trường cần sửa; Hủy/Lưu có icon. Form sửa chưa thay đổi hoặc đã hoàn tác về ban đầu vô hiệu thao tác lưu/xem trước. Tiền nguyên được chuẩn hóa khi blur/submit, không áp dụng quy tắc số nguyên cho lượng vàng. Tooltip dùng thành phần chung, hỗ trợ hover, bàn phím, chạm và cập nhật theo Privacy Mode. Xem [đối chiếu phản hồi toàn ứng dụng](interface-feedback-2026-10-19.md).
+
+## Dòng đọc tiền và kết quả ghi — 21/10/2026
+
+Dialog Ghi giao dịch cùng các form giá/phí/thuế đọc giá trị VND dưới từng ô; lượng vàng giữ đơn vị lượng, không định dạng thành tiền. Dấu `*` sát nhãn và lỗi tại trường có liên kết truy cập. Toast chỉ báo thành công sau ghi nhận, nêu riêng kết quả ghi chưa rõ hoặc lỗi tải lại; footer thao tác cố định khi cuộn nội dung.

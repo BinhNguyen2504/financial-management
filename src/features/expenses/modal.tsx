@@ -2,6 +2,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { X } from "lucide-react";
 import "@/components/dialog-content.css";
+import { ToastViewport } from "@/components/toast";
 
 const openDialogs = new Set<HTMLDialogElement>();
 let previousOverflow = "";
@@ -14,6 +15,7 @@ function updateDialogStack() {
     if (covered) element.setAttribute("aria-hidden", "true");
     else element.removeAttribute("aria-hidden");
   });
+  window.dispatchEvent(new Event("fm-dialog-stack-change"));
 }
 
 export function ExpenseModal({
@@ -209,6 +211,7 @@ export function ExpenseModal({
       </div>
       <div className="dialog-body">{children}</div>
       {footer && <div className="dialog-footer">{footer}</div>}
+      <ToastViewport dialogRef={dialog} />
     </dialog>
   );
 }

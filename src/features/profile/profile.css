@@ -99,15 +99,31 @@
   margin-top: 8px;
 }
 .profile-workspace {
-  max-width: 850px;
+  max-width: 920px;
+}
+.profile-workspace > .expense-page-heading {
+  align-items: flex-start;
+}
+.profile-workspace > .expense-page-heading > .expense-secondary {
+  flex: none;
+}
+.profile-panel {
+  max-width: 760px;
+  border-color: var(--border);
 }
 .profile-identity {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding-bottom: 24px;
+  padding: 4px 0 24px;
   margin-bottom: 24px;
   border-bottom: 1px solid var(--border);
+}
+.profile-field > label {
+  display: inline-flex;
+  align-items: baseline;
+  width: fit-content;
+  max-width: 100%;
 }
 .profile-avatar {
   flex-basis: 64px;
@@ -193,6 +209,10 @@
   }
 }
 @media (max-width: 500px) {
+  .profile-workspace > .expense-page-heading {
+    flex-direction: column-reverse;
+    gap: 16px;
+  }
   .profile-form-grid {
     grid-template-columns: 1fr;
   }

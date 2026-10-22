@@ -1,3 +1,4 @@
+import { ThemeText } from "@/components/theme-decoration";
 import { HelpPageTitle } from "@/features/help/provider";
 import { pageAccess } from "@/server/page-auth";
 import type { Metadata } from "next";
@@ -63,7 +64,7 @@ export default async function ModulePage({
       <div className="module-heading">
         <Garden variant={scenes[slug] ?? "balance"} />
         <span className="pill">
-          {moduleStatusLabels[item.status]} · Đang vun đắp
+          {moduleStatusLabels[item.status]} · <ThemeText name="developing" />
         </span>
         <span className="module-icon">
           <ModuleIcon name={item.icon} size={27} />

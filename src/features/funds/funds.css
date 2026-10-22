@@ -368,6 +368,83 @@
 .fund-preview h3 {
   margin-top: 0;
 }
+.fund-preview-summary {
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.fund-change-table {
+  position: relative;
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.fund-change-row {
+  display: grid;
+  grid-template-columns: minmax(145px, 1.5fr) repeat(3, minmax(100px, 1fr));
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+.fund-change-row:first-child {
+  border-top: 0;
+}
+.fund-change-row > :not(:first-child) {
+  text-align: right;
+}
+.fund-change-header {
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.fund-preview-details {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.fund-preview-details summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 10px 0;
+  font-weight: 650;
+}
+@media (max-width: 600px) {
+  .fund-change-header {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .fund-change-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 12px;
+  }
+  .fund-change-row > :first-child {
+    grid-column: 1 / -1;
+  }
+  .fund-change-row > :not(:first-child) {
+    text-align: left;
+  }
+  .fund-change-row > :nth-child(2)::before {
+    content: "Trước: ";
+    color: var(--muted);
+  }
+  .fund-change-row > :nth-child(3)::before {
+    content: "Sau: ";
+    color: var(--muted);
+  }
+  .fund-change-row > :nth-child(4)::before {
+    content: "Thay đổi: ";
+    color: var(--muted);
+  }
+}
 .fund-preview-rows {
   display: grid;
   gap: 14px;

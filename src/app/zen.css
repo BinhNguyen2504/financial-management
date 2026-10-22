@@ -82,7 +82,7 @@ h1 span {
   border-radius: 12px;
 }
 .expense-primary {
-  box-shadow: 0 3px 8px #30462d0c;
+  box-shadow: 0 3px 8px var(--primary-shadow);
 }
 .expense-primary:active,
 .expense-secondary:active,
@@ -170,7 +170,7 @@ button:disabled {
   font-size: 15px;
   color: var(--muted);
 }
-.daily-note p span {
+.daily-note p > span:first-child {
   display: block;
   font-size: 10px;
   letter-spacing: 1.3px;

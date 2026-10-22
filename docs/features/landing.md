@@ -1,10 +1,10 @@
 # Landing và xác thực truy cập
 
-Cập nhật 19/10/2026. Landing tiếng Việt ở `/`, dành cho mọi người; tên Financial Manager, hướng sản phẩm tinh tế và câu chuyện công cụ từ nhu cầu thật.
+Cập nhật 22/10/2026. Landing tiếng Việt ở `/`, chia thành bản marketing cho khách và bản theo chủ đề sau đăng nhập; tên Financial Manager, hướng sản phẩm tinh tế và câu chuyện công cụ từ nhu cầu thật.
 
 ## Nội dung và trạng thái
 
-Hero → preview → Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn → câu chuyện → trạng thái phát triển/FAQ → CTA. Nền kem, xanh xô thơm, Nunito, dark mode hệ thống, Lucide/SVG và reduced motion. Không bịa người dùng, lời chứng thực, tiểu sử hay hứa hẹn lợi ích đầu tư.
+Khách: hero “Làm chủ tiền bạc. Sống trọn điều bạn muốn.” → lợi ích → preview tương tác → năm module → câu chuyện/thói quen → trạng thái sản phẩm/FAQ → CTA. Nhận diện riêng: nền ngà, chữ đen, cam đồng, font hệ thống, thẻ tài chính CSS tĩnh; không theo theme hoặc chế độ sáng/tối của trình duyệt. Thành viên: giữ nguyên hero “Một nơi rõ ràng hơn”, bố cục, Nunito, màu/minh họa theo theme đã chọn và sáng/tối/theo hệ thống. Cả hai dùng Lucide, điều hướng bàn phím và reduced motion. Không bịa người dùng, lời chứng thực, tiểu sử hay hứa hẹn lợi ích đầu tư.
 
 `src/features/catalog.ts` giữ tên, mô tả và trạng thái module: `implemented`, `partial`, `planned`. Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn có triển khai; Tổng quan và Thiết lập có một phần. Trạng thái này nói về source, không chứng minh đã triển khai cloud. Không quảng bá tài sản ròng toàn hệ thống, kết nối ngân hàng hoặc ghi dữ liệu offline như chức năng hiện có.
 
@@ -18,8 +18,8 @@ Năm tab Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn, m�
 
 | Trạng thái | Hành vi |
 | --- | --- |
-| Khách ở `/` | Xem landing/preview, nút Đăng nhập; CTA vào /overview qua server guard |
-| Đã đăng nhập ở `/` | Vẫn ở landing, có menu avatar/hồ sơ/đăng xuất và Vào ứng dụng |
+| Khách ở `/` | Xem marketing/preview trung tính, nút Đăng nhập; CTA đến /login?next=%2Foverview |
+| Đã đăng nhập ở `/` | Xem landing hiện có theo theme đã chọn, có menu avatar/hồ sơ/đăng xuất và Vào ứng dụng |
 | Mở trang ứng dụng khi chưa đăng nhập | Redirect /login?next=<đường dẫn ứng dụng đã encode> trước khi render workspace |
 | Đăng nhập thành công | Về next trong whitelist; mặc định /overview |
 | Đã đăng nhập mở /login | Redirect đến next hợp lệ, mặc định /overview |
@@ -29,7 +29,7 @@ Năm tab Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn, m�
 
 Whitelist dùng đường dẫn chính xác của catalog và /profile; từ chối URL ngoài, query/hash, route lạ, login/callback và vòng lặp. Proxy refresh cookie, mỗi page xác minh getUser trước render, API tiếp tục xác minh owner/RLS độc lập. Bearer không cấp quyền mở trang HTML. Page guard không được thay bằng layout/client check.
 
-Landing HTML không chờ Auth phía server: avatar được xác minh trong trình duyệt, giữ nội dung công khai đọc được khi dịch vụ Auth gián đoạn. Proxy không gọi Auth cho `/` và ảnh Open Graph. Public/app layout tách route group, giữ nguyên URL. App và login noindex. `APP_ORIGIN` đặt origin triển khai cho URL chia sẻ Open Graph; khi để trống, metadata dùng localhost:3000. PWA start_url /overview, chỉ cache offline.html, không cache dữ liệu tài khoản. Không đổi API tài chính hoặc database.
+Landing HTML không chờ Auth phía server: nội dung ban đầu là marketing, provider xác minh phiên trong trình duyệt rồi chuyển cả khung và nội dung sang bản thành viên. Trong lúc chờ hoặc khi xác minh thất bại mà chưa có user, marketing vẫn đọc được; nút tài khoản giữ trạng thái tải/thử lại. Nếu provider đang giữ user khi refresh lỗi, vẫn giữ bản thành viên. Khi không có JavaScript chỉ hiện bản marketing. Proxy không gọi Auth cho `/` và ảnh Open Graph. Public/app layout tách route group, giữ nguyên URL. App và login noindex. `APP_ORIGIN` đặt origin triển khai cho URL chia sẻ Open Graph; khi để trống, metadata dùng localhost:3000. PWA start_url /overview, chỉ cache offline.html, không cache dữ liệu tài khoản. Không đổi API tài chính hoặc database.
 
 ## Duy trì và nghiệm thu
 
@@ -81,3 +81,26 @@ FAQ giải thích cách dùng Hướng dẫn và giữ bản nháp khi tra cứu
 ### Trình bày Help — 20/10/2026
 
 FAQ/catalog mô tả vị trí mới cạnh tiêu đề; phụ lục preview nói rõ mục lục đánh số và nhấn ý chính. Preview vẫn dùng nội dung cố định, không đọc tài khoản.
+
+## Chủ đề — 21/10/2026
+
+Landing theo chủ đề của thành viên và login kế thừa chủ đề đã chọn trong Cài đặt trên trình duyệt. Minh họa câu chuyện, lời dẫn, icon trang trí và cảnh Quỹ trong preview đổi giữa Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành. Preview vẫn dùng số liệu cố định, không gọi API tài chính hoặc lấy dữ liệu tài khoản. Logo, favicon và Open Graph giữ nhận diện thương hiệu. Không thêm bộ chọn chủ đề công khai riêng.
+
+## Biểu tượng phương thức trong preview — 21/10/2026
+
+Preview Chi tiêu thêm biểu tượng Timo/HSBC cỡ gọn cạnh tên phương thức, dùng cùng `LabelName` và asset local với ứng dụng. Tên và số tiền vẫn là hằng số minh họa, không dùng catalog phân loại của tài khoản hay gọi API tài chính. Copy module nhấn mạnh phương thức dễ nhận biết; preview chỉ minh họa một phần bảng, không giả lập tùy chỉnh cột đầy đủ.
+
+## Giới thiệu quy chuẩn phản hồi — 21/10/2026
+
+Copy landing và chú thích Help trong preview nêu rõ ứng dụng báo lỗi nhập tại trường và chỉ xác nhận lưu khi nhận phản hồi. Preview giữ số liệu minh họa cố định, không giả lập gửi form hoặc đọc dữ liệu tài khoản.
+
+
+## Phân loại trang chủ — 22/10/2026
+
+`page.tsx` ghép hai server component `MarketingLanding` và `ThemedLanding` qua `LandingAudience`. `PublicShell` dùng cùng `useUser` và chỉ áp class `marketing-shell` cho khách tại `/`, không áp cho `/login`. Đây là phân loại trình bày nội dung công khai; không thay thế bất kỳ kiểm tra quyền phía server nào.
+
+`marketing.css` đặt token ngay trên shell, `color-scheme: light`, không sửa `fm-theme`, `fm-visual-theme` hoặc thuộc tính html. Preview `appearance="marketing"` dùng cùng số liệu/tab/ẩn tiền, thay hình/theme text bằng icon module và vòng tiến độ Emergency 50%. Thẻ hero lấy số cố định khớp preview: kế hoạch 12 triệu, còn trong hũ 4,65 triệu, thu nhập 28,5 triệu, tiết kiệm 85 triệu. Không đọc hoặc tổng hợp tài sản tài khoản. Hình hũ trong phần giới thiệu mang tính trang trí, không phải báo cáo tài chính.
+
+Catalog bổ sung `publicHomeSummary`, giữ nguyên trạng thái triển khai module. FAQ dùng catalog để phân biệt hiện có/một phần/đang phát triển. Đăng xuất trở về marketing; tùy chọn giao diện vẫn được giữ để lần đăng nhập sau tiếp tục dùng.
+
+Metadata và ảnh Open Graph công khai dùng cùng thông điệp/cam đồng của trang marketing; logo ứng dụng và favicon giữ nguyên.

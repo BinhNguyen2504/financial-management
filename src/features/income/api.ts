@@ -3,6 +3,7 @@ export class IncomeAPIError extends Error {
     message: string,
     public code: string,
     public status: number,
+    public fieldErrors?: Record<string, string>,
   ) {
     super(message);
   }
@@ -42,6 +43,7 @@ export async function incomeJSON<T>(path: string, body?: unknown): Promise<T> {
       value.error ?? "Không thể tải dữ liệu.",
       value.code ?? "REQUEST_FAILED",
       response.status,
+      value.fieldErrors,
     );
   return value as T;
 }

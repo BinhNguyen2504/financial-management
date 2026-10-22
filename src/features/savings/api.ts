@@ -3,6 +3,7 @@ export class SavingsAPIError extends Error {
     message: string,
     public code: string,
     public status: number,
+    public fieldErrors?: Record<string, string>,
   ) {
     super(message);
   }
@@ -42,6 +43,7 @@ export async function savingsJSON<T>(path: string, body?: unknown): Promise<T> {
       data.error ?? "Không thể tải dữ liệu.",
       data.code ?? "REQUEST_FAILED",
       response.status,
+      data.fieldErrors,
     );
   return data as T;
 }

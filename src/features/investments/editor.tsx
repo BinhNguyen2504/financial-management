@@ -9,6 +9,9 @@ import {
   integerInput,
 } from "@/lib/form-values";
 import { LoadingSpinner } from "@/components/loading";
+import { focusFirstInvalid } from "@/components/form-feedback";
+import { MoneyHint } from "@/components/money-hint";
+import { useToast } from "@/components/toast";
 import { DialogChanges, DialogPreview } from "@/components/dialog-content";
 import { useRef, useId, useState } from "react";
 import { ExpenseModal } from "@/features/expenses/modal";
@@ -80,6 +83,7 @@ function Editor({
   onSaved: () => void;
   onClose: () => void;
 }) {
+  const toast = useToast();
   const [view, setView] = useState(initial),
     hidden = useMoneyHidden(),
     money = useMoney();
@@ -173,9 +177,21 @@ function Editor({
   }
   function input(key: string, label: string, type = "text") {
     const masked = type === "money" && hidden;
+    const required = ![
+      "description",
+      "note",
+      "counterparty",
+      "fee",
+      "tax",
+    ].includes(key);
     return (
       <label key={key} htmlFor={`investment-${key}`}>
         {label}
+        {required && (
+          <span className="required-mark" aria-hidden="true">
+            *
+          </span>
+        )}
         <input
           aria-label={label}
           id={`investment-${key}`}
@@ -183,9 +199,7 @@ function Editor({
           inputMode={type === "money" ? "numeric" : undefined}
           autoComplete="off"
           value={f[key] ?? ""}
-          required={
-            !["description", "note", "counterparty", "fee", "tax"].includes(key)
-          }
+          required={required}
           onChange={(e) => {
             const value =
               type === "money" ? integerInput(e.target.value) : e.target.value;
@@ -197,9 +211,17 @@ function Editor({
           max={type === "date" ? view.today : undefined}
           aria-invalid={!!fieldErrors[key]}
           aria-describedby={
-            fieldErrors[key] ? `investment-error-${key}` : undefined
+            [
+              type === "money" ? `investment-hint-${key}` : "",
+              fieldErrors[key] ? `investment-error-${key}` : "",
+            ]
+              .filter(Boolean)
+              .join(" ") || undefined
           }
         />
+        {type === "money" && (
+          <MoneyHint id={`investment-hint-${key}`} value={f[key] ?? ""} />
+        )}
         {fieldErrors[key] && (
           <small id={`investment-error-${key}`} className="expense-error">
             {fieldErrors[key]}
@@ -349,9 +371,14 @@ function Editor({
       else {
         writing = true;
         await investmentsJSON("/commands", command);
+        toast("success", "Đã lưu thay đổi.");
         onSaved();
       }
     } catch (e) {
+      const unknownWrite =
+        writing &&
+        (!(e instanceof InvestmentAPIError) ||
+          ![400, 401, 403, 409, 415, 422].includes(e.status));
       if (e && typeof e === "object" && "issues" in e) {
         setFieldErrors(
           fieldErrorsFromIssues(
@@ -361,18 +388,28 @@ function Editor({
         );
         setError("Kiểm tra các trường được đánh dấu.");
       } else {
+        if (e instanceof InvestmentAPIError && e.fieldErrors)
+          setFieldErrors(e.fieldErrors);
         setError(e instanceof Error ? e.message : "Không thể lưu.");
         setConflict(
           e instanceof InvestmentAPIError && e.code === "VERSION_CONFLICT",
         );
-        if (
-          writing &&
-          (!(e instanceof InvestmentAPIError) ||
-            ![400, 401, 403, 409, 415, 422].includes(e.status))
-        )
-          setUncertain(true);
+        if (unknownWrite) setUncertain(true);
       }
-      requestAnimationFrame(() => errorRef.current?.focus());
+      focusFirstInvalid(
+        document.querySelector(
+          ".expense-dialog[open]:not([inert]) .dialog-body",
+        ),
+        errorRef.current,
+      );
+      toast(
+        unknownWrite ? "warning" : "error",
+        unknownWrite
+          ? "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu."
+          : e instanceof Error
+            ? e.message
+            : "Chưa hoàn tất. Hãy thử lại.",
+      );
     } finally {
       setBusy(false);
     }
@@ -418,6 +455,15 @@ function Editor({
         <div className="expense-actions">
           <button
             form={formId}
+            type="button"
+            className="expense-secondary"
+            onClick={close}
+            disabled={busy || uncertain}
+          >
+            <X size={17} aria-hidden="true" /> Đóng form
+          </button>
+          <button
+            form={formId}
             aria-busy={busy}
             type="submit"
             className={`expense-primary ${mode.type === "cancel" ? "expense-danger" : ""}`}
@@ -436,16 +482,6 @@ function Editor({
                 ? "Xác nhận lưu"
                 : "Xem trước thay đổi"}
           </button>
-          <button
-            form={formId}
-            type="button"
-            className="expense-secondary"
-            onClick={close}
-            disabled={busy || uncertain}
-          >
-            <X size={17} aria-hidden="true" />
-            Đóng form
-          </button>
         </div>
       }
     >
@@ -458,6 +494,12 @@ function Editor({
           void submit();
         }}
       >
+        <p className="required-fields-note">
+          <span className="required-mark" aria-hidden="true">
+            *
+          </span>{" "}
+          là thông tin cần nhập.
+        </p>
         <PrivacyReveal />
         <HelpButton
           pageId="investments"

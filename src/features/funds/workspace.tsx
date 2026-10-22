@@ -1,15 +1,17 @@
 "use client";
+import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 import { HelpButton, HelpPageTitle } from "@/features/help/provider";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Leaf, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { useUser } from "@/features/profile/user-provider";
 import { LoadingStatus } from "@/components/loading";
 import { useMoney } from "@/components/privacy";
 import { useForegroundRefresh } from "@/components/use-foreground-refresh";
 import { focusPointerControl } from "@/components/pointer-focus";
 import { ExpenseModal } from "@/features/expenses/modal";
+import { useToast } from "@/components/toast";
 import type { FundId } from "@/domain/funds/schema";
 import type { FundView } from "@/domain/funds/types";
 import { FundEditor, type EditorMode } from "./editor";
@@ -19,6 +21,7 @@ import { ProgressScene } from "./progress-scene";
 import { fundNames, guides } from "./content";
 import { fundsJSON, FundAPIError } from "./api";
 export function FundsWorkspace() {
+  const toast = useToast();
   const { user } = useUser(),
     router = useRouter(),
     money = useMoney();
@@ -91,14 +94,16 @@ export function FundsWorkspace() {
     setEditor(null);
     void reload()
       .then(() => setCelebration((n) => n + 1))
-      .catch(() => {});
+      .catch(() =>
+        toast("warning", "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu."),
+      );
   };
   return (
     <div className="fund-workspace" onMouseDownCapture={focusPointerControl}>
       <header className="fund-heading">
         <div>
           <p className="eyebrow">
-            <Leaf size={16} aria-hidden="true" /> VƯỜN AN TOÀN
+            <ThemeIcon size={16} /> <ThemeText name="fundsEyebrow" />
           </p>
           <HelpPageTitle>Vững vàng trước những ngày bất ngờ.</HelpPageTitle>
           <p>Từng khoản dự phòng nhỏ, một nền tảng an tâm hơn.</p>
@@ -120,7 +125,11 @@ export function FundsWorkspace() {
           </div>
         )}
       </header>
-      {loading && !view && <LoadingStatus>Đang mở Vườn an toàn…</LoadingStatus>}
+      {loading && !view && (
+        <LoadingStatus>
+          <ThemeText name="fundsLoading" />
+        </LoadingStatus>
+      )}
       {error && (
         <div role="alert" className="expense-error">
           {error}
@@ -163,7 +172,9 @@ export function FundsWorkspace() {
             {(["emergency", "rainy_day", "sinking"] as FundId[]).map((id) => (
               <article className="fund-card" key={id}>
                 <ProgressScene fund={id} percent="0" />
-                <p className="eyebrow">{guides[id].label}</p>
+                <p className="eyebrow">
+                  <ThemeText name={id} />
+                </p>
                 <h2>{fundNames[id]}</h2>
                 <p>{guides[id].concept}</p>
                 <details>
@@ -243,13 +254,15 @@ export function FundsWorkspace() {
           )}
           <section className="fund-next">
             <span className="fund-next-icon">
-              <Leaf size={24} aria-hidden="true" />
+              <ThemeIcon size={24} />
             </span>
             <div>
               <p className="eyebrow">BƯỚC TIẾP THEO CỦA BẠN</p>
               {next ? (
                 <>
-                  <h2>Tiếp tục chăm sóc {fundNames[next]}.</h2>
+                  <h2>
+                    <ThemeText name="nextFund" /> {fundNames[next]}.
+                  </h2>
                   <p>
                     Còn{" "}
                     {money(
@@ -292,7 +305,9 @@ export function FundsWorkspace() {
                   animate={celebration > 0}
                 />
                 <div className="fund-card-title">
-                  <p className="eyebrow">{guides[f.id].label}</p>
+                  <p className="eyebrow">
+                    <ThemeText name={f.id} />
+                  </p>
                   <span className="fund-percentage">
                     {f.percent.replace(".", ",")}%
                   </span>

@@ -13,7 +13,6 @@ export const transactionNames: Record<FundTransaction["kind"], string> = {
 export const guides: Record<
   FundId,
   {
-    label: string;
     concept: string;
     principle: string;
     build: string;
@@ -22,7 +21,6 @@ export const guides: Record<
   }
 > = {
   emergency: {
-    label: "Gốc rễ vững vàng",
     concept:
       "Khoản dự phòng giúp bạn duy trì chi phí thiết yếu khi mất thu nhập hoặc gặp biến cố lớn.",
     principle:
@@ -34,7 +32,6 @@ export const guides: Record<
       "Dùng quỹ đúng lúc là quỹ đang làm việc. Sau biến cố, bổ sung dần phần đã dùng theo khả năng.",
   },
   rainy_day: {
-    label: "Một khoảng trời được che chở",
     concept:
       "Khoản đệm cho chi phí cần thiết, bất ngờ và tương đối nhỏ, giúp tháng hiện tại ít bị xáo trộn.",
     principle:
@@ -46,7 +43,6 @@ export const guides: Record<
       "Kiểm tra sau mỗi lần dùng và góp bù khi có thể, để sẵn sàng cho lần phát sinh tiếp theo.",
   },
   sinking: {
-    label: "Bắc cầu cho những khoản đã biết",
     concept:
       "Khoản dự phòng cho chi phí cần thiết đã biết trước nhưng không phát sinh đều mỗi tháng, như bảo dưỡng hoặc thay thiết bị.",
     principle:

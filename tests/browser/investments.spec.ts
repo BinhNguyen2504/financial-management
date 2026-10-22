@@ -218,9 +218,9 @@ test("archive guard, sell all, restore and valuation correction history", async 
     .getByRole("dialog")
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "hết giá vốn",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("hết giá vốn");
   page.once("dialog", (d) => d.accept());
   await page.getByRole("button", { name: "Đóng form", exact: true }).click();
   await begin(page, "sell", asset);
@@ -285,9 +285,9 @@ test("network retry, concurrent version conflict, and lost post-commit response 
   await page
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "Mất kết nối",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("Mất kết nối");
   await expect(page.getByLabel("Số tiền (VND)", { exact: true })).toHaveValue(
     "100",
   );
@@ -305,9 +305,9 @@ test("network retry, concurrent version conflict, and lost post-commit response 
     },
   });
   await page.getByRole("button", { name: "Xác nhận lưu", exact: true }).click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "Dữ liệu đã đổi",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("Dữ liệu đã đổi");
   await page
     .getByRole("button", {
       name: "Tải dữ liệu mới, giữ nội dung nhập",

@@ -1,6 +1,6 @@
 {
   "retrieved": "2026-10-19",
-  "note": "Original brand assets from official websites/CDNs. Logos belong to their respective owners; no recoloring or alteration.",
+  "note": "Assets from official websites/CDNs. Symbol-only variants keep original colors and geometry; HSBC, Techcombank and MB omit the separate wordmark. App icons with lettering intrinsic to the mark are kept intact. Trademarks belong to their owners.",
   "sources": {
     "hsbc.svg": "https://www.hsbc.com.vn/content/dam/hsbc/hbvn/images/logos/hsbc-logo-dcm-41145.svg",
     "momo.png": "https://homepage.momocdn.net/img/momo-amazone-s3-api-241023151505-638652933055961843.png",
@@ -14,6 +14,21 @@
     "vpbank.ico": "https://www.vpbank.com.vn/favicon.ico",
     "zalopay.svg": "https://simg.zalopay.com.vn/zlp-website/assets/new_logo_6c5db2d21b.svg",
     "mb.svg": "https://news.mbbank.com.vn/logo.svg",
-    "bidv.png": "https://bidv.com.vn/wps/wcm/connect/cc5c0724-338e-4cf5-bbe7-676f1f36fd7b/logopc.png?MOD=AJPERES"
+    "bidv.png": "https://bidv.com.vn/wps/wcm/connect/cc5c0724-338e-4cf5-bbe7-676f1f36fd7b/logopc.png?MOD=AJPERES",
+    "timo-symbol.png": "https://timo.vn/wp-content/uploads/cropped-favicon-1-192x192.png",
+    "shopeepay-symbol.png": "https://shopeepay.vn/wallet_icon.jpg",
+    "vietcombank-symbol.ico": "https://www.vietcombank.com.vn/-/media/Default-Website/Default-Images/Icons/favicon.ico?ts=00010101000000",
+    "acb-symbol.webp": "https://acb.com.vn/favicon.webp",
+    "zalopay-symbol.png": "https://zalopay.vn/favicon-32x32.png",
+    "hsbc-symbol.svg": "https://www.hsbc.com.vn/content/dam/hsbc/hbvn/images/logos/hsbc-logo-dcm-41145.svg",
+    "techcombank-symbol.svg": "https://techcombank.com/content/dam/techcombank/public-site/seo/techcombank_logo_svg_86201e50d1.svg",
+    "mb-symbol.svg": "https://news.mbbank.com.vn/logo.svg",
+    "bidv-symbol.png": "https://bidv.com.vn/favicon.ico"
+  },
+  "symbolReview": "2026-10-21",
+  "symbolVariants": {
+    "hsbc-symbol.svg": "Original emblem group only; viewBox 4 0.5 74.1 37.",
+    "techcombank-symbol.svg": "Original two red polygon elements only; viewBox 322.98 0 83.02 55.35.",
+    "mb-symbol.svg": "Original star rect/pattern/defs only; viewBox 0 0 58.4427 55."
   }
 }

@@ -8,6 +8,7 @@ import type { User } from "@supabase/supabase-js";
 import { BackButton } from "@/components/back-button";
 import { comparable } from "@/lib/form-values";
 import { Save } from "lucide-react";
+import { useToast } from "@/components/toast";
 import { browserAuth } from "@/lib/supabase/browser";
 import { useUser } from "./user-provider";
 import {
@@ -21,7 +22,6 @@ export function ProfileWorkspace() {
   const { user, configured, loading, error, reload } = useUser();
   return (
     <div className="profile-workspace">
-      <BackButton />
       <div className="expense-page-heading">
         <div>
           <p className="eyebrow">KHÔNG GIAN CỦA BẠN</p>
@@ -30,6 +30,7 @@ export function ProfileWorkspace() {
             Một vài thông tin cơ bản để làm quen và giữ liên lạc.
           </p>
         </div>
+        <BackButton />
       </div>
       {loading ? (
         <LoadingStatus>Đang tải thông tin cá nhân…</LoadingStatus>
@@ -66,12 +67,12 @@ export function ProfileWorkspace() {
 
 function ProfileForm({ user }: { user: User }) {
   const { update } = useUser();
+  const toast = useToast();
   const [fields, setFields] = useState(() => profileFields(user.user_metadata));
   const [errors, setErrors] = useState<
     Partial<Record<keyof ProfileFields, string>>
   >({});
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const form = useRef<HTMLFormElement>(null);
   function change<K extends keyof ProfileFields>(
@@ -80,11 +81,9 @@ function ProfileForm({ user }: { user: User }) {
   ) {
     setFields((previous) => ({ ...previous, [key]: value }));
     setErrors((previous) => ({ ...previous, [key]: undefined }));
-    setNotice("");
   }
   async function save(event: FormEvent) {
     event.preventDefault();
-    setNotice("");
     setError("");
     const parsed = profileSchema.safeParse(fields);
     if (!parsed.success) {
@@ -105,10 +104,23 @@ function ProfileForm({ user }: { user: User }) {
       if (error || !data.user) throw error ?? new Error("Missing user");
       update(data.user);
       setFields(profileFields(data.user.user_metadata));
-      setNotice("Đã lưu thông tin cá nhân.");
-    } catch {
+      toast("success", "Đã lưu thông tin cá nhân.");
+    } catch (failure) {
+      const status =
+        failure && typeof failure === "object" && "status" in failure
+          ? Number(failure.status)
+          : 0;
+      const uncertain = !status || status >= 500;
       setError(
-        "Chưa lưu được thông tin. Nội dung đang nhập được giữ lại; hãy thử lại.",
+        uncertain
+          ? "Chưa xác nhận kết quả lưu. Nội dung đang nhập được giữ lại; hãy kiểm tra hồ sơ rồi thử lại."
+          : "Chưa lưu được thông tin. Nội dung đang nhập được giữ lại; hãy thử lại.",
+      );
+      toast(
+        uncertain ? "warning" : "error",
+        uncertain
+          ? "Chưa xác nhận kết quả lưu hồ sơ. Hãy kiểm tra rồi thử lại."
+          : "Chưa lưu được thông tin cá nhân.",
       );
     } finally {
       setBusy(false);
@@ -133,12 +145,17 @@ function ProfileForm({ user }: { user: User }) {
         noValidate
         aria-busy={busy}
       >
+        <p className="required-fields-note">
+          <span className="required-mark" aria-hidden="true">
+            *
+          </span>{" "}
+          là thông tin cần nhập.
+        </p>
         <fieldset disabled={busy}>
           <div className="profile-field">
             <label htmlFor="profile-name">
               Họ và tên
               <span className="required-mark" aria-hidden="true">
-                {" "}
                 *
               </span>
             </label>
@@ -234,9 +251,6 @@ function ProfileForm({ user }: { user: User }) {
             {busy ? "Đang lưu…" : "Lưu thông tin"}
           </button>
         </div>
-        <p role="status" className="expense-status">
-          {notice}
-        </p>
         <p role="alert" className="expense-error">
           {error}
         </p>

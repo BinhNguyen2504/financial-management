@@ -112,10 +112,21 @@ test("navigation, persistent appearance, installation guidance and profile retur
   await expect(page).toHaveURL(/\/income$/);
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/settings");
+  await expect(page.locator(".mobile-brand .brand-icon svg")).toBeVisible();
+  await expect(page.locator(".mobile-brand")).toContainText("Financial");
   await page.locator(".settings-install > summary").click();
   await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
   const privacy = page.locator(".privacy-toggle");
   await expect(privacy).toBeInViewport();
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth <=
+        document.documentElement.clientWidth,
+    ),
+  ).toBe(true);
+  await page.setViewportSize({ width: 320, height: 700 });
+  await expect(page.locator(".mobile-brand .brand-icon svg")).toBeVisible();
   expect(
     await page.evaluate(
       () =>
@@ -275,9 +286,9 @@ test("expense closed selections, nested classification, brand backup, columns an
   await previewAndSave(page);
   await expect(page.getByRole("dialog")).toBeHidden();
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.locator(".expense-desktop-table .column-picker summary").click();
+  await page.getByRole("button", { name: "Cột hiển thị", exact: true }).click();
   await page
-    .locator(".expense-desktop-table")
+    .getByRole("dialog", { name: "Cột hiển thị", exact: true })
     .getByRole("checkbox", { name: "Hiện cột Mức tháng", exact: true })
     .uncheck();
   await expect(

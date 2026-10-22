@@ -33,7 +33,7 @@ test("public landing and preview stay independent of financial APIs and account 
   });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Một nơi rõ ràng hơn",
+    "Làm chủ tiền bạc.",
   );
   await expect(
     page.getByRole("link", { name: "Đăng nhập", exact: true }),
@@ -100,6 +100,10 @@ test("login returns to the requested page and authenticated users can revisit th
   await login(page, "/savings");
   await page.goto("/");
   await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator("[data-landing-audience=member]")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Một nơi rõ ràng hơn",
+  );
   await expect(
     page.getByRole("button", { name: "Tài khoản của Bạn", exact: true }),
   ).toBeVisible();
@@ -127,6 +131,10 @@ test("login returns to the requested page and authenticated users can revisit th
   await expect(
     page.getByRole("link", { name: "Đăng nhập", exact: true }),
   ).toBeVisible();
+  await expect(page.locator("[data-landing-audience=guest]")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Làm chủ tiền bạc",
+  );
   await page.goto("/savings");
   await expect(page).toHaveURL(/\/login\?next=%2Fsavings$/);
 });
@@ -243,6 +251,24 @@ test("landing supports small phones, tablets, dark mode, zoom and reduced motion
         ),
       ).toBe(true);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      const clipped = await page
+        .locator(
+          ".marketing-hero-copy, .marketing-composition, .marketing-feature, .marketing-details > div, .marketing-hero h1, .preview-workspace, .preview-tabs, .preview-metrics",
+        )
+        .evaluateAll((elements) =>
+          elements
+            .filter((element) => {
+              const bounds = element.getBoundingClientRect();
+              return (
+                bounds.left < -1 ||
+                bounds.right > innerWidth + 1 ||
+                (!element.classList.contains("marketing-composition") &&
+                  element.scrollWidth > element.clientWidth + 1)
+              );
+            })
+            .map((element) => element.className),
+        );
+      expect(clipped).toEqual([]);
     }
   }
   await page.setViewportSize({ width: 844, height: 390 });
@@ -265,7 +291,7 @@ test("landing supports small phones, tablets, dark mode, zoom and reduced motion
   });
   expect(
     await page
-      .locator(".landing-hero")
+      .locator(".marketing-hero")
       .evaluate((element) => getComputedStyle(element).animationName),
   ).toBe("none");
   await page.setViewportSize({
@@ -300,7 +326,7 @@ test("landing remains readable without JavaScript; private routes still redirect
     const page = await context.newPage();
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      "Một nơi rõ ràng hơn",
+      "Làm chủ tiền bạc.",
     );
     await expect(page.locator(".preview-heading")).toContainText(
       "Chăm chút cho tháng",
@@ -313,4 +339,60 @@ test("landing remains readable without JavaScript; private routes still redirect
   } finally {
     await context.close();
   }
+});
+
+test("guest branding ignores saved app themes and preserves preferences through login", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("fm-visual-theme", "water");
+    localStorage.setItem("fm-theme", "dark");
+  });
+  await page.goto("/");
+  const shell = page.locator(".marketing-shell");
+  await expect(shell).toBeVisible();
+  for (const visual of ["forest", "water", "gold", "fire"]) {
+    for (const mode of ["light", "dark", "system"]) {
+      await page.evaluate(
+        ({ visual, mode }) => {
+          localStorage.setItem("fm-visual-theme", visual);
+          localStorage.setItem("fm-theme", mode);
+          window.dispatchEvent(new Event("fm-preference-change"));
+        },
+        { visual, mode },
+      );
+      await expect(shell).toHaveCSS("background-color", "rgb(250, 249, 246)");
+      await expect(shell).toHaveCSS("color", "rgb(36, 36, 32)");
+      await expect(shell).toHaveCSS("color-scheme", "light");
+    }
+  }
+  await page.getByRole("tab", { name: "Quỹ an toàn", exact: true }).click();
+  await expect(page.locator(".marketing-fund-progress")).toBeVisible();
+  await expect(page.locator(".fund-scene, .garden-art")).toHaveCount(0);
+  await page.reload();
+  await expect(shell).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-visual-theme",
+    "water",
+  );
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page
+    .locator(".marketing-hero")
+    .getByRole("link", { name: "Bắt đầu sử dụng" })
+    .click();
+  await expect(page).toHaveURL(/\/login\?next=%2Foverview$/);
+  await expect(page.locator(".marketing-shell")).toHaveCount(0);
+  await login(page);
+  await page.goto("/");
+  await expect(page.locator("[data-landing-audience=member]")).toBeVisible();
+  await expect(
+    page.locator('.story-art .garden-art > [data-visual-only="water"]'),
+  ).toBeVisible();
+  await expect(page.locator(".marketing-shell")).toHaveCount(0);
+  expect(
+    await page.evaluate(() => [
+      localStorage.getItem("fm-visual-theme"),
+      localStorage.getItem("fm-theme"),
+    ]),
+  ).toEqual(["water", "dark"]);
 });

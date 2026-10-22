@@ -1,6 +1,11 @@
 "use client";
+import { useVisualTheme } from "@/components/ui-preferences";
+import { visualThemes } from "@/components/visual-theme";
 import { HelpButton } from "@/features/help/provider";
 import { fieldErrorsFromIssues } from "@/lib/field-errors";
+import { MoneyHint } from "@/components/money-hint";
+import { focusFirstInvalid } from "@/components/form-feedback";
+import { useToast } from "@/components/toast";
 import {
   cloneElement,
   useId,
@@ -68,6 +73,7 @@ function Editor({
   onClose,
   onAuthLost,
 }: Props) {
+  const toast = useToast();
   const [view, setView] = useState(initial),
     config = initial.book?.configurations.at(-1),
     old = "transaction" in mode ? mode.transaction : null;
@@ -141,11 +147,12 @@ function Editor({
       mode.type === "revise" ||
       (mode.type === "configure" && !!config && !initial.sourceChanged)) &&
     draft === originalDraft.current;
+  const theme = useVisualTheme();
   const title =
     mode.type === "configure"
       ? config
         ? "Điều chỉnh Quỹ an toàn"
-        : "Thiết lập Vườn an toàn"
+        : visualThemes[theme].copy.configureFunds
       : mode.type === "location"
         ? location
           ? "Sửa nơi giữ tiền"
@@ -170,9 +177,19 @@ function Editor({
     if (e instanceof z.ZodError) {
       setFieldErrors(fieldErrorsFromIssues(e.issues, true));
       setError("Kiểm tra các trường được đánh dấu.");
+    } else if (e instanceof FundAPIError && e.fieldErrors) {
+      setFieldErrors(e.fieldErrors);
+      setError("Kiểm tra các trường được đánh dấu.");
     } else
       setError(e instanceof Error ? e.message : "Chưa hoàn tất. Hãy thử lại.");
-    requestAnimationFrame(() => errorRef.current?.focus());
+    focusFirstInvalid(
+      document.querySelector(".expense-dialog[open]:not([inert]) .dialog-body"),
+      errorRef.current,
+    );
+    toast(
+      "error",
+      e instanceof Error ? e.message : "Chưa hoàn tất. Hãy thử lại.",
+    );
   }
   function action(): FundAction {
     if (mode.type === "configure")
@@ -255,6 +272,7 @@ function Editor({
       else {
         writing = true;
         await fundsJSON("/commands", command);
+        toast("success", "Đã lưu thay đổi.");
         onSaved();
       }
     } catch (e) {
@@ -262,17 +280,21 @@ function Editor({
         onAuthLost();
         return;
       }
-      report(e);
+      const unknownWrite =
+        writing &&
+        (!(e instanceof FundAPIError) ||
+          ![400, 401, 403, 409, 415, 422].includes(e.status));
+      if (unknownWrite)
+        toast(
+          "warning",
+          "Chưa xác nhận được kết quả lưu. Kiểm tra hoặc thử lại cùng yêu cầu.",
+        );
+      else report(e);
       setConflict(
         e instanceof FundAPIError &&
           ["VERSION_CONFLICT", "EXPENSE_VERSION_CONFLICT"].includes(e.code),
       );
-      if (
-        writing &&
-        (!(e instanceof FundAPIError) ||
-          ![400, 401, 403, 409, 415, 422].includes(e.status))
-      )
-        setUncertain(true);
+      if (unknownWrite) setUncertain(true);
     } finally {
       setBusy(false);
     }
@@ -310,14 +332,25 @@ function Editor({
         <label htmlFor={fieldId(key)}>
           {label}
           {!["note", "active"].includes(key) && (
-            <span className="required-mark"> *</span>
+            <span className="required-mark" aria-hidden="true">
+              *
+            </span>
           )}
         </label>
         {cloneElement(input, {
           "aria-label": label,
           "aria-invalid": Boolean(err),
-          "aria-describedby": err ? `${fieldId(key)}-error` : undefined,
+          "aria-describedby":
+            [
+              key === "amount" ? `${fieldId(key)}-hint` : "",
+              err ? `${fieldId(key)}-error` : "",
+            ]
+              .filter(Boolean)
+              .join(" ") || undefined,
         })}
+        {key === "amount" && (
+          <MoneyHint id={`${fieldId(key)}-hint`} value={f.amount} />
+        )}
         {err && (
           <small id={`${fieldId(key)}-error`} className="fund-field-error">
             {err}
@@ -419,6 +452,44 @@ function Editor({
       (i) => !view.source.items.some((j) => j.jarId === i.jarId),
     ) ?? []),
   ];
+  const changedFundRows = preview
+    ? preview.result.after.funds.flatMap((after) => {
+        const before = preview.result.before.funds.find(
+          (item) => item.id === after.id,
+        );
+        if (!before) return [];
+        return [
+          {
+            label: `${fundNames[after.id]} · Số dư`,
+            before: before.balance,
+            after: after.balance,
+          },
+          {
+            label: `${fundNames[after.id]} · Mục tiêu`,
+            before: before.target,
+            after: after.target,
+          },
+        ].filter((row) => row.before !== row.after);
+      })
+    : [];
+  const changedLocationRows = preview
+    ? Object.keys({
+        ...preview.result.before.balances,
+        ...preview.result.after.balances,
+      }).flatMap((key) => {
+        const before = preview.result.before.balances[key] ?? "0";
+        const after = preview.result.after.balances[key] ?? "0";
+        if (before === after) return [];
+        const [fund, locationId] = key.split(":");
+        return [
+          {
+            label: `${fundNames[fund as FundId]} · ${view.book?.locations.find((item) => item.id === locationId)?.name ?? "Nơi giữ tiền"}`,
+            before,
+            after,
+          },
+        ];
+      })
+    : [];
   return (
     <ExpenseModal
       title={title}
@@ -469,6 +540,12 @@ function Editor({
         </div>
       }
     >
+      <p className="required-fields-note">
+        <span className="required-mark" aria-hidden="true">
+          *
+        </span>{" "}
+        là thông tin cần nhập.
+      </p>
       <PrivacyReveal />
       <HelpButton
         pageId="funds"
@@ -762,104 +839,113 @@ function Editor({
       </fieldset>
       {preview && (
         <section className="fund-preview" aria-label="Xem trước thay đổi">
-          <h3>Trước / Sau</h3>
-          {mode.type === "configure" && (
-            <>
-              <p>
-                Mức sinh hoạt:{" "}
-                {money(preview.result.beforeConfig?.living.total ?? "0")} →{" "}
-                <strong>
-                  {money(preview.result.afterConfig.living.total)}
-                </strong>
-                /tháng
-              </p>
-              <p>
-                Nguồn: tháng {preview.result.afterConfig.living.month} · Chi
-                tiêu phiên bản{" "}
-                {preview.result.afterConfig.living.expenseVersion}
-              </p>
-              {preview.result.afterConfig.living.items.map((i) => (
-                <p key={i.jarId}>
-                  {i.name}: {money(i.amount)}
+          <h3>Kiểm tra thay đổi</h3>
+          <p className="fund-preview-summary">
+            {mode.type === "configure"
+              ? "Điều chỉnh mục tiêu Quỹ an toàn"
+              : mode.type === "location"
+                ? `${location?.name ?? "Thêm nơi giữ tiền"} → ${f.name} · ${f.active ? "Đang sử dụng" : "Ngừng sử dụng"}`
+                : mode.type === "cancel"
+                  ? `Hủy ${old ? transactionNames[old.kind].toLowerCase() : "giao dịch"}`
+                  : `${transactionNames[f.kind]} · ${fundNames[f.fundId as FundId]} · ${money(f.amount)}`}
+          </p>
+          <FundChangeTable
+            rows={[
+              ...(mode.type === "configure" &&
+              (preview.result.beforeConfig?.living.total ?? "0") !==
+                preview.result.afterConfig.living.total
+                ? [
+                    {
+                      label: "Mức sinh hoạt / tháng",
+                      before: preview.result.beforeConfig?.living.total ?? "0",
+                      after: preview.result.afterConfig.living.total,
+                    },
+                  ]
+                : []),
+              ...changedFundRows,
+            ]}
+            money={money}
+            hidden={hidden}
+          />
+          {(changedLocationRows.length > 0 ||
+            mode.type === "configure" ||
+            old) && (
+            <details className="fund-preview-details">
+              <summary>Chi tiết giao dịch và nơi giữ tiền</summary>
+              {old && (
+                <p>
+                  Giao dịch trước: {transactionNames[old.kind]} ·{" "}
+                  {fundNames[old.fundId]} · {money(old.amount)} ·{" "}
+                  {displayTime(old.occurredAt)}
                 </p>
-              ))}
-              <p>
-                Ưu tiên:{" "}
-                {preview.result.afterConfig.priority
-                  .map((k) => fundNames[k])
-                  .join(" → ")}
-              </p>
-            </>
-          )}
-          {mode.type === "location" && (
-            <p>
-              {location?.name ?? "Chưa có"} → {f.name} ·{" "}
-              {f.active ? "Đang sử dụng" : "Ngừng sử dụng"}
-            </p>
-          )}
-          {mode.type !== "configure" && mode.type !== "location" && (
-            <p>
-              {mode.type === "cancel"
-                ? "Hủy giao dịch"
-                : `${transactionNames[f.kind]} · ${fundNames[f.fundId as FundId]} · ${view.book?.locations.find((l) => l.id === f.locationId)?.name ?? ""} · ${money(f.amount)}`}
-              <br />
-              {f.note}
-              {f.reason && ` · ${f.reason}`}
-              {mode.type !== "cancel" && ` · ${f.occurredAt.replace("T", " ")}`}
-              {f.kind === "transfer" &&
-                ` → ${fundNames[f.toFundId as FundId]} · ${view.book?.locations.find((l) => l.id === f.toLocationId)?.name}`}
-            </p>
-          )}
-          {old && (
-            <p>
-              Trước: {transactionNames[old.kind]} · {fundNames[old.fundId]} ·{" "}
-              {view.book?.locations.find((l) => l.id === old.locationId)?.name}{" "}
-              · {money(old.amount)} · {displayTime(old.occurredAt)} · {old.note}
-            </p>
-          )}
-          {Object.keys({
-            ...preview.result.before.balances,
-            ...preview.result.after.balances,
-          })
-            .filter(
-              (key) =>
-                (preview.result.before.balances[key] ?? "0") !==
-                (preview.result.after.balances[key] ?? "0"),
-            )
-            .map((key) => {
-              const [fund, locationId] = key.split(":");
-              return (
-                <p key={key}>
-                  {fundNames[fund as FundId]} ·{" "}
-                  {view.book?.locations.find((l) => l.id === locationId)?.name}:{" "}
-                  {money(preview.result.before.balances[key] ?? "0")} →{" "}
-                  {money(preview.result.after.balances[key] ?? "0")}
+              )}
+              {mode.type === "configure" && (
+                <p>
+                  Nguồn tháng {preview.result.afterConfig.living.month} · Ưu
+                  tiên:{" "}
+                  {preview.result.afterConfig.priority
+                    .map((key) => fundNames[key])
+                    .join(" → ")}
                 </p>
-              );
-            })}
-          <div className="fund-preview-rows">
-            {preview.result.after.funds.map((after) => {
-              const before = preview.result.before.funds.find(
-                (v) => v.id === after.id,
-              )!;
-              return (
-                <div key={after.id}>
-                  <strong>{fundNames[after.id]}</strong>
-                  <span>
-                    Số dư: {money(before.balance)} → {money(after.balance)}
-                  </span>
-                  <span>
-                    Mục tiêu: {money(before.target)} → {money(after.target)}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+              )}
+              {changedLocationRows.length > 0 && (
+                <FundChangeTable
+                  rows={changedLocationRows}
+                  money={money}
+                  hidden={hidden}
+                />
+              )}
+            </details>
+          )}
           <p className="fund-note">
             Chưa ghi dữ liệu. Kiểm tra nội dung rồi xác nhận lưu.
           </p>
         </section>
       )}
     </ExpenseModal>
+  );
+}
+
+function FundChangeTable({
+  rows,
+  money,
+  hidden,
+}: {
+  rows: { label: string; before: string; after: string }[];
+  money: (value: string) => string;
+  hidden: boolean;
+}) {
+  if (!rows.length)
+    return (
+      <p className="fund-note">Không có số dư hoặc mục tiêu nào thay đổi.</p>
+    );
+  return (
+    <div
+      className="fund-change-table"
+      role="table"
+      aria-label="Các giá trị thay đổi"
+    >
+      <div className="fund-change-row fund-change-header" role="row">
+        <span role="columnheader">Thông tin</span>
+        <span role="columnheader">Trước</span>
+        <span role="columnheader">Sau</span>
+        <span role="columnheader">Chênh lệch</span>
+      </div>
+      {rows.map((row) => {
+        const difference = BigInt(row.after) - BigInt(row.before);
+        return (
+          <div className="fund-change-row" role="row" key={row.label}>
+            <strong role="cell">{row.label}</strong>
+            <span role="cell">{money(row.before)}</span>
+            <span role="cell">{money(row.after)}</span>
+            <span role="cell">
+              {hidden
+                ? "•••••• ₫"
+                : `${difference > 0n ? "+" : difference < 0n ? "−" : ""}${money((difference < 0n ? -difference : difference).toString())}`}
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 }

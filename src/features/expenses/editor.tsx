@@ -4,7 +4,12 @@ import { fieldErrorsFromIssues } from "@/lib/field-errors";
 import { createContext, useContext } from "react";
 import { Save, ScanEye, X, Plus, Tag } from "lucide-react";
 import { ZodError } from "zod";
-import { FormErrorSummary, nativeErrors } from "@/components/form-feedback";
+import {
+  FormErrorSummary,
+  nativeErrors,
+  focusFirstInvalid,
+} from "@/components/form-feedback";
+import { useToast } from "@/components/toast";
 import { comparable, normalizeInteger, integerInput } from "@/lib/form-values";
 import { expenseActionSchema } from "@/domain/expenses/schema";
 import { paymentBrands, suggestedBrand } from "@/domain/expenses/label-visuals";
@@ -78,7 +83,11 @@ function Amount({
     <div className="expense-amount">
       <label htmlFor={id}>
         {label}
-        {!optional && <span className="required-mark"> *</span>}
+        {!optional && (
+          <span className="required-mark" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       {hidden ? (
         <input
@@ -145,6 +154,7 @@ function ExpenseEditorForm({
   onSaved: () => Promise<void>;
   onReload: () => Promise<ExpenseView>;
 }) {
+  const toast = useToast();
   const money = useMoney();
   const hidden = useMoneyHidden();
   const moneyForm = ["create", "configure", "month", "spend"].includes(
@@ -184,6 +194,7 @@ function ExpenseEditorForm({
   const [note, setNote] = useState(spend?.note ?? "");
   const [preview, setPreview] = useState<CommandResult | null>(null);
   const [busy, setBusy] = useState(false);
+  const [uncertain, setUncertain] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [brandKey, setBrandKey] = useState(label?.brandKey ?? "");
@@ -303,8 +314,10 @@ function ExpenseEditorForm({
     const invalid = nativeErrors(formElement);
     setFieldErrors(invalid);
     if (Object.keys(invalid).length) {
-      requestAnimationFrame(() =>
-        formElement.querySelector<HTMLElement>(".form-error-summary")?.focus(),
+      toast("error", "Kiểm tra các ô được đánh dấu.");
+      focusFirstInvalid(
+        formElement,
+        formElement.querySelector<HTMLElement>(".form-error-summary"),
       );
       return;
     }
@@ -342,7 +355,14 @@ function ExpenseEditorForm({
           : "Không thể lưu. Vui lòng thử lại.",
     );
     setConflict(e instanceof RequestError && e.code === "VERSION_CONFLICT");
-    requestAnimationFrame(() => errorRef.current?.focus());
+    toast(
+      "error",
+      e instanceof Error ? e.message : "Chưa hoàn tất. Hãy thử lại.",
+    );
+    focusFirstInvalid(
+      document.querySelector(".expense-dialog[open]:not([inert]) .dialog-body"),
+      errorRef.current,
+    );
   }
   async function commit() {
     if (!command.current) return;
@@ -353,9 +373,25 @@ function ExpenseEditorForm({
         method: "POST",
         body: JSON.stringify(command.current),
       });
+      toast("success", "Đã lưu thay đổi.");
       await onSaved();
     } catch (e) {
-      reportError(e);
+      const unknownWrite =
+        !(e instanceof RequestError) ||
+        e.status === undefined ||
+        e.status === 0 ||
+        e.status >= 500 ||
+        e.code === "INVALID_RESPONSE";
+      if (unknownWrite) {
+        setUncertain(true);
+        setError(
+          "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và xác nhận lại cùng yêu cầu.",
+        );
+        toast(
+          "warning",
+          "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.",
+        );
+      } else reportError(e);
     } finally {
       setBusy(false);
     }
@@ -381,7 +417,7 @@ function ExpenseEditorForm({
       <ExpenseModal
         title={titles[editor.mode]}
         onClose={onClose}
-        busy={busy}
+        busy={busy || uncertain}
         size={
           ["deleteSpend", "deleteLabel", "closeYear"].includes(editor.mode)
             ? "confirm"
@@ -393,7 +429,7 @@ function ExpenseEditorForm({
               form={formId}
               className="expense-secondary"
               type="button"
-              disabled={busy}
+              disabled={busy || uncertain}
               onClick={onClose}
             >
               <X size={17} aria-hidden="true" />
@@ -459,6 +495,18 @@ function ExpenseEditorForm({
               command.current = null;
             }}
           >
+            <p className="required-fields-note">
+              <span className="required-mark" aria-hidden="true">
+                *
+              </span>{" "}
+              là thông tin cần nhập.
+            </p>
+            {uncertain && (
+              <p role="status" className="expense-notice">
+                Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận
+                lưu để kiểm tra lại cùng yêu cầu.
+              </p>
+            )}
             <PrivacyReveal />
             <HelpButton
               pageId="budgets"
@@ -474,7 +522,10 @@ function ExpenseEditorForm({
               label="Hiểu hũ và cách tính tiền"
             />
             <FormErrorSummary errors={fieldErrors} prefix="expense-field-" />
-            <fieldset className="dialog-form-section" disabled={busy}>
+            <fieldset
+              className="dialog-form-section"
+              disabled={busy || uncertain}
+            >
               <legend>Thông tin cần nhập</legend>
               {["create", "configure", "label"].includes(editor.mode) && (
                 <HelpButton
@@ -501,8 +552,16 @@ function ExpenseEditorForm({
                   {editor.mode === "initialize" || editor.mode === "create"
                     ? "Tháng bắt đầu"
                     : "Áp dụng từ tháng"}
+                  <span className="required-mark" aria-hidden="true">
+                    *
+                  </span>
                   <input
                     type="month"
+                    aria-label={
+                      editor.mode === "initialize" || editor.mode === "create"
+                        ? "Tháng bắt đầu"
+                        : "Áp dụng từ tháng"
+                    }
                     name={
                       editor.mode === "initialize" || editor.mode === "create"
                         ? "start"
@@ -514,6 +573,14 @@ function ExpenseEditorForm({
                         : "expense-field-month"
                     }
                     aria-invalid={!!(fieldErrors.start || fieldErrors.month)}
+                    aria-describedby={
+                      fieldErrors.start || fieldErrors.month
+                        ? editor.mode === "initialize" ||
+                          editor.mode === "create"
+                          ? "expense-error-start"
+                          : "expense-error-month"
+                        : undefined
+                    }
                     value={period}
                     required
                     min={
@@ -529,7 +596,14 @@ function ExpenseEditorForm({
                     onChange={(e) => setPeriod(e.target.value)}
                   />
                   {(fieldErrors.start || fieldErrors.month) && (
-                    <small className="field-error">
+                    <small
+                      id={
+                        editor.mode === "initialize" || editor.mode === "create"
+                          ? "expense-error-start"
+                          : "expense-error-month"
+                      }
+                      className="field-error"
+                    >
                       {fieldErrors.start || fieldErrors.month}
                     </small>
                   )}
@@ -551,6 +625,9 @@ function ExpenseEditorForm({
                 <>
                   <label>
                     Tên hũ
+                    <span className="required-mark" aria-hidden="true">
+                      *
+                    </span>
                     <input
                       required
                       maxLength={100}
@@ -702,11 +779,18 @@ function ExpenseEditorForm({
                   </p>
                   <label>
                     Ngày sử dụng
+                    <span className="required-mark" aria-hidden="true">
+                      *
+                    </span>
                     <input
                       type="date"
+                      aria-label="Ngày sử dụng"
                       id="expense-field-date"
                       name="date"
                       aria-invalid={!!fieldErrors.date}
+                      aria-describedby={
+                        fieldErrors.date ? "expense-error-date" : undefined
+                      }
                       required
                       min={`${jar?.start}-01`}
                       max={view.today}
@@ -714,7 +798,9 @@ function ExpenseEditorForm({
                       onChange={(e) => setDate(e.target.value)}
                     />
                     {fieldErrors.date && (
-                      <small className="field-error">{fieldErrors.date}</small>
+                      <small id="expense-error-date" className="field-error">
+                        {fieldErrors.date}
+                      </small>
                     )}
                   </label>
                   <Amount
@@ -750,6 +836,9 @@ function ExpenseEditorForm({
                   </label>
                   <label>
                     Tên
+                    <span className="required-mark" aria-hidden="true">
+                      *
+                    </span>
                     <input
                       required
                       maxLength={100}
@@ -937,7 +1026,17 @@ function ExpenseEditorForm({
           onClose={() => setClassifying(false)}
           onReload={onReload}
           onSaved={async () => {
-            const next = await onReload();
+            let next: ExpenseView;
+            try {
+              next = await onReload();
+            } catch {
+              toast(
+                "warning",
+                "Đã lưu phân loại nhưng chưa tải lại được dữ liệu.",
+              );
+              setClassifying(false);
+              return;
+            }
             const added = next.book?.labels.find(
               (item) =>
                 !selectionView.book?.labels.some(

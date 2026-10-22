@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const alt =
-  "Financial Manager — Một nơi rõ ràng hơn cho tài chính của bạn";
+  "Financial Manager — Làm chủ tiền bạc. Sống trọn điều bạn muốn.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -14,8 +14,8 @@ export default function OpenGraphImage() {
         width: "100%",
         height: "100%",
         padding: "70px 80px",
-        background: "#F7F3EB",
-        color: "#3F3A32",
+        background: "#FAF9F6",
+        color: "#242420",
         fontFamily: "sans-serif",
       }}
     >
@@ -24,7 +24,7 @@ export default function OpenGraphImage() {
           display: "flex",
           justifyContent: "space-between",
           fontSize: 24,
-          color: "#506B50",
+          color: "#A74425",
         }}
       >
         <span>Financial Manager</span>
@@ -40,8 +40,8 @@ export default function OpenGraphImage() {
           letterSpacing: -2,
         }}
       >
-        <span>Một nơi rõ ràng hơn</span>
-        <span style={{ color: "#506B50" }}>cho tài chính của bạn.</span>
+        <span>Làm chủ tiền bạc.</span>
+        <span style={{ color: "#A74425" }}>Sống trọn điều bạn muốn.</span>
       </div>
       <div
         style={{

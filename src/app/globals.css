@@ -173,8 +173,8 @@ svg {
   height: 45px;
   display: grid;
   place-items: center;
-  background: var(--primary);
-  color: var(--on-primary);
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
   border-radius: 12px;
 }
 .brand-sub {

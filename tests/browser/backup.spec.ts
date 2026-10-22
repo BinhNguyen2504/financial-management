@@ -281,9 +281,9 @@ test("full transfer, optional profile failure/retry, download and responsive set
     });
     await confirm.focus();
     await confirm.press("Enter");
-    await expect(target.getByRole("status")).toContainText(
-      "Đã khôi phục toàn bộ dữ liệu tài chính",
-    );
+    await expect(
+      target.locator(".settings-import-result [role=status]"),
+    ).toContainText("Đã khôi phục toàn bộ dữ liệu tài chính");
     await expect(
       target.locator(".settings-workspace [role=alert]"),
     ).toContainText("Chưa lưu được hồ sơ");
@@ -293,7 +293,9 @@ test("full transfer, optional profile failure/retry, download and responsive set
     await target
       .getByRole("button", { name: "Thử khôi phục hồ sơ", exact: true })
       .click();
-    await expect(target.getByRole("status")).toContainText("và hồ sơ cá nhân");
+    await expect(
+      target.locator(".settings-import-result [role=status]"),
+    ).toContainText("và hồ sơ cá nhân");
     await expect(
       target.getByRole("button", { name: "Thử khôi phục hồ sơ", exact: true }),
     ).toBeHidden();
@@ -365,11 +367,14 @@ test("retry after commit keeps one copy and leaves profile untouched by default"
     await expect(
       target.locator(".settings-workspace [role=alert]"),
     ).toBeVisible();
+    await expect(target.locator('[data-toast-kind="warning"]')).toContainText(
+      "Chưa xác nhận kết quả khôi phục",
+    );
     await expect(confirm).toBeEnabled();
     await confirm.click();
-    await expect(target.getByRole("status")).toContainText(
-      "Đã khôi phục toàn bộ",
-    );
+    await expect(
+      target.locator(".settings-import-result [role=status]"),
+    ).toContainText("Đã khôi phục toàn bộ");
     const copy = await (await target.request.get("/api/v1/data/backup")).json();
     expect(copy.tables).toEqual(backup.tables);
     expect(copy.profile.full_name).toBe("");

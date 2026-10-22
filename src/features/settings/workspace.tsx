@@ -23,9 +23,10 @@ import {
   type FullBackup,
   type summarizeBackup,
 } from "@/domain/backup/format";
-import { dataRequest, type DataStatus } from "./api";
+import { dataRequest, DataRequestError, type DataStatus } from "./api";
 import "./settings.css";
 import { ThemePicker } from "@/components/ui-preferences";
+import { useToast } from "@/components/toast";
 import { InstallGuide } from "./install-guide";
 
 type Summary = ReturnType<typeof summarizeBackup> & { canImport: boolean };
@@ -42,6 +43,7 @@ function period(value: string | null) {
   return value.split("-").reverse().join("/");
 }
 export function SettingsWorkspace() {
+  const toast = useToast();
   const {
     user,
     loading: userLoading,
@@ -247,9 +249,12 @@ export function SettingsWorkspace() {
     setImportError("");
     setImportNotice("");
     const destination = status?.ownerId;
+    let imported = false;
+    let writing = false;
     try {
       if (user?.id !== destination || owner.current !== destination)
         throw new Error("Phiên đăng nhập đã thay đổi. Hãy tải lại trang.");
+      writing = true;
       await dataRequest("/import", {
         method: "POST",
         body: JSON.stringify({
@@ -259,6 +264,8 @@ export function SettingsWorkspace() {
         }),
       });
       if (owner.current !== destination) return;
+      imported = true;
+      toast("success", "Đã khôi phục dữ liệu tài chính.");
       setComplete(true);
       setStatus((s) => (s ? { ...s, empty: false } : s));
       setImportNotice(
@@ -271,7 +278,27 @@ export function SettingsWorkspace() {
           setImportNotice("Đã khôi phục dữ liệu tài chính và hồ sơ cá nhân.");
       }
     } catch (e) {
-      if (owner.current === destination) setImportError(message(e));
+      if (owner.current === destination) {
+        const uncertain =
+          writing &&
+          !imported &&
+          (!(e instanceof DataRequestError) ||
+            e.status === undefined ||
+            e.status >= 500);
+        setImportError(
+          uncertain
+            ? "Chưa xác nhận kết quả khôi phục. Giữ bản xem trước và thử lại cùng yêu cầu."
+            : message(e),
+        );
+        toast(
+          imported || uncertain ? "warning" : "error",
+          imported
+            ? "Dữ liệu tài chính đã khôi phục; hồ sơ cá nhân chưa lưu được."
+            : uncertain
+              ? "Chưa xác nhận kết quả khôi phục. Thử lại cùng yêu cầu."
+              : message(e),
+        );
+      }
     } finally {
       if (owner.current === destination) {
         inFlight.current = false;
@@ -287,8 +314,10 @@ export function SettingsWorkspace() {
     try {
       await applyProfile();
       setImportNotice("Đã khôi phục dữ liệu tài chính và hồ sơ cá nhân.");
+      toast("success", "Đã lưu hồ sơ cá nhân từ bản sao lưu.");
     } catch (e) {
       setImportError(message(e));
+      toast("error", message(e));
     } finally {
       inFlight.current = false;
       setBusy("");
@@ -455,6 +484,10 @@ export function SettingsWorkspace() {
               hidden
               accept=".json,application/json"
               aria-label="Chọn file JSON sao lưu toàn tài khoản"
+              aria-invalid={!!importError && !summary}
+              aria-describedby={
+                importError && !summary ? "import-error" : undefined
+              }
               disabled={!canSelect}
               onChange={(e) => void selectFile(e.target.files?.[0])}
             />
@@ -503,6 +536,9 @@ export function SettingsWorkspace() {
                   <div className="settings-actions">
                     <button
                       className="expense-secondary"
+                      aria-describedby={
+                        importError && !summary ? "import-error" : undefined
+                      }
                       disabled={!canSelect}
                       onClick={chooseFile}
                     >
@@ -532,6 +568,14 @@ export function SettingsWorkspace() {
                 >
                   <X size={17} aria-hidden="true" />
                 </button>
+              </div>
+            )}
+            {importError && !summary && (
+              <div
+                className="settings-feedback settings-feedback-error"
+                id="import-error"
+              >
+                <p role="alert">{importError}</p>
               </div>
             )}
             {busy === "preview" && (
@@ -598,6 +642,14 @@ export function SettingsWorkspace() {
                 </button>
               </div>
             )}
+            {importError && summary && (
+              <div
+                className="settings-feedback settings-feedback-error"
+                id="import-error"
+              >
+                <p role="alert">{importError}</p>
+              </div>
+            )}
             {importNotice && (
               <div
                 ref={result}
@@ -614,14 +666,6 @@ export function SettingsWorkspace() {
                     <ArrowRight size={16} aria-hidden="true" />
                   </Link>
                 )}
-              </div>
-            )}
-            {importError && (
-              <div
-                className="settings-feedback settings-feedback-error"
-                id="import-error"
-              >
-                <p role="alert">{importError}</p>
               </div>
             )}
             {profilePending && (

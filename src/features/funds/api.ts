@@ -3,6 +3,7 @@ export class FundAPIError extends Error {
     message: string,
     public code: string,
     public status: number,
+    public fieldErrors?: Record<string, string>,
   ) {
     super(message);
   }
@@ -42,6 +43,7 @@ export async function fundsJSON<T>(path = "", body?: unknown): Promise<T> {
       data.error ?? "Không thể truy cập Quỹ an toàn.",
       data.code ?? "REQUEST_FAILED",
       response.status,
+      data.fieldErrors,
     );
   return data as T;
 }

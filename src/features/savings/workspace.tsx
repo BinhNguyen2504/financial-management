@@ -9,6 +9,7 @@ import { Download, Plus, RefreshCw } from "lucide-react";
 import { Garden } from "@/components/garden";
 import { focusPointerControl } from "@/components/pointer-focus";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
+import { useToast } from "@/components/toast";
 import {
   activeTransactions,
   endOfMonth,
@@ -33,6 +34,7 @@ export function SavingsWorkspace({
   configured: boolean;
   initialToday: string;
 }) {
+  const toast = useToast();
   const money = useMoney(),
     hidden = useMoneyHidden();
   const [month, setMonth] = useState(initialToday.slice(0, 7)),
@@ -818,8 +820,15 @@ export function SavingsWorkspace({
                   onClose={() => setEditor(null)}
                   onReload={load}
                   onSaved={async () => {
-                    await load();
                     setEditor(null);
+                    try {
+                      await load();
+                    } catch {
+                      toast(
+                        "warning",
+                        "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.",
+                      );
+                    }
                   }}
                 />
               )}

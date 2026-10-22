@@ -162,3 +162,24 @@ Các điểm Giải thích nằm cạnh tiêu đề và trong form, không lặp
 ### Tinh chỉnh Help theo phản hồi — 20/10/2026
 
 Đề mục 01–06 và mục con được đánh số; đường phân cách, khoảng trắng và khối nền làm rõ cấu trúc. Nhấn đậm từ khóa/quy tắc, dùng màu theme cho số liệu minh họa. Các khối tư duy, ví dụ, lưu ý có nhãn và biểu tượng phù hợp. Bảng trượt vào/thu về nhẹ (280/220ms), không đổi kích thước layout; reduced motion bỏ chuyển động. Giữ focus/khóa cuộn đến khi đóng xong và có timeout dự phòng.
+
+## Hai chủ đề, cùng nhịp sử dụng — 21/10/2026
+
+Giao diện trong Cài đặt gồm thẻ Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành và nhóm Sáng/Tối/Theo hệ thống. Thẻ có radio, minh họa đúng chủ đề, mô tả và dấu chọn; desktop ba cột, tablet 561–900px hai cột, dưới 561px một cột. Đổi tức thời, giữ bộ lọc và bản nháp. Xanh lục giữ thiết kế hiện có; xanh lam dùng nền trắng xanh/xanh đêm, suối, hợp lưu và hồ tích nước. Kim ngân dùng nền kem, vàng mật ong/vàng champagne, đồng xu, thỏi vàng, túi tiền và rương tích lũy. Lửa ấm dùng đỏ gạch/đỏ san hô, bếp lửa, đèn lồng và than hồng; cảnh núi lửa là hình tĩnh cách điệu. Đất lành lấy địa hình làm đặc trưng: tầng đất, đồi núi, đá cuội, đất nung và ruộng bậc thang, khác hình cây lá của Khu vườn. Cảnh Quỹ phản ánh tỷ lệ thật, che tiền vẫn giữ tỷ lệ.
+
+Lời dẫn và icon trang trí theo chủ đề; thuật ngữ nghiệp vụ, màu cảnh báo/lỗi, logo thanh toán và emoji người dùng giữ nguyên. Chỉ chuyển màu 180ms sau thao tác và phản hồi Quỹ ngắn; không hoạt ảnh nền lặp, reduced motion tắt hiệu ứng. Chủ đề áp dụng cả public/login/offline. Chi tiết: [themes](features/themes.md).
+
+## Quy chuẩn form và phản hồi — 21/10/2026
+
+Các luồng tạo, sửa, hủy/ngừng và khôi phục cho biết kết quả bằng toast sau phản hồi xác nhận. Khi lưu lỗi, giữ nội dung và báo tại form; khi kết quả ghi chưa rõ, hướng dẫn kiểm tra/thử lại cùng yêu cầu. Mỗi ô tiền VND có số định dạng bên dưới và chịu chế độ riêng tư. Trường cần nhập dùng dấu `*` sát nhãn, có chú giải đầu form. Lỗi nằm sát trường, được mô tả cho trình đọc màn hình và nhận focus khi gửi. Dialog giữ header/footer và chỉ cuộn nội dung; Quỹ an toàn đối chiếu những giá trị thay đổi trước và sau. Nút thu gọn sidebar ở vùng đầu, nhận diện ứng dụng vẫn có trên mobile; Hồ sơ và Hướng dẫn giữ khả năng đọc ở màn hình hẹp, sáng/tối của cả năm chủ đề.
+
+## Thông tin phụ gọn và chọn cột — 21/10/2026
+
+Ưu tiên tên hũ và các số tiền. Phương thức/nhóm dùng icon nhỏ cùng nhãn, không bọc như một nút lớn; biểu tượng thương hiệu tách khỏi wordmark nếu asset có hai phần. Nút tùy chọn cột đặt cạnh tiêu đề ngữ cảnh, mở panel nổi thay vì kéo dài luồng nội dung. Panel có danh sách một cột dễ quét, công tắc, thông tin luôn hiện và reset; giữ vị trí bảng khi mở/đóng. Xem [đặc tả Chi tiêu](features/expenses.md#cột-hiển-thị-và-nhận-diện-phương-thức--21102026).
+
+
+## Trang chủ khách và thành viên — 22/10/2026
+
+Khách chưa đăng nhập có nhận diện marketing riêng được người dùng chọn: sáng, tinh tế, nền ngà `#FAF9F6`, chữ `#242420`, điểm nhấn cam đồng `#A74425`. Typography lớn, khoảng thở, thẻ tài chính tĩnh và nội dung hướng đến lợi ích; không dùng cây/nước/vàng/lửa. Trình tự lợi ích → preview → khả năng sản phẩm → câu chuyện → FAQ → CTA. Không thêm số người dùng, lời chứng thực hoặc kết quả tài chính chưa có bằng chứng.
+
+Trang thành viên giữ nguyên giao diện theo theme hiện tại. Marketing là HTML mặc định; khi provider xác nhận user, đổi cả shell và nội dung. Tải lỗi Auth vẫn đọc được marketing và thử lại qua nút tài khoản. Theme và mode đã lưu không bị ghi đè. Preview khách có cùng số liệu/keyboard/ẩn tiền, dùng biểu đồ trung tính. Màn hình hẹp xếp hero và feature thành một cột; FAQ dùng details/summary, CTA là link thật; không có chuyển động nền lặp.

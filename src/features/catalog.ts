@@ -70,6 +70,7 @@ export const modules = [
       "Thực chi, số còn lại và phần chuyển tiếp kỳ sau",
       "Phân biệt chi phí, trả nợ và tiền dành để tiết kiệm",
       "Tổng hợp nhu cầu tiền theo ví/ngân hàng",
+      "Phân loại có biểu tượng gọn; chọn cột mà không dịch chuyển bảng",
       "Chi tiết hũ theo tab tháng, sử dụng và lịch sử",
     ],
     questions: [
@@ -132,12 +133,12 @@ export const modules = [
     status: "implemented",
     title: "Quỹ an toàn",
     icon: "funds",
-    label: "Vườn an toàn tài chính",
+    label: "Nền tảng an toàn tài chính",
     description:
       "Xây Emergency, Rainy Day và Sinking từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.",
     scope: [
       "Mức sinh hoạt từ các hũ chi tháng được chọn; mục tiêu theo hệ số tự nhập",
-      "Cây, tán ô và cây cầu phản ánh tiến độ thực tế",
+      "Minh họa theo chủ đề phản ánh tiến độ thực tế",
       "Ghi sổ độc lập; thêm, rút và chuyển giữa quỹ/nơi giữ",
       "Sửa/hủy có lịch sử, nguồn thay đổi được xem trước rồi áp dụng",
     ],
@@ -184,10 +185,11 @@ export const modules = [
     icon: "settings",
     label: "Không gian của bạn",
     description:
-      "Chọn giao diện sáng/tối/theo hệ thống, sao lưu JSON, khôi phục vào tài khoản trống và cài lên màn hình chính.",
+      "Chọn chủ đề Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành và chế độ sáng/tối/theo hệ thống, sao lưu JSON, khôi phục vào tài khoản trống và cài lên màn hình chính.",
     scope: [
       "Cloud riêng với tài khoản đăng nhập; mặc định tiền VND",
       "Múi giờ Asia/Ho_Chi_Minh và định dạng Việt Nam",
+      "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt",
       "Backup toàn tài khoản và khôi phục vào tài khoản trống; hồ sơ tùy chọn",
       "PWA trên điện thoại/máy tính; chuẩn bị API cho app iOS",
     ],
@@ -219,4 +221,8 @@ export const navigationModules = [...modules].sort(
 
 // Shared product capability; does not change the implementation status of any module.
 export const pageHelpSummary =
-  "Hướng dẫn cạnh tiêu đề mỗi trang: mục lục đánh số, tư duy sử dụng, thuật ngữ và từng thao tác, ngay cả khi đang nhập liệu.";
+  "Hướng dẫn dễ thấy cạnh tiêu đề mỗi trang: mục lục đánh số, tư duy sử dụng, thuật ngữ và từng thao tác, ngay cả khi đang nhập liệu.";
+
+// Public home presentation is independent of module implementation status.
+export const publicHomeSummary =
+  "Trang giới thiệu trước đăng nhập có thiết kế riêng; sau đăng nhập, trang chủ giữ chủ đề bạn đã chọn trong Cài đặt.";

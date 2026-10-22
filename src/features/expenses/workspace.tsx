@@ -1,8 +1,9 @@
 "use client";
+import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 import { HelpPageTitle } from "@/features/help/provider";
 import { ColumnPicker, hiddenColumns } from "@/components/column-table";
 import { usePreference } from "@/components/ui-preferences";
-import { LabelName } from "./label-visual";
+import { JarClassification } from "./label-visual";
 import { ColumnTable } from "@/components/column-table";
 import { useForegroundRefresh } from "@/components/use-foreground-refresh";
 import { LoadingStatus, LoadingSpinner } from "@/components/loading";
@@ -21,12 +22,14 @@ import { useMoney } from "@/components/privacy";
 import { Garden } from "@/components/garden";
 import { DailyNote } from "@/components/daily-note";
 import { focusPointerControl } from "@/components/pointer-focus";
+import { useToast } from "@/components/toast";
 import { jarEmoji } from "@/domain/expenses/emoji";
 
 export function ExpenseWorkspace({ configured }: { configured: boolean }) {
+  const toast = useToast();
   const money = useMoney();
   const [columnPreference] = usePreference(
-    "fm-columns:expenses-workspace-1",
+    "fm-columns:expenses-workspace-2",
     "[]",
   );
   const hidden = hiddenColumns(columnPreference);
@@ -120,11 +123,12 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
   }
   async function saved() {
     setEditor(null);
-    setNotice("Đã lưu thay đổi.");
+    setNotice("");
     try {
       await reload();
     } catch {
       setNotice("Đã lưu thay đổi. Chưa tải lại được dữ liệu; hãy thử tải lại.");
+      toast("warning", "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.");
     }
   }
   const currentYear =
@@ -519,10 +523,29 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   </section>
                   <div className="expense-section-heading">
                     <h2>{monthName(selectedMonth)}</h2>
-                    <span className="expense-muted">
-                      {rows.length} hũ{future ? " · Kế hoạch" : ""}
-                      {readonly ? " · Chỉ xem" : ""}
-                    </span>
+                    <div className="expense-section-tools">
+                      <span className="expense-muted">
+                        {rows.length} hũ{future ? " · Kế hoạch" : ""}
+                        {readonly ? " · Chỉ xem" : ""}
+                      </span>
+                      {rows.length > 0 && (
+                        <ColumnPicker
+                          tableId="expenses-workspace-2"
+                          columns={[
+                            { id: "Khoản chi", fixed: true },
+                            ...[
+                              "Mức tháng",
+                              "Chuyển sang",
+                              "Cần thêm",
+                              future ? "Dự kiến bỏ" : "Đã bỏ hũ",
+                              "Thực chi",
+                              "Còn lại",
+                            ].map((id) => ({ id })),
+                            { id: "Thao tác", fixed: true },
+                          ]}
+                        />
+                      )}
+                    </div>
                   </div>
                   {selectedMonth === view.today.slice(0, 7) && (
                     <p className="expense-notice">
@@ -534,7 +557,10 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                   {rows.length ? (
                     <>
                       <div className="expense-desktop-table expense-table-scroll">
-                        <ColumnTable tableId="expenses-workspace-2">
+                        <ColumnTable
+                          tableId="expenses-workspace-2"
+                          showColumnPicker={false}
+                        >
                           <caption className="sr-only">
                             Các hũ trong {monthName(selectedMonth)}, đơn vị VND
                           </caption>
@@ -570,28 +596,10 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                       aria-hidden="true"
                                     />
                                   </button>
-                                  <small>
-                                    {row.kind === "monthly"
-                                      ? "Chi trong tháng"
-                                      : "Tích lũy"}{" "}
-                                    ·{" "}
-                                    <LabelName
-                                      name={row.method}
-                                      labels={view.book?.labels}
-                                    />
-                                    {row.group && (
-                                      <>
-                                        {" "}
-                                        ·{" "}
-                                        <LabelName
-                                          name={row.group}
-                                          labels={view.book?.labels}
-                                          kind="group"
-                                        />
-                                      </>
-                                    )}
-                                    {!row.active ? " · Đã ngừng" : ""}
-                                  </small>
+                                  <JarClassification
+                                    row={row}
+                                    labels={view.book?.labels}
+                                  />
                                   <JarProgress row={row} />
                                 </th>
                                 <td>{money(row.target)}</td>
@@ -646,21 +654,6 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                         </ColumnTable>
                       </div>
                       <div className="expense-mobile-cards">
-                        <ColumnPicker
-                          tableId="expenses-workspace-1"
-                          columns={[
-                            { id: "Khoản chi", fixed: true },
-                            ...[
-                              "Mức tháng",
-                              "Chuyển sang",
-                              "Cần thêm",
-                              future ? "Dự kiến bỏ" : "Đã bỏ hũ",
-                              "Thực chi",
-                              "Còn lại",
-                            ].map((id) => ({ id })),
-                            { id: "Thao tác", fixed: true },
-                          ]}
-                        />
                         {rows.map((row) => (
                           <article
                             key={row.jarId}
@@ -677,28 +670,10 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                 {row.name}
                                 <ArrowUpRight size={16} />
                               </button>
-                              <p className="expense-muted">
-                                {row.kind === "monthly"
-                                  ? "Chi trong tháng"
-                                  : "Tích lũy"}{" "}
-                                ·{" "}
-                                <LabelName
-                                  name={row.method}
-                                  labels={view.book?.labels}
-                                />
-                                {row.group && (
-                                  <>
-                                    {" "}
-                                    ·{" "}
-                                    <LabelName
-                                      name={row.group}
-                                      labels={view.book?.labels}
-                                      kind="group"
-                                    />
-                                  </>
-                                )}
-                                {!row.active ? " · Đã ngừng" : ""}
-                              </p>
+                              <JarClassification
+                                row={row}
+                                labels={view.book?.labels}
+                              />
                             </div>
                             <div className="jar-balance">
                               <span>
@@ -825,10 +800,12 @@ function JarProgress({ row }: { row: ExpenseRow }) {
   if (row.kind === "accumulation")
     return (
       <p className="jar-growth">
-        <span aria-hidden="true">🌱</span>{" "}
-        {row.status === "planned"
-          ? "Dành sẵn cho tương lai"
-          : "Từng chút vun đắp"}
+        <ThemeIcon size={16} kind="sprout" />{" "}
+        {row.status === "planned" ? (
+          "Dành sẵn cho tương lai"
+        ) : (
+          <ThemeText name="accumulation" />
+        )}
       </p>
     );
   if (row.status === "planned")

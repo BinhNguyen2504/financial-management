@@ -65,3 +65,7 @@ Danh mục chưa nhập, đã ghi 0 và đã ngừng có dấu hiệu riêng. B�
 ## Help theo ngữ cảnh — 20/10/2026
 
 Giải thích nguồn cố định khác số tiền cố định, thu phát sinh, chưa nhập/0 và lưu thay thế số tháng. Hướng dẫn bám nút Lưu cho tạo/nhập, xem trước cho sửa/ngừng danh mục. Xem [Help theo từng trang](help.md).
+
+## Phản hồi nhập liệu — 21/10/2026
+
+Số tiền thực nhận có dòng đọc VND dưới ô; dấu `*` đặt sát nhãn. Lỗi từ kiểm tra và API xuất hiện tại trường, có focus khi gửi. Toast xác nhận kết quả ghi; mất phản hồi ghi được mô tả là chưa rõ kết quả, giữ nội dung và mã yêu cầu để thử lại.

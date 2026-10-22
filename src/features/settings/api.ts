@@ -1,3 +1,12 @@
+export class DataRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status?: number,
+  ) {
+    super(message);
+  }
+}
+
 export async function dataRequest(path: string, init?: RequestInit) {
   let response: Response;
   try {
@@ -7,11 +16,16 @@ export async function dataRequest(path: string, init?: RequestInit) {
       headers: { "Content-Type": "application/json", ...init?.headers },
     });
   } catch {
-    throw new Error("Chưa kết nối được dữ liệu. Kiểm tra mạng và thử lại.");
+    throw new DataRequestError(
+      "Chưa kết nối được dữ liệu. Kiểm tra mạng và thử lại.",
+    );
   }
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
-    throw new Error(body.error ?? "Chưa kết nối được dữ liệu. Hãy thử lại.");
+    throw new DataRequestError(
+      body.error ?? "Chưa kết nối được dữ liệu. Hãy thử lại.",
+      response.status,
+    );
   }
   return response;
 }

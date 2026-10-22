@@ -1,4 +1,5 @@
 "use client";
+import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 import {
@@ -12,6 +13,7 @@ import {
 import { modules } from "@/features/catalog";
 import { ProgressScene } from "@/features/funds/progress-scene";
 import { ModuleIcon } from "@/components/module-icon";
+import { LabelName } from "@/features/expenses/label-visual";
 
 const tabs = modules.filter((item) =>
   ["income", "budgets", "savings", "investments", "funds"].includes(item.slug),
@@ -93,7 +95,7 @@ const data = {
   },
   budgets: {
     title: "Chăm chút cho tháng của bạn.",
-    subtitle: "Mỗi hũ một mục đích. Mỗi khoản chi một lựa chọn.",
+    subtitle: "Hũ gọn gàng, phương thức thanh toán dễ nhận biết.",
     label: "Kế hoạch tháng",
     value: "12.000.000",
     secondary: "Số còn trong hũ",
@@ -175,7 +177,12 @@ const data = {
 } as const;
 type PreviewKey = keyof typeof data;
 
-export function ProductPreview() {
+export function ProductPreview({
+  appearance = "themed",
+}: {
+  appearance?: "themed" | "marketing";
+}) {
+  const neutral = appearance === "marketing";
   const [active, setActive] = useState<PreviewKey>("budgets");
   const [hidden, setHidden] = useState(false);
   const id = useId();
@@ -240,7 +247,11 @@ export function ProductPreview() {
           </div>
           <div className="preview-sidebar-note">
             <span className="status-dot" />
-            Từng bước vun đắp.
+            {neutral ? (
+              "Từng khoản tiền, rõ mục đích."
+            ) : (
+              <ThemeText name="storyNote" />
+            )}
             <small>Tải bản sao dữ liệu của bạn trong Cài đặt.</small>
           </div>
         </aside>
@@ -272,7 +283,8 @@ export function ProductPreview() {
             <p>{helpPreview[active]}</p>
             <small>
               Minh họa rút gọn. Trong ứng dụng, mỗi trang có mục lục đánh số,
-              các ý chính được nhấn rõ và hướng dẫn từng thao tác.
+              các ý chính được nhấn rõ và hướng dẫn từng thao tác; các biểu mẫu
+              báo lỗi ngay tại trường cần sửa.
             </small>
           </details>
           {tabs.map((item) => (
@@ -288,7 +300,17 @@ export function ProductPreview() {
                 <>
                   <div className="preview-heading">
                     <p>{item.title}</p>
-                    <h2>{selected.title}</h2>
+                    <h2>
+                      {neutral ? (
+                        selected.title
+                      ) : active === "funds" ? (
+                        <ThemeText name="previewFunds" />
+                      ) : active === "savings" ? (
+                        <ThemeText name="previewSavings" />
+                      ) : (
+                        selected.title
+                      )}
+                    </h2>
                     <span>{selected.subtitle}</span>
                   </div>
                   <div className="preview-metrics">
@@ -325,7 +347,13 @@ export function ProductPreview() {
                             className="preview-row-emoji"
                             aria-hidden="true"
                           >
-                            {row.emoji}
+                            {neutral ? (
+                              <ModuleIcon name={item.icon} size={21} />
+                            ) : active === "funds" ? (
+                              <ThemeIcon size={21} />
+                            ) : (
+                              row.emoji
+                            )}
                           </span>
                           <div className="preview-row-info">
                             <strong>{row.name}</strong>
@@ -334,6 +362,15 @@ export function ProductPreview() {
                                 ? `Hoàn thành ${row.percent}%`
                                 : row.note}
                             </small>
+                            {active === "budgets" && (
+                              <span className="preview-payment">
+                                <LabelName
+                                  name={
+                                    row.name === "Sinh hoạt" ? "Timo" : "HSBC"
+                                  }
+                                />
+                              </span>
+                            )}
                             <span
                               className="preview-progress"
                               hidden={active === "funds"}
@@ -350,10 +387,26 @@ export function ProductPreview() {
                     <div
                       className={`preview-chart ${active === "funds" ? "preview-chart-funds" : ""}`}
                     >
-                      <span>{selected.chartLabel}</span>
+                      <span>
+                        {neutral && active === "funds"
+                          ? "EMERGENCY · TIẾN ĐỘ DỰ PHÒNG"
+                          : selected.chartLabel}
+                      </span>
                       {active === "funds" ? (
                         <>
-                          <ProgressScene fund="emergency" percent="50" />
+                          {neutral ? (
+                            <div
+                              className="marketing-fund-progress"
+                              role="img"
+                              aria-label="Emergency Fund đã chuẩn bị 50% mục tiêu"
+                            >
+                              <span>
+                                50<small>%</small>
+                              </span>
+                            </div>
+                          ) : (
+                            <ProgressScene fund="emergency" percent="50" />
+                          )}
                           <p>
                             Đã chuẩn bị 50% · Mức sinh hoạt {money("9.000.000")}
                             /tháng

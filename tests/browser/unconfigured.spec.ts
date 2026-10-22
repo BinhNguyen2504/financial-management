@@ -11,7 +11,7 @@ test.describe("without Auth configuration", () => {
   }, info) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      "Một nơi rõ ràng hơn",
+      "Làm chủ tiền bạc.",
     );
     await expect(
       page.getByRole("link", { name: "Đăng nhập", exact: true }),
@@ -40,7 +40,11 @@ test.describe("without Auth configuration", () => {
       /noindex/,
     );
     await expect(page.locator(".app-shell")).toHaveCount(0);
-    await page.screenshot({ path: `artifacts/landing/login-setup-${info.project.name}.png`, fullPage: true, scale: "css" });
+    await page.screenshot({
+      path: `artifacts/landing/login-setup-${info.project.name}.png`,
+      fullPage: true,
+      scale: "css",
+    });
   });
 
   test("production PWA starts through auth and caches only the neutral offline page", async ({

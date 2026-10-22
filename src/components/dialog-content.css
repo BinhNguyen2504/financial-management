@@ -14,6 +14,12 @@
   display: flex;
   flex-direction: column;
 }
+.expense-dialog.dialog-form {
+  height: min(760px, calc(100dvh - 32px));
+}
+.expense-dialog.dialog-detail {
+  height: min(800px, calc(100dvh - 32px));
+}
 .expense-dialog.dialog-detail {
   width: min(960px, calc(100vw - 32px));
 }
@@ -48,6 +54,7 @@
   margin: 6px 0 0;
 }
 .dialog-body {
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
@@ -64,6 +71,14 @@
   margin: 0;
   justify-content: flex-end;
   gap: 12px;
+}
+.dialog-footer .fund-actions {
+  margin: 0;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.dialog-footer :is(.expense-actions, .fund-actions) > button {
+  min-width: 112px;
 }
 .dialog-shell h3 {
   font-size: 16px;

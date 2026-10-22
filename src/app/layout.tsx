@@ -8,6 +8,7 @@ import "@/features/expenses/expenses.css";
 import "./zen.css";
 import "@/features/profile/profile.css";
 import "./experience.css";
+import "./visual-themes.css";
 const nunito = Nunito({
   subsets: ["latin", "vietnamese"],
   display: "swap",

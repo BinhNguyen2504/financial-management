@@ -65,3 +65,42 @@ Help dùng dialog stack hiện có với biến thể bên phải/toàn màn hì
 Khi hồi quy Help, phát hiện hydration ở tiêu đề SVG của hướng dẫn cài đặt: nhiều React text node bị trình duyệt gộp trong `<title>`. Chuyển tiêu đề thành một chuỗi template duy nhất để markup server/client khớp; không dùng suppressHydrationWarning.
 
 Rà soát bàn phím bổ sung Tab từ tiêu đề được mục lục focus: Help đưa focus về nút đóng thay vì thoát sang thanh trình duyệt; Shift+Tab từ nút đóng quay về mục cuối. Thanh đầu trang cho phép xuống hàng khi phóng lớn; bộ chọn kỳ Thu nhập dưới 400px dùng selector đủ cụ thể để giữ hai cột, tránh phụ thuộc thứ tự stylesheet.
+
+## Bộ chọn cột và thông tin phụ — 21/10/2026
+
+`ColumnPicker` dùng native auto popover trên top layer, không mở nội dung trong luồng bảng hoặc bị vùng cuộn cắt. Đặt nút ở thanh tiêu đề ngữ cảnh khi có; Chi tiêu đưa cạnh số hũ. Popover có công tắc căn hàng, nhãn cột cố định và nút reset; đóng bằng nút, bấm ngoài hoặc Escape. Escape trả focus về nút mở và chỉ đóng popover; reset đưa focus về công tắc vì nút reset trở thành disabled. Điện thoại hẹp dùng panel căn giữa để dành đủ chỗ cho các lựa chọn; viewport ngang ngắn tận dụng chiều cao màn hình, danh sách cuộn riêng.
+
+Logo phụ trợ không nên cạnh tranh với tên hũ: dùng biểu tượng 20px không có ô viền lớn; icon nhóm 16px. Nhãn và icon là một cụm không bị tách dòng; nhiều cụm dùng flex-wrap có khoảng cách, thay chuỗi text/bullet xen các khối inline cao thấp. Kiểm bằng tọa độ căn giữa, chiều cao hàng và ảnh; không chỉ xác nhận asset tải được. Xem [Chi tiêu](expenses.md#cột-hiển-thị-và-nhận-diện-phương-thức--21102026).
+
+
+## Tinh chỉnh Help theo phản hồi — 21/10/2026
+
+Nút Hướng dẫn chuyển về cạnh h1, dùng biểu tượng sách và nhãn chữ nhẹ; giữ nhãn trên điện thoại. Mục lục và mục lớn đánh số 01–06; mục con 3.1/4.1… có khoảng cách và đường phân cách. Tư duy, ví dụ và điểm dễ nhầm có khối nền khác nhau; từ khóa, công thức và số tiền minh họa được nhấn có chọn lọc bằng đậm/màu theo theme.
+
+Help trượt vào từ phải 280ms và thu về 220ms. Đóng giữa chuyển động lấy vị trí/độ mờ hiện tại để tránh giật; modal giữ focus và khóa cuộn đến khi xong. Timeout 300ms giải phóng bảng nếu animationend bị thiếu, timer được dọn khi rời route. Reduced motion bỏ hiệu ứng và đóng ngay. Các dialog khác giữ cách đóng hiện có.
+
+Kiểm thử bổ sung đo vị trí giữa animation, kiểm focus/khóa cuộn trong lúc đóng, fallback khi tắt animation, reduced motion, phân cấp nội dung và không lộ dấu nhấn source trong bài đã render. Kết quả và phạm vi local được ghi tại [validation](../07-validation.md).
+
+## Chủ đề Khu vườn / Dòng nước — 21/10/2026
+
+Bổ sung hai thẻ chủ đề và nhóm chế độ hiển thị riêng. Đổi áp dụng ngay, giữ state/bản nháp, đồng bộ giữa các tab; storage bị chặn dùng bộ nhớ phiên. Nhánh minh họa và lời dẫn được CSS chọn trước paint, giảm nguy cơ nháy sai hình khi hydration. Chuyển màu 180ms chỉ bật sau thao tác chọn, tôn trọng reduced motion. Xem [themes](themes.md) và bằng chứng tại [validation](../07-validation.md).
+
+## Bổ sung Kim ngân — 21/10/2026
+
+Thêm chủ đề vàng với đủ sáng/tối, icon, lời dẫn, tám cảnh SVG và ba cảnh Quỹ. Bộ chọn có ba thẻ; desktop ba cột, tablet hai cột và điện thoại một cột. Landing/preview cố định, login, Help và offline cùng áp dụng lựa chọn. Không đổi dữ liệu, bản nháp, thuật ngữ nghiệp vụ hay màu logo. Chi tiết: [themes](themes.md); bằng chứng local và giới hạn: [validation](../07-validation.md).
+
+## Trạng thái lưu và nhập liệu xuyên ứng dụng — 21/10/2026
+
+- Thông báo kết quả lưu dùng toast chung, ở trên dialog đang mở. Chỉ báo thành công sau phản hồi ghi nhận; lỗi có thông báo tại chỗ và giữ bản nháp. Mất phản hồi khi ghi là kết quả chưa rõ, không kết luận đã lưu hay thất bại; lỗi tải lại sau lưu được báo riêng.
+- Ô tiền VND có dòng đọc số `1.000.000 ₫` ngay dưới, ô trống có gợi ý và chế độ riêng tư che số. Lượng vàng, tỷ lệ, hệ số không đọc như tiền. Nhãn cần nhập đặt `*` sát tên và giải thích một lần đầu form. Lỗi kiểm tra trình duyệt, nghiệp vụ và API hiện dưới ô, liên kết bằng `aria-describedby`; focus tới lỗi đầu tiên khi gửi.
+- Dialog cuộn phần nội dung, giữ hàng nút ổn định, kể cả khi mở Help hoặc form con. Xem trước Quỹ an toàn nêu giao dịch và các số trước/sau thực sự khác nhau, kèm mức tăng giảm; chi tiết phụ nằm trong vùng mở rộng.
+- Hồ sơ sắp xếp lại vùng nhận diện, nút quay lại và lưới form. Nút thu gọn ở đầu sidebar desktop; mobile có biểu tượng cùng tên ứng dụng. Nút Hướng dẫn có nền/viền rõ hơn ở trạng thái thường trên cả ba chủ đề.
+
+## Bổ sung Lửa ấm — 22/10/2026
+
+Thêm chủ đề đỏ gạch/san hô với đủ sáng/tối, lời dẫn/icon, tám cảnh SVG và ba cảnh Quỹ theo tiến độ. Bộ chọn bốn thẻ xếp hai cột desktop/tablet, một cột dưới 561px. Landing/preview, login, Help và offline kế thừa lựa chọn; giữ dữ liệu, bản nháp, logo, emoji và ngữ nghĩa cảnh báo/lỗi. Minh họa lửa tĩnh, chỉ có phản hồi ngắn khi tương tác và tôn trọng giảm chuyển động. Xem [themes](themes.md) và [validation](../07-validation.md).
+
+
+## Bổ sung Đất lành — 22/10/2026
+
+Hoàn thành bộ năm chủ đề bằng Nâu — Đất lành với sáng/tối riêng, lời dẫn/icon, tám cảnh SVG và ba cảnh Quỹ. Địa hình, tầng đất, đá cuội, đất nung và ruộng bậc thang tạo khác biệt với Khu vườn. Bộ chọn ba cột desktop, hai cột 561–900px và một cột dưới 561px. Theme lưu theo trình duyệt, áp dụng ngay cho app/login/offline/landing thành viên, giữ bản nháp và chế độ hiển thị. Landing marketing khách giữ palette riêng. Xem [themes](themes.md) và [validation](../07-validation.md).

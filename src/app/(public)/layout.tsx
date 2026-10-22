@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { WalletCards, ArrowUpRight } from "lucide-react";
 import { PublicAccount } from "@/features/landing/account-actions";
+import { PublicShell } from "@/features/landing/landing-audience";
 import "@/features/landing/landing.css";
+import "@/features/landing/marketing.css";
 
 export default function PublicLayout({
   children,
@@ -9,7 +11,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="public-shell">
+    <PublicShell>
       <header className="public-header">
         <Link
           href="/"
@@ -55,6 +57,6 @@ export default function PublicLayout({
           <span>© 2026 Bình Nguyễn · Tiếng Việt · VND</span>
         </div>
       </footer>
-    </div>
+    </PublicShell>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { ThemeText } from "@/components/theme-decoration";
 import { Pencil as EditCommandGlyph } from "lucide-react";
 import { useId, useState, type KeyboardEvent } from "react";
 import { ExpenseModal } from "@/features/expenses/modal";
@@ -252,7 +253,9 @@ export function FundDetails({
       <div className="fund-detail-summary">
         <ProgressScene fund={fund} percent={state.percent} />
         <div>
-          <p className="eyebrow">{guides[fund].label}</p>
+          <p className="eyebrow">
+            <ThemeText name={fund} />
+          </p>
           <h3>{state.percent.replace(".", ",")}% đã chuẩn bị</h3>
           <p>
             {money(state.balance)} / {money(state.target)}

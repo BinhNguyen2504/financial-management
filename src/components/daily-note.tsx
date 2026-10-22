@@ -1,16 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Sprout } from "lucide-react";
+import { ThemeIcon } from "./theme-decoration";
+import { visualThemeKeys, visualThemes } from "./visual-theme";
 import { vietnamClock } from "@/domain/expenses/engine";
-const notes = [
-  "Mỗi khoản để dành là một chút bình yên cho ngày mai.",
-  "Bạn có thể bắt đầu nhỏ, rồi lớn lên theo nhịp của mình.",
-  "Một lần nhìn lại hôm nay, một bước chủ động hơn ngày mai.",
-  "Chăm sóc tài chính cũng là một cách chăm sóc bản thân.",
-  "Không cần vội. Những thói quen nhỏ cần thời gian để nảy mầm.",
-  "Dành chỗ cho điều cần thiết và cả những niềm vui vừa đủ.",
-  "Một tháng chưa như ý cũng là cơ hội để hiểu mình hơn.",
-];
 export function DailyNote() {
   const [index, setIndex] = useState(0);
   useEffect(() => {
@@ -18,7 +10,8 @@ export function DailyNote() {
     const update = () => {
       const day = vietnamClock().today;
       setIndex(
-        Math.floor(Date.parse(`${day}T00:00:00Z`) / 86400000) % notes.length,
+        Math.floor(Date.parse(`${day}T00:00:00Z`) / 86400000) %
+          visualThemes.forest.notes.length,
       );
       clearTimeout(timer);
       const midnight = Date.parse(`${day}T00:00:00+07:00`) + 86400000;
@@ -33,10 +26,18 @@ export function DailyNote() {
   }, []);
   return (
     <aside className="daily-note">
-      <Sprout size={21} aria-hidden="true" />
+      <ThemeIcon size={21} kind="sprout" />
       <p>
         <span>MỘT CHÚT BÌNH YÊN</span>
-        {notes[index]}
+        {visualThemeKeys.map((theme) => (
+          <span
+            key={theme}
+            className="daily-note-message"
+            data-visual-only={theme}
+          >
+            {visualThemes[theme].notes[index]}
+          </span>
+        ))}
       </p>
     </aside>
   );

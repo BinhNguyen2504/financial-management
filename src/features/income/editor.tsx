@@ -4,6 +4,9 @@ import { fieldErrorsFromIssues } from "@/lib/field-errors";
 import { Save, X, ScanEye, Trash2 } from "lucide-react";
 import { normalizeInteger, integerInput } from "@/lib/form-values";
 import { LoadingSpinner } from "@/components/loading";
+import { focusFirstInvalid } from "@/components/form-feedback";
+import { MoneyHint } from "@/components/money-hint";
+import { useToast } from "@/components/toast";
 import { DialogChanges, DialogPreview } from "@/components/dialog-content";
 import { useRef, useId, useState, type FormEvent } from "react";
 import { ZodError } from "zod";
@@ -64,6 +67,7 @@ function IncomeEditorForm({
   onSaved(): Promise<void>;
   onReload(): Promise<unknown>;
 }) {
+  const toast = useToast();
   const money = useMoney();
   const hidden = useMoneyHidden();
   const initialRow = "row" in mode ? mode.row : undefined;
@@ -87,6 +91,7 @@ function IncomeEditorForm({
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [conflict, setConflict] = useState(false);
+  const [uncertain, setUncertain] = useState(false);
   const [preview, setPreview] = useState<{
     result: CommandResult;
     command: IncomeCommand;
@@ -177,6 +182,7 @@ function IncomeEditorForm({
     setBusy(true);
     setError("");
     setFieldErrors({});
+    let writing = false;
     try {
       const parsed = incomeActionSchema.parse(action());
       const previous = pending.current;
@@ -195,12 +201,22 @@ function IncomeEditorForm({
           command,
         });
       } else {
+        writing = true;
         await incomeJSON("/commands", command);
+        toast("success", "Đã lưu thay đổi.");
         await onSaved();
       }
     } catch (e) {
+      const unknownWrite =
+        writing &&
+        (!(e instanceof IncomeAPIError) ||
+          ![400, 401, 403, 409, 415, 422].includes(e.status));
+      if (unknownWrite) setUncertain(true);
       if (e instanceof ZodError) {
         setFieldErrors(fieldErrorsFromIssues(e.issues));
+        setError("Kiểm tra các trường được đánh dấu bên dưới.");
+      } else if (e instanceof IncomeAPIError && e.fieldErrors) {
+        setFieldErrors(e.fieldErrors);
         setError("Kiểm tra các trường được đánh dấu bên dưới.");
       } else
         setError(
@@ -212,7 +228,20 @@ function IncomeEditorForm({
         setConflict(true);
         setPreview(null);
       }
-      requestAnimationFrame(() => errorRef.current?.focus());
+      focusFirstInvalid(
+        document.querySelector(
+          ".expense-dialog[open]:not([inert]) .dialog-body",
+        ),
+        errorRef.current,
+      );
+      toast(
+        unknownWrite ? "warning" : "error",
+        unknownWrite
+          ? "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu."
+          : e instanceof Error
+            ? e.message
+            : "Chưa hoàn tất. Hãy thử lại.",
+      );
     } finally {
       setBusy(false);
     }
@@ -239,7 +268,7 @@ function IncomeEditorForm({
     <ExpenseModal
       title={titles[mode.type]}
       onClose={onClose}
-      busy={busy}
+      busy={busy || uncertain}
       size={deleting ? "confirm" : "form"}
       footer={
         <div className="expense-actions">
@@ -248,7 +277,7 @@ function IncomeEditorForm({
             type="button"
             className="expense-secondary"
             onClick={onClose}
-            disabled={busy}
+            disabled={busy || uncertain}
           >
             <X size={17} aria-hidden="true" />
             Hủy
@@ -288,6 +317,20 @@ function IncomeEditorForm({
         onSubmit={submit}
         onChange={changed}
       >
+        {!deleting && (
+          <p className="required-fields-note">
+            <span className="required-mark" aria-hidden="true">
+              *
+            </span>{" "}
+            là thông tin cần nhập.
+          </p>
+        )}
+        {uncertain && (
+          <p role="status" className="expense-notice">
+            Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Lưu lại để
+            kiểm tra cùng yêu cầu.
+          </p>
+        )}
         <PrivacyReveal />
         <HelpButton
           pageId="income"
@@ -344,7 +387,7 @@ function IncomeEditorForm({
             Tải dữ liệu mới, giữ nội dung nhập
           </button>
         )}
-        <fieldset className="dialog-form-section" disabled={busy}>
+        <fieldset className="dialog-form-section" disabled={busy || uncertain}>
           <legend>Thông tin thu nhập</legend>
           {initialRow && (
             <p>
@@ -362,6 +405,9 @@ function IncomeEditorForm({
               {hasName && (
                 <label>
                   Tên
+                  <span className="required-mark" aria-hidden="true">
+                    *
+                  </span>
                   <input
                     aria-label="Tên"
                     id="income-field-name"
@@ -395,7 +441,17 @@ function IncomeEditorForm({
                   : needsPreview
                     ? "Tháng hiệu lực"
                     : "Tháng"}
+                <span className="required-mark" aria-hidden="true">
+                  *
+                </span>
                 <input
+                  aria-label={
+                    mode.type === "create"
+                      ? "Tháng bắt đầu"
+                      : needsPreview
+                        ? "Tháng hiệu lực"
+                        : "Tháng"
+                  }
                   id={
                     mode.type === "create"
                       ? "income-field-start"
@@ -423,6 +479,9 @@ function IncomeEditorForm({
               {hasAmount && (
                 <label>
                   Số tiền thực nhận (VND)
+                  <span className="required-mark" aria-hidden="true">
+                    *
+                  </span>
                   {hidden ? (
                     <input
                       aria-label="Số tiền thực nhận (VND)"
@@ -442,9 +501,7 @@ function IncomeEditorForm({
                       value={amount}
                       disabled={busy}
                       aria-invalid={!!fieldErrors.amount}
-                      aria-describedby={
-                        fieldErrors.amount ? "income-error-amount" : undefined
-                      }
+                      aria-describedby={`income-hint-amount${fieldErrors.amount ? " income-error-amount" : ""}`}
                       onChange={(e) => {
                         const next = integerInput(e.target.value);
                         if (next !== null) setAmount(next);
@@ -452,10 +509,8 @@ function IncomeEditorForm({
                       onBlur={() => setAmount(normalizeInteger(amount))}
                     />
                   )}
+                  <MoneyHint id="income-hint-amount" value={amount} />
                   {fieldError("amount")}
-                  {/^\d{1,24}$/.test(amount) && (
-                    <span className="expense-muted">{money(amount)}</span>
-                  )}
                 </label>
               )}
               {mode.type === "monthly" && (

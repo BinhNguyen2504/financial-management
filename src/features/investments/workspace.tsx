@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Garden } from "@/components/garden";
 import { focusPointerControl } from "@/components/pointer-focus";
+import { useToast } from "@/components/toast";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
 import { activeTransactions, ruleAt } from "@/domain/investments/engine";
 import { buildReport, type ReportFilter } from "@/domain/investments/reports";
@@ -33,6 +34,7 @@ export function InvestmentWorkspace({
   configured: boolean;
   initialToday: string;
 }) {
+  const toast = useToast();
   const money = useMoney(),
     hidden = useMoneyHidden(),
     [date, setDate] = useState(initialToday),
@@ -148,8 +150,10 @@ export function InvestmentWorkspace({
   }
   function saved() {
     setEditor(null);
-    setNotice("Đã lưu thay đổi.");
-    void load().catch(() => {});
+    setNotice("");
+    void load().catch(() =>
+      toast("warning", "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu."),
+    );
   }
   function open(mode: EditorMode) {
     setNotice("");

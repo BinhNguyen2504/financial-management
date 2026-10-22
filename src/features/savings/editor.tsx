@@ -9,6 +9,9 @@ import {
   integerInput,
 } from "@/lib/form-values";
 import { FormErrorSummary } from "@/components/form-feedback";
+import { focusFirstInvalid } from "@/components/form-feedback";
+import { MoneyHint } from "@/components/money-hint";
+import { useToast } from "@/components/toast";
 import { LoadingSpinner } from "@/components/loading";
 import {
   DialogChanges,
@@ -106,6 +109,7 @@ function EditorForm({
   onSaved(): Promise<void>;
   onReload(): Promise<unknown>;
 }) {
+  const toast = useToast();
   const hidden = useMoneyHidden(),
     money = useMoney(),
     old = "transaction" in mode ? mode.transaction : undefined;
@@ -171,7 +175,8 @@ function EditorForm({
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [fieldErrors, setFieldErrors] = useState<Record<string, string>>({}),
-    [conflict, setConflict] = useState(false);
+    [conflict, setConflict] = useState(false),
+    [uncertain, setUncertain] = useState(false);
   const [preview, setPreview] = useState<{
     command: SavingsCommand;
     result: CommandResult;
@@ -468,6 +473,7 @@ function EditorForm({
     if (unchanged) return;
     setBusy(true);
     setError("");
+    let writing = false;
     try {
       const a = actionSchema.parse(action());
       const command =
@@ -486,12 +492,21 @@ function EditorForm({
           result: await savingsJSON<CommandResult>("/preview", command),
         });
       else {
+        writing = true;
         await savingsJSON("/commands", command);
+        toast("success", "Đã lưu thay đổi.");
         await onSaved();
       }
     } catch (e) {
+      const unknownWrite =
+        writing &&
+        (!(e instanceof SavingsAPIError) ||
+          ![400, 401, 403, 409, 415, 422].includes(e.status));
+      if (unknownWrite) setUncertain(true);
       if (e instanceof ZodError)
         setFieldErrors(fieldErrorsFromIssues(e.issues));
+      else if (e instanceof SavingsAPIError && e.fieldErrors)
+        setFieldErrors(e.fieldErrors);
       setError(
         e instanceof ZodError
           ? "Kiểm tra các trường được đánh dấu."
@@ -503,7 +518,20 @@ function EditorForm({
         setConflict(true);
         setPreview(null);
       }
-      requestAnimationFrame(() => errorRef.current?.focus());
+      focusFirstInvalid(
+        document.querySelector(
+          ".expense-dialog[open]:not([inert]) .dialog-body",
+        ),
+        errorRef.current,
+      );
+      toast(
+        unknownWrite ? "warning" : "error",
+        unknownWrite
+          ? "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu."
+          : e instanceof Error
+            ? e.message
+            : "Chưa hoàn tất. Hãy thử lại.",
+      );
     } finally {
       setBusy(false);
     }
@@ -519,13 +547,23 @@ function EditorForm({
     return (
       <label key={key} htmlFor={`savings-field-${key}`}>
         {label}
+        {required && (
+          <span className="required-mark" aria-hidden="true">
+            *
+          </span>
+        )}
         <input
           aria-label={label}
           id={`savings-field-${key}`}
           name={key}
           aria-invalid={!!fieldErrors[key]}
           aria-describedby={
-            fieldErrors[key] ? `savings-error-${key}` : undefined
+            [
+              secret && key !== "quantity" ? `savings-hint-${key}` : "",
+              fieldErrors[key] ? `savings-error-${key}` : "",
+            ]
+              .filter(Boolean)
+              .join(" ") || undefined
           }
           type={secret && hidden ? "password" : type}
           inputMode={secret ? "decimal" : undefined}
@@ -550,6 +588,9 @@ function EditorForm({
               : undefined
           }
         />
+        {secret && key !== "quantity" && (
+          <MoneyHint id={`savings-hint-${key}`} value={f[key]} />
+        )}
         {fieldErrors[key] && (
           <small id={`savings-error-${key}`} className="field-error">
             {fieldErrors[key]}
@@ -562,8 +603,12 @@ function EditorForm({
     return (
       <label>
         {label}
+        <span className="required-mark" aria-hidden="true">
+          *
+        </span>
         <select
           id={`savings-field-${key}`}
+          required
           aria-invalid={!!fieldErrors[key]}
           aria-describedby={
             fieldErrors[key] ? `savings-error-${key}` : undefined
@@ -615,10 +660,19 @@ function EditorForm({
           : titles[mode.type]
       }
       onClose={onClose}
-      busy={busy}
+      busy={busy || uncertain}
       size={mode.type === "void" ? "confirm" : "form"}
       footer={
         <div className="expense-actions">
+          <button
+            form={formId}
+            type="button"
+            className="expense-secondary"
+            onClick={onClose}
+            disabled={busy || uncertain}
+          >
+            <X size={17} aria-hidden="true" /> Hủy
+          </button>
           <button
             form={formId}
             aria-busy={busy}
@@ -638,16 +692,6 @@ function EditorForm({
                 ? "Xác nhận lưu"
                 : "Xem trước thay đổi"}
           </button>
-          <button
-            form={formId}
-            type="button"
-            className="expense-secondary"
-            onClick={onClose}
-            disabled={busy}
-          >
-            <X size={17} aria-hidden="true" />
-            Hủy
-          </button>
         </div>
       }
     >
@@ -657,6 +701,18 @@ function EditorForm({
         noValidate
         onSubmit={submit}
       >
+        <p className="required-fields-note">
+          <span className="required-mark" aria-hidden="true">
+            *
+          </span>{" "}
+          là thông tin cần nhập.
+        </p>
+        {uncertain && (
+          <p role="status" className="expense-notice">
+            Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu
+            để kiểm tra lại cùng yêu cầu.
+          </p>
+        )}
         <PrivacyReveal />
         <HelpButton
           pageId="savings"
@@ -707,7 +763,7 @@ function EditorForm({
             Tải dữ liệu mới, giữ nội dung nhập
           </button>
         )}
-        <fieldset className="dialog-form-section" disabled={busy}>
+        <fieldset className="dialog-form-section" disabled={busy || uncertain}>
           <legend>Thông tin giao dịch / danh mục</legend>
           {["create", "configure"].includes(mode.type) && (
             <>

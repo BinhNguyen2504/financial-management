@@ -107,3 +107,7 @@ Hướng dẫn tổng danh mục, ví tiền chờ, giá vốn bán nhập tay, 
 ## Quy chuẩn giao diện dùng chung — 20/10/2026
 
 Bảng rộng cho chọn cột và giữ lựa chọn trên trình duyệt; cột định danh/thao tác luôn hiện. Form sửa vô hiệu lưu/xem trước khi dữ liệu nghiệp vụ chưa đổi, kể cả khi chỉ nhập lý do. Tiền nguyên bỏ số 0 đầu khi blur/submit; field bắt buộc và lỗi có chỉ báo, nội dung lỗi tiếng Việt và tổng hợp lỗi dẫn về trường tương ứng. Thao tác sửa/hủy có icon, hành động hủy giao dịch dùng màu nguy hiểm; đóng form con tiếp tục giữ ngữ cảnh dialog cha. Xem [đối chiếu phản hồi toàn ứng dụng](interface-feedback-2026-10-19.md).
+
+## Phản hồi nhập liệu — 21/10/2026
+
+Tiền, giá theo đơn vị, phí và thuế đọc số VND dưới ô; số lượng và tỷ lệ giữ đơn vị riêng. Lỗi kiểm tra hoặc API ở đúng trường, kèm focus. Toast phân biệt ghi thành công, thất bại và chưa rõ kết quả; lỗi tải lại sau ghi có thông báo riêng. Footer dialog giữ vị trí khi nội dung dài.

@@ -10,7 +10,8 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
-import { BookOpen, CircleHelp, Leaf, Lightbulb, Check } from "lucide-react";
+import { ThemeIcon } from "@/components/theme-decoration";
+import { BookOpen, CircleHelp, Lightbulb, Check } from "lucide-react";
 import { ExpenseModal } from "@/features/expenses/modal";
 import { focusPointerControl } from "@/components/pointer-focus";
 import { helpPageForPath, helpPages } from "./registry";
@@ -206,7 +207,7 @@ function HelpPanel({
                   <div className="help-section-copy">
                     {section.id === "mindset" && (
                       <p className="help-callout-label">
-                        <Leaf size={18} aria-hidden="true" /> Nguyên tắc cốt lõi
+                        <ThemeIcon size={18} /> Nguyên tắc cốt lõi
                       </p>
                     )}
                     {section.id === "pitfalls" && (

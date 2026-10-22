@@ -1,5 +1,9 @@
 "use client";
-import { FormErrorSummary, nativeErrors } from "@/components/form-feedback";
+import {
+  FormErrorSummary,
+  nativeErrors,
+  focusFirstInvalid,
+} from "@/components/form-feedback";
 import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
@@ -35,8 +39,9 @@ export function Login({
     const invalid = nativeErrors(form);
     setFieldErrors(invalid);
     if (Object.keys(invalid).length) {
-      requestAnimationFrame(() =>
-        form.querySelector<HTMLElement>(".form-error-summary")?.focus(),
+      focusFirstInvalid(
+        form,
+        form.querySelector<HTMLElement>(".form-error-summary"),
       );
       return;
     }
@@ -101,12 +106,22 @@ export function Login({
           </p>
         ) : (
           <form onSubmit={submit} className="expense-form" noValidate>
+            <p className="required-fields-note">
+              <span className="required-mark" aria-hidden="true">
+                *
+              </span>{" "}
+              là thông tin cần nhập.
+            </p>
             <FormErrorSummary errors={fieldErrors} prefix="login-field-" />
             <label>
               Email
+              <span className="required-mark" aria-hidden="true">
+                *
+              </span>
               <input
                 id="login-field-email"
                 name="email"
+                aria-label="Email"
                 aria-invalid={!!fieldErrors.email}
                 aria-describedby={
                   fieldErrors.email ? "login-error-email" : undefined
@@ -130,9 +145,13 @@ export function Login({
             {sent && (
               <label>
                 Mã xác nhận
+                <span className="required-mark" aria-hidden="true">
+                  *
+                </span>
                 <input
                   id="login-field-token"
                   name="token"
+                  aria-label="Mã xác nhận"
                   aria-invalid={!!fieldErrors.token}
                   aria-describedby={
                     fieldErrors.token ? "login-error-token" : undefined
@@ -143,7 +162,10 @@ export function Login({
                   inputMode="numeric"
                   value={token}
                   disabled={!ready || busy}
-                  onChange={(e) => setToken(e.target.value)}
+                  onChange={(e) => {
+                    setToken(e.target.value);
+                    setFieldErrors((previous) => ({ ...previous, token: "" }));
+                  }}
                 />
                 {fieldErrors.token && (
                   <small id="login-error-token" className="field-error">

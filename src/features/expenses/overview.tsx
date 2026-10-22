@@ -4,7 +4,8 @@ import { useForegroundRefresh } from "@/components/use-foreground-refresh";
 import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, Leaf, Sprout, Wallet } from "lucide-react";
+import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
+import { ArrowRight, Wallet } from "lucide-react";
 import type { ExpenseView } from "@/domain/expenses/types";
 import { summarize, buildReport } from "@/domain/expenses/reports";
 import { jarEmoji } from "@/domain/expenses/emoji";
@@ -137,7 +138,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
         </div>
         {loading && !view && (
           <LoadingStatus className="overview-loading">
-            Đang chăm chút bức tranh tháng này…
+            <ThemeText name="overviewLoading" />
           </LoadingStatus>
         )}
         {error && (
@@ -176,13 +177,13 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
                   hint: total.provisional
                     ? "Tạm tính · cập nhật số dư để chính xác hơn"
                     : "Những khoản đã sử dụng",
-                  Icon: Leaf,
+                  Icon: ThemeIcon,
                 },
                 {
                   label: "Còn trong hũ",
                   value: total.closing,
                   hint: "Tiếp tục dành cho những điều sắp tới",
-                  Icon: Sprout,
+                  Icon: ThemeIcon,
                 },
               ].map(({ label, value, hint, Icon }) => (
                 <article key={label} className="metric overview-metric">
@@ -205,7 +206,9 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
               </section>
               <section className="panel overview-jars">
                 <div className="section-title">
-                  <h2>Những hũ đang chăm</h2>
+                  <h2>
+                    <ThemeText name="overviewJars" />
+                  </h2>
                   <Link href="/budgets" className="text-link">
                     Xem tất cả <ArrowRight size={15} aria-hidden="true" />
                   </Link>

@@ -82,6 +82,18 @@ Phương thức/nhóm chọn từ danh sách có sẵn; thêm phân loại qua d
 
 Bổ sung 20/10/2026: khi chưa có cột logo/icon, repository đọc metadata thành null và tiếp tục lưu hũ/phân loại không kèm metadata. Chỉ lệnh lưu metadata khác null bị chặn với HTTP 503 / `LABEL_VISUALS_MIGRATION_REQUIRED`, giữ bản nháp và không đổi version/audit/biên nhận lệnh. Sau migration, metadata được lưu/đọc bình thường; không tự chạy DDL hoặc nâng quyền runtime. Điều này cũng giữ nguồn Chi tiêu cho Fund đọc được khi thiếu riêng migration metadata.
 
+## Cột hiển thị và nhận diện phương thức — 21/10/2026
+
+Nút Cột hiển thị nằm cùng hàng tiêu đề tháng/số hũ, ngoài vùng cuộn bảng; bỏ hàng trống trước tiêu đề cột. Bộ chọn mở dạng popover nổi, không làm thay đổi chiều cao hoặc đẩy bảng; điện thoại hẹp dùng panel căn giữa màn hình. Danh sách công tắc theo từng dòng, có số cột đang hiện, giải thích cột luôn hiện và khôi phục mặc định. Chọn nhiều cột liên tiếp, bấm ngoài/đóng/Escape để kết thúc; Escape trong popover không đóng dialog cha. Desktop và card mobile dùng chung khóa `fm-columns:expenses-workspace-2`, giữ tùy chọn desktop đã lưu. Khóa `expenses-workspace-1` dành cho bảng tổng kết năm, không dùng cho card tháng nữa.
+
+Loại hũ, phương thức và nhóm là các cụm gọn được căn giữa theo dòng; cả cụm xuống hàng khi thiếu chỗ, không có dấu phân cách lẻ. Logo nằm trong khung 20px, icon nhóm 16px, bỏ ô viền 36px. HSBC/Techcombank/MB dùng riêng phần biểu tượng của asset gốc; các thương hiệu còn lại dùng icon chính thức phù hợp. Giữ nguyên tỷ lệ/màu và tên bên cạnh; chữ vốn là bản thân app icon như MoMo/ZaloPay không bị vẽ lại. Nguồn và cách lấy biểu tượng được ghi tại `public/brands/sources.json`.
+
+Không đổi brand key, schema, dữ liệu phân loại, công thức hoặc CSV; không cần migration mới cho đợt tinh chỉnh này. Hành vi popover dùng chung cho các bảng rộng trong ứng dụng. Bằng chứng và giới hạn môi trường ở [validation](../07-validation.md).
+
 ## Help theo ngữ cảnh — 20/10/2026
 
 Hướng dẫn “chia trước, chi sau”, hũ chi tháng/tích lũy, phương thức/nhóm, cách tính tiền và chốt năm; tra cứu từ form đến đúng khái niệm. Công thức và API giữ nguyên. Xem [Help theo từng trang](help.md).
+
+## Phản hồi nhập liệu — 21/10/2026
+
+Các ô tiền của hũ, chi tích lũy và điều chỉnh kỳ đọc số VND ngay dưới ô, có gợi ý khi trống và che theo chế độ riêng tư. Dấu `*` sát nhãn; lỗi nhập sai hiển thị tại ô và được nối bằng `aria-describedby`. Toast chỉ báo sau ghi nhận, giữ bản nháp nếu ghi chưa rõ; header/footer dialog ổn định khi cuộn.

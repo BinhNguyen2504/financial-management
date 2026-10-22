@@ -8,7 +8,7 @@
 - Mỗi page ứng dụng await `pageAccess()` trước khi render. `pageSession()` xác minh qua Supabase `getUser`, chỉ cache trong một lượt render; không dựa vào cookie claim hoặc layout để cấp quyền.
 - Proxy refresh cookie cho trang và API, đặt private/no-store. Chỉ request API có Authorization mới bỏ qua refresh cookie; API tự xác minh Bearer và owner/RLS.
 - Phiên thiếu/hết hạn chuyển `/login?next=...`; whitelist route dùng chung với catalog, mặc định `/overview`. Auth gián đoạn hiện retry, không coi là logout. `/` luôn công khai.
-- Landing HTML và ảnh Open Graph không chờ Auth trong proxy; avatar được xác minh trong trình duyệt, để nội dung công khai vẫn đọc được khi Auth gián đoạn.
+- Landing HTML và ảnh Open Graph không chờ Auth trong proxy. `/` render marketing công khai ban đầu; `LandingAudience` và `PublicShell` dùng `useUser` chung để chuyển sang landing theo theme khi đã có user. Auth gián đoạn không chặn nội dung công khai; đây chỉ là phân loại trình bày, không cấp quyền workspace. `marketing-shell` chỉ áp cho khách ở `/`, không đổi preference hoặc giao diện login.
 - Landing preview là client component với dữ liệu mẫu cố định; không import workspace hoặc gọi API tài chính. Tài khoản công khai dùng user provider/menu hiện có, tách khỏi dữ liệu preview.
 - Metadata chia sẻ có ảnh Open Graph sinh bằng Next ImageResponse. App và login noindex; service worker chỉ cache offline.html, PWA mở /overview sau xác thực.
 - Catalog là nguồn module/status dùng chung; tài liệu và preview được rà soát cùng thay đổi theo AGENTS.md. Xem [đặc tả landing](features/landing.md).
@@ -151,3 +151,13 @@ Help dùng biến thể `help` của dialog chung, giữ cùng stack/inert, khó
 ### Tinh chỉnh trình đọc Help — 20/10/2026
 
 `HelpPageTitle` gắn nút theo pathname cạnh h1 của từng workspace và trang planned; không phụ thuộc tải dữ liệu nghiệp vụ. `HelpText` chỉ xử lý dấu nhấn biên tập thành React strong, giữ escape mặc định. Biến thể Help của ExpenseModal trì hoãn unmount khi đóng đến animationend hoặc timeout 300ms, dọn timer khi đổi route/unmount; các dialog khác giữ hành vi hiện có.
+
+## Chủ đề độc lập với chế độ hiển thị — 21/10/2026
+
+Danh sách `visualThemeKeys` dùng chung cho bộ chọn, kiểm tra giá trị và script trước paint; cấu hình `visualThemes` định nghĩa `VisualTheme = forest | water | gold | fire | earth`, màu thanh trình duyệt và lời dẫn. `fm-visual-theme` điều khiển `data-visual-theme`; `fm-theme` vẫn giữ light/dark/system để tương thích. PreferenceSync đọc snapshot hiện tại khi hydrate, script parser áp dụng lựa chọn trước lần vẽ đầu. CSS chọn các nhánh SVG/text cùng markup server/client, không remount workspace hay gọi API. Metadata theme-color do React quản lý; system mode dùng media theo color-scheme.
+
+Tùy chọn lưu theo origin trình duyệt, dùng storage event để cập nhật các tab và sự kiện nội bộ cho cùng tab. Storage bị chặn thì giữ trong bộ nhớ phiên của tab. Không thêm cookie, API, migration hay dữ liệu vào backup. Offline HTML độc lập đọc cùng hai khóa; service worker v6 chỉ cache trang này, không cache tài khoản/API. Manifest và biểu tượng cài đặt giữ nhận diện thương hiệu cố định. Xem [themes](features/themes.md).
+
+## Popover chọn cột — 21/10/2026
+
+`ColumnPicker` dùng Popover API (`popover="auto"`, invoker `popoverTarget`) để giữ DOM trong đúng dialog/section mà vẫn nằm trên top layer, tránh clipping bởi overflow của bảng. Tọa độ fixed được tính theo nút mở, giới hạn viewport và cập nhật khi scroll/resize; danh sách bên trong có vùng cuộn riêng. Không portal sang body ngoài dialog đang modal. Trạng thái cột vẫn dùng `usePreference`; `ColumnTable.showColumnPicker=false` cho phép đặt nút bên ngoài bảng mà giữ cùng cơ chế lọc header/body/footer. Escape được xử lý ở popover để không lan sang dialog cha.

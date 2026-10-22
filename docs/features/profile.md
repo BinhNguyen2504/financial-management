@@ -34,3 +34,7 @@ Menu tài khoản truyền đường quay lại nội bộ; nút Quay lại trê
 ## Help theo ngữ cảnh — 20/10/2026
 
 Help giải thích trường có thể chỉnh, email chỉ đọc, avatar từ tên, Lưu khi có thay đổi và Quay lại. Nút tra cứu không làm mất bản nháp hồ sơ. Xem [Help theo từng trang](help.md).
+
+## Bố cục và phản hồi lưu — 21/10/2026
+
+Nút Quay lại đứng cùng vùng tiêu đề; thẻ hồ sơ giới hạn chiều rộng đọc, phần nhận diện tách khỏi form, lưới trường chuyển một cột trên màn hình hẹp. Dấu `*` gắn sát nhãn Họ và tên. Lỗi ngày sinh/tên ở ngay dưới ô và đưa focus đến ô lỗi đầu; lưu thành công hiện toast, lỗi giữ bản nháp và báo tại form. Mất phản hồi khi cập nhật hồ sơ được báo là chưa rõ kết quả để người dùng kiểm tra trước khi thử lại.

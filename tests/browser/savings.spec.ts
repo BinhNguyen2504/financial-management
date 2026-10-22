@@ -487,9 +487,9 @@ test("deposits, atomic rollover, monthly locks, archive and historical reporting
   await page
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "hết tài sản",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("hết tài sản");
   await page.getByRole("button", { name: "Đóng", exact: true }).click();
   const report = await page.request.get(
     `/api/v1/savings/reports?from=${day}&to=${today}`,
@@ -531,9 +531,9 @@ test("savings API auth, invalid input, origin, private responses and draft recov
   await page
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "Mất kết nối",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("Mất kết nối");
   await expect(page.getByLabel("Số tiền (VND)", { exact: true })).toHaveValue(
     "12345",
   );
@@ -594,9 +594,9 @@ test("lost commit response retries once; empty categories archive and restore wi
     } else await route.fulfill({ response });
   });
   await page.getByRole("button", { name: "Xác nhận lưu", exact: true }).click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "Mất kết nối",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("Mất kết nối");
   await page.getByRole("button", { name: "Xác nhận lưu", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
   await page.unroute("**/api/v1/savings/commands");

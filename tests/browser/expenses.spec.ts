@@ -197,9 +197,9 @@ test("network errors preserve drafts and Escape restores keyboard access", async
     route.abort("failed"),
   );
   await page.getByRole("button", { name: "Xem trước thay đổi" }).click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "Mất kết nối",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("Mất kết nối");
   await expect(page.getByLabel("Tên hũ")).toHaveValue("Bản nháp còn nguyên");
   expect(
     await page.evaluate(
@@ -216,9 +216,9 @@ test("network errors preserve drafts and Escape restores keyboard access", async
     await route.abort("failed");
   });
   await page.getByRole("button", { name: "Xác nhận lưu" }).click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "Mất kết nối",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("Chưa xác nhận kết quả lưu");
   expect((await view(page)).book?.jars).toHaveLength(1);
   await page.unroute("**/api/v1/expenses/commands");
   await page.getByRole("button", { name: "Xác nhận lưu" }).click();
@@ -271,9 +271,9 @@ test("independent sessions detect conflicts, keep drafts, and reload without ove
       ).ok(),
     ).toBe(true);
     await page.getByRole("button", { name: "Xem trước thay đổi" }).click();
-    await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-      "phiên khác",
-    );
+    await expect(
+      page.getByRole("dialog").locator(".expense-error"),
+    ).toContainText("phiên khác");
     await expect(page.getByLabel("Tên hũ")).toHaveValue("Bản nháp đa thiết bị");
     await page
       .getByRole("button", { name: "Tải dữ liệu mới, giữ nội dung đang nhập" })

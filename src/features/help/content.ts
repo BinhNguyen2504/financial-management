@@ -76,7 +76,7 @@ export const articles: HelpArticles = {
         "Khi muốn kiểm tra nhanh tình hình Chi tiêu.",
         [
           "Đọc tháng đang hiển thị cùng ba chỉ số Mức tháng, Thực chi, Còn trong hũ.",
-          "Xem phần Tiền đã đi đâu? và Những hũ đang chăm để xác định khoản cần kiểm tra.",
+          "Xem phần Tiền đã đi đâu? và danh sách hũ để xác định khoản cần kiểm tra.",
           "Mở Chi tiêu để xem chi tiết và điều chỉnh số thực tế nếu cần.",
         ],
         "Kết quả: biết nên kiểm tra hũ nào trước; số tổng không thay thế việc đối chiếu.",
@@ -783,10 +783,11 @@ export const articles: HelpArticles = {
         "Chọn giao diện",
         "Khi muốn app phù hợp ánh sáng hoặc sở thích.",
         [
-          "Trong phần giao diện, chọn Sáng, Tối hoặc Theo hệ thống.",
+          "Trong Giao diện, chọn chủ đề Khu vườn (xanh lục), Dòng nước (xanh lam), Kim ngân (vàng), Lửa ấm (đỏ) hoặc Đất lành (nâu).",
+          "Chọn Sáng, Tối hoặc Theo hệ thống; mỗi chủ đề có bảng màu sáng/tối riêng và dùng chung chế độ bạn chọn.",
           "Với Theo hệ thống, app dùng lựa chọn sáng/tối của thiết bị.",
         ],
-        "Kết quả: giao diện đổi trên trình duyệt đang dùng, không đổi số liệu.",
+        "Kết quả: màu sắc, minh họa và lời dẫn đổi ngay, được nhớ trên trình duyệt và cập nhật giữa các tab; dữ liệu và bản nháp đang nhập được giữ. Tùy chọn này không đồng bộ theo tài khoản và không nằm trong backup tài chính.",
       ),
       task(
         "install-app",

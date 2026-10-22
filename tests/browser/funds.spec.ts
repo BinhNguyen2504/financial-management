@@ -146,8 +146,17 @@ test("onboarding links living expense, requires user x, previews without writing
   await expect(
     page.getByRole("region", { name: "Xem trước thay đổi" }),
   ).toContainText("54.000.000");
+  await expect(
+    page.getByRole("table", { name: "Các giá trị thay đổi" }),
+  ).toContainText("Trước");
+  await expect(
+    page.getByRole("table", { name: "Các giá trị thay đổi" }),
+  ).toContainText("Chênh lệch");
   await page.getByRole("button", { name: "Xác nhận lưu", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
+  await expect(page.locator('[data-toast-kind="success"]')).toContainText(
+    "Đã lưu thay đổi",
+  );
   await expect(page.locator(".fund-next")).toContainText("Rainy Day Fund");
   expect((await view(page)).book?.configurations[0].priority[0]).toBe(
     "rainy_day",
@@ -193,8 +202,22 @@ test("nested transactions, atomic transfers, corrections and filters retain pare
   await page.getByLabel("Quỹ nhận", { exact: true }).selectOption("rainy_day");
   await page.getByLabel("Nơi nhận", { exact: true }).selectOption(s.cash);
   await page.getByLabel("Số tiền (VND)", { exact: true }).fill("200000");
+  await expect(page.locator(".money-input-hint")).toContainText("200.000 ₫");
   await page.getByLabel("Lý do giao dịch", { exact: true }).fill("Phân bổ lại");
-  await save(page);
+  const transferDialog = page.getByRole("dialog");
+  await transferDialog
+    .getByRole("button", { name: "Xem trước thay đổi" })
+    .click();
+  const changes = transferDialog.getByRole("table", {
+    name: "Các giá trị thay đổi",
+  });
+  await expect(
+    changes.locator(".fund-change-row:not(.fund-change-header)"),
+  ).toHaveCount(2);
+  await expect(changes).toContainText("−200.000 ₫");
+  await expect(changes).toContainText("+200.000 ₫");
+  await transferDialog.getByRole("button", { name: "Xác nhận lưu" }).click();
+  await expect(transferDialog).toBeHidden();
   await expect
     .poll(async () => (await view(page)).state.funds.map((f) => f.balance))
     .toEqual(["1000000", "200000", "0"]);
@@ -257,9 +280,9 @@ test("version conflicts preserve drafts and lost save responses retry once", asy
     .click();
   await post(page, s.bank, "5");
   await page.getByRole("button", { name: "Xác nhận lưu", exact: true }).click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "Dữ liệu đã đổi",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("Dữ liệu đã đổi");
   await page
     .getByRole("button", {
       name: "Tải dữ liệu mới, giữ nội dung nhập",
@@ -292,93 +315,121 @@ test("version conflicts preserve drafts and lost save responses retry once", asy
   expect((await view(page)).state.total).toBe("105");
   expect((await view(page)).book?.revisions).toHaveLength(2);
 });
-test("real progress scenes, privacy, reduced motion, keyboard and responsive themes", async ({
-  page,
-}, info) => {
-  const errors: string[] = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  const s = await setup(page);
-  await post(page, s.bank, "27000000");
-  await post(page, s.bank, "6750000", { fundId: "rainy_day" });
-  await post(page, s.bank, "9000000", { fundId: "sinking" });
-  await page.reload();
-  await expect(
-    page.locator('[data-fund="emergency"] .fund-scene'),
-  ).toHaveAttribute("data-progress", "0.5");
-  await expect(
-    page.locator('[data-fund="rainy_day"] .fund-scene'),
-  ).toHaveAttribute("data-progress", "0.75");
-  await page.screenshot({
-    path: `artifacts/funds-light-${info.project.name}.png`,
-    fullPage: true,
-  });
-  await page.getByRole("button", { name: "Ẩn số tiền", exact: true }).click();
-  await expect(page.locator(".fund-workspace")).not.toContainText("27.000.000");
-  await expect(page.locator('[data-fund="emergency"]')).toContainText("50,00%");
-  await page
-    .locator('[data-fund="emergency"]')
-    .getByRole("button", { name: "Thêm tiền", exact: true })
-    .click();
-  await expect(
-    page.getByRole("button", { name: "Xem trước thay đổi", exact: true }),
-  ).toBeDisabled();
-  await page
-    .getByRole("button", { name: "Hiện tiền trong form", exact: true })
-    .click();
-  await expect(
-    page.getByRole("button", { name: "Xem trước thay đổi", exact: true }),
-  ).toBeEnabled();
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Đóng", exact: true })
-    .click();
-  await expect(page.locator(".fund-workspace")).not.toContainText("27.000.000");
-  await page.getByRole("button", { name: "Hiện số tiền", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Xem Emergency Fund", exact: true })
-    .click();
-  await page.getByRole("tab", { name: "Hướng dẫn", exact: true }).focus();
-  await page.keyboard.press("End");
-  await expect(
-    page.getByRole("tab", { name: "Lịch sử", exact: true }),
-  ).toBeFocused();
-  await expect(
-    page.getByRole("tab", { name: "Lịch sử", exact: true }),
-  ).toHaveAttribute("aria-selected", "true");
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Đóng", exact: true })
-    .click();
-  await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await page.screenshot({
-    path: `artifacts/funds-dark-${info.project.name}.png`,
-    fullPage: true,
-  });
-  expect(
+for (const progressTheme of ["gold", "fire", "earth"] as const)
+  test(`real progress scenes, privacy, reduced motion, keyboard and responsive ${progressTheme} theme`, async ({
+    page,
+  }, info) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.addInitScript(
+      (theme) => localStorage.setItem("fm-visual-theme", theme),
+      progressTheme,
+    );
+    const s = await setup(page);
+    await expect(
+      page.locator('[data-fund="emergency"] .fund-scene'),
+    ).toHaveAttribute("data-progress", "0");
+    await post(page, s.bank, "13500000");
+    await page.reload();
+    await expect(
+      page.locator('[data-fund="emergency"] .fund-scene'),
+    ).toHaveAttribute("data-progress", "0.25");
+    await expect(
+      page.locator(
+        `[data-fund="emergency"] .fund-scene > [data-visual-only="${progressTheme}"]`,
+      ),
+    ).toBeVisible();
+    await post(page, s.bank, "13500000");
+    await post(page, s.bank, "6750000", { fundId: "rainy_day" });
+    await post(page, s.bank, "9000000", { fundId: "sinking" });
+    await page.reload();
+    await expect(
+      page.locator('[data-fund="emergency"] .fund-scene'),
+    ).toHaveAttribute("data-progress", "0.5");
+    await expect(
+      page.locator('[data-fund="rainy_day"] .fund-scene'),
+    ).toHaveAttribute("data-progress", "0.75");
+    await page.screenshot({
+      path: `artifacts/funds-${progressTheme}-light-${info.project.name}.png`,
+      fullPage: true,
+    });
+    await page.getByRole("button", { name: "Ẩn số tiền", exact: true }).click();
+    await expect(page.locator(".fund-workspace")).not.toContainText(
+      "27.000.000",
+    );
+    await expect(page.locator('[data-fund="emergency"]')).toContainText(
+      "50,00%",
+    );
     await page
-      .locator(".fund-scene")
-      .first()
-      .evaluate((el) => getComputedStyle(el.querySelector("g")!).animationName),
-  ).toBe("none");
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
-  expect(errors).toEqual([]);
-  await post(page, s.bank, "81000000");
-  await page.reload();
-  await expect(
-    page.locator('[data-fund="emergency"] .fund-scene'),
-  ).toHaveAttribute("data-progress", "1");
-  await expect(page.locator('[data-fund="emergency"]')).toContainText(
-    "200,00%",
-  );
-  await expect(page.locator('[data-fund="emergency"]')).toContainText(
-    "Vượt mục tiêu",
-  );
-});
+      .locator('[data-fund="emergency"]')
+      .getByRole("button", { name: "Thêm tiền", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Xem trước thay đổi", exact: true }),
+    ).toBeDisabled();
+    await page
+      .getByRole("button", { name: "Hiện tiền trong form", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Xem trước thay đổi", exact: true }),
+    ).toBeEnabled();
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Đóng", exact: true })
+      .click();
+    await expect(page.locator(".fund-workspace")).not.toContainText(
+      "27.000.000",
+    );
+    await page
+      .getByRole("button", { name: "Hiện số tiền", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Xem Emergency Fund", exact: true })
+      .click();
+    await page.getByRole("tab", { name: "Hướng dẫn", exact: true }).focus();
+    await page.keyboard.press("End");
+    await expect(
+      page.getByRole("tab", { name: "Lịch sử", exact: true }),
+    ).toBeFocused();
+    await expect(
+      page.getByRole("tab", { name: "Lịch sử", exact: true }),
+    ).toHaveAttribute("aria-selected", "true");
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Đóng", exact: true })
+      .click();
+    await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({
+      path: `artifacts/funds-${progressTheme}-dark-${info.project.name}.png`,
+      fullPage: true,
+    });
+    expect(
+      await page
+        .locator(".fund-scene")
+        .first()
+        .evaluate(
+          (el) => getComputedStyle(el.querySelector("g")!).animationName,
+        ),
+    ).toBe("none");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    expect(errors).toEqual([]);
+    await post(page, s.bank, "81000000");
+    await page.reload();
+    await expect(
+      page.locator('[data-fund="emergency"] .fund-scene'),
+    ).toHaveAttribute("data-progress", "1");
+    await expect(page.locator('[data-fund="emergency"]')).toContainText(
+      "200,00%",
+    );
+    await expect(page.locator('[data-fund="emergency"]')).toContainText(
+      "Vượt mục tiêu",
+    );
+  });
 test("fund pages and APIs enforce auth and cookie origin, landing stays illustrative", async ({
   page,
 }) => {
@@ -459,9 +510,9 @@ test("locations archive only at zero; canceled entries remain in history and lis
   await page
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "bằng 0",
-  );
+  await expect(
+    page.getByRole("dialog").locator(".expense-error"),
+  ).toContainText("bằng 0");
 });
 test("foreground refresh keeps drafts on network failure and clears data on auth expiry", async ({
   page,

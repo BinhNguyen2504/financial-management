@@ -354,7 +354,7 @@
   box-shadow: 0 20px 90px #0005;
 }
 .expense-dialog::backdrop {
-  background: #182019c2;
+  background: var(--dialog-scrim);
 }
 .expense-dialog-heading {
   display: flex;

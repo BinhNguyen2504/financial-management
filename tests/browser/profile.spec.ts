@@ -124,6 +124,21 @@ test("validation and save failures preserve drafts and support retry", async ({
     "Tên sau khi thử lại",
   );
   await page.unroute("**/auth/v1/user");
+  await page.route("**/auth/v1/user", (route) =>
+    route.request().method() === "PUT"
+      ? route.abort("failed")
+      : route.continue(),
+  );
+  await page
+    .getByRole("button", { name: "Lưu thông tin", exact: true })
+    .click();
+  await expect(page.locator('[data-toast-kind="warning"]')).toContainText(
+    "Chưa xác nhận kết quả lưu hồ sơ",
+  );
+  await expect(page.getByLabel("Họ và tên", { exact: true })).toHaveValue(
+    "Tên sau khi thử lại",
+  );
+  await page.unroute("**/auth/v1/user");
   await page
     .getByRole("button", { name: "Lưu thông tin", exact: true })
     .click();

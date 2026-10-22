@@ -1,5 +1,5 @@
 // Only the neutral offline document is cached. Never cache account pages or APIs.
-const CACHE = "fm-offline-v2";
+const CACHE = "fm-offline-v6";
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.add("/offline.html")));
 });

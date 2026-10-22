@@ -70,3 +70,11 @@ Phân loại Chi tiêu có `brand_key`/`icon_key` nullable sau migration `202610
 ## Help theo ngữ cảnh — 20/10/2026
 
 Help tại Cài đặt hướng dẫn file JSON toàn tài khoản, khôi phục vào tài khoản trống, hồ sơ tùy chọn và file luôn chứa đầy đủ số tiền. Không thêm gộp/ghi đè hoặc nhập từng phần. Xem [Help theo từng trang](help.md).
+
+## Chủ đề — 21/10/2026
+
+Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành (`fm-visual-theme`) và chế độ Sáng/Tối/Theo hệ thống (`fm-theme`) là tùy chọn trình duyệt. Không xuất hoặc khôi phục chúng qua JSON tài chính; đổi chủ đề khi đang xem trước khôi phục giữ nguyên file và lựa chọn trong phiên.
+
+## Phản hồi khôi phục — 21/10/2026
+
+File không hợp lệ báo lỗi ngay gần vùng chọn file và liên kết lỗi với nút chọn. Khôi phục tài chính thành công mới hiện toast thành công; nếu tiếp theo lưu hồ sơ lỗi, báo riêng phần hồ sơ và giữ kết quả tài chính đã ghi. Mất xác nhận hoặc lỗi nhập có thông báo tại Cài đặt, không tự kết luận thành công. Giữ bản xem trước và tùy chọn hồ sơ khi có thể thử lại.

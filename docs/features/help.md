@@ -14,7 +14,7 @@ Cập nhật theo phản hồi ngày 20/10/2026: nút Hướng dẫn dùng biể
 
 Bảng trượt vào từ phải trong 280ms, thu về trong 220ms; nền mờ chuyển cùng nhịp. Đóng khi đang mở tiếp tục từ vị trí hiện tại. Help giữ lớp modal và khóa cuộn đến hết hiệu ứng, rồi mới trả focus; có timeout dự phòng 300ms nếu không nhận animationend. Reduced motion bỏ hiệu ứng và đóng ngay. Đổi route gỡ bảng ngay, không giữ animation cũ.
 
-Nội dung source hỗ trợ hai dấu nhấn có chủ đích: `**ý quan trọng**` và `==số liệu/quy tắc nổi bật==`. Renderer chỉ tạo strong/span bằng React, không diễn giải HTML hoặc link. Giữ nguyên định nghĩa quỹ dùng chung.
+Nội dung source hỗ trợ hai dấu nhấn có chủ đích: `**ý quan trọng**` và `==số liệu/quy tắc nổi bật==`. Renderer chỉ tạo strong và text bằng React, không diễn giải HTML hoặc link. Giữ nguyên định nghĩa quỹ dùng chung.
 
 ## Nội dung và phạm vi
 
@@ -40,3 +40,7 @@ Public landing có FAQ dùng mô tả chung trong catalog; preview dùng phần 
 Khi thêm trang hoặc đổi nghiệp vụ, cập nhật bài tương ứng, ID tại điểm tra cứu và catalog nếu phạm vi thay đổi. Đối chiếu tên nút với UI, đặc biệt Lưu trực tiếp so với Xem trước/Xác nhận. Kiểm thử contract phát hiện thiếu bài/mục, trùng ID và khác biệt định nghĩa quỹ.
 
 Browser tests trong `tests/browser/help.spec.ts` bao phủ đủ trang, không gọi API khi mở Help, dialog lồng nhau, định tuyến, lỗi API và tải chunk, theme, viewport, bàn phím, chữ lớn và preview công khai. Kết quả chạy thực tế, môi trường và giới hạn được bổ sung tại [validation](../07-validation.md).
+
+## Chủ đề — 21/10/2026
+
+Hướng dẫn Cài đặt giải thích năm chủ đề, chế độ sáng/tối dùng chung và phạm vi lưu theo trình duyệt. Bảng hướng dẫn kế thừa màu, icon trang trí theo chủ đề; cấu trúc, thao tác và quy tắc tài chính giữ nguyên.

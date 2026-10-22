@@ -264,7 +264,9 @@ test("income network retry and independent session conflicts preserve drafts", a
     .getByRole("dialog")
     .getByRole("button", { name: "Lưu", exact: true })
     .click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toBeVisible();
+  await expect(
+    page.getByRole("dialog").locator(".form-error-summary"),
+  ).toBeVisible();
   await expect(
     page.getByRole("dialog").getByLabel("Tên", { exact: true }),
   ).toHaveValue("Bản nháp giữ lại");
@@ -290,9 +292,9 @@ test("income network retry and independent session conflicts preserve drafts", a
       .getByRole("dialog")
       .getByRole("button", { name: "Lưu", exact: true })
       .click();
-    await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-      "phiên khác",
-    );
+    await expect(
+      page.getByRole("dialog").locator(".form-error-summary"),
+    ).toContainText("phiên khác");
     await page
       .getByRole("button", {
         name: "Tải dữ liệu mới, giữ nội dung nhập",
@@ -337,7 +339,9 @@ test("income retries a lost response after commit without duplicating income or 
     .getByRole("dialog")
     .getByRole("button", { name: "Lưu", exact: true })
     .click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toBeVisible();
+  await expect(
+    page.getByRole("dialog").locator(".form-error-summary"),
+  ).toBeVisible();
   expect((await view(page)).book!.version).toBe(1);
   const refresh = page.waitForResponse((response) =>
     response.url().includes("/api/v1/income?year="),

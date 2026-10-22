@@ -18,7 +18,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useState } from "react";
-import type { Label } from "@/domain/expenses/types";
+import type { Label, ExpenseRow } from "@/domain/expenses/types";
 import {
   paymentBrands,
   suggestedBrand,
@@ -77,12 +77,12 @@ export function LabelVisual({
         <img
           src={`/brands/${brand.file}`}
           alt=""
-          width={28}
-          height={28}
+          width={20}
+          height={20}
           onError={() => setFailed(brand.key)}
         />
       ) : (
-        <Icon size={21} />
+        <Icon size={16} />
       )}
     </span>
   );
@@ -107,6 +107,24 @@ export function LabelName({
     </span>
   );
 }
+export function JarClassification({
+  row,
+  labels,
+}: {
+  row: ExpenseRow;
+  labels?: Label[];
+}) {
+  return (
+    <div className="expense-jar-meta">
+      <span className="expense-kind-label">
+        {row.kind === "monthly" ? "Chi tháng" : "Tích lũy"}
+      </span>
+      <LabelName name={row.method} labels={labels} />
+      {row.group && <LabelName name={row.group} labels={labels} kind="group" />}
+      {!row.active && <span className="expense-inactive-label">Đã ngừng</span>}
+    </div>
+  );
+}
 export function LabelSelect({
   name,
   value,
@@ -129,7 +147,11 @@ export function LabelSelect({
     <div className="form-field">
       <label htmlFor={id}>
         {name}
-        {kind === "method" && <span className="required-mark"> *</span>}
+        {kind === "method" && (
+          <span className="required-mark" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       <div className="label-select">
         <LabelVisual

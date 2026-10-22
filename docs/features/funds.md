@@ -46,3 +46,11 @@ Help tái sử dụng guides hiện có cho định nghĩa và nguyên tắc ba 
 ## Quy chuẩn giao diện dùng chung — 20/10/2026
 
 Form có chỉ báo bắt buộc, lỗi tại trường và tổng hợp lỗi có liên kết; tiền nguyên được chuẩn hóa khi blur/submit. Sửa dữ liệu không thay đổi vô hiệu xem trước/lưu. Nút hủy/lưu và thao tác giao dịch có icon, hủy giao dịch có nhấn mạnh nguy hiểm. Giữ nguyên wizard cấu hình, công thức quỹ và lịch sử; bảng dùng bộ căn cột chung. Xem [đối chiếu phản hồi toàn ứng dụng](interface-feedback-2026-10-19.md).
+
+## Minh họa theo chủ đề — 21/10/2026
+
+Khu vườn giữ cây/tán ô/cây cầu; Dòng nước dùng hồ dự trữ đầy dần, mái che mở rộng dưới mưa và thuyền tiến về bến. Kim ngân có chồng xu cao dần (Emergency), túi dự phòng đầy dần có khiên bảo vệ (Rainy Day) và rương tích lũy đầy dần (Sinking). Lửa ấm có bếp lửa ấm dần (Emergency), đèn dưới mái che sáng dần (Rainy Day) và đốm lửa tiến về đèn đích (Sinking). Đất lành có nền đá xây cao dần (Emergency), mái trú đất nung mở rộng (Rainy Day) và đá xếp tiến lên bậc thang đến đích (Sinking). Năm bộ cùng nhận tỷ lệ đã giới hạn cho hình vẽ; dữ liệu/số dư và mốc 0/25/50/75/100% giữ cách tính hiện có. Vượt mục tiêu chỉ giới hạn hình ở 100%. Che tiền không che tỷ lệ. Nhãn trang trí theo chủ đề, hướng dẫn nghiệp vụ giữ nguyên. Xem [themes](themes.md).
+
+## Xem trước giao dịch và phản hồi — 21/10/2026
+
+Xem trước nêu loại giao dịch cùng bảng các số dư/mục tiêu thực sự đổi, đối chiếu Trước–Sau và mức tăng giảm. Nơi giữ tiền, nguồn mức sinh hoạt và giao dịch gốc nằm trong Chi tiết có thể mở. Tiền VND được đọc ngay dưới ô; hệ số x giữ dạng số. Lỗi tại trường hoặc form, toast kết quả và footer cố định dùng cùng quy chuẩn chung; không ghi từ bước xem trước.

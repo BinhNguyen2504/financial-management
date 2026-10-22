@@ -13,6 +13,7 @@ import { useMoney } from "@/components/privacy";
 import { DailyNote } from "@/components/daily-note";
 import { Garden } from "@/components/garden";
 import { focusPointerControl } from "@/components/pointer-focus";
+import { useToast } from "@/components/toast";
 import { MissingIncome } from "./missing-income";
 import {
   Plus,
@@ -41,6 +42,7 @@ export function IncomeWorkspace({
   configured: boolean;
   initialToday: string;
 }) {
+  const toast = useToast();
   const money = useMoney();
   const displayMoney = useDisplayMoney();
   const [year, setYear] = useState(Number(initialToday.slice(0, 4)));
@@ -137,13 +139,14 @@ export function IncomeWorkspace({
   }
   async function saved() {
     setEditor(null);
-    setNotice("Đã lưu thay đổi.");
+    setNotice("");
     try {
       await reload();
     } catch {
       setNotice(
         "Đã lưu trên server. Chưa tải lại được dữ liệu; hãy thử tải lại.",
       );
+      toast("warning", "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.");
     }
   }
   function navigateMonth(delta: number) {
