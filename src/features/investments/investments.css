@@ -12,6 +12,9 @@
   width: 180px;
   flex-shrink: 0;
 }
+.investment-heading > div {
+  min-width: 0;
+}
 .investment-heading h1 {
   margin: 8px 0;
 }
@@ -354,7 +357,9 @@
 }
 @media (max-width: 639px) {
   .investment-heading > .garden-art {
-    display: none;
+    width: 96px;
+    max-width: 26%;
+    align-self: flex-start;
   }
   .investment-heading {
     margin-bottom: 20px;

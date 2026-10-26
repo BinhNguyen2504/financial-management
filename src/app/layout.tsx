@@ -10,6 +10,7 @@ import "@/features/profile/profile.css";
 import "./experience.css";
 import "@/components/scroll-tabs.css";
 import "./visual-themes.css";
+import "@/components/illustrated-heading.css";
 const nunito = Nunito({
   subsets: ["latin", "vietnamese"],
   display: "swap",

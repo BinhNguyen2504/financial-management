@@ -2,6 +2,8 @@
 
 `/funds` cung cấp Emergency (biến cố lớn), Rainy Day (phát sinh nhỏ), Sinking (chi phí thiết yếu đã biết trước). Mục tiêu mua sắm/cuộc sống nằm ở Financial Goals riêng. Nội dung hướng dẫn tham khảo [CFPB](https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/) và [MoneyHelper](https://www.moneyhelper.org.uk/en/blog/everyday-money/sinking-funds-explained). Phân biệt ba quỹ là cách tổ chức sản phẩm; số tháng và ưu tiên do người dùng chọn.
 
+Tinh chỉnh 26/10/2026: nguồn CFPB/MoneyHelper dùng `.external-link` chung với Cài đặt và Thu nhập, có chữ đậm, màu theo theme, gạch chân luôn hiện và phản hồi hover/focus. Chữ được xuống dòng trên mobile, giữ đích mở tab mới; cùng thành phần hướng dẫn xuất hiện ở onboarding và chi tiết quỹ.
+
 ## Thiết lập và nguồn
 
 Giới thiệu → chọn hũ sinh hoạt → nhập ba hệ số x → xếp ưu tiên bằng nút → xem trước → xác nhận. GET không tự tạo sổ. Living expense cộng mức cấu hình hiệu lực của hũ chi tháng đang hoạt động, bỏ qua ngoại lệ theo tháng và hũ tích lũy. Snapshot giữ ID/tên/mức hũ, tháng, expenseVersion. x là chuỗi thập phân dương tối đa hai chữ số lẻ; mục tiêu làm tròn lên VND, mỗi mục tiêu/số dư không quá 24 chữ số. Không có số mặc định từ ảnh Notion.
@@ -62,3 +64,7 @@ Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định d
 ## Bố cục và cuộn — 23/10/2026
 
 Tab chi tiết một hàng cuộn ngang, giữ nhãn đầy đủ và đưa mục đang chọn vào tầm nhìn bằng cuộn nội bộ. Phân trang giao dịch được rà soát cùng nhóm điều khiển mobile. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).
+
+## Minh họa và bố cục tiêu đề — 26/10/2026
+
+Tiêu đề luôn có cảnh bảo vệ riêng cho năm theme: cây/khiên, hải đăng, két dự phòng, vòm nến, vòm đá che mầm cây. Hình trang trí tĩnh, không biểu thị tỷ lệ giả; tiến độ thật vẫn do `ProgressScene` ở từng thẻ đảm nhiệm. Hình dùng tỷ lệ lớn chung với các trang tài chính; Nơi giữ tiền/Điều chỉnh mục tiêu ở hàng riêng khi đã thiết lập quỹ. Không đổi cấu hình, số tiền hoặc cách tính mục tiêu. Xem [tỷ lệ minh họa](themes.md).

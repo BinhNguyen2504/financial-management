@@ -5,6 +5,7 @@ import { useI18n } from "@/i18n/provider";
 
 import { ColumnTable } from "@/components/column-table";
 import { Garden } from "@/components/garden";
+import { AssetScene } from "@/components/asset-scene";
 import { LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
@@ -243,8 +244,8 @@ export function InvestmentWorkspace({
       className="investment-workspace"
       onMouseDownCapture={focusPointerControl}
     >
-      <header className="investment-heading">
-        <div>
+      <header className="investment-heading illustrated-heading">
+        <div className="heading-copy">
           <p className="eyebrow">{tr("Vốn và giá trị hiện tại")}</p>
           <HelpPageTitle>{tr("Đầu tư")}</HelpPageTitle>
           <p className="lead">
@@ -253,7 +254,9 @@ export function InvestmentWorkspace({
             )}
           </p>
         </div>
-        <Garden variant="grove" />
+        <div className="heading-art">
+          <AssetScene kind="investments" />
+        </div>
       </header>
       {!configured ? (
         <section className="panel">
@@ -404,7 +407,7 @@ export function InvestmentWorkspace({
                     </p>
                     {!categories.length ? (
                       <section className="panel investment-empty">
-                        <Garden variant="grove" />
+                        <Garden variant="sprout" />
                         <h2>{tr("Bắt đầu từ những gì bạn đang có")}</h2>
                         <p>
                           {tr(

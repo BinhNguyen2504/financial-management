@@ -30,13 +30,13 @@ Catalog dùng chung cho trạng thái module; quy tắc trong `AGENTS.md` yêu c
 
 ## Giao diện Zen
 
-Tổng quan và các màn hình dùng Nunito tiếng Việt, minh họa SVG cùng năm chủ đề **Khu vườn (xanh lục)**, **Dòng nước (xanh lam)**, **Kim ngân (vàng)**, **Lửa ấm (đỏ)** và **Đất lành (nâu)**. Đổi trong Cài đặt, áp dụng ngay cho app, landing sau đăng nhập, trang đăng nhập và trang mất kết nối (landing khách dùng nhận diện riêng); mỗi chủ đề có màu sáng/tối riêng, dùng chung lựa chọn Sáng/Tối/Theo hệ thống. Minh họa và lời dẫn đi theo chủ đề; emoji người dùng giữ nguyên. Logo hũ tích lũy/đồng xu dùng màu than–ngà chung cho cả năm chủ đề, đảo theo sáng/tối; favicon và icon cài app cùng biểu tượng. Tổng quan đọc dữ liệu hũ tháng hiện tại; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Biểu đồ Tiết kiệm có tooltip cho điểm, cột nạp/rút, lát donut và chú giải khi rê chuột, chạm hoặc dùng Tab. Nút mắt ở header che số tiền trong Chi tiêu, Thu nhập, Tiết kiệm (kể cả giá/lượng vàng), Đầu tư và Quỹ an toàn; form có nút hiện riêng. Các tùy chọn riêng tư, theme, sidebar và cột bảng được lưu trên trình duyệt; chủ đề/chế độ đồng bộ giữa các tab, không đồng bộ tài khoản và không nằm trong backup tài chính; không lưu bản nháp hay dữ liệu tài chính. Backup/CSV vẫn chứa số đầy đủ. Dialog các module có tóm tắt số liệu, tab theo nội dung, tìm kiếm/lọc và danh sách 20 dòng mỗi trang; mở form con rồi quay lại giữ vị trí. Xem [hướng UI/UX](docs/04-ux-direction.md).
+Tổng quan và các màn hình dùng Nunito tiếng Việt, minh họa SVG cùng năm chủ đề **Khu vườn (xanh lục)**, **Dòng nước (xanh lam)**, **Kim ngân (vàng)**, **Lửa ấm (đỏ)** và **Đất lành (nâu)**. Đổi trong Cài đặt, áp dụng ngay cho app, landing sau đăng nhập, trang đăng nhập và trang mất kết nối (landing khách dùng nhận diện riêng); mỗi chủ đề có màu sáng/tối riêng, dùng chung lựa chọn Sáng/Tối/Theo hệ thống. Minh họa và lời dẫn đi theo chủ đề; emoji người dùng giữ nguyên. Logo hũ tích lũy/đồng xu dùng màu than–ngà chung cho cả năm chủ đề, đảo theo sáng/tối; favicon và icon cài app cùng biểu tượng. Tổng quan đọc dữ liệu hũ tháng hiện tại; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Biểu đồ Tiết kiệm có tooltip cho điểm, cột nạp/rút, lát donut và chú giải khi rê chuột, chạm hoặc dùng Tab. Nút mắt ở header che số tiền trong Chi tiêu, Thu nhập, Tiết kiệm (kể cả giá/lượng vàng), Đầu tư và Quỹ an toàn; form có nút hiện riêng. Nút chevron thu gọn/mở rộng menu desktop nằm trên mép phải sidebar, ngang hàng logo, với vòng tròn nhỏ và vùng bấm rộng. Các tùy chọn riêng tư, theme, sidebar và cột bảng được lưu trên trình duyệt; chủ đề/chế độ đồng bộ giữa các tab, không đồng bộ tài khoản và không nằm trong backup tài chính; không lưu bản nháp hay dữ liệu tài chính. Backup/CSV vẫn chứa số đầy đủ. Dialog các module có tóm tắt số liệu, tab theo nội dung, tìm kiếm/lọc và danh sách 20 dòng mỗi trang; mở form con rồi quay lại giữ vị trí. Xem [hướng UI/UX](docs/04-ux-direction.md).
 
 Tổng quan, Chi tiêu và Thu nhập giữ nội dung khi quay lại tab; dữ liệu đã tải ít nhất 60 giây được cập nhật ngầm, gộp các sự kiện quay lại trùng nhau. Có mạng trở lại hoặc đổi ngày Việt Nam sẽ kiểm tra sớm hơn (cách lần tải trước ít nhất 5 giây). Lần mở đầu hoặc đổi năm Thu nhập vẫn có trạng thái tải. Các trạng thái tải dữ liệu có vòng xoay kèm thông báo; nút gửi/lưu/khôi phục hiển thị tiến trình trong lúc chờ server. Hiệu ứng theo màu sáng/tối và dừng khi bật giảm chuyển động. Xem [phản hồi giao diện](docs/features/ui-feedback.md). Nếu gặp hydration diff `cz-shortcut-listen`, xem [cách xử lý extension](docs/08-troubleshooting.md).
 
 Mỗi trang trong ứng dụng có **Hướng dẫn** cạnh tiêu đề, với đề mục đánh số, từ khóa và ví dụ được nhấn rõ. Nội dung bao gồm mục đích, tư duy sử dụng, thuật ngữ và thao tác. Có thể tra cứu ngay từ form rồi quay lại với bản nháp còn nguyên; ví dụ dùng số liệu minh họa cố định. Xem [Help theo từng trang](docs/features/help.md).
 
-Biểu mẫu tài chính đọc số tiền VND ngay dưới ô, đặt `*` sát nhãn cần nhập và báo lỗi tại đúng trường. Lưu thành công hoặc lỗi có thông báo chung; trường hợp chưa rõ kết quả lưu được nêu riêng và giữ bản nháp. Dialog giữ hàng nút thao tác khi cuộn; bước xem trước Quỹ an toàn ưu tiên những số thực sự thay đổi. Sidebar desktop có nút thu gọn ở đầu menu; biểu tượng ứng dụng vẫn hiện ở thanh mobile. Xem [quy chuẩn phản hồi giao diện](docs/features/ui-feedback.md).
+Biểu mẫu tài chính đọc số tiền VND ngay dưới ô, đặt `*` sát nhãn cần nhập và báo lỗi tại đúng trường. Lưu thành công hoặc lỗi có thông báo chung; trường hợp chưa rõ kết quả lưu được nêu riêng và giữ bản nháp. Dialog giữ hàng nút thao tác khi cuộn; bước xem trước Quỹ an toàn ưu tiên những số thực sự thay đổi. Sidebar desktop có nút thu gọn ở mép phân cách, ngang hàng logo; biểu tượng ứng dụng vẫn hiện ở thanh mobile. Xem [quy chuẩn phản hồi giao diện](docs/features/ui-feedback.md).
 
 ## Ngôn ngữ Anh/Việt
 
@@ -140,9 +140,15 @@ Bộ mẫu Fund để review có ba mức 50% / 105% / 25%, 37 giao dịch gốc
 
 ## Cải thiện thao tác — 19/10/2026
 
+Tinh chỉnh 26/10: chú thích dưới các card hướng dẫn cài đặt có khoảng cách riêng với card và lưu ý kết nối mạng, dùng chung cho cả ba nhóm thiết bị.
+
+Liên kết ngoài trong hướng dẫn cài đặt, tài liệu tham khảo Quỹ an toàn và thiết lập Thu nhập dùng chung màu theo theme, chữ đậm và gạch chân luôn hiện; hover/focus làm nét gạch chân đậm hơn để dễ nhận biết thao tác.
+
 Menu theo trạng thái triển khai, sidebar thu gọn, header giữ nút ẩn tiền, theme sáng/tối/hệ thống; Thu nhập nhắc rõ khoản thiếu và nhập ngay từ báo cáo. Chi tiêu chọn năm bất kỳ, chọn phân loại có sẵn kèm logo/icon và tùy chỉnh cột. Hướng dẫn cài đặt có minh họa theo thiết bị. Xem [đối chiếu 33 phản hồi](docs/features/interface-feedback-2026-10-19.md). Lưu logo/icon tùy chọn cần migration `202610190002_label_visuals.sql`; schema cũ vẫn dùng được các thao tác không có metadata. Chưa áp dụng migration cloud trong đợt này.
 
 Tinh chỉnh 21/10: chọn cột bằng popover nổi, không đẩy bảng; Chi tiêu đặt nút cạnh tiêu đề tháng, dùng chung lựa chọn trên desktop/mobile. Logo phương thức 20px, ưu tiên biểu tượng riêng thay wordmark và sắp nhãn phụ thành các cụm gọn. Xem [đặc tả](docs/features/expenses.md#cột-hiển-thị-và-nhận-diện-phương-thức--21102026).
+
+Tinh chỉnh 26/10: cột thao tác bảng hũ căn giữa một hoặc hai nút; Dùng tiền dùng icon ví đồng bộ nút sửa, có nhãn truy cập và tooltip. Nền tiêu đề/hàng được cắt theo góc bo của bảng, giữ cuộn dữ liệu và popover chọn cột.
 
 ## Chủ đề giao diện — 21/10/2026
 
@@ -151,3 +157,11 @@ Khu vườn giữ thiết kế xanh lục hiện có; Dòng nước dùng xanh l
 ### Bố cục mobile và bảng — 23/10/2026
 
 Tab trong app và dialog giữ nhãn một dòng, cuộn ngang khi thiếu chỗ; preview mobile dùng cùng hành vi. Nút chọn cột giữ vị trí theo khung bảng khi cuộn dữ liệu. Thu nhập đặt mũi tên hai bên bộ chọn kỳ và giữ hàng nhập thiếu gọn, đều với hàng có số. Xem [ma trận rà soát toàn ứng dụng](docs/features/layout-scroll-2026-10-23.md) và [bằng chứng kiểm thử](docs/07-validation.md).
+
+### Minh họa Tiết kiệm và Đầu tư — 26/10/2026
+
+Mỗi trang có năm cảnh riêng theo theme: Tiết kiệm dùng nhà kính, bồn hứng nước, heo đất, đèn lồng và chum; Đầu tư dùng vườn cây ăn quả, thuyền buồm, cân tài sản, lò gốm và cầu đá. Bộ mười hình SVG hỗ trợ sáng/tối, xuất hiện cả trong preview thành viên; trạng thái trống có cảnh khác tiêu đề. Hình trang trí không biểu thị số dư hay cam kết lợi nhuận. Xem [chủ đề giao diện](docs/features/themes.md).
+
+### Tiêu đề và tỷ lệ minh họa — 26/10/2026
+
+Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn dùng bố cục tiêu đề chung: hình 240–320px cạnh chữ trên desktop/tablet, 216px ở hàng riêng dưới chữ trên điện thoại. Nút thao tác có hàng riêng. Chi tiêu thêm cảnh hũ, Quỹ thêm năm cảnh bảo vệ riêng theo theme; hình tiêu đề Quỹ là trang trí, tiến độ thật vẫn ở từng thẻ. Các trang dự kiến dùng cùng tỷ lệ nhưng giữ nhãn trạng thái. Preview thành viên có hình cho cả năm module; preview khách giữ nhận diện riêng. Xem [chủ đề giao diện](docs/features/themes.md).

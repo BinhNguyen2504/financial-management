@@ -2,6 +2,8 @@
 
 Module `/income` quản lý độc lập thu nhập thực nhận theo tháng. Không ghi ledger, không thay đổi số dư ngân hàng, không phân bổ vào hũ Chi tiêu. Dữ liệu chỉ được lưu cloud sau khi xác thực; không seed số tiền hoặc tên từ ảnh Notion.
 
+Tinh chỉnh 26/10/2026: liên kết ngoài “Mở Supabase” trong trạng thái chưa cấu hình dùng `.external-link` chung: chữ đậm, màu theo theme, gạch chân luôn hiện và phản hồi hover/focus rõ ràng. Giữ đích mở tab mới.
+
 ## Danh mục và số thu
 
 - Danh mục cố định có tên (1–100 ký tự), mô tả tùy chọn (tối đa 1.000 ký tự), tháng bắt đầu. Xuất hiện mỗi tháng, qua các năm đến khi ngừng. Không tự ghi số tiền.
@@ -77,3 +79,7 @@ Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định d
 ## Bố cục và cuộn — 23/10/2026
 
 Bộ chọn kỳ hiển thị mũi tên hai đầu, tab một hàng cuộn ngang khi thiếu chỗ. Bảng có hàng cơ sở 48px; ô chưa nhập giữ vùng chạm 44px và không cộng padding dọc. Nút chọn cột đứng ngoài vùng cuộn ngang. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).
+
+## Tỷ lệ minh họa tiêu đề — 26/10/2026
+
+Giữ cảnh thu hoạch theo năm theme, chuyển sang bố cục tiêu đề chung với khung hình lớn 240–320px trên desktop/tablet, 216px ở hàng riêng trên điện thoại. Chữ có đủ chiều ngang, Help và lời nhắc hàng ngày giữ chức năng hiện có. Xem [chủ đề giao diện](themes.md).

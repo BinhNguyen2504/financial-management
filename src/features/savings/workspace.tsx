@@ -4,6 +4,7 @@ import { formatDate, formatMonth } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import { Garden } from "@/components/garden";
+import { AssetScene } from "@/components/asset-scene";
 import { LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
@@ -243,8 +244,8 @@ export function SavingsWorkspace({
   }
   return (
     <div className="savings-workspace" onMouseDownCapture={focusPointerControl}>
-      <div className="expense-page-heading">
-        <div>
+      <div className="expense-page-heading illustrated-heading">
+        <div className="heading-copy">
           <p className="eyebrow">{tr("TÍCH LŨY CÓ LỊCH SỬ")}</p>
           <HelpPageTitle>
             {tr("Chăm chút")} <span>{tr("ngày mai.")}</span>
@@ -253,7 +254,9 @@ export function SavingsWorkspace({
             {tr("Tiền, sổ tiết kiệm và vàng — từng bước vun đắp theo tháng.")}
           </p>
         </div>
-        <Garden variant="grove" />
+        <div className="heading-art">
+          <AssetScene kind="savings" />
+        </div>
       </div>
       {!configured ? (
         <section className="panel">

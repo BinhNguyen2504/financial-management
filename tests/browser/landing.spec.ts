@@ -263,6 +263,10 @@ test("landing supports small phones, tablets, dark mode, zoom and reduced motion
                 bounds.left < -1 ||
                 bounds.right > innerWidth + 1 ||
                 (!element.classList.contains("marketing-composition") &&
+                  // Tab strips intentionally scroll within their visible frame.
+                  !["auto", "scroll"].includes(
+                    getComputedStyle(element).overflowX,
+                  ) &&
                   element.scrollWidth > element.clientWidth + 1)
               );
             })

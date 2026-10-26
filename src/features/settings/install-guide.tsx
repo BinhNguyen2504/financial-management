@@ -246,11 +246,16 @@ export function InstallGuide() {
           </li>
         ))}
       </ol>
-      <p className="expense-muted">
+      <p className="expense-muted install-caption">
         {tr(
           "Hình minh họa thao tác; vị trí và tên menu có thể khác theo phiên bản trình duyệt.",
         )}{" "}
-        <a href={guide.source} target="_blank" rel="noreferrer">
+        <a
+          className="external-link"
+          href={guide.source}
+          target="_blank"
+          rel="noreferrer"
+        >
           {tr("Xem hướng dẫn chính thức ↗")}
         </a>
       </p>

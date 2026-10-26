@@ -1,10 +1,13 @@
 "use client";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { AppLogo } from "@/components/app-logo";
+import { AssetScene } from "@/components/asset-scene";
+import { Garden } from "@/components/garden";
+import { SafetyScene } from "@/components/safety-scene";
 import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 
 import { ModuleIcon } from "@/components/module-icon";
-import { modules } from "@/features/catalog";
+import { modules, navigationSummary } from "@/features/catalog";
 import { LabelName } from "@/features/expenses/label-visual";
 import { ProgressScene } from "@/features/funds/progress-scene";
 import {
@@ -96,7 +99,7 @@ const data = {
   },
   budgets: {
     title: "Chăm chút cho tháng của bạn.",
-    subtitle: "Hũ gọn gàng, phương thức thanh toán dễ nhận biết.",
+    subtitle: "Hũ chi tháng và tích lũy gọn gàng, dễ theo dõi số còn lại.",
     label: "Kế hoạch tháng",
     value: "12.000.000",
     secondary: "Số còn trong hũ",
@@ -254,6 +257,7 @@ export function ProductPreview({
               <ThemeText name="storyNote" />
             )}
             <small>Tải bản sao dữ liệu của bạn trong Cài đặt.</small>
+            <small>{navigationSummary}</small>
             <small>
               Trong app: Tiếng Việt / English. Bản xem thử dùng tiếng Việt.
             </small>
@@ -303,19 +307,32 @@ export function ProductPreview({
               {active === item.slug && (
                 <>
                   <div className="preview-heading">
-                    <p>{item.title}</p>
-                    <h2>
-                      {neutral ? (
-                        selected.title
-                      ) : active === "funds" ? (
-                        <ThemeText name="previewFunds" />
-                      ) : active === "savings" ? (
-                        <ThemeText name="previewSavings" />
-                      ) : (
-                        selected.title
+                    <div>
+                      <p>{item.title}</p>
+                      <h2>
+                        {neutral ? (
+                          selected.title
+                        ) : active === "funds" ? (
+                          <ThemeText name="previewFunds" />
+                        ) : active === "savings" ? (
+                          <ThemeText name="previewSavings" />
+                        ) : (
+                          selected.title
+                        )}
+                      </h2>
+                      <span>{selected.subtitle}</span>
+                    </div>
+                    {!neutral &&
+                      (active === "savings" || active === "investments") && (
+                        <AssetScene kind={active} />
                       )}
-                    </h2>
-                    <span>{selected.subtitle}</span>
+                    {!neutral && active === "budgets" && (
+                      <Garden variant="jar" />
+                    )}
+                    {!neutral && active === "income" && (
+                      <Garden variant="harvest" />
+                    )}
+                    {!neutral && active === "funds" && <SafetyScene />}
                   </div>
                   <div className="preview-metrics">
                     <div>

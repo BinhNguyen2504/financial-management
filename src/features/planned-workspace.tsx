@@ -30,18 +30,22 @@ export function PlannedWorkspace({ item: sourceItem }: { item: Module }) {
       <Link className="back-link" href="/overview">
         <ArrowLeft size={16} aria-hidden="true" /> {tr("Tổng quan")}
       </Link>
-      <div className="module-heading">
-        <Garden variant={scenes[slug] ?? "balance"} />
-        <span className="pill">
-          {localize(moduleStatusLabelsSource)[item.status]} ·{" "}
-          <ThemeText name="developing" />
-        </span>
-        <span className="module-icon">
-          <ModuleIcon name={item.icon} size={27} />
-        </span>
-        <p className="eyebrow">{item.label}</p>
-        <HelpPageTitle>{item.title}</HelpPageTitle>
-        <p className="lead">{item.description}</p>
+      <div className="module-heading illustrated-heading">
+        <div className="heading-copy">
+          <span className="pill">
+            {localize(moduleStatusLabelsSource)[item.status]} ·{" "}
+            <ThemeText name="developing" />
+          </span>
+          <span className="module-icon">
+            <ModuleIcon name={item.icon} size={27} />
+          </span>
+          <p className="eyebrow">{item.label}</p>
+          <HelpPageTitle>{item.title}</HelpPageTitle>
+          <p className="lead">{item.description}</p>
+        </div>
+        <div className="heading-art">
+          <Garden variant={scenes[slug] ?? "balance"} />
+        </div>
       </div>
       <div className="spec-grid">
         <section className="panel">

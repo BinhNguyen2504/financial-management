@@ -239,8 +239,8 @@ export function IncomeWorkspace({
       className="income-workspace expenses-workspace"
       onMouseDownCapture={focusPointerControl}
     >
-      <div className="expense-page-heading">
-        <div>
+      <div className="expense-page-heading illustrated-heading">
+        <div className="heading-copy">
           <p className="eyebrow">{tr("THỰC NHẬN THEO THÁNG")}</p>
           <HelpPageTitle>{tr("Thu nhập")}</HelpPageTitle>
           <p className="lead">
@@ -249,7 +249,9 @@ export function IncomeWorkspace({
             )}
           </p>
         </div>
-        <Garden variant="harvest" />
+        <div className="heading-art">
+          <Garden variant="harvest" />
+        </div>
       </div>
       <DailyNote />
       {!configured ? (
@@ -261,7 +263,7 @@ export function IncomeWorkspace({
             )}
           </p>
           <a
-            className="text-link"
+            className="text-link external-link"
             href="https://supabase.com/dashboard"
             target="_blank"
             rel="noreferrer"

@@ -91,3 +91,11 @@ Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định d
 ## Bố cục và cuộn — 23/10/2026
 
 Tab workspace một hàng cuộn ngang, tự đưa mục đang chọn vào tầm nhìn. Bảng báo cáo dùng scroller chung; toolbar không trôi khi cuộn dữ liệu. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).
+
+## Minh họa riêng theo chủ đề — 26/10/2026
+
+Tiêu đề dùng nhà kính, bồn hứng nước, heo đất, đèn lồng hoặc chum tích trữ theo năm theme; mỗi hình có bố cục riêng, khác Đầu tư. Trạng thái trống vẫn là cảnh hũ để dành. Preview thành viên dùng cùng cảnh tiêu đề; dữ liệu minh họa cố định. Hình trang trí tĩnh, hỗ trợ sáng/tối, không phản ánh số dư hoặc lợi nhuận. Xem [bảng minh họa](themes.md#minh-họa-tiết-kiệm-và-đầu-tư--26102026).
+
+## Tỷ lệ minh họa tiêu đề — 26/10/2026
+
+Giữ bộ năm cảnh Tiết kiệm riêng, tăng khung hình theo bố cục tiêu đề chung: 240–320px cạnh chữ trên desktop/tablet, 216px dưới chữ trên điện thoại. Không thu hẹp tiêu đề và Help để nhường chỗ cho hình. Xem [chủ đề giao diện](themes.md).

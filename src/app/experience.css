@@ -36,38 +36,58 @@
   font-size: 19px;
   letter-spacing: -0.5px;
 }
-.sidebar-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
-}
-.sidebar-header .brand {
-  flex: 1;
-  min-width: 0;
-  padding-right: 0;
-}
-.sidebar-header .sidebar-toggle {
+.sidebar-header .brand-icon {
   flex: none;
+}
+.app-shell .sidebar-toggle {
+  position: fixed;
+  top: 28.5px;
+  left: var(--sidebar-width);
+  transform: translateX(-50%);
+  z-index: 30;
   width: 44px;
-  min-width: 44px;
   height: 44px;
-  margin-top: 0;
-  border-color: transparent;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
   background: transparent;
   color: var(--muted);
 }
-.sidebar-header .sidebar-toggle:hover,
-.sidebar-header .sidebar-toggle:focus-visible {
+.app-shell .sidebar-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+.app-shell .sidebar-toggle svg {
+  position: relative;
+}
+.app-shell .sidebar-toggle:hover,
+.app-shell .sidebar-toggle:focus-visible {
+  background: transparent;
   color: var(--primary);
+}
+.app-shell .sidebar-toggle:hover::before,
+.app-shell .sidebar-toggle:focus-visible::before {
   background: var(--primary-soft);
-  border-color: var(--border);
+  border-color: var(--primary);
 }
-html[data-sidebar="collapsed"] .sidebar-header {
-  flex-direction: column;
-  align-items: center;
+.app-shell .sidebar-toggle:focus-visible {
+  outline: none;
 }
-html[data-sidebar="collapsed"] .sidebar-header .brand {
-  padding-bottom: 4px;
+.app-shell .sidebar-toggle:focus-visible::before {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .sidebar-toggle::before {
+    transition: none;
+  }
 }
 .mobile-brand {
   align-items: center;
@@ -711,6 +731,10 @@ textarea[aria-invalid="true"],
 .install-steps p {
   margin-top: 8px;
   color: var(--muted);
+}
+.install-steps + .install-caption {
+  margin-block: 24px 12px;
+  line-height: 1.6;
 }
 @media (min-width: 960px) {
   html[data-sidebar="collapsed"] {

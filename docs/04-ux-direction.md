@@ -2,6 +2,8 @@
 
 ## Nguyên tắc
 
+Tinh chỉnh 26/10/2026: nhóm thao tác bảng hũ căn giữa theo số nút thực tế; sửa và dùng tiền dùng icon có cùng kích thước, nhãn truy cập và tooltip. Nền bảng phải nằm trong đường bo của khung, kể cả khi bảng cuộn ngang. Nút xác nhận ghi tiền trong form giữ chữ rõ ràng; card mobile giữ nhãn chữ.
+
 Thiết kế cho thao tác hàng ngày trên điện thoại và kiểm tra sâu trên máy tính. Ưu tiên nhập nhanh và nhìn rõ nguồn số liệu. Ảnh Notion cho biết nội dung cần quản lý, không bắt buộc giữ bố cục bảng dài, màu sắc hay trang trí của Notion.
 
 Skill `ui-ux-pro-max` được dùng để tra hướng dashboard dữ liệu, accessibility và Next.js. Hướng Zen và emoji do người dùng chọn được ưu tiên hơn các gợi ý màu/icon tự động của skill. Kết quả tự động có các gợi ý landing/enterprise không phù hợp; không dùng chúng làm cấu trúc ứng dụng. Bản định hướng dưới đây được điều chỉnh cho tác vụ tài chính cá nhân.
@@ -191,3 +193,24 @@ Logo hũ/đồng xu dùng than–ngà, đảo sáng/tối và phù hợp năm th
 ## Bố cục gọn và điều khiển ổn định — 23/10/2026
 
 Tab giữ nguyên nhãn trên một hàng và cuộn trong thanh khi thiếu chỗ; mục đang chọn luôn nhìn thấy, không làm nhảy trang/dialog. Toolbar bảng đứng ngoài vùng dữ liệu cuộn ngang. Thu nhập có mũi tên hai đầu bộ chọn kỳ, hàng bảng cơ sở 48px và nút nhập thiếu 44px không cộng thêm padding dọc. Audit theo nhóm lỗi trên toàn ứng dụng được ghi tại [ma trận bố cục](features/layout-scroll-2026-10-23.md).
+
+
+## Vị trí nút thu gọn menu — 26/10/2026
+
+Nút chevron thu gọn/mở rộng sidebar desktop nằm trên mép phân cách bên phải, ngang tâm logo. Hình tròn 28px nền surface/viền nhẹ nằm giữa vùng bấm 44 × 44px; hover và focus tăng độ rõ, focus có vòng viền riêng. Nút cố định theo viewport và theo chiều rộng sidebar ở cả hai trạng thái, tránh vùng cuộn cắt nút; nhãn theo ngôn ngữ, trạng thái cho công nghệ hỗ trợ và lựa chọn trình duyệt được giữ. Dưới 960px dùng menu mobile. Chuyển màu nhẹ 150ms, tắt khi giảm chuyển động.
+
+## Chú thích hướng dẫn cài đặt — 26/10/2026
+
+Chú thích minh họa và liên kết hướng dẫn chính thức cách cụm card 24px, cách lưu ý kết nối mạng bên dưới 12px. Dùng chung cho iPhone/iPad, Android và máy tính; chữ và liên kết xuống dòng tự nhiên theo chiều rộng màn hình.
+
+## Nhận diện liên kết ngoài — 26/10/2026
+
+Các liên kết ngoài dùng chung `.external-link`: màu `--primary` theo theme, chữ đậm 700 và gạch chân luôn hiển thị với khoảng cách 3px. Hover và focus bàn phím làm nét gạch chân đậm hơn; giữ viền focus dùng chung. Liên kết dài được xuống dòng tự nhiên trên mobile. Áp dụng cho hướng dẫn cài đặt, nguồn tham khảo Quỹ an toàn và Mở Supabase ở Thu nhập.
+
+## Minh họa tích lũy và danh mục — 26/10/2026
+
+Tiết kiệm và Đầu tư có cảnh riêng trong mỗi theme: tích góp/gìn giữ so với chăm sóc/phân bổ nhiều tài sản. Mười bố cục SVG tĩnh dùng semantic tokens sáng/tối; CSS chọn cảnh trước paint, không phụ thuộc dữ liệu tài chính. Tiêu đề Đầu tư giữ minh họa gọn trên mobile; trạng thái trống dùng cảnh khởi đầu riêng. Preview thành viên dùng cùng bộ hình, preview khách giữ phong cách marketing. Chi tiết trong [chủ đề giao diện](features/themes.md).
+
+## Tỷ lệ hình trong tiêu đề — 26/10/2026
+
+Bố cục `illustrated-heading` tách vùng chữ/hình/thao tác, áp dụng cho năm trang tài chính và bốn trang dự kiến. Hình lớn 240–320px trên desktop/tablet; ở màn hình không quá 700px, chữ chiếm toàn hàng và hình 216px nằm dưới, không ép tiêu đề thành cột hẹp. Nút Phân loại/Thêm hũ và Nơi giữ tiền/Điều chỉnh mục tiêu vẫn ở tiêu đề, trên hàng riêng. Nền tỏa nhẹ dùng token theme, không chuyển động hoặc che chữ. Tổng quan giữ khối chào mừng riêng; Hồ sơ/Cài đặt giữ bố cục chức năng. Xem [chủ đề](features/themes.md).

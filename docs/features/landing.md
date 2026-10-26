@@ -10,6 +10,8 @@ Khách: hero “Làm chủ tiền bạc. Sống trọn điều bạn muốn.” 
 
 ## Preview
 
+Rà soát 26/10/2026: copy Chi tiêu nhắc rõ hũ chi tháng, tích lũy và ghi sử dụng tích lũy. Preview tiếp tục minh họa gọn số còn lại bằng dữ liệu cố định; không mô phỏng các nút sửa/dùng tiền của bảng thật và không đọc API tài chính. Catalog ghi nhận các icon thao tác căn giữa; không thay đổi trạng thái triển khai.
+
 Năm tab Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn, mở đầu Chi tiêu. Có nhãn Dữ liệu minh họa, tháng cố định 06/2026 và số liệu cố định. Không gọi API tài chính, dùng workspace thật, đọc tài khoản hoặc ghi dữ liệu. Chuyển tab bằng click/mũi tên/Home/End; nút che tiền chỉ tác động preview, không lưu localStorage, giữ hình dạng biểu đồ. Giá trị bị che được loại khỏi nội dung hiển thị và accessibility tree.
 
 Đổi giao diện sản phẩm thì rà soát preview cùng thay đổi. Đây là mô phỏng gọn, không phải sandbox thực thi đầy đủ nghiệp vụ. Nội dung và preview mặc định render phía server; chuyển tab/form cần JavaScript.
@@ -112,3 +114,16 @@ Trang công khai, preview và login tiếp tục bằng tiếng Việt; FAQ gi�
 ## Bố cục và cuộn — 23/10/2026
 
 Preview mobile dùng thanh tính năng một hàng cuộn ngang, chọn bằng bàn phím không làm nhảy trang. Preview desktop giữ điều hướng dọc. FAQ mô tả tab/bảng trên mobile; số liệu minh họa vẫn cố định, không có yêu cầu API tài chính. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).
+
+
+## Đối chiếu nút menu desktop — 26/10/2026
+
+Catalog có mô tả vị trí nút thu gọn/mở rộng ở mép phải thanh điều hướng, ngang hàng logo. FAQ của cả hai landing và ghi chú preview dùng chung mô tả này; preview vẫn chỉ chuyển tab và ẩn/hiện số liệu hằng số, không thêm nút thu gọn giả hoặc gọi API tài chính. Không đổi trạng thái triển khai các module. README, hướng UX và đặc tả phản hồi giao diện được cập nhật cùng source.
+
+## Minh họa tích lũy và đầu tư — 26/10/2026
+
+Preview thành viên hiển thị cùng cảnh SVG của trang Tiết kiệm hoặc Đầu tư ở phần tiêu đề, có năm biến thể và hỗ trợ sáng/tối. Preview khách vẫn dùng nhận diện marketing sáng riêng. Copy nghiệp vụ, số tiền, nhãn và dữ liệu cố định được rà soát, giữ đúng phạm vi hiện có; hình không biểu thị tiến độ hoặc cam kết sinh lời. Không thêm truy vấn tài khoản/API tài chính. Xem [bộ mười cảnh](themes.md#minh-họa-tiết-kiệm-và-đầu-tư--26102026).
+
+## Tỷ lệ hình trong preview thành viên — 26/10/2026
+
+Cả năm tab Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn có hình cùng ngữ cảnh với tiêu đề trang thật. Khung tối đa 160px theo tỷ lệ giao diện thu nhỏ; tiêu đề Quỹ là cảnh bảo vệ tĩnh, biểu đồ Quỹ vẫn minh họa tiến độ cố định 50%. Copy nghiệp vụ/số liệu được rà soát, không đổi phạm vi sản phẩm. Preview khách giữ nhận diện marketing sáng, không thêm hình theo theme hoặc request tài chính.

@@ -35,7 +35,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       Financial<span className="brand-sub">Manager</span>
                     </span>
                   </Link>
-                  <SidebarToggle />
                 </div>
                 <p className="nav-label">{tr("KHÔNG GIAN CÁ NHÂN")}</p>
                 <Navigation />
@@ -45,6 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <p>{tr("Một chút mỗi ngày, theo nhịp của bạn.")}</p>
                 </div>
               </aside>
+              <SidebarToggle />
               <div className="app-body">
                 <header className="topbar">
                   <Link href="/" className="mobile-brand">

@@ -4,6 +4,8 @@
 
 ## Cách sử dụng
 
+Cập nhật 26/10/2026: cột Thao tác trên bảng hũ căn giữa cả khi có một hoặc hai nút. Điều chỉnh dùng icon bút, Dùng tiền dùng icon ví cùng kích thước 44px, cách nhau 8px, có tên truy cập và tooltip. Dùng tiền chỉ mở form ghi sử dụng tích lũy; nút xác nhận trong form vẫn có chữ. Card mobile giữ các nút có chữ. Khung bảng cắt nền tiêu đề và hàng theo góc bo; cuộn ngang vẫn nằm trong vùng dữ liệu, popover chọn cột tiếp tục nổi phía trên.
+
 Mở `/budgets` → đăng nhập email → chọn tháng bắt đầu → thêm hũ và số dư đầu kỳ. Loại hũ được cố định sau khi tạo. Phương thức chỉ là nơi phân loại tiền; module này không ghi sổ ngân hàng hoặc tạo giao dịch chuyển tiền.
 
 | Nội dung | Chi trong tháng | Tích lũy |
@@ -105,3 +107,7 @@ Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định d
 ## Bố cục và cuộn — 23/10/2026
 
 Thanh nội dung và kiểu báo cáo dùng tab ngang. Bảng báo cáo/tổng kết dùng scroller chung; toolbar cột giữ vị trí theo khung. Bảng số liệu biểu đồ vẫn cuộn riêng. Xem [ma trận rà soát](layout-scroll-2026-10-23.md).
+
+## Minh họa và bố cục tiêu đề — 26/10/2026
+
+Tiêu đề luôn có cảnh hũ chi theo năm theme, kể cả trước khi có dữ liệu. Bố cục chung dùng hình lớn bên chữ trên desktop, hình ở hàng riêng trên điện thoại; Phân loại/Thêm hũ có hàng thao tác riêng và vẫn tuân thủ trạng thái chỉ đọc. Không đổi dữ liệu, bộ lọc hay nghiệp vụ chia hũ. Xem [tỷ lệ minh họa](themes.md).

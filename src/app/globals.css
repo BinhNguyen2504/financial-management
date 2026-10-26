@@ -593,6 +593,17 @@ svg {
   min-height: 44px;
   margin-top: 16px;
 }
+.external-link {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.external-link:is(:hover, :focus-visible) {
+  text-decoration-thickness: 2px;
+}
 .button {
   background: var(--primary);
   color: var(--on-primary);

@@ -3,10 +3,10 @@ import { useI18n } from "@/i18n/provider";
 
 import {
   Check,
+  ChevronLeft,
+  ChevronRight,
   Monitor,
   Moon,
-  PanelLeftClose,
-  PanelLeftOpen,
   Sun,
 } from "lucide-react";
 import { useEffect, useSyncExternalStore } from "react";
@@ -127,18 +127,19 @@ export function SidebarToggle() {
 
   const [value, set] = usePreference("fm-sidebar", "expanded");
   const collapsed = value === "collapsed";
-  const Icon = collapsed ? PanelLeftOpen : PanelLeftClose;
+  const Icon = collapsed ? ChevronRight : ChevronLeft;
   return (
     <button
       type="button"
       className="sidebar-toggle icon-action"
+      tabIndex={0}
       aria-label={collapsed ? tr("Mở rộng menu") : tr("Thu gọn menu")}
       title={collapsed ? tr("Mở rộng menu") : tr("Thu gọn menu")}
       aria-expanded={!collapsed}
       aria-controls="app-sidebar"
       onClick={() => set(collapsed ? "expanded" : "collapsed")}
     >
-      <Icon size={21} aria-hidden="true" />
+      <Icon size={16} aria-hidden="true" />
     </button>
   );
 }

@@ -52,6 +52,8 @@ export const catalog = {
   "Tổng hợp nhu cầu tiền theo ví/ngân hàng": "Funding needs by wallet/bank",
   "Phân loại có biểu tượng gọn; nút chọn cột giữ vị trí khi cuộn bảng":
     "Compact category icons; column controls stay in place while scrolling tables",
+  "Bảng hũ căn giữa nút điều chỉnh và dùng tiền bằng biểu tượng":
+    "Jar tables center the edit and use-money icon buttons",
   "Chi tiết hũ theo tab tháng, sử dụng và lịch sử":
     "Jar details with month, usage and history tabs",
   "Tiền chưa chi có được cộng dồn sang tháng tiếp theo?":
@@ -73,6 +75,16 @@ export const catalog = {
   "Bạn cần theo dõi dư nợ và lịch trả nợ đến mức nào?":
     "How much detail do you need for debts and repayment schedules?",
   "Tiết kiệm": "Savings",
+  "Tiêu đề có minh họa theo chủ đề, thích ứng màn hình":
+    "Theme illustrations in responsive page headings",
+  "Tiêu đề có minh họa hũ chi, nút thao tác ở hàng riêng":
+    "Spending-jar illustrations in page headings, with a separate action row",
+  "Minh họa bảo vệ ở tiêu đề, độc lập với tiến độ từng quỹ":
+    "Protection illustrations in page headings, independent of fund progress",
+  "Minh họa tích góp riêng cho từng chủ đề giao diện":
+    "Distinct savings illustrations for each visual theme",
+  "Minh họa danh mục riêng cho từng chủ đề giao diện":
+    "Distinct portfolio illustrations for each visual theme",
   "Tích lũy có lịch sử": "Savings with a history",
   "Tiền, sổ tiết kiệm và vàng cùng lịch sử giao dịch, định giá và báo cáo nhiều năm.":
     "Cash, term deposits and gold with transaction history, valuations and reports across years.",

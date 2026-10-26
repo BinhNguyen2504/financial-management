@@ -1,0 +1,93 @@
+/* One proportion for financial page introductions; controls have their own row. */
+.illustrated-heading.illustrated-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(256px, 25vw, 320px);
+  grid-template-areas: "copy art" "actions art";
+  align-items: center;
+  column-gap: clamp(24px, 4vw, 56px);
+  row-gap: 12px;
+  margin-bottom: 24px;
+}
+.illustrated-heading > .heading-copy {
+  grid-area: copy;
+  min-width: 0;
+  align-self: end;
+}
+.illustrated-heading > .heading-copy h1 {
+  font-size: clamp(32px, 3.4vw, 44px);
+  line-height: 1.18;
+  margin: 8px 0 12px;
+  text-wrap: balance;
+}
+.illustrated-heading > .heading-copy > p:last-child {
+  max-width: 60ch;
+  font-size: 16px;
+  line-height: 1.65;
+}
+.illustrated-heading > .heading-art {
+  grid-area: art;
+  width: 100%;
+  min-width: 0;
+  align-self: center;
+  border-radius: 48% 52% 44% 56%;
+  background: radial-gradient(ellipse, var(--primary-soft), transparent 72%);
+}
+.illustrated-heading > .heading-art > .garden-art {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  aspect-ratio: 3 / 2;
+}
+.illustrated-heading > .heading-actions {
+  grid-area: actions;
+  align-self: start;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.illustrated-heading:not(:has(> .heading-actions)) {
+  grid-template-areas: "copy art";
+}
+.illustrated-heading:not(:has(> .heading-actions)) > .heading-copy {
+  align-self: center;
+}
+.fund-workspace > .illustrated-heading {
+  margin-bottom: 0;
+}
+.module-heading.illustrated-heading {
+  padding-right: 0;
+  min-height: 0;
+}
+.module-heading .heading-copy > .pill {
+  display: block;
+  margin-bottom: 18px;
+  white-space: normal;
+}
+
+@media (max-width: 700px) {
+  .illustrated-heading.illustrated-heading {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "copy" "art" "actions";
+    gap: 8px;
+  }
+  .illustrated-heading:not(:has(> .heading-actions)) {
+    grid-template-areas: "copy" "art";
+  }
+  .illustrated-heading > .heading-art {
+    width: 216px;
+    max-width: 85%;
+    justify-self: center;
+  }
+  .illustrated-heading > .heading-copy h1 {
+    font-size: clamp(30px, 7vw, 36px);
+  }
+  .illustrated-heading > .heading-actions {
+    margin-top: 4px;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1000px) {
+  .illustrated-heading.illustrated-heading {
+    grid-template-columns: minmax(0, 1fr) 240px;
+    column-gap: 24px;
+  }
+}

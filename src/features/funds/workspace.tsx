@@ -1,6 +1,7 @@
 "use client";
 import { useI18n } from "@/i18n/provider";
 
+import { SafetyScene } from "@/components/safety-scene";
 import { LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
 import { useMoney } from "@/components/privacy";
@@ -109,8 +110,8 @@ export function FundsWorkspace() {
   };
   return (
     <div className="fund-workspace" onMouseDownCapture={focusPointerControl}>
-      <header className="fund-heading">
-        <div>
+      <header className="fund-heading illustrated-heading">
+        <div className="heading-copy">
           <p className="eyebrow">
             <ThemeIcon size={16} /> <ThemeText name="fundsEyebrow" />
           </p>
@@ -119,8 +120,11 @@ export function FundsWorkspace() {
           </HelpPageTitle>
           <p>{tr("Từng khoản dự phòng nhỏ, một nền tảng an tâm hơn.")}</p>
         </div>
+        <div className="heading-art">
+          <SafetyScene />
+        </div>
         {view?.book && (
-          <div className="fund-actions">
+          <div className="fund-actions heading-actions">
             <button
               className="expense-secondary"
               onClick={() => setDetail("locations")}

@@ -42,6 +42,7 @@ export function FundGuide({ fund }: { fund: FundId }) {
       <p className="fund-note">
         {tr("Tìm hiểu thêm:")}{" "}
         <a
+          className="external-link"
           href="https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/"
           target="_blank"
           rel="noreferrer"
@@ -50,6 +51,7 @@ export function FundGuide({ fund }: { fund: FundId }) {
         </a>{" "}
         ·{" "}
         <a
+          className="external-link"
           href="https://www.moneyhelper.org.uk/en/blog/everyday-money/sinking-funds-explained"
           target="_blank"
           rel="noreferrer"

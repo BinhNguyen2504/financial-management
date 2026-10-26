@@ -36,6 +36,7 @@ export const modules = [
       "Bảng, biểu đồ và xuất CSV",
       "Chi tiết khoản phát sinh có tìm kiếm và phân trang",
       "Tab gọn trên mobile; nút chọn cột giữ vị trí khi cuộn bảng",
+      "Tiêu đề có minh họa theo chủ đề, thích ứng màn hình",
     ],
     questions: [],
   },
@@ -72,7 +73,9 @@ export const modules = [
       "Phân biệt chi phí, trả nợ và tiền dành để tiết kiệm",
       "Tổng hợp nhu cầu tiền theo ví/ngân hàng",
       "Phân loại có biểu tượng gọn; nút chọn cột giữ vị trí khi cuộn bảng",
+      "Bảng hũ căn giữa nút điều chỉnh và dùng tiền bằng biểu tượng",
       "Chi tiết hũ theo tab tháng, sử dụng và lịch sử",
+      "Tiêu đề có minh họa hũ chi, nút thao tác ở hàng riêng",
     ],
     questions: [
       "Tiền chưa chi có được cộng dồn sang tháng tiếp theo?",
@@ -109,6 +112,7 @@ export const modules = [
       "Rút, bán, nhận lãi và tái tục có lịch sử",
       "Tài sản, tỷ trọng, dòng tiền và lãi/lỗ; chú thích biểu đồ khi rê chuột, chạm hoặc dùng Tab",
       "Chốt tháng, mở lại có lý do và sao lưu",
+      "Minh họa tích góp riêng cho từng chủ đề giao diện",
     ],
     questions: [],
   },
@@ -126,6 +130,7 @@ export const modules = [
       "Giá vốn bán nhập tay; phí, thuế, lãi/lỗ đã chốt và chưa chốt",
       "Định giá có ngày; báo cáo xuyên năm, CSV và backup JSON",
       "Chi tiết giao dịch trước/sau, phiên bản sửa và giữ vị trí khi quay lại",
+      "Minh họa danh mục riêng cho từng chủ đề giao diện",
     ],
     questions: [],
   },
@@ -140,6 +145,7 @@ export const modules = [
     scope: [
       "Mức sinh hoạt từ các hũ chi tháng được chọn; mục tiêu theo hệ số tự nhập",
       "Minh họa theo chủ đề phản ánh tiến độ thực tế",
+      "Minh họa bảo vệ ở tiêu đề, độc lập với tiến độ từng quỹ",
       "Ghi sổ độc lập; thêm, rút và chuyển giữa quỹ/nơi giữ",
       "Sửa/hủy có lịch sử, nguồn thay đổi được xem trước rồi áp dụng",
     ],
@@ -230,3 +236,6 @@ export const publicHomeSummary =
 
 export const languageSummary =
   "Trong ứng dụng, chọn Tiếng Việt hoặc English tại Cài đặt; ngôn ngữ được ghi nhớ trên trình duyệt, tiền tệ vẫn là VND.";
+
+export const navigationSummary =
+  "Trên máy tính, nút thu gọn và mở rộng menu nằm ở mép phải thanh điều hướng, ngang hàng logo.";

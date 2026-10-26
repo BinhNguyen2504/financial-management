@@ -1,5 +1,11 @@
 # Rà soát UI/UX — 17/10/2026
 
+## Nhận diện liên kết ngoài — 26/10/2026
+
+Rà soát toàn bộ anchor dẫn ra website ngoài: hướng dẫn cài đặt trong Cài đặt, nguồn CFPB/MoneyHelper trong Quỹ an toàn và liên kết thiết lập Supabase trong Thu nhập. Các vị trí dùng chung `.external-link`, màu theo theme, chữ đậm và gạch chân luôn hiện; hover/focus tăng độ dày gạch chân, focus giữ viền chung. Không dùng riêng màu để nhận diện liên kết, cho phép chữ dài xuống dòng trên mobile.
+
+Đã rà soát catalog, landing copy và preview cố định; khả năng/trạng thái module và dữ liệu minh họa vẫn phù hợp. README và hướng dẫn UX cập nhật cùng source. Bằng chứng và giới hạn môi trường tại [validation](../07-validation.md).
+
 Giữ phong cách Zen, bảng Chi tiêu trên desktop và thẻ trên điện thoại.
 
 - Bảng: tiêu đề cột tiền và giá trị cùng căn phải; số dùng tabular numerals. Ô tiền và nhóm thao tác căn giữa theo chiều cao dòng. Cột thao tác giữ vị trí nút sửa thống nhất, có chỗ cho Dùng tiền. Bảng rộng cuộn trong vùng riêng.
@@ -127,3 +133,17 @@ Checklist bắt lỗi theo nhóm, áp dụng cả các màn hình không đượ
 Phạm vi rà soát và bằng chứng: [ma trận bố cục](layout-scroll-2026-10-23.md), [lịch sử validation](../07-validation.md).
 
 Hồi quy cùng lượt phát hiện ô số hợp lệ giữ số 0 đầu sau blur khi form đã có giá trị chuẩn. Sửa đồng bộ hiển thị trong `LocalizedInput` dùng chung; bản nháp lỗi vẫn được giữ nguyên. Xem [ngôn ngữ và bản nháp](localization.md).
+
+
+### Vị trí nút menu — 26/10/2026
+
+Nút thu gọn/mở rộng dùng chevron ở mép phân cách bên phải sidebar, ngang hàng logo. Hình tròn nhỏ 28px có viền nhẹ, vùng bấm 44 × 44px và focus rõ; vị trí theo chiều rộng sidebar ở cả hai trạng thái. Menu mobile giữ hành vi hiện tại.
+
+
+### Cột thao tác và góc bo bảng hũ — 26/10/2026
+
+Nhóm thao tác dùng flex căn giữa thay lưới chừa sẵn hai ô; một nút sửa đứng giữa cột, hai nút có cùng kích thước 44px và cách nhau 8px. Dùng tiền dùng icon ví, có tên truy cập/tooltip như nút sửa; vẫn mở form xem trước và xác nhận bằng chữ. Card mobile giữ nhãn chữ. Khung bảng Chi tiêu cắt nền tiêu đề/hàng theo đường bo, còn cuộn ngang do scroller dữ liệu đảm nhiệm; popover top-layer không bị cắt. Đã rà các bảng và nhóm thao tác tương ứng. Bằng chứng và giới hạn tại [validation](../07-validation.md).
+
+## Tiêu đề có minh họa — 26/10/2026
+
+Đồng bộ tỷ lệ chữ/hình cho năm trang tài chính và bốn trang dự kiến. Chi tiêu và Quỹ an toàn bổ sung hình tiêu đề; các nút thao tác tách khỏi vùng hình, giữ hành vi form/dialog và Help. Desktop dùng hình lớn cạnh chữ, điện thoại dành cả hàng cho chữ rồi đặt hình ở hàng tiếp theo. Xem [chi tiết chủ đề](themes.md).

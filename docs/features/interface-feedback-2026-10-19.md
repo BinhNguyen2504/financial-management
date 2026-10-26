@@ -76,3 +76,12 @@ Các ca mới nằm trong `tests/form-experience.test.ts` và `tests/browser/int
 Lượt đầy đủ ngày 20/10 đạt 167 unit tests, 67 PostgreSQL tests, typecheck, production build và **324/324 browser tests** trên bốn profile, gồm 16 ca mới chuyên biệt cho phản hồi này. Xem [bằng chứng và giới hạn](../07-validation.md#hoàn-tất-33-phản-hồi-giao-diện--20102026).
 
 Lượt tiếp tục ngày 20/10 giữ các thay đổi Fund, Help và tương thích schema đã có trong workspace. Theme bootstrap chạy đầu body trước first paint; metadata màu theme do React quản lý để tránh hydration mismatch. Ô nhập nhanh và vùng bảng tạo containing block để nội dung trợ năng không làm trang mobile tràn ngang. Những trường hợp này được kiểm cùng luồng nghiệp vụ, không chỉ bằng ảnh tĩnh.
+
+
+## Sửa vị trí nút thu gọn — 26/10/2026
+
+Nút chevron đặt trên mép phải sidebar, ngang hàng logo, theo lựa chọn đã chốt sau khi xem phương án header. Hình tròn 28px có viền nhẹ, vùng bấm 44 × 44px và focus rõ; vị trí fixed theo chiều rộng sidebar để nút không bị cắt bởi vùng cuộn. Áp dụng ở AppShell dùng chung cho mọi workspace, giữ menu mobile dưới 960px và tùy chọn thu gọn sau reload. Bằng chứng và giới hạn tại [validation](../07-validation.md).
+
+## Khoảng cách chú thích cài đặt — 26/10/2026
+
+Thêm khoảng cách 24px giữa danh sách card và chú thích minh họa, 12px trước lưu ý kết nối mạng. Áp dụng cùng một quy tắc cho ba tab thiết bị, giữ chữ và liên kết tự xuống dòng trên màn hình hẹp. Đã rà soát catalog, landing copy và preview cố định: thay đổi khoảng cách không làm đổi khả năng, trạng thái module hoặc dữ liệu minh họa; các nội dung này vẫn phù hợp. Bằng chứng local nằm trong [validation](../07-validation.md).

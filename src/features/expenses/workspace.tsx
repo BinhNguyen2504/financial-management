@@ -21,7 +21,14 @@ import { vietnamClock } from "@/domain/expenses/engine";
 import { summarize } from "@/domain/expenses/reports";
 import type { ExpenseRow, ExpenseView } from "@/domain/expenses/types";
 import { HelpPageTitle } from "@/features/help/provider";
-import { Archive, ArrowUpRight, Pencil, Plus, Settings2 } from "lucide-react";
+import {
+  Archive,
+  ArrowUpRight,
+  Pencil,
+  Plus,
+  Settings2,
+  Wallet,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiJSON } from "./api";
@@ -191,16 +198,19 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
       className="expenses-workspace"
       onMouseDownCapture={focusPointerControl}
     >
-      <div className="expense-page-heading">
-        <div>
+      <div className="expense-page-heading illustrated-heading">
+        <div className="heading-copy">
           <p className="eyebrow">{tr("MỖI KHOẢN TIỀN, MỘT MỤC ĐÍCH")}</p>
           <HelpPageTitle>{tr("Chi tiêu")}</HelpPageTitle>
           <p className="lead">
             {tr("Chuẩn bị cho tháng này. Dành sẵn cho những đợt chi sắp tới.")}
           </p>
         </div>
+        <div className="heading-art">
+          <Garden variant="jar" />
+        </div>
         {view?.book && (
-          <div className="expense-actions">
+          <div className="expense-actions heading-actions">
             <button
               className="expense-secondary"
               onClick={() => setLabelsOpen(true)}
@@ -666,23 +676,31 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
                                         aria-label={tr("Điều chỉnh {0}", {
                                           0: row.name,
                                         })}
+                                        title={tr("Điều chỉnh {0}", {
+                                          0: row.name,
+                                        })}
                                         onClick={() =>
                                           openEditor({ mode: "month", row })
                                         }
                                       >
-                                        <Pencil size={17} />
+                                        <Pencil size={17} aria-hidden="true" />
                                       </button>
                                     )}
                                     {!readonly &&
                                       !future &&
                                       row.kind === "accumulation" && (
                                         <button
-                                          className="expense-secondary"
+                                          className="expense-icon-button"
+                                          aria-label={tr("Dùng tiền")}
+                                          title={tr("Dùng tiền")}
                                           onClick={() =>
                                             openEditor({ mode: "spend", row })
                                           }
                                         >
-                                          {tr("Dùng tiền")}
+                                          <Wallet
+                                            size={17}
+                                            aria-hidden="true"
+                                          />
                                         </button>
                                       )}
                                   </div>

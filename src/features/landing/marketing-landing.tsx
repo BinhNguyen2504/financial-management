@@ -3,6 +3,7 @@ import {
   languageSummary,
   modules,
   moduleStatusLabels,
+  navigationSummary,
   publicHomeSummary,
 } from "@/features/catalog";
 import {
@@ -407,6 +408,7 @@ export function MarketingLanding() {
                 HTTPS hỗ trợ thêm vào màn hình chính. Hiện chưa hỗ trợ nhập dữ
                 liệu khi mất mạng.
               </p>
+              <p>{navigationSummary}</p>
             </div>
           </details>
           <details>

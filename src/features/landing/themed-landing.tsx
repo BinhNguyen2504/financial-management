@@ -5,6 +5,7 @@ import {
   languageSummary,
   modules,
   moduleStatusLabels,
+  navigationSummary,
   pageHelpSummary,
 } from "@/features/catalog";
 import { StartLink } from "@/features/landing/account-actions";
@@ -31,7 +32,7 @@ const benefits: Record<string, { heading: string; detail: string }> = {
   },
   budgets: {
     heading: "Mỗi hũ, một mục đích.",
-    detail: "Hũ chi tháng · Hũ tích lũy · Phương thức dễ nhận biết",
+    detail: "Hũ chi tháng · Hũ tích lũy · Ghi sử dụng tiền tích lũy",
   },
   investments: {
     heading: "Hiểu rõ vốn và giá trị hiện tại.",
@@ -274,6 +275,7 @@ export function ThemedLanding() {
               HTTPS có nền PWA để thêm vào màn hình chính; hiện chưa hỗ trợ ghi
               dữ liệu khi mất mạng.
             </p>
+            <p>{navigationSummary}</p>
           </details>
           <details>
             <summary>

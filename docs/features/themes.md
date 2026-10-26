@@ -1,4 +1,4 @@
-# Chủ đề giao diện — cập nhật 22/10/2026
+# Chủ đề giao diện — cập nhật 26/10/2026
 
 ## Trải nghiệm
 
@@ -96,3 +96,25 @@ Xem [lịch sử validation](../07-validation.md). Kiểm thử trình duyệt l
 ## Logo và lời dẫn đa ngôn ngữ — 22/10/2026
 
 Logo ứng dụng đổi sang hũ tích lũy/đồng xu dùng than `#292724` và ngà `#F7F3EB`, đảo theo sáng/tối. SVG và PNG/favicon/PWA dùng cùng hình, không gắn màu riêng với forest hoặc theme khác. Icon cài app dùng nền than. Copy của cả năm theme trong app có Anh/Việt; minh họa và công thức tiến độ giữ nguyên. Ngôn ngữ độc lập theme/mode, xem [đặc tả](localization.md).
+
+## Minh họa Tiết kiệm và Đầu tư — 26/10/2026
+
+Hai trang có mười cảnh SVG riêng, thay cho việc cùng dùng `grove`. Mỗi cảnh khác bố cục và vật thể, dùng bảng màu sáng/tối sẵn có:
+
+| Chủ đề | Tiết kiệm | Đầu tư |
+|---|---|---|
+| Khu vườn | Nhà kính ươm mầm trong chậu | Vườn cây ăn quả và giỏ thu hoạch |
+| Dòng nước | Mây mưa, phễu và bồn hứng nước | Hai thuyền buồm trên những lớp sóng |
+| Kim ngân | Heo đất nhận đồng xu | Cân phân bổ đồng xu và thỏi vàng |
+| Lửa ấm | Đèn lồng bao bọc ngọn lửa | Lò nung và các bình gốm |
+| Đất lành | Chum đất nung và hũ nhỏ | Cầu đá nhiều trụ giữa đồi núi |
+
+`src/components/asset-scene.tsx` dùng chung cho tiêu đề trang và preview thành viên. CSS chọn cảnh trước khi vẽ; không đọc localStorage trong component, không hoạt ảnh hoặc gọi API. Hình chỉ trang trí, ẩn với trình đọc màn hình; không biểu thị số dư, lợi nhuận hay tiến độ thực tế. Trạng thái trống dùng cảnh hũ tích góp ở Tiết kiệm và cảnh khởi đầu ở Đầu tư, khác hình tiêu đề. Minh họa Đầu tư cũng hiện ở màn hình nhỏ. Preview khách vẫn dùng nhận diện marketing riêng và dữ liệu cố định.
+
+## Tiêu đề có minh họa đồng bộ — 26/10/2026
+
+Năm trang tài chính dùng `illustrated-heading` với vùng chữ, hình và nút thao tác riêng. Trên 700px, hình 240–320px cạnh chữ; dưới hoặc bằng 700px, chữ rộng toàn hàng và hình 216px ở hàng riêng, có nền tỏa nhẹ theo theme. Đây là kích thước khung SVG; vật thể có khoảng thở trong viewBox. Các trang dự kiến cũng dùng bố cục này và giữ nguyên trạng thái đang phát triển. Tổng quan đã có khối chào mừng/hình lớn riêng; Cài đặt và Hồ sơ giữ tiêu đề chức năng.
+
+Chi tiêu dùng cảnh `jar` theo theme. Quỹ an toàn dùng `SafetyScene` riêng: cây và khiên bảo vệ (Khu vườn), hải đăng (Dòng nước), két dự phòng (Kim ngân), nến trong vòm che (Lửa ấm), vòm đá che mầm cây (Đất lành). Không dùng tỷ lệ giả cho tiêu đề Quỹ; các thẻ `ProgressScene` vẫn phản ánh tiến độ thực tế. Cảnh mới khác nhà kính/bồn nước/heo đất/đèn lồng/chum của Tiết kiệm và các cảnh Đầu tư.
+
+Preview thành viên dùng hình cho cả năm module, khung tối đa 160px để hợp giao diện thu nhỏ; preview khách không đổi nhận diện. SVG là trang trí tĩnh và ẩn với trình đọc màn hình; lựa chọn theme vẫn bằng CSS, không thêm API hoặc dữ liệu tài khoản.

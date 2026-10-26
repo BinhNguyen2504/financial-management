@@ -336,7 +336,7 @@
 .preview-heading {
   margin: 18px 0 24px;
 }
-.preview-heading > p {
+.preview-heading > div > p {
   font-size: 10px;
   color: var(--primary);
   font-weight: 650;
@@ -347,7 +347,7 @@
   font-weight: 600;
   letter-spacing: -0.7px;
 }
-.preview-heading > span {
+.preview-heading > div > span {
   display: block;
   font-size: 11px;
   color: var(--muted);
@@ -948,7 +948,7 @@
   .preview-heading h2 {
     font-size: 25px;
   }
-  .preview-heading > span {
+  .preview-heading > div > span {
     font-size: 12px;
   }
   .preview-row-info strong,
@@ -1113,7 +1113,7 @@
   .preview-heading h2 {
     font-size: 22px;
   }
-  .preview-heading > span {
+  .preview-heading > div > span {
     font-size: 12px;
     line-height: 1.7;
   }
@@ -1293,6 +1293,21 @@
   .public-login .lead {
     font-size: 16px;
   }
+}
+
+.preview-heading:has(> .garden-art) {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.preview-heading > div {
+  min-width: 0;
+  flex: 1;
+}
+.preview-heading > .garden-art {
+  width: 160px;
+  max-width: 32%;
+  flex-shrink: 0;
 }
 
 /* Fund's illustration also explains its progress on compact preview layouts. */
