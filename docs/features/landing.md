@@ -31,7 +31,7 @@ Năm tab Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn, m�
 
 Whitelist dùng đường dẫn chính xác của catalog và /profile; từ chối URL ngoài, query/hash, route lạ, login/callback và vòng lặp. Proxy refresh cookie, mỗi page xác minh getUser trước render, API tiếp tục xác minh owner/RLS độc lập. Bearer không cấp quyền mở trang HTML. Page guard không được thay bằng layout/client check.
 
-Landing HTML không chờ Auth phía server: nội dung ban đầu là marketing, provider xác minh phiên trong trình duyệt rồi chuyển cả khung và nội dung sang bản thành viên. Trong lúc chờ hoặc khi xác minh thất bại mà chưa có user, marketing vẫn đọc được; nút tài khoản giữ trạng thái tải/thử lại. Nếu provider đang giữ user khi refresh lỗi, vẫn giữ bản thành viên. Khi không có JavaScript chỉ hiện bản marketing. Proxy không gọi Auth cho `/`, ảnh Open Graph, `/robots.txt` và `/sitemap.xml`. Public/app layout tách route group, giữ nguyên URL. App và login noindex. `APP_ORIGIN` đặt origin triển khai cho URL chia sẻ Open Graph; khi để trống, metadata dùng localhost:3000. PWA start_url /overview, chỉ cache offline.html, không cache dữ liệu tài khoản. Không đổi API tài chính hoặc database.
+Từ 27/10/2026, root layout dùng `pageSession()` xác minh phiên phía server rồi truyền user (không có access/refresh token) vào `UserProvider`. Shell, nội dung, CTA và tài khoản vì vậy khớp ngay trong HTML đầu tiên, cả khi JavaScript chậm hoặc bị tắt; user đã xác minh không gọi lại getUser ngay khi hydrate. Public layout dùng cùng kết quả request-scoped để liên kết noscript đến hồ sơ cho thành viên hoặc đăng nhập cho khách. Proxy refresh cookie của `/` trước render và đặt `private, no-store` để HTML thành viên không được cache dùng chung. `/` vẫn công khai: nếu xác minh lỗi hoặc Auth thiếu cấu hình, trả nội dung công khai và cho thử lại tài khoản phía client; không áp pageAccess/redirect lên trang chủ. Nếu provider đang giữ user khi refresh lỗi, vẫn giữ bản thành viên. Ảnh Open Graph, `/robots.txt` và `/sitemap.xml` tiếp tục không gọi Auth trong proxy. Public/app layout tách route group, giữ nguyên URL. App và login noindex. `APP_ORIGIN` đặt origin triển khai cho URL chia sẻ Open Graph; khi để trống, metadata dùng localhost:3000. PWA start_url /overview, chỉ cache offline.html, không cache dữ liệu tài khoản. Không đổi API tài chính hoặc database.
 
 ## Duy trì và nghiệm thu
 
@@ -143,3 +143,16 @@ Mặc định `SEO_INDEXABLE=false`, HTML có `noindex, nofollow`, sitemap rỗn
 Proxy bỏ qua Auth cho `/robots.txt` và `/sitemap.xml`, tương tự `/` và ảnh Open Graph. Robots cho phép đọc HTML/CSS/JS để bot thấy nội dung và noindex; chặn `/api/` và `/auth/`. Sitemap khi bật chỉ có trang `/`; login/workspace không đưa vào sitemap và giữ noindex cùng page guard phía server. Không dùng robots như kiểm soát quyền truy cập.
 
 Kiểm bằng `npm run test:seo`: production build riêng cho mặc định tắt index, production bật index và Vercel preview bật cờ nhưng vẫn noindex; HTML gốc với user agent thường/Googlebot/Twitterbot, no-JavaScript, ảnh chia sẻ, responsive và truy cập riêng tư. Bằng chứng thực chạy và giới hạn ghi ở [validation](../07-validation.md). Xem [bật SEO khi có domain](../05-deployment.md#seo-trang-giới-thiệu--27102026).
+
+### Điều chỉnh mã 8 số và ô nhập — 27/10/2026
+
+Theo email thực tế người dùng cung cấp, source dùng 8 số, có 8 ô vuông tự chuyển focus và tự xác nhận khi nhập đủ/dán/tự điền đủ mã. FAQ/copy/catalog đã đổi sang 8 số. Preview tiếp tục dùng số liệu tài chính cố định, không thêm luồng xác thực hoặc truy cập tài khoản. Bằng chứng mã email 8 số là ảnh do người dùng cung cấp, chưa phải nghiệm thu đăng nhập cloud của agent.
+
+
+## Sửa nháy trạng thái đăng nhập — 27/10/2026
+
+Thay luồng marketing trước rồi mới chuyển thành viên bằng khởi tạo phiên đã xác minh từ server. Kiểm HTML với JavaScript bị tắt và trì hoãn bundle để quan sát trước/sau hydration; shell phải luôn là member khi phiên hợp lệ, giữ Water/Dark và menu tài khoản. Rà catalog, hai landing và preview: nội dung/trạng thái module vẫn phù hợp; không thay số liệu minh họa hoặc đọc API tài chính để phân loại người xem. Kết quả và giới hạn tại [validation](../07-validation.md).
+
+## Cuộn trong trang — 27/10/2026
+
+Các liên kết tới Trải nghiệm và các mục cùng trang cuộn mượt theo CSS dùng chung trên cả landing khách và thành viên; giảm chuyển động giữ cuộn tức thời. Đã rà catalog, copy hai landing và preview: khả năng, trạng thái module và nội dung giới thiệu vẫn phù hợp, không cần sửa số liệu/copy hoặc thêm dữ liệu tài khoản. Preview tiếp tục dùng dữ liệu minh họa cố định.

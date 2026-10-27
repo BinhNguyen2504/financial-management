@@ -8,7 +8,7 @@ export const auth = {
   "Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Hãy yêu cầu email mới.":
     "Sign-in link has expired or is invalid. Request a new email.",
   "Nhận mã đăng nhập gồm 8 chữ số qua email.":
-    "Receive a 8-digit sign-in code by email.",
+    "Receive an 8-digit sign-in code by email.",
   "Nhập mã trong email gửi tới {email}. Mã dùng một lần, có hiệu lực 30 phút.":
     "Enter the code emailed to {email}. It can be used once and expires in 30 minutes.",
   "Mã đăng nhập đã được gửi. Kiểm tra cả thư mục Spam nếu chưa thấy email.":
@@ -28,7 +28,8 @@ export const auth = {
   "Gửi lại sau {seconds} giây": "Resend in {seconds} seconds",
   "Gửi lại mã": "Resend code",
   "Chữ số {position} của mã xác nhận": "Confirmation code digit {position}",
-  "Nhập đủ 8 số hoặc dán mã để tự động đăng nhập.": "Enter all 8 digits or paste the code to sign in automatically.",
+  "Nhập đủ 8 số hoặc dán mã để tự động đăng nhập.":
+    "Enter all 8 digits or paste the code to sign in automatically.",
   "Đổi email": "Change email",
   "KHÔNG GIAN CỦA BẠN": "YOUR WORKSPACE",
   "Trở về với một": "Return to",

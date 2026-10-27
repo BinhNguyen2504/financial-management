@@ -249,7 +249,13 @@ test("financial layouts align values and actions across themes and viewport size
                   centerGap: Math.abs(
                     value.y + value.height / 2 - action.y - action.height / 2,
                   ),
-                  actionX: action.x,
+                  // One-action and two-action rows center the whole action group.
+                  actionCenter: (() => {
+                    const group = cells[6]
+                      .querySelector(".expense-row-actions")!
+                      .getBoundingClientRect();
+                    return group.x + group.width / 2;
+                  })(),
                 };
               });
             });
@@ -257,7 +263,8 @@ test("financial layouts align values and actions across themes and viewport size
             alignment.every((a) => a.headerGap < 2 && a.centerGap < 2),
             JSON.stringify(alignment),
           ).toBe(true);
-          expect(new Set(alignment.map((a) => a.actionX)).size).toBe(1);
+          const centers = alignment.map((a) => a.actionCenter);
+          expect(Math.max(...centers) - Math.min(...centers)).toBeLessThan(1);
         }
         if (width === 1440 || info.project.name !== "desktop")
           await page.screenshot({

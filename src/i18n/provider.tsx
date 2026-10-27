@@ -95,6 +95,14 @@ export function LocaleProvider({
     };
   }, [initialLocale, hasLocaleCookie]);
   useEffect(() => {
+    document.documentElement.lang = locale;
+    if (pathname === "/") {
+      document.title = translator(
+        locale,
+        "landing",
+      )("Quản lý tài chính cá nhân | Financial Manager");
+      return;
+    }
     const source =
       pathname === "/profile"
         ? "Thông tin cá nhân"

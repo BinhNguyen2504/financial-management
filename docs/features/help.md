@@ -4,7 +4,7 @@ Triển khai trong source ngày 20/10/2026. Help phục vụ người quản lý
 
 ## Cách dùng
 
-Mở **Hướng dẫn** cạnh tiêu đề trang để đọc bài của trang hiện tại. Bảng nằm bên phải trên desktop (tối đa 640px), toàn màn hình dưới 768px. Mục lục đưa đến mục cần đọc; nút đóng luôn nhìn thấy. Các nút **Giải thích** cạnh tiêu đề hoặc trong form mở đúng thuật ngữ/tác vụ. Đóng Help bằng nút, Escape hoặc nền quay lại form với bản nháp, bộ lọc, vị trí cuộn còn nguyên. Không tự bật khi vào trang. Đổi route đóng Help và đặt lại mục đọc.
+Mở **Hướng dẫn** cạnh tiêu đề trang để đọc bài của trang hiện tại. Bảng nằm bên phải trên desktop (tối đa 640px), toàn màn hình dưới 768px. Mục lục đưa focus đến tiêu đề và cuộn mượt trong phần đọc; tùy chọn giảm chuyển động bỏ hiệu ứng cuộn. Nút đóng luôn nhìn thấy. Các nút **Giải thích** cạnh tiêu đề hoặc trong form mở đúng thuật ngữ/tác vụ. Đóng Help bằng nút, Escape hoặc nền quay lại form với bản nháp, bộ lọc, vị trí cuộn còn nguyên. Không tự bật khi vào trang. Đổi route đóng Help và đặt lại mục đọc.
 
 Mỗi bài gồm: mục đích/đối tượng, tư duy sử dụng, thuật ngữ, hướng dẫn theo tác vụ, ví dụ minh họa và điểm dễ hiểu nhầm. Tác vụ gồm khi nào dùng, bước thao tác và kết quả/lưu ý. Các trang đang phát triển giới thiệu phạm vi dự kiến và chỉ đến chức năng hiện có, không giả thao tác chưa triển khai.
 

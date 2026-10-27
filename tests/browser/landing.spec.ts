@@ -153,6 +153,111 @@ test("new user login defaults to overview and unsafe destinations remain inside 
   await expect(page).toHaveURL(/\/overview$/);
 });
 
+test("member homepage is correct in server HTML and stays stable through delayed hydration", async ({
+  page,
+  browser,
+}, info) => {
+  await login(page);
+  await expect(page.locator(".overview-start")).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await page.evaluate(() => {
+    localStorage.setItem("fm-visual-theme", "water");
+    localStorage.setItem("fm-theme", "dark");
+  });
+  const noJS = await browser.newContext({
+    baseURL: process.env.TEST_BASE_URL,
+    javaScriptEnabled: false,
+  });
+  try {
+    await noJS.addCookies(await page.context().cookies());
+    const document = await noJS.newPage();
+    const response = await document.goto("/");
+    expect(response?.headers()["cache-control"]).toContain("no-store");
+    await expect(
+      document.locator('[data-landing-audience="member"]'),
+    ).toBeVisible();
+    await expect(document.getByRole("heading", { level: 1 })).toContainText(
+      "Một nơi rõ ràng hơn",
+    );
+    await expect(
+      document.locator(".marketing-shell, .marketing-hero"),
+    ).toHaveCount(0);
+    await expect(
+      document.getByRole("link", { name: "Thông tin cá nhân", exact: true }),
+    ).toBeVisible();
+    await expect(
+      document.getByRole("link", { name: "Đăng nhập", exact: true }),
+    ).toHaveCount(0);
+    await document.screenshot({
+      path: info.outputPath("member-server-without-js.png"),
+    });
+  } finally {
+    await noJS.close();
+  }
+
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.addInitScript(() => {
+    const audiences: string[] = [];
+    Object.assign(window, { landingAudiences: audiences });
+    new MutationObserver(() => {
+      const audience = document
+        .querySelector("[data-landing-audience]")
+        ?.getAttribute("data-landing-audience");
+      if (audience && audiences.at(-1) !== audience) audiences.push(audience);
+    }).observe(document, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-landing-audience"],
+    });
+  });
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route(/\/_next\/static\/.*\.js(?:\?|$)/, async (route) => {
+    await gate;
+    await route.continue();
+  });
+  try {
+    await page.goto("/", { waitUntil: "commit" });
+    await expect(
+      page.locator('[data-landing-audience="member"]'),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(
+      "Một nơi rõ ràng hơn",
+    );
+    await expect(
+      page.locator(".marketing-shell, .marketing-hero, .user-loading"),
+    ).toHaveCount(0);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-visual-theme",
+      "water",
+    );
+  } finally {
+    release();
+  }
+  await page.waitForLoadState("networkidle");
+  await page.screenshot({
+    path: info.outputPath("member-after-hydration.png"),
+  });
+  await page
+    .getByRole("button", { name: "Tài khoản của Bạn", exact: true })
+    .click();
+  await expect(
+    page.getByRole("link", { name: "Thông tin cá nhân", exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () =>
+        (window as Window & { landingAudiences?: string[] }).landingAudiences,
+    ),
+  ).toEqual(["member"]);
+  expect(errors).toEqual([]);
+});
+
 test("email callback verifies PKCE, preserves destination and handles expired links", async ({
   page,
 }) => {

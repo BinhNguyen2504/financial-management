@@ -1,63 +1,27 @@
-import { AppLogo } from "@/components/app-logo";
-import { PublicAccount } from "@/features/landing/account-actions";
-import { PublicShell } from "@/features/landing/landing-audience";
+import { PublicChrome } from "@/features/landing/public-chrome";
+import { LocaleProvider } from "@/i18n/provider";
+import { serverLocaleState } from "@/i18n/server";
+import { ToastProvider } from "@/components/toast";
+import { pageSession } from "@/server/page-auth";
 import "@/features/landing/landing.css";
 import "@/features/landing/marketing.css";
-import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [session, { locale, hasCookie }] = await Promise.all([
+    pageSession(),
+    serverLocaleState(),
+  ]);
   return (
-    <PublicShell>
-      <header className="public-header">
-        <Link
-          href="/"
-          className="public-brand"
-          aria-label="Financial Manager — Trang giới thiệu"
-        >
-          <span className="public-brand-mark">
-            <AppLogo size={26} />
-          </span>
-          <span>
-            Financial<span className="public-brand-sub">Manager</span>
-          </span>
-        </Link>
-        <nav aria-label="Điều hướng giới thiệu" className="public-nav">
-          <Link href="/#trai-nghiem">Trải nghiệm</Link>
-          <Link href="/#cau-chuyen">Câu chuyện</Link>
-          <Link href="/#dang-phat-trien">Đang phát triển</Link>
-        </nav>
-        <PublicAccount />
-        <noscript>
-          <style>{`.public-account { display: none; }`}</style>
-          <Link href="/login" className="landing-text-link">
-            Đăng nhập
-          </Link>
-        </noscript>
-      </header>
-      <main id="main" tabIndex={-1}>
-        {children}
-      </main>
-      <footer className="public-footer">
-        <div>
-          <Link className="public-footer-brand" href="/">
-            Financial Manager
-          </Link>
-          <p>Từ nhu cầu thật. Cho từng ngày rõ ràng hơn.</p>
-          <p>Quản lý tài chính trên web và thiết bị di động.</p>
-        </div>
-        <div>
-          <a href="/#dang-phat-trien">Đang phát triển</a>
-          <Link href="/overview" prefetch={false}>
-            Mở không gian của bạn <ArrowUpRight size={15} aria-hidden="true" />
-          </Link>
-          <span>© 2026 Bình Nguyễn · Tiếng Việt · VND</span>
-        </div>
-      </footer>
-    </PublicShell>
+    <LocaleProvider initialLocale={locale} hasLocaleCookie={hasCookie}>
+      <ToastProvider>
+        <PublicChrome member={session.state === "authenticated"}>
+          {children}
+        </PublicChrome>
+      </ToastProvider>
+    </LocaleProvider>
   );
 }

@@ -81,7 +81,6 @@ test("slow data requests show readable progress across workspaces and themes", a
     ["/savings", "**/api/v1/savings?*", "Đang mở sổ tiết kiệm…"],
     ["/investments", "**/api/v1/investments?*", "Đang tải danh mục…"],
     ["/settings", "**/api/v1/data/status", "Đang kiểm tra trạng thái dữ liệu…"],
-    ["/profile", "**/auth/v1/user", "Đang tải thông tin cá nhân…"],
   ];
   for (const [path, pattern, message] of screens) {
     let release!: () => void;
@@ -138,6 +137,22 @@ test("slow data requests show readable progress across workspaces and themes", a
     await page.unroute(pattern);
   }
   expect(hydration).toEqual([]);
+});
+
+test("profile uses the server-verified user without an initial browser refetch", async ({
+  page,
+}) => {
+  await login(page);
+  let browserLookups = 0;
+  await page.route("**/auth/v1/user", async (route) => {
+    browserLookups++;
+    await route.abort("failed");
+  });
+  await page.goto("/profile");
+  await expect(page.getByLabel("Họ và tên", { exact: true })).toBeVisible();
+  await expect(page.locator(".loading-status, .user-loading")).toHaveCount(0);
+  await page.waitForLoadState("networkidle");
+  expect(browserLookups).toBe(0);
 });
 
 test("failed loads stop progress and retries show it again until recovery", async ({

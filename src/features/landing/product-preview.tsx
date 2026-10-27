@@ -1,4 +1,7 @@
 "use client";
+import { formatMoney } from "@/i18n/format";
+import { useI18n } from "@/i18n/provider";
+
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { AppLogo } from "@/components/app-logo";
 import { AssetScene } from "@/components/asset-scene";
@@ -41,7 +44,7 @@ const data = {
     title: "Từng bước vun đắp sự an tâm.",
     subtitle: "Ba quỹ độc lập, cùng một nền tảng sinh hoạt đã xác nhận.",
     label: "Tổng dự phòng",
-    value: "42.750.000",
+    value: "42750000",
     secondary: "Emergency đủ trang trải",
     secondaryValue: "3 tháng",
     columns: ["Quỹ an toàn", "Đã dự phòng"],
@@ -50,21 +53,21 @@ const data = {
         name: "Emergency Fund",
         note: "27 / 54 triệu · Hoàn thành 50%",
         emoji: "🌳",
-        amount: "27.000.000",
+        amount: "27000000",
         percent: 50,
       },
       {
         name: "Rainy Day Fund",
         note: "6,75 / 9 triệu · Hoàn thành 75%",
         emoji: "☂️",
-        amount: "6.750.000",
+        amount: "6750000",
         percent: 75,
       },
       {
         name: "Sinking Fund",
         note: "9 / 18 triệu · Hoàn thành 50%",
         emoji: "🌉",
-        amount: "9.000.000",
+        amount: "9000000",
         percent: 50,
       },
     ],
@@ -76,7 +79,7 @@ const data = {
     subtitle:
       "Thu cố định và phát sinh phân biệt rõ; khoản chưa nhập có nhắc bổ sung.",
     label: "Tổng thực nhận",
-    value: "28.500.000",
+    value: "28500000",
     secondary: "Nguồn thu trong tháng",
     secondaryValue: "2 nguồn",
     columns: ["Nguồn thu", "Thực nhận"],
@@ -85,14 +88,14 @@ const data = {
         name: "Lương",
         note: "Cố định · Đã ghi nhận",
         emoji: "🌿",
-        amount: "25.000.000",
+        amount: "25000000",
         percent: 88,
       },
       {
         name: "Dự án cá nhân",
         note: "Phát sinh · Khoản thu một lần",
         emoji: "☀️",
-        amount: "3.500.000",
+        amount: "3500000",
         percent: 12,
       },
     ],
@@ -103,23 +106,23 @@ const data = {
     title: "Chăm chút cho tháng của bạn.",
     subtitle: "Hũ chi tháng và tích lũy gọn gàng, dễ theo dõi số còn lại.",
     label: "Kế hoạch tháng",
-    value: "12.000.000",
+    value: "12000000",
     secondary: "Số còn trong hũ",
-    secondaryValue: "4.650.000",
+    secondaryValue: "4650000",
     columns: ["Hũ chi tiêu", "Còn trong hũ"],
     rows: [
       {
         name: "Sinh hoạt",
         note: "Chi hàng tháng · Đã dùng 65%",
         emoji: "🏡",
-        amount: "2.450.000",
+        amount: "2450000",
         percent: 65,
       },
       {
         name: "Chăm sóc bản thân",
         note: "Chi hàng tháng · Đã dùng 56%",
         emoji: "🌷",
-        amount: "2.200.000",
+        amount: "2200000",
         percent: 56,
       },
     ],
@@ -130,7 +133,7 @@ const data = {
     title: "Nhìn rõ những khoản đang đầu tư.",
     subtitle: "Giá trị chính ở đầu, từng danh mục và ngày định giá rõ ràng.",
     label: "Tài sản trong Đầu tư",
-    value: "72.000.000",
+    value: "72000000",
     secondary: "Danh mục và ví",
     secondaryValue: "1 danh mục · 1 ví",
     columns: ["Danh mục / ví", "Giá trị"],
@@ -139,14 +142,14 @@ const data = {
         name: "Cổ phiếu",
         note: "Định giá 30/06/2026",
         emoji: "📈",
-        amount: "65.000.000",
+        amount: "65000000",
         percent: 90,
       },
       {
         name: "Tiền chờ TCBS",
         note: "Tiền chờ · Không tính ROI",
         emoji: "💼",
-        amount: "7.000.000",
+        amount: "7000000",
         percent: 10,
       },
     ],
@@ -155,9 +158,10 @@ const data = {
   },
   savings: {
     title: "Những điều đang lớn lên.",
-    subtitle: "Đọc rõ từng danh mục, đối chiếu giao dịch theo tháng và kỳ báo cáo.",
+    subtitle:
+      "Đọc rõ từng danh mục, đối chiếu giao dịch theo tháng và kỳ báo cáo.",
     label: "Tài sản trong Tiết kiệm",
-    value: "85.000.000",
+    value: "85000000",
     secondary: "Danh mục đang theo dõi",
     secondaryValue: "2 danh mục",
     columns: ["Danh mục", "Giá trị"],
@@ -166,14 +170,14 @@ const data = {
         name: "Tiền tích lũy",
         note: "Tiền · Tích lũy đều đặn",
         emoji: "🌱",
-        amount: "25.000.000",
+        amount: "25000000",
         percent: 29,
       },
       {
         name: "Sổ tiết kiệm",
         note: "Tiền gửi · Theo dõi từng sổ",
         emoji: "🪴",
-        amount: "60.000.000",
+        amount: "60000000",
         percent: 71,
       },
     ],
@@ -188,13 +192,15 @@ export function ProductPreview({
 }: {
   appearance?: "themed" | "marketing";
 }) {
+  const { t: tr, locale } = useI18n("landing");
   const neutral = appearance === "marketing";
   const [active, setActive] = useState<PreviewKey>("budgets");
   const [hidden, setHidden] = useState(false);
   const id = useId();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const selected = data[active];
-  const money = (value: string) => (hidden ? "•••••• ₫" : `${value} ₫`);
+  const money = (value: string) =>
+    hidden ? "•••••• ₫" : formatMoney(value, locale);
   const changeTab = (
     event: KeyboardEvent<HTMLButtonElement>,
     index: number,
@@ -218,19 +224,22 @@ export function ProductPreview({
           <i />
           <i />
         </div>
-        <span>financial manager / không gian cá nhân</span>
-        <span className="preview-demo-label">Dữ liệu minh họa</span>
+        <span>{tr("financial manager / không gian cá nhân")}</span>
+        <span className="preview-demo-label">{tr("Dữ liệu minh họa")}</span>
       </div>
       <div className="preview-body">
-        <aside className="preview-sidebar" aria-label="Các mục trong preview">
+        <aside
+          className="preview-sidebar"
+          aria-label={tr("Các mục trong preview")}
+        >
           <span className="preview-logo">
             <AppLogo size={24} /> Financial Manager
           </span>
-          <p>KHÔNG GIAN CÁ NHÂN</p>
+          <p>{tr("KHÔNG GIAN CÁ NHÂN")}</p>
           <ScrollTabs
             className="preview-tabs"
             role="tablist"
-            aria-label="Khám phá các tính năng"
+            aria-label={tr("Khám phá các tính năng")}
           >
             {tabs.map((item, index) => (
               <button
@@ -247,34 +256,35 @@ export function ProductPreview({
                 onClick={() => setActive(item.slug as PreviewKey)}
               >
                 <ModuleIcon name={item.icon} size={19} />
-                {item.title}
+                {tr(item.title)}
               </button>
             ))}
           </ScrollTabs>
           <div className="preview-sidebar-note">
             <span className="status-dot" />
             {neutral ? (
-              "Từng khoản tiền, rõ mục đích."
+              tr("Từng khoản tiền, rõ mục đích.")
             ) : (
               <ThemeText name="storyNote" />
             )}
-            <small>Tải bản sao dữ liệu của bạn trong Cài đặt.</small>
-            <small>{navigationSummary}</small>
+            <small>{tr("Tải bản sao dữ liệu của bạn trong Cài đặt.")}</small>
+            <small>{tr(navigationSummary)}</small>
             <small>
-              Trong app: Tiếng Việt / English. Bản xem thử dùng tiếng Việt.
+              {tr("Trang chủ và ứng dụng hỗ trợ Tiếng Việt / English.")}
             </small>
           </div>
         </aside>
         <div className="preview-workspace">
           <div className="preview-workspace-top">
             <span>
-              THÁNG 06 / 2026 <ChevronDown size={13} aria-hidden="true" />
+              {tr("THÁNG 06 / 2026")}{" "}
+              <ChevronDown size={13} aria-hidden="true" />
             </span>
             <button
               className="preview-privacy"
-              aria-label={
-                hidden ? "Hiện số tiền minh họa" : "Ẩn số tiền minh họa"
-              }
+              aria-label={tr(
+                hidden ? "Hiện số tiền minh họa" : "Ẩn số tiền minh họa",
+              )}
               aria-pressed={hidden}
               onClick={() => setHidden(!hidden)}
             >
@@ -283,18 +293,19 @@ export function ProductPreview({
               ) : (
                 <Eye size={18} aria-hidden="true" />
               )}
-              <span>Riêng tư</span>
+              <span>{tr("Riêng tư")}</span>
             </button>
           </div>
           <details className="preview-help" key={active}>
             <summary>
-              Hướng dẫn · {modules.find((item) => item.slug === active)?.title}
+              {tr("Hướng dẫn ·")}{" "}
+              {tr(modules.find((item) => item.slug === active)!.title)}
             </summary>
-            <p>{helpPreview[active]}</p>
+            <p>{tr(helpPreview[active])}</p>
             <small>
-              Minh họa rút gọn. Trong ứng dụng, mỗi trang có mục lục đánh số,
-              các ý chính được nhấn rõ và hướng dẫn từng thao tác; các biểu mẫu
-              báo lỗi ngay tại trường cần sửa.
+              {tr(
+                "Minh họa rút gọn. Trong ứng dụng, mỗi trang có mục lục đánh số, các ý chính được nhấn rõ và hướng dẫn từng thao tác; các biểu mẫu báo lỗi ngay tại trường cần sửa.",
+              )}
             </small>
           </details>
           {tabs.map((item) => (
@@ -310,19 +321,19 @@ export function ProductPreview({
                 <>
                   <div className="preview-heading">
                     <div>
-                      <p>{item.title}</p>
+                      <p>{tr(item.title)}</p>
                       <h2>
                         {neutral ? (
-                          selected.title
+                          tr(selected.title)
                         ) : active === "funds" ? (
                           <ThemeText name="previewFunds" />
                         ) : active === "savings" ? (
                           <ThemeText name="previewSavings" />
                         ) : (
-                          selected.title
+                          tr(selected.title)
                         )}
                       </h2>
-                      <span>{selected.subtitle}</span>
+                      <span>{tr(selected.subtitle)}</span>
                     </div>
                     {!neutral &&
                       (active === "savings" || active === "investments") && (
@@ -338,34 +349,34 @@ export function ProductPreview({
                   </div>
                   <div className="preview-metrics">
                     <div>
-                      <span>{selected.label}</span>
+                      <span>{tr(selected.label)}</span>
                       <strong>{money(selected.value)}</strong>
                       <small>
                         <ArrowDownLeft size={14} aria-hidden="true" />
-                        Tháng 06 · Dữ liệu mẫu
+                        {tr("Tháng 06 · Dữ liệu mẫu")}
                       </small>
                     </div>
                     <div>
-                      <span>{selected.secondary}</span>
+                      <span>{tr(selected.secondary)}</span>
                       <strong>
                         {active === "budgets"
                           ? money(selected.secondaryValue)
-                          : selected.secondaryValue}
+                          : tr(selected.secondaryValue)}
                       </strong>
                       <small>
                         <ArrowUpRight size={14} aria-hidden="true" />
-                        Theo nhịp của bạn
+                        {tr("Theo nhịp của bạn")}
                       </small>
                     </div>
                   </div>
                   <div className="preview-detail-grid">
                     <div className="preview-rows">
                       <div className="preview-table-heading">
-                        <span>{selected.columns[0]}</span>
-                        <span>{selected.columns[1]}</span>
+                        <span>{tr(selected.columns[0])}</span>
+                        <span>{tr(selected.columns[1])}</span>
                       </div>
                       {selected.rows.map((row) => (
-                        <div className="preview-row" key={row.name}>
+                        <div className="preview-row" key={tr(row.name)}>
                           <span
                             className="preview-row-emoji"
                             aria-hidden="true"
@@ -379,11 +390,11 @@ export function ProductPreview({
                             )}
                           </span>
                           <div className="preview-row-info">
-                            <strong>{row.name}</strong>
+                            <strong>{tr(row.name)}</strong>
                             <small>
                               {active === "funds"
-                                ? `Hoàn thành ${row.percent}%`
-                                : row.note}
+                                ? tr("Hoàn thành {0}%", { 0: row.percent })
+                                : tr(row.note)}
                             </small>
                             {active === "budgets" && (
                               <span className="preview-payment">
@@ -412,8 +423,8 @@ export function ProductPreview({
                     >
                       <span>
                         {neutral && active === "funds"
-                          ? "EMERGENCY · TIẾN ĐỘ DỰ PHÒNG"
-                          : selected.chartLabel}
+                          ? tr("EMERGENCY · TIẾN ĐỘ DỰ PHÒNG")
+                          : tr(selected.chartLabel)}
                       </span>
                       {active === "funds" ? (
                         <>
@@ -421,7 +432,9 @@ export function ProductPreview({
                             <div
                               className="marketing-fund-progress"
                               role="img"
-                              aria-label="Emergency Fund đã chuẩn bị 50% mục tiêu"
+                              aria-label={tr(
+                                "Emergency Fund đã chuẩn bị 50% mục tiêu",
+                              )}
                             >
                               <span>
                                 50<small>%</small>
@@ -431,29 +444,30 @@ export function ProductPreview({
                             <ProgressScene fund="emergency" percent="50" />
                           )}
                           <p>
-                            Đã chuẩn bị 50% · Mức sinh hoạt {money("9.000.000")}
-                            /tháng
+                            {tr("Đã chuẩn bị 50% · Mức sinh hoạt")}{" "}
+                            {money("9000000")}
+                            {tr("/tháng")}
                           </p>
                         </>
                       ) : (
                         <div
                           className="preview-bars"
                           role="img"
-                          aria-label={
+                          aria-label={tr(
                             active === "budgets"
                               ? "Minh họa mức thực chi khác nhau qua sáu tháng"
-                              : "Minh họa xu hướng qua sáu tháng"
-                          }
+                              : "Minh họa xu hướng qua sáu tháng",
+                          )}
                         >
                           {selected.bars.map((height, index) => (
                             <div key={index}>
                               <i style={{ height: `${height}%` }} />
-                              <small>T{index + 1}</small>
+                              <small>{tr("T{0}", { 0: index + 1 })}</small>
                             </div>
                           ))}
                         </div>
                       )}
-                      <small>Số liệu minh họa cố định</small>
+                      <small>{tr("Số liệu minh họa cố định")}</small>
                     </div>
                   </div>
                 </>

@@ -38,13 +38,20 @@ export function OtpInput({
     const start = digits.length === OTP_LENGTH ? 0 : index;
     const next = [...value];
     if (!digits) next[index] = "";
-    else for (let offset = 0; offset < digits.length && start + offset < OTP_LENGTH; offset++) {
-      next[start + offset] = digits[offset];
-    }
+    else
+      for (
+        let offset = 0;
+        offset < digits.length && start + offset < OTP_LENGTH;
+        offset++
+      ) {
+        next[start + offset] = digits[offset];
+      }
     onChange(next);
     if (digits) focus(Math.min(start + digits.length, OTP_LENGTH - 1));
-    if (next.every((digit) => /^[0-9]$/.test(digit)) &&
-      (pasted || digits.length === OTP_LENGTH || index === OTP_LENGTH - 1)) {
+    if (
+      next.every((digit) => /^[0-9]$/.test(digit)) &&
+      (pasted || digits.length === OTP_LENGTH || index === OTP_LENGTH - 1)
+    ) {
       onComplete(next.join(""));
     }
   }
@@ -53,7 +60,7 @@ export function OtpInput({
       className="otp-inputs"
       role="group"
       aria-labelledby="login-token-label"
-      aria-describedby={`login-token-hint${invalid ? " login-error-token" : ""}`}
+      aria-describedby={`login-token-hint login-token-auto${invalid ? " login-error-token" : ""}`}
     >
       {value.map((digit, index) => (
         <input
@@ -63,9 +70,13 @@ export function OtpInput({
             if (index === 0) firstInputRef.current = element;
           }}
           id={index === 0 ? "login-field-token" : `login-token-${index + 1}`}
-          aria-label={index === 0 ? t("Mã xác nhận") : t("Chữ số {position} của mã xác nhận", { position: index + 1 })}
+          aria-label={
+            index === 0
+              ? t("Mã xác nhận")
+              : t("Chữ số {position} của mã xác nhận", { position: index + 1 })
+          }
           aria-invalid={invalid}
-          aria-describedby={`login-token-hint${invalid ? " login-error-token" : ""}`}
+          aria-describedby={`login-token-hint login-token-auto${invalid ? " login-error-token" : ""}`}
           className="otp-digit"
           type="text"
           inputMode="numeric"
@@ -76,12 +87,23 @@ export function OtpInput({
           value={digit}
           disabled={disabled}
           onFocus={(event) => event.currentTarget.select()}
-          onChange={(event) => update(index, event.currentTarget.value)}
+          onClick={(event) => event.currentTarget.select()}
+          onChange={(event) => {
+            const input = event.nativeEvent as InputEvent;
+            // Safari can place the caret after focus selection. A typed digit
+            // replaces this slot; a multi-digit paste/autofill is distributed.
+            const typedDigit =
+              input.inputType === "insertText" &&
+              input.data?.length === 1 &&
+              /^[0-9]$/.test(input.data);
+            update(index, typedDigit ? input.data! : event.currentTarget.value);
+          }}
           onPaste={(event) => {
             event.preventDefault();
             update(index, event.clipboardData.getData("text"), true);
           }}
           onKeyDown={(event) => {
+            if (disabled) return;
             if (event.key === "Backspace") {
               event.preventDefault();
               const target = !value[index] && index > 0 ? index - 1 : index;
@@ -94,10 +116,23 @@ export function OtpInput({
               const next = [...value];
               next[index] = "";
               onChange(next);
-            } else if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+            } else if (
+              ["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)
+            ) {
               event.preventDefault();
-              focus(event.key === "Home" ? 0 : event.key === "End" ? OTP_LENGTH - 1
-                : Math.max(0, Math.min(OTP_LENGTH - 1, index + (event.key === "ArrowLeft" ? -1 : 1))));
+              focus(
+                event.key === "Home"
+                  ? 0
+                  : event.key === "End"
+                    ? OTP_LENGTH - 1
+                    : Math.max(
+                        0,
+                        Math.min(
+                          OTP_LENGTH - 1,
+                          index + (event.key === "ArrowLeft" ? -1 : 1),
+                        ),
+                      ),
+              );
             }
           }}
         />

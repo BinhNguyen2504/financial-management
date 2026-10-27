@@ -9,13 +9,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-it.each([
-  "/",
-  "/?utm_source=test",
-  "/robots.txt",
-  "/sitemap.xml",
-  "/opengraph-image",
-])(
+it.each(["/robots.txt", "/sitemap.xml", "/opengraph-image"])(
   "serves public crawler resources without consulting Auth: %s",
   async (path) => {
     vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://auth.example.com");
@@ -30,17 +24,23 @@ it.each([
   },
 );
 
-it("still refreshes Auth on private paths and lookalike crawler URLs", async () => {
+it("refreshes homepage/private cookies and keeps personalized HTML out of shared caches", async () => {
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://auth.example.com");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "local-test-key");
   const getUser = vi.fn().mockResolvedValue({ data: { user: null } });
   vi.mocked(createServerClient).mockReturnValue({ auth: { getUser } } as never);
   for (const path of [
+    "/",
+    "/?utm_source=test",
     "/overview",
     "/robots.txt/private",
     "/sitemap.xml/private",
   ]) {
-    await proxy(new NextRequest(`https://finance.example.com${path}`));
+    const response = await proxy(
+      new NextRequest(`https://finance.example.com${path}`),
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
   }
-  expect(getUser).toHaveBeenCalledTimes(3);
+  expect(getUser).toHaveBeenCalledTimes(5);
 });

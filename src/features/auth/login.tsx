@@ -60,7 +60,10 @@ export function Login({
       ? "Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Hãy yêu cầu email mới."
       : "",
   );
-  async function authenticate(action: "send" | "verify", completedToken = token) {
+  async function authenticate(
+    action: "send" | "verify",
+    completedToken = token,
+  ) {
     if (pending.current) return;
     const address = email.trim();
     const key = address.toLowerCase();
@@ -244,10 +247,10 @@ export function Login({
             {sent && (
               <div className="login-code-field">
                 <label htmlFor="login-field-token" id="login-token-label">
-                {tr("Mã xác nhận")}
-                <span className="required-mark" aria-hidden="true">
-                  *
-                </span>
+                  {tr("Mã xác nhận")}
+                  <span className="required-mark" aria-hidden="true">
+                    *
+                  </span>
                 </label>
                 <OtpInput
                   firstInputRef={tokenInput}
@@ -267,7 +270,9 @@ export function Login({
                     { email },
                   )}
                 </small>
-                <small>{tr("Nhập đủ 8 số hoặc dán mã để tự động đăng nhập.")}</small>
+                <small id="login-token-auto">
+                  {tr("Nhập đủ 8 số hoặc dán mã để tự động đăng nhập.")}
+                </small>
                 {fieldErrors.token && (
                   <small id="login-error-token" className="field-error">
                     {tr(fieldErrors.token)}

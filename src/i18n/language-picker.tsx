@@ -1,12 +1,37 @@
 "use client";
 
 import { useToast } from "@/components/toast";
+import { Languages } from "lucide-react";
+import { type Locale } from "./locale";
 import { useI18n } from "./provider";
 import { translate } from "./translate";
 
-export function LanguagePicker() {
+export function LanguagePicker({ compact = false }: { compact?: boolean }) {
   const { locale, setLocale, t } = useI18n();
   const toast = useToast();
+  const change = (value: Locale) => {
+    if (value === locale) return;
+    setLocale(value);
+    toast("success", translate(value, "Đã đổi ngôn ngữ."));
+  };
+  if (compact)
+    return (
+      <label className="public-language">
+        <Languages size={17} aria-hidden="true" />
+        <select
+          aria-label={`${t("Ngôn ngữ")} / Language`}
+          value={locale}
+          onChange={(event) => change(event.target.value as Locale)}
+        >
+          <option value="vi" lang="vi">
+            Tiếng Việt
+          </option>
+          <option value="en" lang="en">
+            English
+          </option>
+        </select>
+      </label>
+    );
   return (
     <section className="language-picker">
       <h2>
@@ -33,10 +58,7 @@ export function LanguagePicker() {
                 name="locale"
                 value={value}
                 checked={locale === value}
-                onChange={() => {
-                  setLocale(value);
-                  toast("success", translate(value, "Đã đổi ngôn ngữ."));
-                }}
+                onChange={() => change(value)}
               />
               <span>{label}</span>
             </label>

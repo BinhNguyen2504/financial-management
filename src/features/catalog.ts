@@ -239,7 +239,7 @@ export const publicHomeSummary =
   "Trang giới thiệu trước đăng nhập có thiết kế riêng; sau đăng nhập, trang chủ giữ chủ đề bạn đã chọn trong Cài đặt.";
 
 export const languageSummary =
-  "Trong ứng dụng, chọn Tiếng Việt hoặc English tại Cài đặt; ngôn ngữ được ghi nhớ trên trình duyệt, tiền tệ vẫn là VND.";
+  "Chọn Tiếng Việt hoặc English trên thanh đầu trang hoặc trong Cài đặt; lựa chọn dùng chung cho trang chủ, đăng nhập và ứng dụng, được ghi nhớ trên trình duyệt. Tiền tệ vẫn là VND.";
 
 export const navigationSummary =
   "Trên máy tính, nút thu gọn và mở rộng menu nằm ở mép phải thanh điều hướng, ngang hàng logo.";

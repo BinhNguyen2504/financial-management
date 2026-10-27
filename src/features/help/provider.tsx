@@ -154,7 +154,7 @@ function HelpPanel({
     );
     if (!target) return;
     target.focus({ preventScroll: true });
-    target.scrollIntoView({ block: "start", behavior: "instant" });
+    target.scrollIntoView({ block: "start" });
   }
   useEffect(() => {
     if (article && request.sectionId) jump(request.sectionId);

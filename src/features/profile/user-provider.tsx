@@ -36,11 +36,17 @@ const UserContext = createContext<{
   update: () => {},
 });
 
-export function UserProvider({ children }: { children: ReactNode }) {
+export function UserProvider({
+  children,
+  initialUser = null,
+}: {
+  children: ReactNode;
+  initialUser?: User | null;
+}) {
   const { t: tr } = useI18n("profile");
 
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(configured);
+  const [user, setUser] = useState<User | null>(initialUser);
+  const [loading, setLoading] = useState(configured && !initialUser);
   const [error, setError] = useState("");
   const [signingOut, setSigningOut] = useState(false);
   const reload = useCallback(async () => {
@@ -77,9 +83,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (event === "SIGNED_OUT") setUser(null);
       else if (event !== "INITIAL_SESSION" && session) setUser(session.user);
     });
-    void reload();
+    // The server already verified this user for the initial HTML. Repeating the
+    // same lookup here would replace the account menu with a loading spinner.
+    if (!initialUser) void reload();
     return () => subscription.unsubscribe();
-  }, [reload]);
+  }, [reload, initialUser]);
   return (
     <UserContext.Provider
       value={{

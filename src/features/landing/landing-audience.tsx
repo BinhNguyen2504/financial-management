@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useUser } from "@/features/profile/user-provider";
 
 // Public content only: workspace access remains enforced by the server pages.
-// Render marketing in the initial HTML so / stays readable without Auth or JS.
+// UserProvider starts with the server-verified user so HTML and hydration agree.
 export function LandingAudience({
   marketing,
   children,

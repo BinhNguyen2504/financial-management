@@ -58,6 +58,7 @@
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
+  scroll-behavior: smooth;
   padding: 24px;
   scroll-padding-block: 72px 24px;
 }

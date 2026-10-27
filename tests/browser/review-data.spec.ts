@@ -118,11 +118,16 @@ test("imported review data renders across budgets, income, savings, overview and
     .getByLabel("Từ ngày", { exact: true })
     .fill(`${Number(savings.today.slice(0, 4)) - 1}-12-01`);
   await expect(
-    page.getByRole("region", {
-      name: "Bảng tiết kiệm theo tháng",
-      exact: true,
-    }),
-  ).toContainText(`${Number(savings.today.slice(0, 4)) - 1}-12`);
+    page
+      .getByRole("region", {
+        name: "Bảng tiết kiệm theo tháng",
+        exact: true,
+      })
+      .getByRole("rowheader", {
+        name: `Tháng 12/${Number(savings.today.slice(0, 4)) - 1}`,
+        exact: true,
+      }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Ẩn số tiền", exact: true }).click();
   await expect(page.locator("main")).not.toContainText(
     new Intl.NumberFormat("vi-VN").format(BigInt(savings.state.total)),

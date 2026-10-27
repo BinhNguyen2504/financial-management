@@ -155,7 +155,7 @@ export const catalog = {
   "Chọn chủ đề Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành và chế độ sáng/tối/theo hệ thống, sao lưu JSON, khôi phục vào tài khoản trống và cài lên màn hình chính.":
     "Choose Garden/Water/Gold/Warm fire/Earth and light/dark/system mode, back up JSON, restore to an empty account and install on your home screen.",
   "Đăng nhập bằng mã 8 chữ số qua email; dữ liệu cloud riêng, mặc định tiền VND":
-    "Sign in with a 8-digit email code; private cloud data, VND by default",
+    "Sign in with an 8-digit email code; private cloud data, VND by default",
   "Múi giờ Asia/Ho_Chi_Minh và định dạng Việt Nam":
     "Asia/Ho_Chi_Minh time zone and Vietnamese formats",
   "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt":

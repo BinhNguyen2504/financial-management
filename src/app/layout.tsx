@@ -1,9 +1,11 @@
+import { serverLocale } from "@/i18n/server";
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import { PwaRegistration } from "@/components/pwa-registration";
 import { UserProvider } from "@/features/profile/user-provider";
 import { PreferenceSync, preferenceScript } from "@/components/ui-preferences";
 import { getSeoConfig } from "@/lib/seo";
+import { pageSession } from "@/server/page-auth";
 import "./globals.css";
 import "@/features/expenses/expenses.css";
 import "./zen.css";
@@ -36,18 +38,23 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const [session, locale] = await Promise.all([pageSession(), serverLocale()]);
   return (
-    <html lang="vi" className={nunito.variable} suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={nunito.variable}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <body>
         <script dangerouslySetInnerHTML={{ __html: preferenceScript }} />
         <PreferenceSync />
-        <UserProvider>
-          <a className="skip-link" href="#main">
-            Đến nội dung chính
-          </a>
+        <UserProvider
+          initialUser={session.state === "authenticated" ? session.user : null}
+        >
           {children}
           <PwaRegistration />
         </UserProvider>

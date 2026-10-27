@@ -1,3 +1,4 @@
+import { landing } from "./landing";
 import { auth } from "./auth";
 import { catalog } from "./catalog";
 import { common } from "./common";
@@ -20,6 +21,7 @@ export const english = {
   ...profile,
   ...catalog,
   ...auth,
+  ...landing,
   ...errors,
 } as const;
 export type MessageKey = keyof typeof english;
@@ -36,5 +38,6 @@ export const namespaces = {
   catalog,
   errors,
   auth,
+  landing,
 } as const;
 export type Namespace = keyof typeof namespaces;

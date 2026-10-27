@@ -1,13 +1,16 @@
+import { serverLocale } from "@/i18n/server";
 import type { Metadata } from "next";
 import { LandingAudience } from "@/features/landing/landing-audience";
 import { MarketingLanding } from "@/features/landing/marketing-landing";
 import { ThemedLanding } from "@/features/landing/themed-landing";
 import { getLandingMetadata, getWebsiteJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = getLandingMetadata();
+export async function generateMetadata(): Promise<Metadata> {
+  return getLandingMetadata(undefined, await serverLocale());
+}
 
-export default function Home() {
-  const jsonLd = getWebsiteJsonLd();
+export default async function Home() {
+  const jsonLd = getWebsiteJsonLd(undefined, await serverLocale());
   return (
     <>
       {jsonLd && (

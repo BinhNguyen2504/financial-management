@@ -3,10 +3,10 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
-  // Public HTML contains no account data. Verify the avatar in the browser so an
-  // Auth outage cannot hold the landing document behind a network request.
+  // Crawler resources are session-independent. The homepage stays public, but
+  // refresh its cookies before server rendering the matching guest/member UI.
   if (
-    ["/", "/robots.txt", "/sitemap.xml"].includes(request.nextUrl.pathname) ||
+    ["/robots.txt", "/sitemap.xml"].includes(request.nextUrl.pathname) ||
     request.nextUrl.pathname.startsWith("/opengraph-image")
   )
     return response;

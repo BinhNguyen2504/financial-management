@@ -184,7 +184,7 @@ Các luồng tạo, sửa, hủy/ngừng và khôi phục cho biết kết quả
 
 Khách chưa đăng nhập có nhận diện marketing riêng được người dùng chọn: sáng, tinh tế, nền ngà `#FAF9F6`, chữ `#242420`, điểm nhấn cam đồng `#A74425`. Typography lớn, khoảng thở, thẻ tài chính tĩnh và nội dung hướng đến lợi ích; không dùng cây/nước/vàng/lửa. Trình tự lợi ích → preview → khả năng sản phẩm → câu chuyện → FAQ → CTA. Không thêm số người dùng, lời chứng thực hoặc kết quả tài chính chưa có bằng chứng.
 
-Trang thành viên giữ nguyên giao diện theo theme hiện tại. Marketing là HTML mặc định; khi provider xác nhận user, đổi cả shell và nội dung. Tải lỗi Auth vẫn đọc được marketing và thử lại qua nút tài khoản. Theme và mode đã lưu không bị ghi đè. Preview khách có cùng số liệu/keyboard/ẩn tiền, dùng biểu đồ trung tính. Màn hình hẹp xếp hero và feature thành một cột; FAQ dùng details/summary, CTA là link thật; không có chuyển động nền lặp.
+Trang thành viên giữ nguyên giao diện theo theme hiện tại. Từ 27/10/2026, server khởi tạo provider bằng user đã xác minh để shell, nội dung, CTA và menu tài khoản đúng ngay trong HTML đầu tiên; không nháy marketing hoặc thay menu bằng spinner khi hydrate. Tải lỗi Auth vẫn đọc được nội dung công khai và thử lại qua nút tài khoản. Theme và mode đã lưu không bị ghi đè. Preview khách có cùng số liệu/keyboard/ẩn tiền, dùng biểu đồ trung tính. Màn hình hẹp xếp hero và feature thành một cột; FAQ dùng details/summary, CTA là link thật; không có chuyển động nền lặp.
 
 ## Logo trung tính và Anh/Việt — 22/10/2026
 
@@ -193,6 +193,10 @@ Logo hũ/đồng xu dùng than–ngà, đảo sáng/tối và phù hợp năm th
 ## Bố cục gọn và điều khiển ổn định — 23/10/2026
 
 Tab giữ nguyên nhãn trên một hàng và cuộn trong thanh khi thiếu chỗ; mục đang chọn luôn nhìn thấy, không làm nhảy trang/dialog. Toolbar bảng đứng ngoài vùng dữ liệu cuộn ngang. Thu nhập có mũi tên hai đầu bộ chọn kỳ, hàng bảng cơ sở 48px và nút nhập thiếu 44px không cộng thêm padding dọc. Audit theo nhóm lỗi trên toàn ứng dụng được ghi tại [ma trận bố cục](features/layout-scroll-2026-10-23.md).
+
+### Cuộn đến nội dung — 27/10/2026
+
+Liên kết đến vị trí khác trong cùng trang và các thao tác trong dialog (mục lục Help, xem trước, phân trang, quay lại vị trí tab và đưa tới ô lỗi) cuộn mượt bằng hành vi trình duyệt. Focus dùng `preventScroll` trước khi cuộn để tránh nhảy đột ngột. `prefers-reduced-motion: reduce` giữ cuộn tức thời. Chuyển route và đóng dialog vẫn giữ quy tắc điều hướng/khôi phục vị trí hiện có.
 
 
 ## Vị trí nút thu gọn menu — 26/10/2026
@@ -218,3 +222,7 @@ Danh mục, giao dịch tháng và giao dịch nguồn báo cáo dùng cột rõ
 ## Tỷ lệ hình trong tiêu đề — 26/10/2026
 
 Bố cục `illustrated-heading` tách vùng chữ/hình/thao tác, áp dụng cho năm trang tài chính và bốn trang dự kiến. Hình lớn 240–320px trên desktop/tablet; ở màn hình không quá 700px, chữ chiếm toàn hàng và hình 216px nằm dưới, không ép tiêu đề thành cột hẹp. Nút Phân loại/Thêm hũ và Nơi giữ tiền/Điều chỉnh mục tiêu vẫn ở tiêu đề, trên hàng riêng. Nền tỏa nhẹ dùng token theme, không chuyển động hoặc che chữ. Tổng quan giữ khối chào mừng riêng; Hồ sơ/Cài đặt giữ bố cục chức năng. Xem [chủ đề](features/themes.md).
+
+### Nhập mã đăng nhập — 27/10/2026
+
+Email thực tế của người dùng trả mã 8 chữ số. Biểu mẫu dùng 8 ô vuông, focus ô đầu sau khi gửi/gửi lại; gõ từng số chuyển ô kế tiếp. Nhập ô cuối hoặc dán/tự điền đầy đủ mã tự xác nhận một lần, có trạng thái đang xử lý. Backspace/Delete giữ vị trí các số khác; mũi tên/Home/End chuyển ô. Lỗi giữ mã để sửa/thử lại, không tự lặp request; nút Đăng nhập vẫn hỗ trợ xác nhận thủ công. Các ô dùng token màu/font hiện có, bố cục một hàng thích ứng 320px. Xem [đặc tả OTP](features/email-otp.md).

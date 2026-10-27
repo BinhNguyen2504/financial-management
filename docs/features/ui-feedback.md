@@ -1,5 +1,9 @@
 # Rà soát UI/UX — 17/10/2026
 
+## Cuộn đến nội dung — 27/10/2026
+
+Trang và `.dialog-body` dùng cuộn mượt cho anchor, mục lục Help, bước xem trước, phân trang và vị trí đã lưu của tab. Đưa focus đến ô lỗi với `preventScroll` rồi cuộn tới giữa vùng đọc; liên kết trong tóm tắt lỗi dùng cùng hành vi. CSS giảm chuyển động hiện có đặt lại `scroll-behavior: auto`. `<html data-scroll-behavior="smooth">` giữ cách Next.js khôi phục cuộn khi chuyển route. Không thêm animation cho cuộn bằng tay hoặc thay đổi stack dialog. Bằng chứng thực tế nằm tại [validation](../07-validation.md).
+
 ## Nhận diện liên kết ngoài — 26/10/2026
 
 Rà soát toàn bộ anchor dẫn ra website ngoài: hướng dẫn cài đặt trong Cài đặt, nguồn CFPB/MoneyHelper trong Quỹ an toàn và liên kết thiết lập Supabase trong Thu nhập. Các vị trí dùng chung `.external-link`, màu theo theme, chữ đậm và gạch chân luôn hiện; hover/focus tăng độ dày gạch chân, focus giữ viền chung. Không dùng riêng màu để nhận diện liên kết, cho phép chữ dài xuống dòng trên mobile.

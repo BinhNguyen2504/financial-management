@@ -1,3 +1,5 @@
+import type { Locale } from "@/i18n/locale";
+import { translator } from "@/i18n/translate";
 import { isIP } from "node:net";
 import type { Metadata } from "next";
 import { publicProductSummary } from "@/features/catalog";
@@ -62,39 +64,46 @@ export function getSeoConfig(env: SeoEnvironment = process.env) {
   };
 }
 
-export function getLandingMetadata(config = getSeoConfig()): Metadata {
+export function getLandingMetadata(
+  config = getSeoConfig(),
+  locale: Locale = "vi",
+): Metadata {
+  const tr = translator(locale, "landing");
   return {
-    title: { absolute: landingTitle },
-    description: landingDescription,
+    title: { absolute: tr(landingTitle) },
+    description: translator(locale, "landing")(landingDescription),
     robots: { index: config.indexable, follow: config.indexable },
     ...(config.origin && {
       alternates: { canonical: `${config.origin}/` },
     }),
     openGraph: {
-      title: landingTitle,
-      description: landingDescription,
-      locale: "vi_VN",
+      title: tr(landingTitle),
+      description: translator(locale, "landing")(landingDescription),
+      locale: locale === "en" ? "en_GB" : "vi_VN",
       type: "website",
       siteName: "Financial Manager",
       ...(config.origin && { url: `${config.origin}/` }),
     },
     twitter: {
       card: "summary_large_image",
-      title: landingTitle,
-      description: landingDescription,
+      title: tr(landingTitle),
+      description: translator(locale, "landing")(landingDescription),
       // Next derives the hashed image URL and alt from opengraph-image.tsx.
     },
   };
 }
 
-export function getWebsiteJsonLd(config = getSeoConfig()) {
+export function getWebsiteJsonLd(
+  config = getSeoConfig(),
+  locale: Locale = "vi",
+) {
   if (!config.origin) return undefined;
   return JSON.stringify({
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Financial Manager",
     url: `${config.origin}/`,
-    inLanguage: "vi-VN",
-    description: landingDescription,
+    inLanguage: locale === "en" ? "en-GB" : "vi-VN",
+    description: translator(locale, "landing")(landingDescription),
   }).replace(/</g, "\\u003c");
 }

@@ -150,7 +150,7 @@ export function focusInvalidNumber(scope: ParentNode | null) {
     'input[data-number-invalid="true"]:not(:disabled):not([readonly])',
   );
   if (!invalid) return false;
-  invalid.focus();
-  invalid.scrollIntoView({ block: "center", behavior: "instant" });
+  invalid.focus({ preventScroll: true });
+  invalid.scrollIntoView({ block: "center" });
   return true;
 }

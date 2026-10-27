@@ -12,8 +12,9 @@ export function focusFirstInvalid(
 ) {
   requestAnimationFrame(() => {
     const input = scope?.querySelector<HTMLElement>('[aria-invalid="true"]');
-    (input ?? fallback)?.focus();
-    input?.scrollIntoView({ block: "center", behavior: "instant" });
+    const target = input ?? fallback;
+    target?.focus({ preventScroll: true });
+    target?.scrollIntoView({ block: "center" });
   });
 }
 export function nativeErrors(
@@ -76,7 +77,9 @@ export function FormErrorSummary({
               href={`#${prefix}${key}`}
               onClick={(event) => {
                 event.preventDefault();
-                document.getElementById(`${prefix}${key}`)?.focus();
+                const target = document.getElementById(`${prefix}${key}`);
+                target?.focus({ preventScroll: true });
+                target?.scrollIntoView({ block: "center" });
               }}
             >
               {tr(message)}
