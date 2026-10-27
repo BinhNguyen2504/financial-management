@@ -3,6 +3,216 @@ import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { savingsClock } from "../../src/domain/savings/engine";
 import type { SavingsView } from "../../src/domain/savings/types";
+
+test("savings ledgers keep fields, filters, privacy and actions usable across widths", async ({
+  page,
+}, info) => {
+  test.setTimeout(120000);
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await login(page);
+  const cash = randomUUID(),
+    other = randomUUID(),
+    archived = randomUUID();
+  const longName =
+    "Tiền tích lũy cho kế hoạch gia đình và những khoản dự phòng dài hạn";
+  const note =
+    "Đối chiếu khoản góp tháng này.\n" +
+    "Ghi chú dài không có dấu cách: " +
+    "abcdefghij".repeat(12);
+  for (const [id, name] of [
+    [cash, longName],
+    [other, "Ví nhận chuyển nội bộ"],
+    [archived, "Danh mục đã lưu trữ"],
+  ]) {
+    const response = await command(page, {
+      type: "createCategory",
+      id,
+      name,
+      kind: "cash",
+      start: month,
+      description: note,
+    });
+    expect(response.ok(), await response.text()).toBe(true);
+  }
+  expect(
+    (
+      await command(page, {
+        type: "archiveCategory",
+        categoryId: archived,
+        month,
+      })
+    ).ok(),
+  ).toBe(true);
+  const first = randomUUID();
+  for (const transaction of [
+    {
+      id: first,
+      kind: "deposit",
+      categoryId: cash,
+      date: day,
+      amount: "9007199254740993",
+      note,
+    },
+    {
+      id: randomUUID(),
+      kind: "withdraw",
+      categoryId: cash,
+      date: day,
+      amount: "1000000",
+    },
+    {
+      id: randomUUID(),
+      kind: "transfer",
+      categoryId: cash,
+      cashCategoryId: other,
+      date: day,
+      amount: "500000",
+    },
+  ]) {
+    const response = await command(page, {
+      type: "postTransaction",
+      transaction,
+    });
+    expect(response.ok(), await response.text()).toBe(true);
+  }
+  await page.getByLabel("Tháng đang xem", { exact: true }).fill(month);
+  await page.getByRole("button", { name: "Tải lại", exact: true }).click();
+  await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
+  const monthlyTable = page.getByRole("table", {
+    name: `Giao dịch tháng ${month}`,
+    exact: true,
+  });
+  await expect(monthlyTable.getByRole("row")).toHaveCount(4);
+  await expect(monthlyTable).toContainText("9.007.199.254.740.993");
+  await expect(monthlyTable).toContainText(
+    "Ví liên quan: Ví nhận chuyển nội bộ",
+  );
+  await page
+    .getByLabel("Danh mục giao dịch", { exact: true })
+    .selectOption(other);
+  await expect(monthlyTable.getByRole("row")).toHaveCount(2);
+  await expect(page.locator(".savings-ledger-count")).toHaveText(
+    "1 giao dịch · Mới nhất trước",
+  );
+  await page
+    .getByLabel("Loại giao dịch lọc", { exact: true })
+    .selectOption("withdraw");
+  await expect(monthlyTable).toContainText(
+    "Chưa có giao dịch trong bộ lọc này.",
+  );
+  await page.getByLabel("Danh mục giao dịch", { exact: true }).selectOption("");
+  await page.getByLabel("Loại giao dịch lọc", { exact: true }).selectOption("");
+  await monthlyTable
+    .getByRole("button", { name: `Sửa giao dịch ${first}`, exact: true })
+    .click();
+  await expect(
+    page.getByRole("dialog").getByLabel("Số tiền (VND)", { exact: true }),
+  ).toHaveValue("9007199254740993");
+  await page.getByRole("button", { name: "Đóng", exact: true }).click();
+  await page.locator(".privacy-toggle").click();
+  await expect(monthlyTable).not.toContainText("9.007.199.254.740.993");
+  await expect(monthlyTable).toContainText("••••••");
+  await page.locator(".privacy-toggle").click();
+
+  const widths =
+    info.project.name === "desktop"
+      ? [
+          { width: 1440, height: 1000 },
+          { width: 768, height: 1024 },
+          { width: 320, height: 740 },
+          { width: 844, height: 390 },
+        ]
+      : [page.viewportSize()!];
+  for (const size of widths) {
+    await page.setViewportSize(size);
+    for (const [tab, title] of [
+      ["Giao dịch", `Giao dịch tháng ${month}`],
+      ["Danh mục", "Danh mục tiết kiệm"],
+      ["Báo cáo", "Giao dịch nguồn trong kỳ"],
+    ]) {
+      await page.getByRole("tab", { name: tab, exact: true }).click();
+      if (tab === "Báo cáo") {
+        await page.getByLabel("Từ ngày", { exact: true }).fill(day);
+        await page.getByLabel("Đến ngày", { exact: true }).fill(day);
+      }
+      const table = page.getByRole("table", { name: title, exact: true });
+      await expect(table.getByRole("row")).toHaveCount(4);
+      await table.scrollIntoViewIfNeeded();
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+      ).toBe(true);
+      const overflow = await table.locator("tbody").evaluate((body) => {
+        const frame = body
+          .closest(".column-table-scroll")!
+          .getBoundingClientRect();
+        return [...body.querySelectorAll("td, th, button")].some((cell) => {
+          const rect = cell.getBoundingClientRect();
+          return rect.right > frame.right + 1 || rect.left < frame.left - 1;
+        });
+      });
+      expect(overflow, `${title} at ${size.width}`).toBe(false);
+      await table
+        .locator("..")
+        .locator("..")
+        .screenshot({
+          path: info.outputPath(`ledger-${tab}-${size.width}.png`),
+        });
+      if (tab === "Danh mục") {
+        const row = table
+          .getByRole("row")
+          .filter({ hasText: "Danh mục đã lưu trữ" });
+        await expect(row).toContainText("Đã lưu trữ");
+        await expect(
+          row.getByRole("button", {
+            name: "Khôi phục Danh mục đã lưu trữ",
+            exact: true,
+          }),
+        ).toBeVisible();
+      }
+    }
+  }
+  await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
+  const picker = page
+    .locator(".savings-ledger")
+    .getByRole("button", { name: /cột/i });
+  await picker.click();
+  await page
+    .getByRole("checkbox", { name: "Hiện cột Ngày", exact: true })
+    .uncheck();
+  await page.keyboard.press("Escape");
+  await expect(
+    monthlyTable.getByRole("columnheader", { name: "Ngày", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    monthlyTable.getByRole("button", {
+      name: `Sửa giao dịch ${first}`,
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.reload();
+  await page.getByLabel("Tháng đang xem", { exact: true }).fill(month);
+  await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
+  await expect(monthlyTable.getByRole("row")).toHaveCount(4);
+  await expect(
+    monthlyTable.getByRole("columnheader", { name: "Ngày", exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole("tab", { name: "Danh mục", exact: true }).click();
+  await page.evaluate(() => localStorage.setItem("fm-locale", "en"));
+  await page
+    .context()
+    .addCookies([
+      { name: "fm-locale", value: "en", url: process.env.TEST_BASE_URL! },
+    ]);
+  await page.reload();
+  await page.getByRole("tab", { name: "Category", exact: true }).click();
+  await expect(
+    page.getByRole("table", { name: "Savings categories", exact: true }),
+  ).toContainText("Archived");
+  expect(errors).toEqual([]);
+});
 const today = savingsClock().today,
   year = Number(today.slice(0, 4)) - 1,
   month = `${year}-12`,
@@ -45,8 +255,7 @@ async function login(page: Page) {
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(/\/savings$/);
   await expect(
     page.getByRole("button", { name: "Thêm danh mục", exact: true }),
@@ -637,7 +846,7 @@ test("lost commit response retries once; empty categories archive and restore wi
   await page.getByLabel("Tên danh mục", { exact: true }).fill("Ví đổi tên");
   await save(page);
   await expect(
-    page.getByRole("heading", { name: "🌱 Ví đổi tên", exact: true }),
+    page.getByRole("heading", { name: "Ví đổi tên", exact: true }),
   ).toBeVisible();
   v = await view(page);
   expect(v.book!.revisions).toHaveLength(2);

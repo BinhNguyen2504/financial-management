@@ -12,8 +12,7 @@ test("English gold units keep canonical values and decimal drafts survive langua
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await page.getByRole("radio", { name: "English", exact: true }).check();
   const settings = await context.newPage();
   await settings.goto("/settings");

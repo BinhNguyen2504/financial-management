@@ -32,14 +32,13 @@ test("financial headings balance illustrations, copy and controls across themes 
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
   let ownerId = "";
   await page.route("**/auth/v1/verify", async (route) => {
     const response = await route.fetch();
     ownerId = (await response.json()).user.id;
     await route.fulfill({ response });
   });
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(/\/settings$/);
   await expect(
     page.getByRole("radio", { name: "Khu vườn — Xanh lục", exact: true }),

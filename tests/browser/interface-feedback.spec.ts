@@ -14,8 +14,7 @@ async function login(page: Page, path = "/income") {
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(new RegExp(`${path}$`));
   await expect(page.locator(".privacy-toggle")).toBeEnabled();
 }

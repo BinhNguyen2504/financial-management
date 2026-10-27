@@ -106,8 +106,7 @@
 .savings-position:last-child {
   border-bottom: 0;
 }
-.savings-position h3,
-.savings-activity h3 {
+.savings-position h3 {
   font-size: 15px;
 }
 .savings-value {
@@ -120,22 +119,161 @@
   font-size: 12px;
   color: var(--muted);
 }
-.savings-activity {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--border);
+.savings-ledger {
+  container: savings-ledger / inline-size;
+  min-width: 0;
 }
-.savings-activity p {
+.savings-ledger-count {
+  margin: 16px 0 0;
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.7;
-  overflow-wrap: anywhere;
 }
-.savings-activity:last-child {
+.savings-ledger-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.savings-ledger-table :is(th, td) {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+  font-weight: 400;
+}
+.savings-ledger-table :is(th, td):first-child {
+  padding-left: 0;
+}
+.savings-ledger-table :is(th, td):last-child {
+  padding-right: 0;
+}
+.savings-ledger-table thead th {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.savings-ledger-table h3 {
+  font-size: 14px;
+  font-weight: 700;
+}
+.savings-ledger-table tbody tr:last-child > * {
   border-bottom: 0;
+}
+.savings-ledger-table tbody tr:focus-within {
+  background: var(--surface-alt);
+}
+/* The identity owns the flexible space; the other four columns share the rest. */
+.savings-ledger-identity {
+  width: 30%;
+}
+.savings-ledger-date {
+  width: 13%;
+}
+.savings-ledger-amount {
+  width: 22%;
+}
+.savings-ledger-actions {
+  width: 160px;
+}
+.savings-ledger-table .expense-actions {
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.savings-ledger-table .is-numeric {
+  font-variant-numeric: tabular-nums;
+}
+.savings-ledger .savings-ledger-table .savings-ledger-text {
+  text-align: left;
+}
+.savings-ledger-subline {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.savings-ledger-note {
+  white-space: pre-line;
+}
+.savings-category-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.savings-category-status[data-active="true"] {
+  color: var(--text);
+}
+.savings-cell-label {
+  display: none;
+}
+.savings-ledger-empty {
+  padding: 28px 0 !important;
+  color: var(--muted);
+}
+@container savings-ledger (max-width: 760px) {
+  .savings-ledger-table,
+  .savings-ledger-table tbody {
+    display: block;
+  }
+  .savings-ledger-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .savings-ledger-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .savings-ledger-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .savings-ledger-table tbody :is(th, td) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    text-align: right;
+  }
+  .savings-ledger-table tbody th {
+    display: block;
+    text-align: left;
+  }
+  .savings-ledger-table h3 {
+    font-size: 15px;
+  }
+  .savings-ledger-table td > :last-child {
+    min-width: 0;
+  }
+  .savings-cell-label {
+    display: block;
+    flex: 0 0 92px;
+    text-align: left;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .savings-ledger-table td[data-column-kind="actions"] {
+    justify-content: flex-end;
+    padding-top: 4px;
+  }
+  .savings-ledger-table .savings-ledger-empty {
+    display: block;
+    text-align: left;
+  }
 }
 .savings-chart-grid {
   display: grid;
@@ -257,9 +395,10 @@
 }
 .savings-composition li {
   display: grid;
-  grid-template-columns: 12px 1fr auto;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
   gap: 5px;
   font-size: 12px;
+  overflow-wrap: anywhere;
 }
 .savings-composition li > span:last-child {
   grid-column: 2 / -1;
@@ -370,17 +509,6 @@
   .savings-position > button {
     grid-column: 2;
     grid-row: 1;
-  }
-  .savings-activity {
-    flex-wrap: wrap;
-    align-items: start;
-  }
-  .savings-activity > .expense-actions {
-    width: 100%;
-  }
-  .savings-activity > div:first-child {
-    flex: 1;
-    min-width: 150px;
   }
   .savings-toolbar > .expense-actions {
     margin-left: 0;

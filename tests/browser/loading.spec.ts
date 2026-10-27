@@ -9,8 +9,7 @@ async function login(page: Page) {
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(/\/overview$/);
   // Finish the initial request before intercepting a subsequent navigation.
   await expect(page.locator(".overview-start")).toBeVisible();

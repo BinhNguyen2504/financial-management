@@ -15,12 +15,12 @@ Backend dùng role riêng theo [Supabase Postgres Roles](https://supabase.com/do
 ## Đăng nhập email
 
 - Bật Email trong Supabase Auth. Đặt Site URL và allowlist Redirect URL đúng origin ứng dụng với `/auth/callback`; thêm origin local nếu cần thử local. Theo [Supabase SSR](https://supabase.com/docs/guides/auth/server-side/creating-a-client?queryGroups=framework&framework=nextjs).
-- Giao diện hỗ trợ liên kết email mặc định qua PKCE callback; nếu dùng mã OTP, chỉnh email template để có `{{ .Token }}` theo [passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless). Không thay mã bằng dữ liệu trong ảnh Notion.
+- Cập nhật 27/10/2026: giao diện dùng mã email 8 chữ số. Áp dụng [mẫu email OTP và hướng dẫn cấu hình](features/email-otp.md) cho Magic Link/OTP và Confirm sign up, hiển thị `{{ .Token }}` thay link; đặt Email OTP expiration **1800 giây**, khoảng cách gửi tối thiểu **60 giây**. Callback PKCE giữ để xử lý link cũ. Source không tự thay cấu hình cloud.
 - Đối với app cá nhân, tạo/invite tài khoản cần dùng rồi tắt đăng ký công khai. Mỗi owner vẫn được cách ly bằng RLS. Cấu hình SMTP/rate limit của Supabase phù hợp môi trường trước khi đưa vào dùng thường xuyên.
 
 ## Nghiệm thu trên cloud thật
 
-1. Đăng nhập bằng email thật, thử cả liên kết xác nhận và mã OTP nếu đã cấu hình template; kiểm tra callback, refresh session, đăng xuất và API 401 sau logout.
+1. Đăng nhập bằng mã gửi tới email thật của tài khoản hiện có và tài khoản mới nếu được phép đăng ký. Kiểm mã sai/hết hạn/đã dùng, gửi lại và hạn 30 phút; kiểm tra callback cũ, refresh session, đăng xuất và API 401 sau logout.
 2. Tạo sổ từ tháng chọn; thêm hai loại hũ với dữ liệu thử. Kiểm tra ví dụ 300.000 dư → thêm 1.700.000 → bổ sung 400.000 → dư 100.000 → thực chi 2.300.000.
 3. Mở trên hai thiết bị: xác nhận lưu phản ánh sau refetch, thử sửa đồng thời và kiểm tra thông báo xung đột, thử gửi lại command ID cùng payload.
 4. Tạo owner thứ hai và xác nhận không đọc/sửa/liên kết dữ liệu owner thứ nhất. Kiểm tra SELECT/INSERT trực tiếp qua PostgREST không vượt qua RLS.

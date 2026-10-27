@@ -3,6 +3,7 @@ import { Nunito } from "next/font/google";
 import { PwaRegistration } from "@/components/pwa-registration";
 import { UserProvider } from "@/features/profile/user-provider";
 import { PreferenceSync, preferenceScript } from "@/components/ui-preferences";
+import { getSeoConfig } from "@/lib/seo";
 import "./globals.css";
 import "@/features/expenses/expenses.css";
 import "./zen.css";
@@ -18,7 +19,8 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.APP_ORIGIN || "http://localhost:3000"),
+  metadataBase: new URL(getSeoConfig().metadataBase),
+  robots: { index: false, follow: false },
   title: { default: "Financial Manager", template: "%s · Financial Manager" },
   description:
     "Quản lý thu nhập, hũ chi tiêu, tiết kiệm và đầu tư, theo nhịp của bạn.",

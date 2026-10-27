@@ -30,8 +30,7 @@ async function login(page: Page, next = "savings") {
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(new RegExp(`/${next}$`));
   await expect(page.locator("main h1")).toBeVisible();
   if (next === "investments" || next === "savings")

@@ -34,6 +34,8 @@ const helpPreview = {
   funds:
     "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt và hệ số bạn chọn; đổi mục tiêu không tự thêm tiền vào quỹ.",
 };
+// Fixed illustrative data, including in server-rendered public SEO content.
+// Never substitute account data or fetch financial APIs for this preview.
 const data = {
   funds: {
     title: "Từng bước vun đắp sự an tâm.",
@@ -153,7 +155,7 @@ const data = {
   },
   savings: {
     title: "Những điều đang lớn lên.",
-    subtitle: "Nhìn lại tích lũy, giá trị và tỷ trọng từng danh mục.",
+    subtitle: "Đọc rõ từng danh mục, đối chiếu giao dịch theo tháng và kỳ báo cáo.",
     label: "Tài sản trong Tiết kiệm",
     value: "85.000.000",
     secondary: "Danh mục đang theo dõi",

@@ -123,8 +123,7 @@ async function login(page: Page, next = "/settings") {
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(new RegExp(`${next}$`));
 }
 async function command(page: Page, module: string, action: unknown) {

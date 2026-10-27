@@ -32,8 +32,7 @@ async function login(page: Page, seed = false) {
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(
     page.getByRole("heading", { name: "Cài đặt", exact: true }),
   ).toBeVisible();

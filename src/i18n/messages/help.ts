@@ -795,6 +795,6 @@ export const help = {
     "Check the format shown below amount fields: 1.000.000 ₫ in Vietnamese or 1,000,000 ₫ in English.",
   "Nếu bản nháp đang có số chưa hợp lệ khi tab khác đổi ngôn ngữ, sửa theo định dạng được ghi tại ô; nội dung cũ không tự bị diễn giải lại.":
     "If a draft number is invalid when another tab changes language, correct it using the format shown at the field; the old text is not reinterpreted.",
-  "Kết quả: giao diện và Help đổi ngay, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong backup hoặc đồng bộ tài khoản; trang giới thiệu và đăng nhập vẫn bằng tiếng Việt.":
-    "Result: the interface and Help update immediately, preserving drafts and filters. The browser saves your choice; it is not backed up or synced to your account. The introduction and sign-in pages stay in Vietnamese.",
+  "Kết quả: giao diện, Help và biểu mẫu đăng nhập theo ngôn ngữ đã chọn, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong backup hoặc đồng bộ tài khoản; trang giới thiệu vẫn bằng tiếng Việt.":
+    "Result: the interface, Help and sign-in form follow your selected language, preserving drafts and filters. The browser saves your choice; it is not backed up or synced to your account. The introduction stays in Vietnamese.",
 } as const;

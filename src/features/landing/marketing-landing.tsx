@@ -41,7 +41,7 @@ function BeginLink({
 const featureCopy: Record<string, string> = {
   income: "Rõ từng khoản thu.",
   budgets: "Chi tiêu có chủ đích.",
-  savings: "Tích lũy có hành trình.",
+  savings: "Tích lũy có hành trình, giao dịch rõ từng kỳ.",
   investments: "Hiểu từng khoản đầu tư.",
   funds: "Chủ động trước bất ngờ.",
 };
@@ -66,8 +66,9 @@ export function MarketingLanding() {
             </span>
           </h1>
           <p className="marketing-lead">
-            Từ khoản thu đầu tháng đến những dự định dài lâu. Một không gian để
-            hiểu tiền của bạn và quyết định điều gì thực sự quan trọng.
+            Financial Manager giúp bạn quản lý tài chính cá nhân: theo dõi thu
+            nhập, chia hũ chi tiêu, tích lũy tiết kiệm và ghi nhận đầu tư. Từ
+            những khoản thu chi mỗi ngày đến các dự định dài lâu.
           </p>
           <div className="marketing-actions">
             <BeginLink />
@@ -211,9 +212,9 @@ export function MarketingLanding() {
               02 / CHO TỪNG QUYẾT ĐỊNH MỖI NGÀY
             </p>
             <h2 id="marketing-features-title">
-              Một nơi.
+              Quản lý thu chi,
               <br />
-              Nhiều điều được sắp xếp.
+              tiết kiệm và đầu tư.
             </h2>
           </div>
           <p>
@@ -376,9 +377,9 @@ export function MarketingLanding() {
             <summary>Bắt đầu sử dụng như thế nào?</summary>
             <div className="marketing-answer">
               <p>
-                Đăng nhập bằng email và mã xác nhận hoặc liên kết trong email.
-                Chọn một mục bạn muốn quản lý trước; nút Hướng dẫn cạnh tiêu đề
-                giúp bạn tìm hiểu thuật ngữ và từng thao tác.
+                Đăng nhập bằng mã 8 chữ số gửi qua email. Mã dùng một lần, có
+                hiệu lực 30 phút. Chọn một mục bạn muốn quản lý trước; nút Hướng
+                dẫn cạnh tiêu đề giúp bạn tìm hiểu thuật ngữ và từng thao tác.
               </p>
               <p>{publicHomeSummary}</p>
             </div>

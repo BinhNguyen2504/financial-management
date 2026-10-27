@@ -40,7 +40,7 @@ const benefits: Record<string, { heading: string; detail: string }> = {
   },
   savings: {
     heading: "Nhìn thấy hành trình tích lũy.",
-    detail: "Tiền · Sổ tiền gửi · Vàng · Biểu đồ có chú thích",
+    detail: "Tiền · Sổ tiền gửi · Vàng · Danh mục và giao dịch rõ từng cột",
   },
 };
 
@@ -252,8 +252,8 @@ export function ThemedLanding() {
             <summary>Tôi có cần đăng nhập để dùng ứng dụng?</summary>
             <p>
               Có. Bạn có thể khám phá trang giới thiệu và dữ liệu minh họa
-              trước. Để mở không gian tài chính, hãy đăng nhập bằng email và mã
-              xác nhận hoặc liên kết trong email.
+              trước. Để mở không gian tài chính, hãy nhập mã 8 chữ số gửi qua
+              email. Mã dùng một lần, có hiệu lực 30 phút.
             </p>
           </details>
           <details>

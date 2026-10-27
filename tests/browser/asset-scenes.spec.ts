@@ -30,8 +30,7 @@ test("asset illustrations differ across modules and themes in light, dark and co
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(/\/settings$/);
   await expect(
     page.getByRole("radio", { name: "Khu vườn — Xanh lục", exact: true }),

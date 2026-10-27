@@ -41,6 +41,20 @@ P0 có `.env.example` nhưng không dùng secret. P1 bổ sung cấu hình có k
 
 API tài chính không cache công khai hoặc qua service worker. Khi thêm Auth cần kiểm tra lại server rendering/cache để tránh trả dữ liệu một người cho người khác.
 
+## SEO trang giới thiệu — 27/10/2026
+
+Chưa có domain chính thức thì giữ `SEO_INDEXABLE=false` (mặc định). Landing vẫn đọc được nhưng có `noindex`; sitemap không có URL. Đây là cấu hình source, chưa chứng minh đã deploy hoặc Google đã lập chỉ mục.
+
+Khi có tên miền chính thức:
+
+1. Đặt `APP_ORIGIN` bằng origin HTTPS công khai, không có tài khoản/mật khẩu, path, query hoặc fragment. Có thể có dấu `/` cuối. Không dùng localhost, IP hoặc domain local/test. Biến này còn được dùng bởi Auth/kiểm tra origin, vì vậy phải khớp tên miền chính mà người dùng truy cập.
+2. Đặt `SEO_INDEXABLE=true` chỉ cho production, rồi build/deploy lại. Node phải ở production; trên Vercel chỉ `VERCEL_ENV=production` được index, dù preview có bật cờ. Tự host không cần `VERCEL_ENV`. Cờ true với origin không hợp lệ làm build/request báo lỗi cấu hình.
+3. Kiểm URL `/` trả 200 không chờ đăng nhập/Auth; HTML gốc có `index, follow`, canonical tuyệt đối về `/`, `og:url` và JSON-LD `WebSite` đúng domain. URL có tham số theo dõi vẫn canonical về `/`.
+4. Kiểm `/robots.txt` và `/sitemap.xml` trả 200; sitemap chỉ chứa URL trang chủ chính thức, robots trỏ đúng sitemap và tài nguyên render không bị chặn. Login/workspace tiếp tục noindex và yêu cầu đăng nhập.
+5. Xác minh quyền sở hữu domain trong Google Search Console, gửi `/sitemap.xml`, dùng URL Inspection kiểm HTML và yêu cầu crawl. Theo dõi Page Indexing và hiệu suất tìm kiếm sau triển khai; việc index/thứ hạng phải được xác minh bằng dữ liệu thực.
+
+`npm run test:seo` chạy ba production build cô lập, không sao chép `.env` hay dùng DB/Auth: tắt index, bật index và Vercel preview. `APP_ORIGIN`, metadata/canonical, JSON-LD, robots và sitemap dùng chung điều kiện trong `src/lib/seo.ts`; thay đổi môi trường cần build lại. Domain `financial-manager.example.com` chỉ là fixture kiểm thử, không phải URL triển khai.
+
 ## Sao lưu và xuất dữ liệu
 
 Không mặc định free tier có backup/restore đủ dùng. Kiểm tra quyền lợi và retention theo [Supabase backups](https://supabase.com/docs/guides/platform/backups); chọn gói hoặc lịch export phù hợp tại thời điểm triển khai.
@@ -78,7 +92,7 @@ Nguồn: [Vercel pricing](https://vercel.com/pricing), [Supabase pricing](https:
 
 Khi cần thêm khả năng vận hành/backup, cân nhắc Vercel Hobby + Supabase Pro **từ 25 USD/tháng** với một project Micro trong mức bao gồm. Nếu cả Vercel Pro và Supabase Pro thì **từ 45 USD/tháng** cho cấu hình cơ bản một developer/một project; chưa tính thuế, usage vượt mức và tiện ích bổ sung. Nếu staging cũng là project trả phí, cộng compute của staging, không giả định mọi project đều nằm trong 25 USD.
 
-Nếu chọn login email/magic link, cần tính cấu hình gửi email: [SMTP mặc định của Supabase](https://supabase.com/docs/guides/auth/auth-smtp) có giới hạn người nhận và không dành cho production. Google login có thể giảm nhu cầu gửi email đăng nhập, nhưng vẫn cần cấu hình OAuth và giới hạn tài khoản được phép.
+Đăng nhập hiện dùng mã email 8 chữ số (thời hạn mục tiêu 30 phút). Cần áp dụng [mẫu email và cấu hình OTP](features/email-otp.md), kiểm tra gửi email thật trước khi phát hành. Cần tính cấu hình gửi email: [SMTP mặc định của Supabase](https://supabase.com/docs/guides/auth/auth-smtp) có giới hạn người nhận và không dành cho production. Google login có thể giảm nhu cầu gửi email đăng nhập, nhưng vẫn cần cấu hình OAuth và giới hạn tài khoản được phép.
 
 Nếu muốn tự host sau này, [Next.js hỗ trợ self-host](https://nextjs.org/docs/app/guides/self-hosting). Cần vận hành Node, reverse proxy/TLS, Postgres, Auth, cập nhật, backup và giám sát. Không cần đổi mô hình nghiệp vụ/API, nhưng chi phí vận hành và migration hạ tầng vẫn phải tính.
 

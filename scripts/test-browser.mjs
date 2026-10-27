@@ -25,6 +25,7 @@ const sessions = new Map();
 const authOutages = new Set();
 const challenges = new Map();
 const confirmationCodes = new Map();
+const emailCodes = new Map();
 const signingKey = randomUUID();
 let authURL;
 function session(user) {
@@ -54,6 +55,10 @@ const auth = http.createServer(async (request, response) => {
     "authorization, apikey, content-type, x-client-info, x-supabase-api-version",
   );
   response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+  // The SDK only reads error.code with a versioned Auth response. Browsers
+  // must also be allowed to read that header on this cross-origin local double.
+  response.setHeader("X-Supabase-Api-Version", "2024-01-01");
+  response.setHeader("Access-Control-Expose-Headers", "X-Supabase-Api-Version");
   response.setHeader("Content-Type", "application/json");
   const send = (status, value) => {
     response.statusCode = status;
@@ -77,7 +82,23 @@ const auth = http.createServer(async (request, response) => {
       confirmationCodes.set(code, body.email);
       return send(200, { code });
     }
+    if (path === "/__test__/otp-state") {
+      const value = emailCodes.get(body.email);
+      if (!value) return send(404, { message: "Request a code first" });
+      if (body.expired) value.expiresAt = Date.now() - 1;
+      if (body.used) value.used = true;
+      if (body.allowResend) value.sendAfter = 0;
+      if (/^[0-9]{8}$/.test(body.token ?? "")) value.token = body.token;
+      return send(200, {
+        expiresIn: Math.ceil((value.expiresAt - Date.now()) / 1000),
+      });
+    }
     if (path === "/auth/v1/otp") {
+      if ((emailCodes.get(body.email)?.sendAfter ?? 0) > Date.now())
+        return send(429, {
+          code: "over_email_send_rate_limit",
+          message: "Wait before requesting another email",
+        });
       if (body.code_challenge) challenges.set(body.email, body.code_challenge);
       if (!body.email?.endsWith("@example.test"))
         return send(400, { message: "Test emails only" });
@@ -94,13 +115,31 @@ const auth = http.createServer(async (request, response) => {
         identities.set(body.email, user);
         await db`insert into auth.users(id) values(${user.id})`;
       }
+      emailCodes.set(body.email, {
+        token: "12345678",
+        expiresAt: Date.now() + 1800_000,
+        sendAfter: Date.now() + 60_000,
+        used: false,
+      });
       return send(200, {});
     }
     if (path === "/auth/v1/verify") {
       const user = identities.get(body.email);
-      return user && body.token === "123456"
-        ? send(200, session(user))
-        : send(401, { message: "Invalid OTP" });
+      const value = emailCodes.get(body.email);
+      if (
+        !user ||
+        !value ||
+        body.type !== "email" ||
+        value.used ||
+        value.expiresAt <= Date.now() ||
+        body.token !== value.token
+      )
+        return send(403, {
+          code: "otp_expired",
+          message: "Token has expired or is invalid",
+        });
+      value.used = true;
+      return send(200, session(user));
     }
     if (path === "/auth/v1/user") {
       const value = sessions.get(
@@ -270,7 +309,7 @@ try {
       const info = {
         url: `${baseURL}/login?next=/funds`,
         email: "review@example.test",
-        otp: "123456",
+        otp: "12345678",
         scope: "Isolated local UI review only; no cloud writes",
       };
       await writeFile(
@@ -283,7 +322,7 @@ try {
       );
     } else
       console.log(
-        `MCP test app ready: ${baseURL} (Auth: ${authURL}). Use any @example.test email and OTP 123456.`,
+        `MCP test app ready: ${baseURL} (Auth: ${authURL}). Use any @example.test email and OTP 12345678.`,
       );
     await new Promise((resolve) => {
       process.once("SIGTERM", resolve);

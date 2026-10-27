@@ -824,6 +824,39 @@
 .public-login .expense-form {
   margin-top: 25px;
 }
+.public-login .expense-form small {
+  overflow-wrap: anywhere;
+}
+.login-code-field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.otp-inputs {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: clamp(3px, 1vw, 8px);
+  max-width: 416px;
+  min-width: 0;
+}
+.public-login .otp-digit {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 8px;
+  text-align: center;
+  font-size: clamp(18px, 3.5vw, 24px);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  caret-color: var(--text);
+}
+.public-login .otp-digit:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
 .public-shell main > .auth-panel {
   margin: 65px auto;
   max-width: min(620px, calc(100% - 48px));

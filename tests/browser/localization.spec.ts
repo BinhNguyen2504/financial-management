@@ -35,8 +35,7 @@ async function login(page: Page, seed = false) {
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(
     page.getByRole("heading", { name: "Cài đặt", exact: true }),
   ).toBeVisible();
@@ -266,9 +265,12 @@ test("English covers every workspace and Help while account names and public cop
     const loginPage = await guest.newPage();
     await loginPage.goto("/login");
     await expect(
-      loginPage.getByRole("heading", { name: "Đăng nhập", exact: true }),
+      loginPage.getByRole("heading", { name: "Sign in", exact: true }),
     ).toBeVisible();
-    await expect(loginPage.locator(".locale-scope")).toHaveCount(0);
+    await expect(loginPage.locator(".locale-scope")).toHaveAttribute(
+      "lang",
+      "en",
+    );
   } finally {
     await guest.close();
   }

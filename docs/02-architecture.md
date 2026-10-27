@@ -47,7 +47,7 @@ flowchart TD
 | Biểu đồ/bảng | HTML/SVG và bảng có accessibility | Tương tác bàn phím, bảng thay thế, ít dependency | Đã dùng; Recharts/TanStack chưa cần |
 | Số học | BigInt; số lượng vàng có scale cố định | Tránh mất chính xác từ float; API dùng decimal string | Đã triển khai |
 | Database | PostgreSQL, Postgres.js và SQL migrations | Transaction, RLS và role expense_api | Source/local đã có; cloud theo module |
-| Auth | Supabase Auth + `@supabase/ssr` cho web | Email/OTP, cookie refresh, page/API verification | Đã triển khai |
+| Auth | Supabase Auth + `@supabase/ssr` cho web | Mã email 8 số, cookie refresh, page/API verification | Đã triển khai |
 | Client dữ liệu | HTTP API v1 cho tài chính; Supabase SDK cho Auth | Server xác minh owner và áp RLS | Đã dùng |
 | PWA | Manifest của Next.js + service worker giới hạn phạm vi | Bắt đầu nhẹ, offline fallback; hàng đợi offline bổ sung sau | Nền PWA đã dựng |
 | Kiểm thử | Vitest, DB integration/RLS, Playwright | Kiểm công thức, transaction, quyền và tác vụ nhiều thiết bị | Unit, DB integration/RLS và browser local đã có |
@@ -56,6 +56,8 @@ flowchart TD
 Khóa phiên bản thực tế trong `package-lock.json`. Dùng TypeScript 5.9 cho bộ khung hiện tại; không tự động chuyển major theo npm latest. Các dependency chưa cần thiết được để ở trạng thái dự kiến.
 
 ## Ranh giới source khi mở rộng
+
+Tiết kiệm có `ledger-tables.tsx` (27/10/2026) dùng chung bảng giao dịch tháng và giao dịch nguồn báo cáo; workspace truyền giao dịch đã lọc cùng effects tương ứng. Bảng danh mục tra rule theo tháng đang xem, tên danh mục giao dịch tra theo ngày giao dịch. `ColumnTable` giữ cấu hình cột riêng trên trình duyệt, CSS container query chọn bố cục theo vùng nội dung. Không thêm request, thay đổi domain/schema hay quyền truy cập cho thay đổi bố cục này.
 
 - `src/app`: route web và `/api/v1`, chỉ chuyển request/response, không chứa công thức tài chính trong JSX.
 - `src/features/<feature>`: component, form và view model của mỗi module.
@@ -169,3 +171,13 @@ Layout app đọc cookie `fm-locale` bằng async `cookies()` và cung cấp cho
 ## Vùng cuộn bảng và thanh tab — 23/10/2026
 
 `ColumnTable` sở hữu `.column-table-scroll` nằm cạnh toolbar, nhận `scrollClassName` và `scrollLabel`; fallback nhãn lấy từ caption hoặc chuỗi Bảng dữ liệu đã dịch. Props của table và khóa `tableId` vẫn giữ nguyên. Các khung module chỉ giữ trình bày, không tạo thêm scroller. `ScrollTabs` giữ semantics của div/nav, dùng MutationObserver/ResizeObserver để đưa mục được chọn vào vùng nhìn thấy bằng cuộn ngang nội bộ, ưu tiên nút đang focus khi điều hướng bàn phím và cập nhật theo kích thước các nhãn sau đổi ngôn ngữ. Không sửa API tài chính hay schema. Xem [quy chuẩn UI](features/ui-feedback.md).
+
+### Đăng nhập email OTP — 27/10/2026
+
+Luồng email → mã 8 số → verifyOtp tạo phiên, mục tiêu thời hạn 1.800 giây; Supabase thực thi thời hạn/rate limit, UI chờ gửi lại 60 giây. Callback PKCE giữ cho link cũ. Không đổi API tài chính/schema/chính sách đăng ký; server page guard và RLS giữ nguyên. Template cloud phải dùng Token cho cả login và signup hiện có. Xem [đặc tả OTP](features/email-otp.md); cấu hình cloud và email thật cần nghiệm thu riêng.
+
+### SEO công khai — 27/10/2026
+
+`src/lib/seo.ts` đọc cấu hình server và dùng tóm tắt sản phẩm từ catalog để tạo metadata/JSON-LD cho trang chủ. Root layout mặc định noindex; riêng `/` có thể override khi `SEO_INDEXABLE=true`, origin HTTPS công khai hợp lệ và môi trường production phù hợp. Không dùng request Host để suy ra canonical; không ảnh hưởng `publicOrigin`/same-origin của Auth/API. Canonical chỉ thuộc homepage, không kế thừa sang login hoặc workspace.
+
+Robots/sitemap là metadata route tĩnh của Next.js, dùng cùng điều kiện index với HTML và cần build lại sau đổi môi trường. Proxy trả qua hai endpoint trước bước refresh Auth. Sitemap chỉ liệt kê `/`; robots không chặn HTML/tài nguyên render để crawler đọc noindex. Server page guard và RLS vẫn chịu trách nhiệm bảo vệ tài khoản. Xem [đặc tả landing](features/landing.md#seo-trang-giới-thiệu--27102026).

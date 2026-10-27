@@ -1,4 +1,8 @@
 export const savings = {
+  "{0} danh mục": "{0} categories",
+  "{0} giao dịch · Mới nhất trước": "{0} transactions · Newest first",
+  "Xem / sửa giao dịch {0}": "View / edit transaction {0}",
+  "Đơn vị": "Unit",
   "Thiếu dữ liệu": "Missing data",
   "Tài sản cuối tháng": "Month-end assets",
   "Nạp bên ngoài": "External deposits",

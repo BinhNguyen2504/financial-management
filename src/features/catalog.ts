@@ -109,6 +109,7 @@ export const modules = [
       "Tiền, sổ tiết kiệm và vàng cùng lịch sử giao dịch, định giá và báo cáo nhiều năm.",
     scope: [
       "Chi tiết danh mục, sổ tiền gửi và đợt vàng có lọc, phân trang",
+      "Bảng danh mục và giao dịch theo cột trên desktop, có nhãn từng trường trên mobile",
       "Rút, bán, nhận lãi và tái tục có lịch sử",
       "Tài sản, tỷ trọng, dòng tiền và lãi/lỗ; chú thích biểu đồ khi rê chuột, chạm hoặc dùng Tab",
       "Chốt tháng, mở lại có lý do và sao lưu",
@@ -194,13 +195,13 @@ export const modules = [
     description:
       "Chọn Tiếng Việt/English, năm chủ đề và chế độ sáng/tối/theo hệ thống; sao lưu JSON, khôi phục vào tài khoản trống và cài lên màn hình chính.",
     scope: [
-      "Cloud riêng với tài khoản đăng nhập; mặc định tiền VND",
+      "Đăng nhập bằng mã 8 chữ số qua email; dữ liệu cloud riêng, mặc định tiền VND",
       "Tiếng Việt/English với định dạng vi-VN/en-GB; cùng tiền VND và giờ Việt Nam",
       "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt",
       "Backup toàn tài khoản và khôi phục vào tài khoản trống; hồ sơ tùy chọn",
       "PWA trên điện thoại/máy tính; chuẩn bị API cho app iOS",
     ],
-    questions: ["Bạn ưu tiên đăng nhập bằng email hay tài khoản Google?"],
+    questions: [],
   },
 ] as const;
 
@@ -231,6 +232,9 @@ export const pageHelpSummary =
   "Hướng dẫn dễ thấy cạnh tiêu đề mỗi trang: mục lục đánh số, tư duy sử dụng, thuật ngữ và từng thao tác, ngay cả khi đang nhập liệu.";
 
 // Public home presentation is independent of module implementation status.
+export const publicProductSummary =
+  "Quản lý tài chính cá nhân với Financial Manager: theo dõi thu nhập, hũ chi tiêu, tiết kiệm, đầu tư và quỹ an toàn. Xem thử giao diện không cần tài khoản.";
+
 export const publicHomeSummary =
   "Trang giới thiệu trước đăng nhập có thiết kế riêng; sau đăng nhập, trang chủ giữ chủ đề bạn đã chọn trong Cài đặt.";
 

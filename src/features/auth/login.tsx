@@ -9,8 +9,9 @@ import {
 import { Garden } from "@/components/garden";
 import { LoadingSpinner, LoadingStatus } from "@/components/loading";
 import { browserAuth } from "@/lib/supabase/browser";
+import { OtpInput, emptyOtp, OTP_LENGTH } from "./otp-input";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 export function Login({
   configured,
@@ -21,28 +22,141 @@ export function Login({
   confirmationError?: boolean;
   returnTo?: string;
 }) {
-  const { t: tr } = useI18n("auth");
+  const { t: tr, locale } = useI18n("auth");
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [email, setEmail] = useState("");
-  const [token, setToken] = useState("");
+  const [digits, setDigits] = useState(emptyOtp);
+  const token = digits.join("");
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
+  const pending = useRef(false);
+  const tokenInput = useRef<HTMLInputElement>(null);
+  const emailInput = useRef<HTMLInputElement>(null);
+  // UX cooldown only; Supabase remains responsible for enforcing rate limits.
+  const sendAfter = useRef(new Map<string, number>());
+  const [now, setNow] = useState(0);
+  const emailKey = email.trim().toLowerCase();
+  const wait = Math.max(
+    0,
+    Math.ceil(((sendAfter.current.get(emailKey) ?? 0) - now) / 1000),
+  );
   // Before hydration, native submission would navigate to /login? and lose the draft.
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  useEffect(() => {
+    if (ready && !busy) {
+      if (sent) tokenInput.current?.focus();
+      else emailInput.current?.focus();
+    }
+  }, [ready, sent, busy]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(
     confirmationError
-      ? tr(
-          "Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Hãy yêu cầu email mới.",
-        )
+      ? "Liên kết đăng nhập đã hết hạn hoặc không hợp lệ. Hãy yêu cầu email mới."
       : "",
   );
+  async function authenticate(action: "send" | "verify", completedToken = token) {
+    if (pending.current) return;
+    const address = email.trim();
+    const key = address.toLowerCase();
+    if (action === "send" && (sendAfter.current.get(key) ?? 0) > Date.now())
+      return;
+    pending.current = true;
+    setBusy(true);
+    setFieldErrors({});
+    setError("");
+    setMessage("");
+    try {
+      const client = browserAuth();
+      if (action === "verify") {
+        const { data, error: failure } = await client.auth.verifyOtp({
+          email: address,
+          token: completedToken,
+          type: "email",
+        });
+        if (failure) throw failure;
+        if (!data.session?.access_token || !data.user) {
+          setError("Chưa thể xác nhận phiên đăng nhập. Hãy thử lại.");
+          return;
+        }
+        window.location.assign(returnTo);
+      } else {
+        // The Supabase email templates must contain {{ .Token }} instead of a link.
+        // Keep the existing account-creation policy (the SDK/server default).
+        const { error: failure } = await client.auth.signInWithOtp({
+          email: address,
+        });
+        if (failure) throw failure;
+        const timestamp = Date.now();
+        sendAfter.current.set(key, timestamp + 60_000);
+        setNow(timestamp);
+        setEmail(address);
+        setDigits(emptyOtp());
+        setSent(true);
+        setMessage(
+          "Mã đăng nhập đã được gửi. Kiểm tra cả thư mục Spam nếu chưa thấy email.",
+        );
+      }
+    } catch (failure) {
+      const code =
+        failure && typeof failure === "object" && "code" in failure
+          ? failure.code
+          : undefined;
+      const status =
+        failure && typeof failure === "object" && "status" in failure
+          ? failure.status
+          : undefined;
+      if (
+        status === 429 ||
+        code === "over_email_send_rate_limit" ||
+        code === "over_request_rate_limit"
+      ) {
+        if (action === "send") {
+          const timestamp = Date.now();
+          sendAfter.current.set(key, timestamp + 60_000);
+          setNow(timestamp);
+        }
+        setError("Bạn đã thử quá nhiều lần. Hãy chờ một lát rồi thử lại.");
+      } else if (
+        action === "verify" &&
+        (code === "otp_expired" || code === "access_denied")
+      ) {
+        setFieldErrors({
+          token:
+            "Mã không đúng, đã hết hạn hoặc đã được sử dụng. Kiểm tra mã hoặc yêu cầu mã mới.",
+        });
+      } else if (
+        !navigator.onLine ||
+        !status ||
+        (typeof status === "number" && status >= 500)
+      ) {
+        setError(
+          "Không thể kết nối dịch vụ đăng nhập. Kiểm tra kết nối và thử lại.",
+        );
+      } else {
+        setError(
+          action === "send"
+            ? "Chưa thể gửi mã đăng nhập. Kiểm tra email hoặc thử lại sau."
+            : "Chưa thể xác nhận phiên đăng nhập. Hãy thử lại.",
+        );
+      }
+    } finally {
+      pending.current = false;
+      setBusy(false);
+    }
+  }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    const invalid = nativeErrors(form);
+    const invalid = nativeErrors(form, locale);
+    if (sent && (token.length !== OTP_LENGTH || !/^[0-9]+$/.test(token)))
+      invalid.token = "Nhập đủ 8 chữ số của mã đăng nhập.";
+    setError("");
     setFieldErrors(invalid);
     if (Object.keys(invalid).length) {
       focusFirstInvalid(
@@ -51,38 +165,7 @@ export function Login({
       );
       return;
     }
-    setBusy(true);
-    setError("");
-    setMessage("");
-    try {
-      const client = browserAuth();
-      const result = sent
-        ? await client.auth.verifyOtp({ email, token, type: "email" })
-        : await client.auth.signInWithOtp({
-            email,
-            options: {
-              emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnTo)}`,
-            },
-          });
-      if (result.error) throw result.error;
-      if (sent) window.location.assign(returnTo);
-      else {
-        setSent(true);
-        setMessage(
-          tr(
-            "Kiểm tra email để mở liên kết đăng nhập, hoặc nhập mã xác nhận nếu email có mã.",
-          ),
-        );
-      }
-    } catch {
-      setError(
-        tr(
-          "Không thể đăng nhập. Kiểm tra email, mã xác nhận hoặc thử lại sau.",
-        ),
-      );
-    } finally {
-      setBusy(false);
-    }
+    await authenticate(sent ? "verify" : "send");
   }
   return (
     <div className="public-login">
@@ -107,6 +190,7 @@ export function Login({
         <Garden variant="sprout" />
         <p className="eyebrow">{tr("CHÀO MỪNG BẠN")}</p>
         <h1>{tr("Đăng nhập")}</h1>
+        <p>{tr("Nhận mã đăng nhập gồm 8 chữ số qua email.")}</p>
         <p className="lead">
           {tr(
             "Dữ liệu tài chính của bạn được lưu riêng và đồng bộ giữa các thiết bị.",
@@ -133,6 +217,7 @@ export function Login({
                 *
               </span>
               <input
+                ref={emailInput}
                 id="login-field-email"
                 name="email"
                 aria-label="Email"
@@ -157,70 +242,91 @@ export function Login({
               )}
             </label>
             {sent && (
-              <label>
+              <div className="login-code-field">
+                <label htmlFor="login-field-token" id="login-token-label">
                 {tr("Mã xác nhận")}
                 <span className="required-mark" aria-hidden="true">
                   *
                 </span>
-                <input
-                  id="login-field-token"
-                  name="token"
-                  aria-label={tr("Mã xác nhận")}
-                  aria-invalid={!!fieldErrors.token}
-                  aria-describedby={
-                    fieldErrors.token ? "login-error-token" : undefined
-                  }
-                  type="text"
-                  required
-                  autoComplete="one-time-code"
-                  inputMode="numeric"
-                  value={token}
+                </label>
+                <OtpInput
+                  firstInputRef={tokenInput}
+                  value={digits}
                   disabled={!ready || busy}
-                  onChange={(e) => {
-                    setToken(e.target.value);
+                  invalid={!!fieldErrors.token}
+                  onChange={(next) => {
+                    setDigits(next);
+                    setError("");
                     setFieldErrors((previous) => ({ ...previous, token: "" }));
                   }}
+                  onComplete={(code) => void authenticate("verify", code)}
                 />
+                <small id="login-token-hint">
+                  {tr(
+                    "Nhập mã trong email gửi tới {email}. Mã dùng một lần, có hiệu lực 30 phút.",
+                    { email },
+                  )}
+                </small>
+                <small>{tr("Nhập đủ 8 số hoặc dán mã để tự động đăng nhập.")}</small>
                 {fieldErrors.token && (
                   <small id="login-error-token" className="field-error">
                     {tr(fieldErrors.token)}
                   </small>
                 )}
-              </label>
+              </div>
             )}
             <button
               aria-busy={busy}
               className="expense-primary"
-              disabled={!ready || busy}
+              disabled={!ready || busy || (!sent && wait > 0)}
             >
               {busy && <LoadingSpinner />}
               {busy
                 ? tr("Đang xử lý…")
                 : sent
                   ? tr("Đăng nhập")
-                  : tr("Gửi mã đăng nhập")}
+                  : wait > 0
+                    ? tr("Gửi lại sau {seconds} giây", { seconds: wait })
+                    : tr("Gửi mã đăng nhập")}
             </button>
             {sent && (
-              <button
-                type="button"
-                className="expense-secondary"
-                disabled={!ready || busy}
-                onClick={() => {
-                  setSent(false);
-                  setToken("");
-                }}
-              >
-                {tr("Đổi email / gửi lại mã")}
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="expense-secondary"
+                  disabled={!ready || busy || wait > 0}
+                  onClick={() => void authenticate("send")}
+                >
+                  {wait > 0
+                    ? tr("Gửi lại sau {seconds} giây", { seconds: wait })
+                    : tr("Gửi lại mã")}
+                </button>
+                <button
+                  type="button"
+                  className="expense-secondary"
+                  disabled={!ready || busy}
+                  onClick={() => {
+                    setSent(false);
+                    setDigits(emptyOtp());
+                    setMessage("");
+                    setError("");
+                    setFieldErrors({});
+                  }}
+                >
+                  {tr("Đổi email")}
+                </button>
+              </>
             )}
             {ready ? (
               <p role="status">{tr(message)}</p>
             ) : (
               <LoadingStatus>{tr("Đang mở biểu mẫu đăng nhập…")}</LoadingStatus>
             )}
-            <p role="alert" className="expense-error">
-              {tr(error)}
-            </p>
+            {error && (
+              <p role="alert" className="expense-error">
+                {tr(error)}
+              </p>
+            )}
           </form>
         )}
       </section>

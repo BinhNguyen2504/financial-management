@@ -31,7 +31,7 @@ Năm tab Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn, m�
 
 Whitelist dùng đường dẫn chính xác của catalog và /profile; từ chối URL ngoài, query/hash, route lạ, login/callback và vòng lặp. Proxy refresh cookie, mỗi page xác minh getUser trước render, API tiếp tục xác minh owner/RLS độc lập. Bearer không cấp quyền mở trang HTML. Page guard không được thay bằng layout/client check.
 
-Landing HTML không chờ Auth phía server: nội dung ban đầu là marketing, provider xác minh phiên trong trình duyệt rồi chuyển cả khung và nội dung sang bản thành viên. Trong lúc chờ hoặc khi xác minh thất bại mà chưa có user, marketing vẫn đọc được; nút tài khoản giữ trạng thái tải/thử lại. Nếu provider đang giữ user khi refresh lỗi, vẫn giữ bản thành viên. Khi không có JavaScript chỉ hiện bản marketing. Proxy không gọi Auth cho `/` và ảnh Open Graph. Public/app layout tách route group, giữ nguyên URL. App và login noindex. `APP_ORIGIN` đặt origin triển khai cho URL chia sẻ Open Graph; khi để trống, metadata dùng localhost:3000. PWA start_url /overview, chỉ cache offline.html, không cache dữ liệu tài khoản. Không đổi API tài chính hoặc database.
+Landing HTML không chờ Auth phía server: nội dung ban đầu là marketing, provider xác minh phiên trong trình duyệt rồi chuyển cả khung và nội dung sang bản thành viên. Trong lúc chờ hoặc khi xác minh thất bại mà chưa có user, marketing vẫn đọc được; nút tài khoản giữ trạng thái tải/thử lại. Nếu provider đang giữ user khi refresh lỗi, vẫn giữ bản thành viên. Khi không có JavaScript chỉ hiện bản marketing. Proxy không gọi Auth cho `/`, ảnh Open Graph, `/robots.txt` và `/sitemap.xml`. Public/app layout tách route group, giữ nguyên URL. App và login noindex. `APP_ORIGIN` đặt origin triển khai cho URL chia sẻ Open Graph; khi để trống, metadata dùng localhost:3000. PWA start_url /overview, chỉ cache offline.html, không cache dữ liệu tài khoản. Không đổi API tài chính hoặc database.
 
 ## Duy trì và nghiệm thu
 
@@ -127,3 +127,19 @@ Preview thành viên hiển thị cùng cảnh SVG của trang Tiết kiệm ho�
 ## Tỷ lệ hình trong preview thành viên — 26/10/2026
 
 Cả năm tab Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn có hình cùng ngữ cảnh với tiêu đề trang thật. Khung tối đa 160px theo tỷ lệ giao diện thu nhỏ; tiêu đề Quỹ là cảnh bảo vệ tĩnh, biểu đồ Quỹ vẫn minh họa tiến độ cố định 50%. Copy nghiệp vụ/số liệu được rà soát, không đổi phạm vi sản phẩm. Preview khách giữ nhận diện marketing sáng, không thêm hình theo theme hoặc request tài chính.
+
+## Cập nhật đăng nhập — 27/10/2026
+
+Hai bản FAQ dùng mã 8 chữ số qua email, một lần trong 30 phút; biểu mẫu có Gửi lại mã sau 60 giây và Đổi email. Giữ callback cho link cũ, whitelist và page guard. Biểu mẫu theo ngôn ngữ đã lưu, khung công khai vẫn tiếng Việt. Preview đã rà soát: không có mô phỏng đăng nhập, giữ dữ liệu minh họa cố định và không đọc API/tài khoản. Xem [cấu hình và nghiệm thu OTP](email-otp.md); source không tự đổi cấu hình Supabase.
+
+## SEO trang giới thiệu — 27/10/2026
+
+Tiêu đề tìm kiếm là “Quản lý tài chính cá nhân | Financial Manager”; mô tả dùng `publicProductSummary` trong catalog. Hero giữ slogan, lời dẫn nêu rõ công dụng và phần tính năng có tiêu đề thu chi/tiết kiệm/đầu tư. Nhận diện, theme thành viên, CTA và preview giữ hành vi hiện có; đã rà soát năm tab, số liệu/nhãn cố định và không gọi API tài chính.
+
+`src/lib/seo.ts` thống nhất origin, metadata và JSON-LD `WebSite`. Origin HTTPS công khai hợp lệ tạo canonical `/`, `og:url` và JSON-LD tiếng Việt; không dùng localhost làm canonical hoặc dữ liệu có cấu trúc. Open Graph và Twitter Card dùng ảnh 1200 × 630 hiện có. Trang chưa có bản landing tiếng Anh nên không thêm hreflang.
+
+Mặc định `SEO_INDEXABLE=false`, HTML có `noindex, nofollow`, sitemap rỗng và robots không quảng bá sitemap. Chỉ bật index khi cờ bằng `true`, Node production, `APP_ORIGIN` hợp lệ và Vercel (nếu có) ở production. Preview/development luôn noindex; bật cờ với origin sai báo lỗi cấu hình. Cần build lại sau đổi cấu hình vì nội dung SEO và hai metadata route được prerender/cache.
+
+Proxy bỏ qua Auth cho `/robots.txt` và `/sitemap.xml`, tương tự `/` và ảnh Open Graph. Robots cho phép đọc HTML/CSS/JS để bot thấy nội dung và noindex; chặn `/api/` và `/auth/`. Sitemap khi bật chỉ có trang `/`; login/workspace không đưa vào sitemap và giữ noindex cùng page guard phía server. Không dùng robots như kiểm soát quyền truy cập.
+
+Kiểm bằng `npm run test:seo`: production build riêng cho mặc định tắt index, production bật index và Vercel preview bật cờ nhưng vẫn noindex; HTML gốc với user agent thường/Googlebot/Twitterbot, no-JavaScript, ảnh chia sẻ, responsive và truy cập riêng tư. Bằng chứng thực chạy và giới hạn ghi ở [validation](../07-validation.md). Xem [bật SEO khi có domain](../05-deployment.md#seo-trang-giới-thiệu--27102026).

@@ -18,8 +18,7 @@ async function requestCode(page: Page, next = "/overview") {
 }
 async function login(page: Page, next = "/overview") {
   const identity = await requestCode(page, next);
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(new RegExp(`${next}$`));
   return identity;
 }
@@ -143,14 +142,12 @@ test("new user login defaults to overview and unsafe destinations remain inside 
   page,
 }) => {
   await requestCode(page, "//evil.test");
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("000000");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("00000000");
   await expect(page.locator("main [role=alert]")).toContainText(
-    "Không thể đăng nhập",
+    "Mã không đúng, đã hết hạn hoặc đã được sử dụng",
   );
   await expect(page.getByLabel("Email", { exact: true })).not.toBeEmpty();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(/\/overview$/);
   await page.goto("/login?next=https://evil.test");
   await expect(page).toHaveURL(/\/overview$/);

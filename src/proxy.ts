@@ -5,7 +5,10 @@ export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   // Public HTML contains no account data. Verify the avatar in the browser so an
   // Auth outage cannot hold the landing document behind a network request.
-  if (request.nextUrl.pathname === "/" || request.nextUrl.pathname.startsWith("/opengraph-image"))
+  if (
+    ["/", "/robots.txt", "/sitemap.xml"].includes(request.nextUrl.pathname) ||
+    request.nextUrl.pathname.startsWith("/opengraph-image")
+  )
     return response;
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||

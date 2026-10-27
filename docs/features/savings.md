@@ -99,3 +99,11 @@ Tiêu đề dùng nhà kính, bồn hứng nước, heo đất, đèn lồng ho�
 ## Tỷ lệ minh họa tiêu đề — 26/10/2026
 
 Giữ bộ năm cảnh Tiết kiệm riêng, tăng khung hình theo bố cục tiêu đề chung: 240–320px cạnh chữ trên desktop/tablet, 216px dưới chữ trên điện thoại. Không thu hẹp tiêu đề và Help để nhường chỗ cho hình. Xem [chủ đề giao diện](themes.md).
+
+## Bảng danh mục và giao dịch — 27/10/2026
+
+Ba bảng Danh mục tiết kiệm, Giao dịch tháng và Giao dịch nguồn trong kỳ dùng cột có tiêu đề, đường phân cách nhẹ và vùng thao tác riêng. Danh mục tách tên/mô tả, loại/đơn vị, tháng bắt đầu và trạng thái hoạt động/lưu trữ. Hai bảng giao dịch dùng cùng thành phần: nội dung/ghi chú, ngày, danh mục/ví liên quan, số tiền và thao tác; giao dịch mới nhất đứng trước, giữ thứ tự gốc khi cùng ngày. Số tiền căn phải, dùng chữ số đều; lãi/lỗ bán vàng hiển thị bên dưới tiền bán.
+
+Khi vùng bảng rộng tối đa 760px, từng hàng xếp dọc với nhãn trường, giữ đủ dữ liệu đang chọn và nút thao tác 44px. Tên, mô tả và ghi chú dài được xuống dòng. Số dòng đi theo bộ lọc; trạng thái trống giữ khung bảng. Bộ chọn cột dùng `ColumnTable`, lưu riêng cho từng bảng trong trình duyệt; tên giao dịch/danh mục và thao tác luôn hiện. Nút Lưu trữ mở luồng có tháng hiệu lực, giữ lịch sử như trước.
+
+Catalog, README, nội dung landing và preview minh họa đã được đối chiếu; preview vẫn dùng dữ liệu cố định, không gọi API tài chính. Không đổi công thức, schema, API hoặc ranh giới đăng nhập. Chi tiết kiểm chứng local trong [biên bản rà soát](savings-ledgers-2026-10-27.md).

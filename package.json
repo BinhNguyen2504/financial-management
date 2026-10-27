@@ -14,6 +14,7 @@
     "test": "vitest run",
     "test:db": "node scripts/test-postgres.mjs",
     "test:e2e": "node scripts/test-postgres.mjs --browser",
+    "test:seo": "node scripts/test-seo.mjs",
     "data:sample": "node scripts/sample-data.mjs",
     "data:savings:sample": "node scripts/sample-savings.mjs",
     "data:investments:sample": "node scripts/sample-investments.mjs",

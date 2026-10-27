@@ -86,7 +86,7 @@ nvm use 22
 npm run data:preview
 ```
 
-Chờ dòng `REVIEW READY`, mở URL in ra, dùng **review@example.test**, mã **123456**. Bản preview chạy production build với PostgreSQL và Auth double local riêng, chứa đủ Thu nhập/Chi tiêu/Tiết kiệm. Chỉ bind 127.0.0.1; không dùng tài khoản/email/OTP thật, không dùng `.env.local`, không ghi dữ liệu cloud, không dừng server đang chạy ở cổng 3000. Ctrl+C dừng preview. Mỗi lần chạy tạo một bộ mới; chỉnh sửa review local không chuyển vào cloud. Thông tin mở phiên nằm trong `artifacts/review-preview.json` (gitignore).
+Chờ dòng `REVIEW READY`, mở URL in ra, dùng **review@example.test**, mã **12345678**. Bản preview chạy production build với PostgreSQL và Auth double local riêng, chứa đủ Thu nhập/Chi tiêu/Tiết kiệm. Chỉ bind 127.0.0.1; không dùng tài khoản/email/OTP thật, không dùng `.env.local`, không ghi dữ liệu cloud, không dừng server đang chạy ở cổng 3000. Ctrl+C dừng preview. Mỗi lần chạy tạo một bộ mới; chỉnh sửa review local không chuyển vào cloud. Thông tin mở phiên nằm trong `artifacts/review-preview.json` (gitignore).
 
 ### Chuẩn bị cùng tài khoản Supabase đang review
 
@@ -112,7 +112,7 @@ Lần kiểm tra cloud ngày 17/10: vẫn có 18 hũ và 2 danh mục thu thuộ
 
 ## Bổ sung preview Đầu tư — 18/10/2026
 
-`npm run data:preview` vẫn dùng database/Auth local riêng, không `.env.local` hoặc kết nối cloud; mở mặc định `/investments` với `review@example.test` / mã `123456`. Giữ dữ liệu mẫu Thu nhập/Chi tiêu/Tiết kiệm và thêm bộ Đầu tư tổng danh mục từ `scripts/lib/investment-review-data.mjs`: 2 ví, 4 danh mục đang giữ và 1 danh mục đã bán hết/lưu trữ; số dư đầu, mua, bán lãi/lỗ, nạp/rút/chuyển, định giá mới và cũ. Bộ mẫu tính ngày theo hôm nay tại Việt Nam, có lịch sử tháng 12 năm trước và năm hiện tại. Không lấy tiền thật từ ảnh Notion.
+`npm run data:preview` vẫn dùng database/Auth local riêng, không `.env.local` hoặc kết nối cloud; mở mặc định `/investments` với `review@example.test` / mã `12345678`. Giữ dữ liệu mẫu Thu nhập/Chi tiêu/Tiết kiệm và thêm bộ Đầu tư tổng danh mục từ `scripts/lib/investment-review-data.mjs`: 2 ví, 4 danh mục đang giữ và 1 danh mục đã bán hết/lưu trữ; số dư đầu, mua, bán lãi/lỗ, nạp/rút/chuyển, định giá mới và cũ. Bộ mẫu tính ngày theo hôm nay tại Việt Nam, có lịch sử tháng 12 năm trước và năm hiện tại. Không lấy tiền thật từ ảnh Notion.
 
 Bộ fixture được đối chiếu bằng cách chạy từng action qua domain thật; seed vào PostgreSQL local trong preview. Thao tác sửa dữ liệu preview không chuyển sang cloud. Các file import/reset cloud 22 bảng từ 17/10 ở phần trên **không bao gồm sáu bảng Đầu tư mới**; không coi chúng là reset toàn ứng dụng sau khi đã có Đầu tư. Bản thay đổi này không chạy migration, import hoặc reset cloud.
 

@@ -1,6 +1,6 @@
 "use client";
 import { ScrollTabs } from "@/components/scroll-tabs";
-import { formatDate, formatMonth } from "@/i18n/format";
+import { formatDate } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import { Garden } from "@/components/garden";
@@ -19,17 +19,12 @@ import { monthSchema } from "@/domain/savings/schema";
 import type { CategoryPosition, SavingsView } from "@/domain/savings/types";
 import { HelpButton, HelpPageTitle } from "@/features/help/provider";
 import { formatDecimal } from "@/i18n/format";
-import {
-  Trash2 as DeleteCommandGlyph,
-  Download,
-  Pencil as EditActionIcon,
-  Plus,
-  RefreshCw,
-} from "lucide-react";
+import { Download, Plus, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SavingsAPIError, downloadSavings, savingsJSON } from "./api";
 import { SavingsDetails } from "./details";
+import { SavingsCategoryTable, SavingsTransactionTable } from "./ledger-tables";
 import {
   SavingsEditor,
   kindNames,
@@ -180,68 +175,17 @@ export function SavingsWorkspace({
       </>
     );
   }
-  function activityRows(
-    from: string,
-    to: string,
-    categoryId = activityCategory,
-    kind = activityKind,
-  ) {
-    return transactions
-      .filter(
-        (t) =>
-          t.date >= from &&
-          t.date <= to &&
-          (!categoryId ||
-            t.categoryId === categoryId ||
-            ("cashCategoryId" in t && t.cashCategoryId === categoryId)) &&
-          (!kind || t.kind === kind),
-      )
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .map((t) => {
-        const c = categories.find((c) => c.id === t.categoryId),
-          effect = view?.state.effects.find((e) => e.id === t.id);
-        return (
-          <article className="savings-activity" key={t.id}>
-            <div>
-              <h3>{localize(transactionNames)[t.kind]}</h3>
-              <p>
-                {c ? (ruleAt(c, t.date.slice(0, 7)) ?? c.rules[0]).name : ""} ·{" "}
-                {formatDate(t.date!, locale)}
-              </p>
-              {t.note && <p>{t.note}</p>}
-            </div>
-            <div>
-              <strong>{effect ? money(effect.net) : "—"}</strong>
-              {effect?.kind === "sellGold" && (
-                <p>
-                  {tr("Lãi/lỗ đã chốt:")} {money(effect.realized)}
-                </p>
-              )}
-            </div>
-            <div className="expense-actions">
-              <button
-                className="expense-secondary icon-action action-edit"
-                onClick={() =>
-                  setEditor({ type: "transaction", transaction: t })
-                }
-                aria-label={tr("Sửa giao dịch {0}", { 0: t.id })}
-                title={tr("Sửa")}
-              >
-                <EditActionIcon size={18} aria-hidden="true" />
-              </button>
-              <button
-                className="expense-secondary"
-                onClick={() => setEditor({ type: "void", transaction: t })}
-                aria-label={tr("Hủy giao dịch {0}", { 0: t.id })}
-              >
-                <DeleteCommandGlyph size={17} aria-hidden="true" />
-                {tr("Hủy giao dịch")}
-              </button>
-            </div>
-          </article>
-        );
-      });
-  }
+  const monthlyTransactions = transactions.filter(
+    (t) =>
+      t.date >= `${month}-01` &&
+      t.date <= endOfMonth(month) &&
+      (!activityCategory ||
+        t.categoryId === activityCategory ||
+        ("cashCategoryId" in t && t.cashCategoryId === activityCategory)) &&
+      (!activityKind || t.kind === activityKind),
+  );
+  const reportIds = new Set(report?.effects.map((effect) => effect.id));
+  const reportTransactions = transactions.filter((t) => reportIds.has(t.id));
   return (
     <div className="savings-workspace" onMouseDownCapture={focusPointerControl}>
       <div className="expense-page-heading illustrated-heading">
@@ -567,13 +511,13 @@ export function SavingsWorkspace({
                         </select>
                       </label>
                     </div>
-                    {activityRows(`${month}-01`, endOfMonth(month)).length ? (
-                      activityRows(`${month}-01`, endOfMonth(month))
-                    ) : (
-                      <p className="expense-empty">
-                        {tr("Chưa có giao dịch trong bộ lọc này.")}
-                      </p>
-                    )}
+                    <SavingsTransactionTable
+                      transactions={monthlyTransactions}
+                      categories={categories}
+                      effects={view.state.effects}
+                      label={`${tr("Giao dịch tháng")} ${month}`}
+                      onEdit={setEditor}
+                    />
                     <details>
                       <summary>
                         {tr("Lịch sử thay đổi (")}
@@ -596,51 +540,11 @@ export function SavingsWorkspace({
                         "Thay đổi theo tháng hiệu lực. Lưu trữ giữ nguyên lịch sử.",
                       )}
                     </p>
-                    {categories.map((c) => {
-                      const r = ruleAt(c, month) ?? c.rules[0];
-                      return (
-                        <article key={c.id} className="savings-activity">
-                          <div>
-                            <h3>
-                              {r.emoji} {r.name}
-                            </h3>
-                            <p>
-                              {localize(kindNames)[c.kind]}
-                              {c.unit ? ` · ${tr(c.unit ?? "")}` : ""}{" "}
-                              {tr("· từ")} {formatMonth(c.start!, locale)} ·{" "}
-                              {r.active
-                                ? tr("Đang hoạt động")
-                                : tr("Đã lưu trữ")}
-                            </p>
-                            <p>{r.description}</p>
-                          </div>
-                          <div className="expense-actions">
-                            <button
-                              className="expense-secondary icon-action action-edit"
-                              aria-label={tr("Sửa danh mục {0}", { 0: r.name })}
-                              onClick={() =>
-                                setEditor({ type: "configure", category: c })
-                              }
-                              title={tr("Sửa")}
-                            >
-                              <EditActionIcon size={18} aria-hidden="true" />
-                            </button>
-                            <button
-                              className="expense-secondary"
-                              aria-label={`${r.active ? tr("Lưu trữ") : tr("Khôi phục")} ${r.name}`}
-                              onClick={() =>
-                                setEditor({
-                                  type: r.active ? "archive" : "restore",
-                                  category: c,
-                                })
-                              }
-                            >
-                              {r.active ? tr("Lưu trữ / xóa") : tr("Khôi phục")}
-                            </button>
-                          </div>
-                        </article>
-                      );
-                    })}
+                    <SavingsCategoryTable
+                      categories={categories}
+                      month={month}
+                      onEdit={setEditor}
+                    />
                   </section>
                 )}
                 {tab === "reports" && (
@@ -800,54 +704,14 @@ export function SavingsWorkspace({
                         <SavingsReports report={report} />
                         <section className="panel">
                           <h2>{tr("Giao dịch nguồn trong kỳ")}</h2>
-                          {report.effects.length === 0 ? (
-                            <p>{tr("Chưa có giao dịch.")}</p>
-                          ) : (
-                            report.effects.map((e) => {
-                              const t = transactions.find(
-                                (t) => t.id === e.id,
-                              )!;
-                              return (
-                                <article
-                                  className="savings-activity"
-                                  key={e.id}
-                                >
-                                  <div>
-                                    <h3>
-                                      {localize(transactionNames)[t.kind]}
-                                    </h3>
-                                    <p>
-                                      {formatDate(e.date!, locale)} ·{" "}
-                                      {(() => {
-                                        const c = categories.find(
-                                          (c) => c.id === e.categoryId,
-                                        );
-                                        return c
-                                          ? (
-                                              ruleAt(c, e.date.slice(0, 7)) ??
-                                              c.rules[0]
-                                            ).name
-                                          : "";
-                                      })()}
-                                    </p>
-                                    <p>{e.note}</p>
-                                  </div>
-                                  <strong>{money(e.net)}</strong>
-                                  <button
-                                    className="expense-secondary"
-                                    onClick={() =>
-                                      setEditor({
-                                        type: "transaction",
-                                        transaction: t,
-                                      })
-                                    }
-                                  >
-                                    {tr("Xem / sửa")}
-                                  </button>
-                                </article>
-                              );
-                            })
-                          )}
+                          <SavingsTransactionTable
+                            transactions={reportTransactions}
+                            categories={categories}
+                            effects={report.effects}
+                            label={tr("Giao dịch nguồn trong kỳ")}
+                            report
+                            onEdit={setEditor}
+                          />
                         </section>
                       </>
                     ) : (

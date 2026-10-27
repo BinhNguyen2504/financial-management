@@ -16,8 +16,7 @@ async function login(page: Page, address = email()) {
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("123456");
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(/\/income$/);
   await expect(
     page.getByRole("button", { name: "Nhập thu nhập", exact: true }),

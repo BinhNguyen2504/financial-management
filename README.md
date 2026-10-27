@@ -14,7 +14,7 @@
 
 **Đầu tư:** tổng tiền từng danh mục và nhiều ví tiền chờ; mở đầu, nạp/rút/chuyển, mua/bán với giá vốn bán nhập tay, phí/thuế, định giá, lãi/lỗ, sửa/hủy có lịch sử, báo cáo xuyên năm và CSV/JSON. Xóa/lưu trữ chỉ khi hết vốn và giá trị. Xem [đặc tả và migration Đầu tư](docs/features/investments.md). Độc lập với các module khác; chưa áp dụng migration Đầu tư lên cloud.
 
-**Tiết kiệm:** tiền/ví, từng sổ tiền gửi và đợt mua vàng; rút/bán, lãi thực nhận, tái tục, giá lịch sử, báo cáo xuyên năm, chốt/mở lại tháng và CSV/JSON. Xem [đặc tả và migration Tiết kiệm](docs/features/savings.md). Chưa tự đồng bộ số dư với Thu nhập/Chi tiêu. Đọc lại cloud ngày 18/10 xác nhận đã có schema và bộ mẫu Tiết kiệm; chưa dùng bằng chứng này để khẳng định đăng nhập/thiết bị thật.
+**Tiết kiệm:** bảng danh mục và giao dịch căn cột trên desktop, xếp dọc có nhãn trên mobile, tùy chọn cột; tiền/ví, từng sổ tiền gửi và đợt mua vàng; rút/bán, lãi thực nhận, tái tục, giá lịch sử, báo cáo xuyên năm, chốt/mở lại tháng và CSV/JSON. Xem [đặc tả và migration Tiết kiệm](docs/features/savings.md). Chưa tự đồng bộ số dư với Thu nhập/Chi tiêu. Đọc lại cloud ngày 18/10 xác nhận đã có schema và bộ mẫu Tiết kiệm; chưa dùng bằng chứng này để khẳng định đăng nhập/thiết bị thật.
 
 Trang `/` là landing công khai với preview tương tác bằng dữ liệu minh họa. Mọi trang ứng dụng yêu cầu đăng nhập; khi chưa cấu hình Auth, chuyển đến trang đăng nhập có hướng dẫn trạng thái thiết lập. Không lưu tài chính trong trình duyệt. Dấu `—` trên tổng quan vẫn là chưa có dữ liệu. Có thể sinh **bộ dữ liệu mẫu tham khảo Notion** bằng `npm run data:sample -- --owner <USER_UID>`, rồi nạp qua Supabase SQL Editor. Bộ có inspect, seed, backup và reset sau khi chốt UI/UX; không tự kết nối hoặc ghi cloud. Xem [hướng dẫn dữ liệu mẫu](docs/10-sample-data.md), [đặc tả Chi tiêu](docs/features/expenses.md) và [hướng dẫn kết nối cloud](docs/09-expenses-cloud.md).
 
@@ -24,9 +24,11 @@ Trang `/` là landing công khai với preview tương tác bằng dữ liệu m
 
 Trang `/` có hai trải nghiệm: **khách chưa đăng nhập** xem landing marketing riêng với nền ngà, chữ đen và điểm nhấn cam đồng; **người đã đăng nhập** giữ trang giới thiệu theo chủ đề đã chọn, avatar/hồ sơ và nút Vào ứng dụng. Bản HTML ban đầu luôn có nội dung marketing; sau khi provider xác nhận phiên, trang chuyển sang giao diện thành viên. Không chặn nội dung công khai khi Auth gián đoạn. Preview Thu nhập / Chi tiêu / Tiết kiệm / Đầu tư / Quỹ an toàn dùng dữ liệu cố định, chuyển tab và che/hiện tiền, không gọi API tài chính. Bản khách dùng biểu đồ trung tính, không đổi theo theme/chế độ lưu trong trình duyệt.
 
-`/login` dùng email + OTP hoặc liên kết email. Sau đăng nhập mặc định mở `/overview`; `next` chỉ chấp nhận đường dẫn ứng dụng trong danh sách cho phép. Các trang kiểm tra phiên phía server trước khi render, kể cả module còn đang xây dựng. Đăng xuất trở về `/`; PWA vẫn khởi đầu tại `/overview` và yêu cầu đăng nhập. Lỗi Auth tạm thời có trạng thái thử lại, khác với phiên hết hạn.
+`/login` dùng mã đăng nhập 8 chữ số qua email, dùng một lần trong 30 phút; có gửi lại sau 60 giây và đổi email. Cần áp dụng mẫu email và thời hạn trên Supabase theo [hướng dẫn OTP](docs/features/email-otp.md); source không tự đổi cấu hình cloud. Callback giữ tương thích link đã gửi trước chuyển đổi. Sau đăng nhập mặc định mở `/overview`; `next` chỉ chấp nhận đường dẫn ứng dụng trong danh sách cho phép. Các trang kiểm tra phiên phía server trước khi render, kể cả module còn đang xây dựng. Đăng xuất trở về `/`; PWA vẫn khởi đầu tại `/overview` và yêu cầu đăng nhập. Lỗi Auth tạm thời có trạng thái thử lại, khác với phiên hết hạn.
 
 Catalog dùng chung cho trạng thái module; quy tắc trong `AGENTS.md` yêu cầu rà soát landing, preview, README và tài liệu khi thay đổi sản phẩm. Xem [đặc tả landing và xác thực](docs/features/landing.md).
+
+SEO của landing tiếng Việt tập trung vào quản lý tài chính cá nhân; giữ slogan và dữ liệu minh họa cố định. Mặc định `SEO_INDEXABLE=false`: trang có `noindex`, sitemap rỗng. Khi có tên miền HTTPS chính thức, đặt `APP_ORIGIN` và `SEO_INDEXABLE=true` ở production rồi build/deploy lại; Vercel preview vẫn `noindex`. Canonical, Open Graph và JSON-LD dùng chung origin hợp lệ; login/workspace tiếp tục không lập chỉ mục. Chạy `npm run test:seo` để kiểm tra ba cấu hình bằng production build cô lập, không cần database/Auth. Xem [hướng dẫn bật SEO](docs/05-deployment.md#seo-trang-giới-thiệu--27102026).
 
 ## Giao diện Zen
 
@@ -40,7 +42,7 @@ Biểu mẫu tài chính đọc số tiền VND ngay dưới ô, đặt `*` sát
 
 ## Ngôn ngữ Anh/Việt
 
-Trong Cài đặt → Ngôn ngữ / Language, chọn **Tiếng Việt** (mặc định) hoặc **English**. Áp dụng cho không gian trong app, Help và lỗi/thông báo; trang giới thiệu, preview công khai và đăng nhập vẫn bằng tiếng Việt. Lựa chọn lưu trên trình duyệt, đồng bộ giữa các tab, không nằm trong backup hoặc đồng bộ tài khoản. Đổi ngôn ngữ giữ bộ lọc và bản nháp.
+Trong Cài đặt → Ngôn ngữ / Language, chọn **Tiếng Việt** (mặc định) hoặc **English**. Áp dụng cho không gian trong app, Help và lỗi/thông báo; biểu mẫu đăng nhập cũng theo lựa chọn đã lưu; trang giới thiệu, preview và khung giới thiệu chung vẫn bằng tiếng Việt. Lựa chọn lưu trên trình duyệt, đồng bộ giữa các tab, không nằm trong backup hoặc đồng bộ tài khoản. Đổi ngôn ngữ giữ bộ lọc và bản nháp.
 
 English dùng `en-GB`: `1,000,000 ₫`, số lượng `1.25`, ngày `22/10/2026`; tiếng Việt dùng `1.000.000 ₫`, số lượng `1,25`. Vẫn dùng VND và giờ Việt Nam. CSV dịch tên cột/nhãn hệ thống, giữ số/ngày dạng chuẩn; JSON backup không đổi cấu trúc. Xem [đặc tả ngôn ngữ và logo](docs/features/localization.md).
 

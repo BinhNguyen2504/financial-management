@@ -81,6 +81,8 @@ export const catalog = {
     "Spending-jar illustrations in page headings, with a separate action row",
   "Minh họa bảo vệ ở tiêu đề, độc lập với tiến độ từng quỹ":
     "Protection illustrations in page headings, independent of fund progress",
+  "Bảng danh mục và giao dịch theo cột trên desktop, có nhãn từng trường trên mobile":
+    "Column-aligned category and transaction tables on desktop, with labelled fields on mobile",
   "Minh họa tích góp riêng cho từng chủ đề giao diện":
     "Distinct savings illustrations for each visual theme",
   "Minh họa danh mục riêng cho từng chủ đề giao diện":
@@ -152,8 +154,8 @@ export const catalog = {
   "Không gian của bạn": "Your workspace",
   "Chọn chủ đề Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành và chế độ sáng/tối/theo hệ thống, sao lưu JSON, khôi phục vào tài khoản trống và cài lên màn hình chính.":
     "Choose Garden/Water/Gold/Warm fire/Earth and light/dark/system mode, back up JSON, restore to an empty account and install on your home screen.",
-  "Cloud riêng với tài khoản đăng nhập; mặc định tiền VND":
-    "Private cloud data for signed-in accounts; VND by default",
+  "Đăng nhập bằng mã 8 chữ số qua email; dữ liệu cloud riêng, mặc định tiền VND":
+    "Sign in with a 8-digit email code; private cloud data, VND by default",
   "Múi giờ Asia/Ho_Chi_Minh và định dạng Việt Nam":
     "Asia/Ho_Chi_Minh time zone and Vietnamese formats",
   "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt":
@@ -162,8 +164,6 @@ export const catalog = {
     "Whole-account backup and restore to an empty account; optional profile",
   "PWA trên điện thoại/máy tính; chuẩn bị API cho app iOS":
     "PWA on phone/computer; API preparation for an iOS app",
-  "Bạn ưu tiên đăng nhập bằng email hay tài khoản Google?":
-    "Do you prefer email or Google sign-in?",
   "Hướng dẫn dễ thấy cạnh tiêu đề mỗi trang: mục lục đánh số, tư duy sử dụng, thuật ngữ và từng thao tác, ngay cả khi đang nhập liệu.":
     "Guidance beside every page title: numbered contents, principles, terms and steps, including while entering data.",
   "Trang giới thiệu trước đăng nhập có thiết kế riêng; sau đăng nhập, trang chủ giữ chủ đề bạn đã chọn trong Cài đặt.":

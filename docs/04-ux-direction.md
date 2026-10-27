@@ -211,6 +211,10 @@ Các liên kết ngoài dùng chung `.external-link`: màu `--primary` theo them
 
 Tiết kiệm và Đầu tư có cảnh riêng trong mỗi theme: tích góp/gìn giữ so với chăm sóc/phân bổ nhiều tài sản. Mười bố cục SVG tĩnh dùng semantic tokens sáng/tối; CSS chọn cảnh trước paint, không phụ thuộc dữ liệu tài chính. Tiêu đề Đầu tư giữ minh họa gọn trên mobile; trạng thái trống dùng cảnh khởi đầu riêng. Preview thành viên dùng cùng bộ hình, preview khách giữ phong cách marketing. Chi tiết trong [chủ đề giao diện](features/themes.md).
 
+## Bảng Tiết kiệm — 27/10/2026
+
+Danh mục, giao dịch tháng và giao dịch nguồn báo cáo dùng cột rõ trên desktop; khi vùng nội dung tối đa 760px, hàng chuyển thành danh sách có nhãn, giữ tên/ghi chú đầy đủ và vùng thao tác riêng. Căn phải số tiền với chữ số đều, giữ số 0, che tiền bằng Privacy Mode, đếm dòng theo bộ lọc. Trạng thái lưu trữ có chữ, không chỉ màu. Dùng bộ chọn cột chung và giữ tên/thao tác luôn hiện. Xem [chi tiết và kiểm chứng](features/savings-ledgers-2026-10-27.md).
+
 ## Tỷ lệ hình trong tiêu đề — 26/10/2026
 
 Bố cục `illustrated-heading` tách vùng chữ/hình/thao tác, áp dụng cho năm trang tài chính và bốn trang dự kiến. Hình lớn 240–320px trên desktop/tablet; ở màn hình không quá 700px, chữ chiếm toàn hàng và hình 216px nằm dưới, không ép tiêu đề thành cột hẹp. Nút Phân loại/Thêm hũ và Nơi giữ tiền/Điều chỉnh mục tiêu vẫn ở tiêu đề, trên hàng riêng. Nền tỏa nhẹ dùng token theme, không chuyển động hoặc che chữ. Tổng quan giữ khối chào mừng riêng; Hồ sơ/Cài đặt giữ bố cục chức năng. Xem [chủ đề](features/themes.md).
