@@ -166,7 +166,7 @@ test("language preference and neutral logo cover every theme and display mode", 
   expect(errors).toEqual([]);
 });
 
-test("English covers every workspace and Help while account names and public copy stay intact", async ({
+test("English covers workspaces, Help and the public home while account names stay intact", async ({
   page,
   browser,
 }) => {
@@ -252,8 +252,8 @@ test("English covers every workspace and Help while account names and public cop
     if (request.url().includes("/api/v1/")) requests.push(request.url());
   });
   await page.goto("/");
-  await expect(page.locator(".public-nav")).toContainText("Trải nghiệm");
-  await expect(page.locator(".locale-scope")).toHaveCount(0);
+  await expect(page.locator(".public-nav")).toContainText("Explore");
+  await expect(page.locator(".locale-scope")).toHaveAttribute("lang", "en");
   expect(requests).toEqual([]);
   const guest = await browser.newContext({
     baseURL: process.env.TEST_BASE_URL,

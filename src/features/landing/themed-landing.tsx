@@ -48,7 +48,7 @@ const benefits: Record<string, { heading: string; detail: string }> = {
 };
 
 export function ThemedLanding() {
-  const { t: tr, locale } = useI18n("landing");
+  const { t: tr } = useI18n("landing");
   return (
     <>
       <section

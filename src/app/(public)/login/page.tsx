@@ -1,14 +1,17 @@
 import { redirect } from "next/navigation";
 import { pageSession } from "@/server/page-auth";
 import { AuthUnavailable } from "@/features/auth/unavailable";
+import { localizedMetadata } from "@/i18n/server";
 import type { Metadata } from "next";
 import { Login } from "@/features/auth/login";
 import { safeReturnPath } from "@/lib/auth-return";
 import { authConfigured } from "@/server/auth";
-export const metadata: Metadata = {
-  title: "Đăng nhập",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    ...(await localizedMetadata("Đăng nhập")),
+    robots: { index: false, follow: false },
+  };
+}
 export default async function LoginPage({
   searchParams,
 }: {

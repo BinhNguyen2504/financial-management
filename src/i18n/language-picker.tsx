@@ -1,7 +1,7 @@
 "use client";
 
 import { useToast } from "@/components/toast";
-import { Languages } from "lucide-react";
+import { ChevronDown, Languages } from "lucide-react";
 import { type Locale } from "./locale";
 import { useI18n } from "./provider";
 import { translate } from "./translate";
@@ -19,7 +19,9 @@ export function LanguagePicker({ compact = false }: { compact?: boolean }) {
       <label className="public-language">
         <Languages size={17} aria-hidden="true" />
         <select
-          aria-label={`${t("Ngôn ngữ")} / Language`}
+          aria-label={
+            locale === "vi" ? `${t("Ngôn ngữ")} / Language` : t("Ngôn ngữ")
+          }
           value={locale}
           onChange={(event) => change(event.target.value as Locale)}
         >
@@ -30,6 +32,11 @@ export function LanguagePicker({ compact = false }: { compact?: boolean }) {
             English
           </option>
         </select>
+        <ChevronDown
+          size={14}
+          className="public-language-chevron"
+          aria-hidden="true"
+        />
       </label>
     );
   return (

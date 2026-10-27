@@ -90,6 +90,68 @@ test("landing exposes SEO in server HTML for visitors and crawlers", async ({
   }
 });
 
+test("English cookie localizes server metadata without changing crawler discovery", async ({
+  browser,
+  request,
+}) => {
+  for (const userAgent of ["Mozilla/5.0", "Googlebot", "Twitterbot"]) {
+    const response = await request.get("/", {
+      headers: { "user-agent": userAgent, cookie: "fm-locale=en" },
+    });
+    const html = await response.text();
+    expect(response.status()).toBe(200);
+    expect(html).toContain("Personal finance management | Financial Manager");
+    expect(html).toContain("Take charge of your money.");
+    expect(html).toContain('lang="en"');
+  }
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    baseURL: process.env.TEST_BASE_URL,
+  });
+  try {
+    await context.addCookies([
+      { name: "fm-locale", value: "en", url: process.env.TEST_BASE_URL! },
+    ]);
+    const page = await context.newPage();
+    await page.goto("/");
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      enabled ? "index, follow" : "noindex, nofollow",
+    );
+    await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(
+      "content",
+      "en_GB",
+    );
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      /^Manage your personal finances/,
+    );
+    await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(
+      0,
+    );
+    if (origin) {
+      const canonical = await page
+        .locator('link[rel="canonical"]')
+        .getAttribute("href");
+      expect(new URL(canonical!).href).toBe(`${origin}/`);
+      const jsonLd = await page
+        .locator('script[type="application/ld+json"]')
+        .textContent();
+      expect(JSON.parse(jsonLd!)).toMatchObject({
+        inLanguage: "en-GB",
+        url: `${origin}/`,
+      });
+    } else {
+      await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+      await expect(
+        page.locator('script[type="application/ld+json"]'),
+      ).toHaveCount(0);
+    }
+  } finally {
+    await context.close();
+  }
+});
+
 test("crawler endpoints stay public and expose only the opted-in home", async ({
   request,
 }) => {

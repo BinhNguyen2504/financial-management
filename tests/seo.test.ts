@@ -99,6 +99,28 @@ describe("public SEO configuration", () => {
   });
 });
 
+describe("localized public metadata", () => {
+  it("uses the saved language with the same canonical and indexing boundary", () => {
+    const config = getSeoConfig(production);
+    const metadata = getLandingMetadata(config, "en");
+    expect(metadata.title).toEqual({
+      absolute: "Personal finance management | Financial Manager",
+    });
+    expect(metadata.description).toMatch(/^Manage your personal finances/);
+    expect(metadata.alternates).toEqual({ canonical: `${origin}/` });
+    expect(metadata.robots).toEqual({ index: true, follow: true });
+    expect(metadata.openGraph).toMatchObject({
+      locale: "en_GB",
+      url: `${origin}/`,
+    });
+    expect(JSON.parse(getWebsiteJsonLd(config, "en")!)).toMatchObject({
+      inLanguage: "en-GB",
+      url: `${origin}/`,
+    });
+    expect(getWebsiteJsonLd(getSeoConfig({}), "en")).toBeUndefined();
+  });
+});
+
 describe("crawler discovery routes", () => {
   it.each([false, true])(
     "only advertises the public home when indexable=%s",

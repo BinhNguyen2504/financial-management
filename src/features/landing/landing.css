@@ -1405,6 +1405,7 @@
   flex-wrap: wrap;
 }
 .public-language {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -1412,9 +1413,11 @@
   flex-shrink: 0;
 }
 .public-language select {
+  appearance: none;
   width: auto;
   min-height: 44px;
-  padding: 6px;
+  height: 44px;
+  padding: 6px 28px 6px 10px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
@@ -1422,6 +1425,11 @@
   font: inherit;
   font-size: 13px;
   cursor: pointer;
+}
+.public-language-chevron {
+  position: absolute;
+  right: 8px;
+  pointer-events: none;
 }
 .public-language select:focus-visible {
   outline: 2px solid var(--primary);
@@ -1440,4 +1448,9 @@
   .public-account .public-enter {
     margin-left: auto;
   }
+}
+/* Keep confirmation below the public header's language and account controls. */
+.public-shell + .toast-viewport {
+  top: auto;
+  bottom: max(16px, env(safe-area-inset-bottom));
 }

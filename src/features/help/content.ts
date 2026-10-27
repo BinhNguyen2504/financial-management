@@ -1026,10 +1026,10 @@ articles.settings.sections
       "Đổi ngôn ngữ",
       "Khi muốn dùng không gian tài chính bằng Tiếng Việt hoặc English.",
       [
-        "Trong Cài đặt → Ngôn ngữ / Language, chọn Tiếng Việt hoặc English.",
+        "Chọn Tiếng Việt hoặc English trên thanh đầu trang, hoặc trong Cài đặt → Ngôn ngữ / Language.",
         "Kiểm tra định dạng gợi ý dưới ô tiền: 1.000.000 ₫ trong tiếng Việt hoặc 1,000,000 ₫ trong English.",
         "Nếu bản nháp đang có số chưa hợp lệ khi tab khác đổi ngôn ngữ, sửa theo định dạng được ghi tại ô; nội dung cũ không tự bị diễn giải lại.",
       ],
-      "Kết quả: giao diện, Help và biểu mẫu đăng nhập theo ngôn ngữ đã chọn, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong backup hoặc đồng bộ tài khoản; trang giới thiệu vẫn bằng tiếng Việt.",
+      "Kết quả: trang chủ, preview, đăng nhập, giao diện ứng dụng và Help theo ngôn ngữ đã chọn, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong backup hoặc đồng bộ tài khoản.",
     ),
   );

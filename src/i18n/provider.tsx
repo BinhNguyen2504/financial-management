@@ -106,7 +106,9 @@ export function LocaleProvider({
     const source =
       pathname === "/profile"
         ? "Thông tin cá nhân"
-        : modules.find((item) => `/${item.slug}` === pathname)?.title;
+        : pathname === "/login"
+          ? "Đăng nhập"
+          : modules.find((item) => `/${item.slug}` === pathname)?.title;
     if (source)
       document.title = `${translator(locale)(source)} · Financial Manager`;
   }, [locale, pathname]);

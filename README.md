@@ -28,7 +28,7 @@ Trang `/` có hai trải nghiệm: **khách chưa đăng nhập** xem landing ma
 
 Catalog dùng chung cho trạng thái module; quy tắc trong `AGENTS.md` yêu cầu rà soát landing, preview, README và tài liệu khi thay đổi sản phẩm. Xem [đặc tả landing và xác thực](docs/features/landing.md).
 
-SEO của landing tiếng Việt tập trung vào quản lý tài chính cá nhân; giữ slogan và dữ liệu minh họa cố định. Mặc định `SEO_INDEXABLE=false`: trang có `noindex`, sitemap rỗng. Khi có tên miền HTTPS chính thức, đặt `APP_ORIGIN` và `SEO_INDEXABLE=true` ở production rồi build/deploy lại; Vercel preview vẫn `noindex`. Canonical, Open Graph và JSON-LD dùng chung origin hợp lệ; login/workspace tiếp tục không lập chỉ mục. Chạy `npm run test:seo` để kiểm tra ba cấu hình bằng production build cô lập, không cần database/Auth. Xem [hướng dẫn bật SEO](docs/05-deployment.md#seo-trang-giới-thiệu--27102026).
+SEO của landing Việt/Anh theo lựa chọn cookie, mặc định tiếng Việt, tập trung vào quản lý tài chính cá nhân; giữ slogan và dữ liệu minh họa cố định. Mặc định `SEO_INDEXABLE=false`: trang có `noindex`, sitemap rỗng. Khi có tên miền HTTPS chính thức, đặt `APP_ORIGIN` và `SEO_INDEXABLE=true` ở production rồi build/deploy lại; Vercel preview vẫn `noindex`. Canonical, Open Graph và JSON-LD dùng chung origin hợp lệ; login/workspace tiếp tục không lập chỉ mục. Chạy `npm run test:seo` để kiểm tra ba cấu hình bằng production build cô lập, không cần database/Auth. Xem [hướng dẫn bật SEO](docs/05-deployment.md#seo-trang-giới-thiệu--27102026).
 
 ## Giao diện Zen
 
@@ -42,7 +42,7 @@ Biểu mẫu tài chính đọc số tiền VND ngay dưới ô, đặt `*` sát
 
 ## Ngôn ngữ Anh/Việt
 
-Trong Cài đặt → Ngôn ngữ / Language, chọn **Tiếng Việt** (mặc định) hoặc **English**. Áp dụng cho không gian trong app, Help và lỗi/thông báo; biểu mẫu đăng nhập cũng theo lựa chọn đã lưu; trang giới thiệu, preview và khung giới thiệu chung vẫn bằng tiếng Việt. Lựa chọn lưu trên trình duyệt, đồng bộ giữa các tab, không nằm trong backup hoặc đồng bộ tài khoản. Đổi ngôn ngữ giữ bộ lọc và bản nháp.
+Chọn **Tiếng Việt** (mặc định) hoặc **English** trên thanh đầu trang, cạnh đăng nhập/tài khoản, hoặc trong Cài đặt → Ngôn ngữ / Language. Áp dụng ngay cho cả trang chủ khách và thành viên, preview, khung công khai, đăng nhập, ứng dụng, Help và lỗi/thông báo. Lựa chọn lưu trên trình duyệt, đồng bộ giữa các tab, không nằm trong backup hoặc đồng bộ tài khoản. Đổi ngôn ngữ giữ bộ lọc và bản nháp.
 
 English dùng `en-GB`: `1,000,000 ₫`, số lượng `1.25`, ngày `22/10/2026`; tiếng Việt dùng `1.000.000 ₫`, số lượng `1,25`. Vẫn dùng VND và giờ Việt Nam. CSV dịch tên cột/nhãn hệ thống, giữ số/ngày dạng chuẩn; JSON backup không đổi cấu trúc. Xem [đặc tả ngôn ngữ và logo](docs/features/localization.md).
 

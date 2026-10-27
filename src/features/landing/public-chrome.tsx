@@ -45,7 +45,7 @@ export function PublicChrome({
             href={member ? "/profile" : "/login"}
             className="landing-text-link"
           >
-            {member ? "Thông tin cá nhân" : "Đăng nhập"}
+            {tr(member ? "Thông tin cá nhân" : "Đăng nhập")}
           </Link>
         </noscript>
       </header>

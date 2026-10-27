@@ -1,6 +1,6 @@
 # Landing và xác thực truy cập
 
-Cập nhật 22/10/2026. Landing tiếng Việt ở `/`, chia thành bản marketing cho khách và bản theo chủ đề sau đăng nhập; tên Financial Manager, hướng sản phẩm tinh tế và câu chuyện công cụ từ nhu cầu thật.
+Cập nhật 27/10/2026. Landing Tiếng Việt/English ở `/`, chia thành bản marketing cho khách và bản theo chủ đề sau đăng nhập; tên Financial Manager, hướng sản phẩm tinh tế và câu chuyện công cụ từ nhu cầu thật.
 
 ## Nội dung và trạng thái
 
@@ -109,6 +109,8 @@ Metadata và ảnh Open Graph công khai dùng cùng thông điệp/cam đồng 
 
 ## Logo và phạm vi ngôn ngữ — 22/10/2026
 
+> Giới hạn ngôn ngữ bên dưới là ghi nhận lịch sử; xem cập nhật toàn bộ trang chủ ngày 27/10/2026 cuối tài liệu.
+
 Trang công khai, preview và login tiếp tục bằng tiếng Việt; FAQ giải thích Anh/Việt trong app và Cài đặt. Preview có chú thích phạm vi ngôn ngữ, số liệu vẫn cố định và không đọc API tài chính. Logo header/mobile/preview, favicon và icon PWA đồng bộ biểu tượng hũ/đồng xu màu than–ngà, độc lập màu theme. Xem [đặc tả](localization.md).
 
 ## Bố cục và cuộn — 23/10/2026
@@ -156,3 +158,10 @@ Thay luồng marketing trước rồi mới chuyển thành viên bằng khởi 
 ## Cuộn trong trang — 27/10/2026
 
 Các liên kết tới Trải nghiệm và các mục cùng trang cuộn mượt theo CSS dùng chung trên cả landing khách và thành viên; giảm chuyển động giữ cuộn tức thời. Đã rà catalog, copy hai landing và preview: khả năng, trạng thái module và nội dung giới thiệu vẫn phù hợp, không cần sửa số liệu/copy hoặc thêm dữ liệu tài khoản. Preview tiếp tục dùng dữ liệu minh họa cố định.
+
+
+## Ngôn ngữ toàn bộ trang chủ — 27/10/2026
+
+Mục này thay thế các giới hạn tiếng Việt trong ghi chú lịch sử phía trên. Header có bộ chọn Tiếng Việt/English cạnh đăng nhập/tài khoản trên desktop và mobile; ở màn hình hẹp, nhóm thao tác xuống dòng để giữ nhãn và vùng bấm. Toast xác nhận nằm phía dưới để không che bộ chọn và tài khoản. Lựa chọn áp dụng ngay cho hai landing, navigation/footer, CTA, FAQ, preview, accessibility và nội dung theo theme. VND giữ nguyên; số minh họa chuyển vi-VN/en-GB, giữ tab và trạng thái che tiền. Preview luôn dùng dữ liệu cố định, không đọc API tài chính.
+
+Layout công khai dùng một LocaleProvider chung cho trang chủ và login, cùng khóa cookie/localStorage `fm-locale` với Cài đặt. Cookie phục vụ HTML SSR; `lang` và title cập nhật khi đổi trực tiếp. Metadata, mô tả và JSON-LD theo cookie, canonical vẫn `/`; không thêm URL ngôn ngữ/hreflang. Ảnh chia sẻ hiện có vẫn bằng tiếng Việt. Quyền truy cập app tiếp tục do server kiểm tra, `/` luôn công khai.

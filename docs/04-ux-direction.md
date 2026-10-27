@@ -188,7 +188,7 @@ Trang thành viên giữ nguyên giao diện theo theme hiện tại. Từ 27/10
 
 ## Logo trung tính và Anh/Việt — 22/10/2026
 
-Logo hũ/đồng xu dùng than–ngà, đảo sáng/tối và phù hợp năm theme. Cài đặt có radio Tiếng Việt/English, tiếng Việt mặc định; đổi ngay kèm toast. English dùng en-GB, tiền VND và giờ Việt Nam. Không gian app/Help có hai ngôn ngữ, trang công khai/login vẫn tiếng Việt. Khi đổi, giữ bản nháp, bộ lọc, vị trí và lựa chọn cột. Ô số lỗi giữ nguyên chữ cùng định dạng lúc nhập, báo tại chỗ và chặn lưu thay vì bỏ tùy ý dấu chấm/phẩy. Xem [đặc tả](features/localization.md).
+Logo hũ/đồng xu dùng than–ngà, đảo sáng/tối và phù hợp năm theme. Cài đặt có radio Tiếng Việt/English, tiếng Việt mặc định; đổi ngay kèm toast. English dùng en-GB, tiền VND và giờ Việt Nam. Không gian app/Help có hai ngôn ngữ. Cập nhật 27/10/2026: trang chủ, preview và khung công khai/login cũng theo lựa chọn Việt/Anh dùng chung. Khi đổi, giữ bản nháp, bộ lọc, vị trí và lựa chọn cột. Ô số lỗi giữ nguyên chữ cùng định dạng lúc nhập, báo tại chỗ và chặn lưu thay vì bỏ tùy ý dấu chấm/phẩy. Xem [đặc tả](features/localization.md).
 
 ## Bố cục gọn và điều khiển ổn định — 23/10/2026
 
@@ -226,3 +226,8 @@ Bố cục `illustrated-heading` tách vùng chữ/hình/thao tác, áp dụng c
 ### Nhập mã đăng nhập — 27/10/2026
 
 Email thực tế của người dùng trả mã 8 chữ số. Biểu mẫu dùng 8 ô vuông, focus ô đầu sau khi gửi/gửi lại; gõ từng số chuyển ô kế tiếp. Nhập ô cuối hoặc dán/tự điền đầy đủ mã tự xác nhận một lần, có trạng thái đang xử lý. Backspace/Delete giữ vị trí các số khác; mũi tên/Home/End chuyển ô. Lỗi giữ mã để sửa/thử lại, không tự lặp request; nút Đăng nhập vẫn hỗ trợ xác nhận thủ công. Các ô dùng token màu/font hiện có, bố cục một hàng thích ứng 320px. Xem [đặc tả OTP](features/email-otp.md).
+
+
+## Bộ chọn ngôn ngữ trang chủ — 27/10/2026
+
+Thay thế giới hạn tiếng Việt của trang công khai trong ghi chú cũ: header có select native Tiếng Việt/English cạnh đăng nhập hoặc tài khoản, có focus rõ và thông báo xác nhận theo ngôn ngữ mới. Ở màn hình hẹp, header cho nhóm thao tác xuống hàng, không rút tên ngôn ngữ. Dịch cả landing khách/thành viên, preview, menu/footer, CTA, FAQ và nhãn truy cập; giữ bản sắc marketing/themed, VND, trạng thái tab và che tiền. Dùng chung lựa chọn với Cài đặt và login.

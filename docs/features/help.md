@@ -48,3 +48,8 @@ Hướng dẫn Cài đặt giải thích năm chủ đề, chế độ sáng/t�
 ## Anh/Việt — 22/10/2026
 
 Help trong app dùng lựa chọn Tiếng Việt/English của Cài đặt. Hai bản giữ cùng ID bài, mục và tác vụ; bản tiếng Anh tải bằng dynamic import khi cần. Cài đặt có hướng dẫn đổi ngôn ngữ, định dạng số và giới hạn lưu trên trình duyệt. Không tra cứu API tài chính hoặc dịch nội dung người dùng. Xem [ngôn ngữ](localization.md).
+
+
+## Hướng dẫn đổi ngôn ngữ trang chủ — 27/10/2026
+
+Tác vụ đổi ngôn ngữ trong Cài đặt nay chỉ cả bộ chọn header công khai và radio Cài đặt. Kết quả bao gồm trang chủ khách/thành viên, preview, khung công khai và đăng nhập; hai bản Help giữ cùng ID tác vụ và giới hạn lưu theo trình duyệt.

@@ -183,3 +183,8 @@ Luồng email → mã 8 số → verifyOtp tạo phiên, mục tiêu thời hạ
 Robots/sitemap là metadata route tĩnh của Next.js, dùng cùng điều kiện index với HTML và cần build lại sau đổi môi trường. Proxy trả qua hai endpoint trước bước refresh Auth. Sitemap chỉ liệt kê `/`; robots không chặn HTML/tài nguyên render để crawler đọc noindex. Server page guard và RLS vẫn chịu trách nhiệm bảo vệ tài khoản. Xem [đặc tả landing](features/landing.md#seo-trang-giới-thiệu--27102026).
 
 UI OTP dùng 8 input có nhãn truy cập riêng, giữ từng vị trí khi xóa/sửa. Thao tác hoàn thành truyền trực tiếp chuỗi mã mới cho verifyOtp để tránh state React chưa cập nhật; khóa request đồng bộ chặn xác nhận trùng khi auto-submit/Enter/paste trùng nhau. Không xác nhận bằng effect theo state để tránh vòng lặp sau lỗi.
+
+
+## Ngôn ngữ trang công khai — 27/10/2026
+
+Layout công khai đọc `serverLocaleState()`, bọc một `LocaleProvider` và `ToastProvider` quanh `PublicChrome`; trang login dùng provider này thay cho provider riêng. Hai landing và preview là client components được SSR theo cookie, đổi ngôn ngữ bằng context và giữ state. Root HTML đọc locale server; provider cập nhật document lang/title phía client. SEO helpers nhận locale tùy chọn, mặc định vi, giữ canonical và indexing gate. Không đổi API, schema hoặc kiểm tra quyền server.

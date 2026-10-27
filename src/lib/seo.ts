@@ -71,14 +71,14 @@ export function getLandingMetadata(
   const tr = translator(locale, "landing");
   return {
     title: { absolute: tr(landingTitle) },
-    description: translator(locale, "landing")(landingDescription),
+    description: tr(landingDescription),
     robots: { index: config.indexable, follow: config.indexable },
     ...(config.origin && {
       alternates: { canonical: `${config.origin}/` },
     }),
     openGraph: {
       title: tr(landingTitle),
-      description: translator(locale, "landing")(landingDescription),
+      description: tr(landingDescription),
       locale: locale === "en" ? "en_GB" : "vi_VN",
       type: "website",
       siteName: "Financial Manager",
@@ -87,7 +87,7 @@ export function getLandingMetadata(
     twitter: {
       card: "summary_large_image",
       title: tr(landingTitle),
-      description: translator(locale, "landing")(landingDescription),
+      description: tr(landingDescription),
       // Next derives the hashed image URL and alt from opengraph-image.tsx.
     },
   };
