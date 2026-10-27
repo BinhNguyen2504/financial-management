@@ -13,6 +13,9 @@ const email = () => `${randomUUID()}@example.test`;
 async function login(page: Page, address = email()) {
   await page.goto("/login?next=/income");
   await page.getByLabel("Email", { exact: true }).fill(address);
+  const otp = page.waitForResponse((response) =>
+    response.url().includes("/auth/v1/otp"),
+  );
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
@@ -21,6 +24,7 @@ async function login(page: Page, address = email()) {
   await expect(
     page.getByRole("button", { name: "Nhập thu nhập", exact: true }),
   ).toBeVisible();
+  return new URL((await otp).url()).origin;
 }
 async function view(page: Page, y = year): Promise<IncomeView> {
   const response = await page.request.get(`/api/v1/income?year=${y}`);
@@ -249,7 +253,7 @@ test("income network retry and independent session conflicts preserve drafts", a
   browser,
 }) => {
   const address = email();
-  await login(page, address);
+  const authURL = await login(page, address);
   await page
     .getByRole("button", { name: "Thêm thu phát sinh", exact: true })
     .click();
@@ -275,6 +279,12 @@ test("income network retry and independent session conflicts preserve drafts", a
   });
   const second = await other.newPage();
   try {
+    // This scenario needs two independent sessions immediately; reset only the
+    // isolated Auth double's resend cooldown, as the dedicated OTP suite does.
+    const resend = await page.request.post(`${authURL}/__test__/otp-state`, {
+      data: { email: address, allowResend: true },
+    });
+    expect(resend.ok()).toBe(true);
     await login(second, address);
     expect(
       (
@@ -391,7 +401,12 @@ test("income rollover shows empty next-year months and future is read-only", asy
     .getByRole("combobox", { name: "Tháng", exact: true })
     .selectOption("12");
   await expect(page.locator(".income-summary")).toContainText("100 ₫");
-  await page.getByRole("button", { name: "Tháng sau", exact: true }).click();
+  await page
+    .getByRole("combobox", { name: "Năm", exact: true })
+    .selectOption(String(year));
+  await page
+    .getByRole("combobox", { name: "Tháng", exact: true })
+    .selectOption("1");
   await expect(
     page.getByRole("combobox", { name: "Năm", exact: true }),
   ).toHaveValue(String(year));

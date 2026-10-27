@@ -178,6 +178,22 @@ button:disabled {
   color: var(--primary);
   margin-bottom: 3px;
 }
+.overview-month-heading {
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+.overview-month-heading > div {
+  min-width: 0;
+}
+.overview-month-heading .help-context {
+  max-width: 100%;
+}
+.overview-month-status {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
 .overview-metrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -764,6 +780,10 @@ button:disabled {
   }
   .section-title {
     flex-wrap: wrap;
+  }
+  .overview-month-heading {
+    flex-direction: column;
+    align-items: flex-start;
   }
   .overview-metrics {
     grid-template-columns: 1fr;

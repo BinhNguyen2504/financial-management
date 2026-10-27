@@ -220,9 +220,9 @@ export function ExpenseModal({
           <X size={20} />
         </button>
       </div>
+      <ToastViewport dialogRef={dialog} />
       <div className="dialog-body">{children}</div>
       {footer && <div className="dialog-footer">{footer}</div>}
-      <ToastViewport dialogRef={dialog} />
     </dialog>
   );
 }

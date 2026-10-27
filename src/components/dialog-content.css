@@ -252,7 +252,7 @@
 .dialog-data-table :is(th, td) {
   padding: 12px 10px;
   border-bottom: 1px solid var(--border);
-  vertical-align: top;
+  vertical-align: middle;
   overflow-wrap: anywhere;
   text-align: left;
 }
@@ -428,9 +428,17 @@
   .dialog-data-table td {
     display: grid;
     grid-template-columns: minmax(80px, 30%) minmax(0, 1fr);
+    align-items: center;
     gap: 12px;
     border: 0;
     padding: 6px 0;
+  }
+  .dialog-data-table :is(.is-actions, .is-date) {
+    width: auto;
+    white-space: normal;
+  }
+  .dialog-data-table td > div {
+    min-width: 0;
   }
   .dialog-data-table .is-numeric {
     text-align: right;
@@ -441,7 +449,7 @@
     font-size: 12px;
     text-align: left;
   }
-  .dialog-data-table .expense-actions {
+  .dialog-data-table .is-actions .expense-actions {
     justify-content: flex-end;
   }
   .dialog-shell

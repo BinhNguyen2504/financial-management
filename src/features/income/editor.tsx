@@ -1,5 +1,6 @@
 "use client";
 import { LocalizedInput } from "@/components/localized-input";
+import { RequiredFieldsNote } from "@/components/required-fields-note";
 import { useI18n } from "@/i18n/provider";
 
 import type { CommandResult } from "@/application/income";
@@ -323,14 +324,7 @@ function IncomeEditorForm({
         onSubmit={submit}
         onChange={changed}
       >
-        {!deleting && (
-          <p className="required-fields-note">
-            <span className="required-mark" aria-hidden="true">
-              *
-            </span>{" "}
-            {tr("là thông tin cần nhập.")}
-          </p>
-        )}
+        {!deleting && <RequiredFieldsNote />}
         {uncertain && (
           <p role="status" className="expense-notice">
             {tr(

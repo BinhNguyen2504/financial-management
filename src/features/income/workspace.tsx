@@ -16,8 +16,6 @@ import { monthName } from "@/features/expenses/format";
 import { HelpButton, HelpPageTitle } from "@/features/help/provider";
 import {
   Archive,
-  ArrowLeft,
-  ArrowRight,
   CircleAlert,
   Trash2 as DeleteActionIcon,
   Trash2 as DeleteCommandGlyph,
@@ -150,13 +148,6 @@ export function IncomeWorkspace({
       );
       toast("warning", tr("Đã lưu thay đổi nhưng chưa tải lại được dữ liệu."));
     }
-  }
-  function navigateMonth(delta: number) {
-    const index = year * 12 + month - 1 + delta;
-    const nextYear = Math.floor(index / 12);
-    if (nextYear < 2000 || nextYear > 2099) return;
-    setYear(nextYear);
-    setMonth((index % 12) + 1);
   }
   async function download() {
     try {
@@ -304,14 +295,6 @@ export function IncomeWorkspace({
             <>
               <div className="expense-toolbar">
                 <div className="expense-actions income-period-controls">
-                  <button
-                    className="expense-icon-button"
-                    aria-label={tr("Tháng trước")}
-                    disabled={year === 2000 && month === 1}
-                    onClick={() => navigateMonth(-1)}
-                  >
-                    <ArrowLeft size={18} />
-                  </button>
                   <label className="income-select">
                     {tr("Năm")}
                     <select
@@ -338,14 +321,6 @@ export function IncomeWorkspace({
                       ))}
                     </select>
                   </label>
-                  <button
-                    className="expense-icon-button"
-                    aria-label={tr("Tháng sau")}
-                    disabled={year === 2099 && month === 12}
-                    onClick={() => navigateMonth(1)}
-                  >
-                    <ArrowRight size={18} />
-                  </button>
                 </div>
                 <button
                   className="expense-primary"

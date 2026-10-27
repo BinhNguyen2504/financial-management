@@ -74,6 +74,75 @@ afterAll(async () => {
   await admin.end();
 });
 describe("PostgreSQL transactions, retry, concurrency and owner isolation", () => {
+  it("writes only the changed jar and new audit entry as history grows", async () => {
+    const user = await initialized();
+    const ids = Array.from({ length: 20 }, () => randomUUID());
+    let version = 1;
+    for (const id of ids)
+      await execute(user, version++, {
+        type: "createJar",
+        id,
+        kind: "monthly",
+        start: "2026-12",
+        opening: "0",
+        name: `Jar ${id}`,
+        description: "",
+        method: "Cash",
+        group: "",
+        amount: "2000000",
+      });
+    const statements: string[] = [];
+    const measured = postgres(process.env.TEST_DATABASE_URL!, {
+      max: 1,
+      prepare: false,
+      debug: (_connection, query) => {
+        statements.push(query);
+      },
+    });
+    try {
+      const measuredRepository = postgresExpenseRepository(measured);
+      const action: ExpenseAction = {
+        type: "configureJar",
+        jarId: ids[0],
+        month: "2027-01",
+        name: `Jar ${ids[0]}`,
+        description: "",
+        method: "HSBC",
+        group: "",
+        amount: "2000000",
+      };
+      const command = { id: randomUUID(), expectedVersion: version, action };
+      const result = await runExpenseCommand(
+        measuredRepository,
+        user,
+        command,
+        clock,
+      );
+      const writes = statements.filter((query) =>
+        /^\s*(insert|update|delete)\b/i.test(query),
+      );
+      expect(writes).toHaveLength(4); // header, one jar, one audit entry, one receipt
+      expect(
+        writes.filter((query) => query.includes("expense_jars")),
+      ).toHaveLength(1);
+      expect(
+        writes.filter((query) => query.includes("expense_audit")),
+      ).toHaveLength(1);
+      expect(
+        await runExpenseCommand(measuredRepository, user, command, clock),
+      ).toEqual(result);
+      const persisted = await readExpenseView(measuredRepository, user, clock);
+      expect(persisted.book!.jars).toHaveLength(20);
+      expect(persisted.book!.audit).toHaveLength(version + 1);
+      expect(
+        persisted.rows.find(
+          (row) => row.jarId === ids[0] && row.month === "2027-01",
+        )!.method,
+      ).toBe("HSBC");
+    } finally {
+      await measured.end();
+    }
+  });
   it.each([["brand_key", "icon_key"], ["brand_key"], ["icon_key"]])(
     "keeps existing expenses usable without visual columns %j",
     async (...columns) => {

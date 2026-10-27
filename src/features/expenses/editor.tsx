@@ -1,10 +1,11 @@
 "use client";
 import { LocalizedInput } from "@/components/localized-input";
 import { formatDate } from "@/i18n/format";
+import { RequiredFieldsNote } from "@/components/required-fields-note";
 import { useI18n } from "@/i18n/provider";
 
 import type { CommandResult } from "@/application/expenses";
-import { DialogChanges } from "@/components/dialog-content";
+import { DialogChanges, DialogPreview } from "@/components/dialog-content";
 import {
   focusFirstInvalid,
   FormErrorSummary,
@@ -214,7 +215,6 @@ function ExpenseEditorForm({
   const [conflict, setConflict] = useState(false);
   const command = useRef<ExpenseCommand | null>(null);
   const errorRef = useRef<HTMLParagraphElement>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
   const future = (row?.month ?? month) > view.today.slice(0, 7);
   function makeAction(): ExpenseAction {
     const config = {
@@ -348,7 +348,6 @@ function ExpenseEditorForm({
       });
       command.current = next;
       setPreview(result);
-      requestAnimationFrame(() => previewRef.current?.focus());
     } catch (e) {
       reportError(e);
     } finally {
@@ -435,7 +434,9 @@ function ExpenseEditorForm({
         size={
           ["deleteSpend", "deleteLabel", "closeYear"].includes(editor.mode)
             ? "confirm"
-            : "form"
+            : preview?.changes.length && editor.mode !== "emoji"
+              ? "detail"
+              : "form"
         }
         footer={
           <div className="expense-actions">
@@ -509,12 +510,7 @@ function ExpenseEditorForm({
               command.current = null;
             }}
           >
-            <p className="required-fields-note">
-              <span className="required-mark" aria-hidden="true">
-                *
-              </span>{" "}
-              {tr("là thông tin cần nhập.")}
-            </p>
+            <RequiredFieldsNote />
             {uncertain && (
               <p role="status" className="expense-notice">
                 {tr(
@@ -848,16 +844,23 @@ function ExpenseEditorForm({
                 <>
                   <label>
                     {tr("Loại")}
-                    <select
-                      value={labelKind}
-                      disabled={Boolean(label)}
-                      onChange={(e) =>
-                        setLabelKind(e.target.value as typeof labelKind)
-                      }
-                    >
-                      <option value="method">{tr("Phương thức")}</option>
-                      <option value="group">{tr("Nhóm mục đích")}</option>
-                    </select>
+                    {label ? (
+                      <span className="form-readonly-value">
+                        {labelKind === "method"
+                          ? tr("Phương thức")
+                          : tr("Nhóm mục đích")}
+                      </span>
+                    ) : (
+                      <select
+                        value={labelKind}
+                        onChange={(e) =>
+                          setLabelKind(e.target.value as typeof labelKind)
+                        }
+                      >
+                        <option value="method">{tr("Phương thức")}</option>
+                        <option value="group">{tr("Nhóm mục đích")}</option>
+                      </select>
+                    )}
                   </label>
                   <label>
                     {tr("Tên")}
@@ -1009,12 +1012,7 @@ function ExpenseEditorForm({
               )}
             </fieldset>
             {preview && (
-              <div
-                className="expense-preview"
-                ref={previewRef}
-                tabIndex={-1}
-                aria-label={tr("Xem trước thay đổi")}
-              >
+              <DialogPreview className="expense-preview">
                 <h3>{tr("Xem trước trước khi lưu")}</h3>
                 <p>
                   {editor.mode === "emoji"
@@ -1041,7 +1039,13 @@ function ExpenseEditorForm({
                         (["funding", "spent", "closing"] as const).map(
                           (field) => ({
                             key: `${change.jarId}/${change.month}/${field}`,
-                            label: `${change.name} · ${monthName(change.month, locale)} · ${{ funding: tr("Tiền thêm"), spent: tr("Thực chi"), closing: tr("Số dư") }[field]}`,
+                            period: monthName(change.month, locale),
+                            subject: change.name,
+                            label: {
+                              funding: tr("Tiền thêm"),
+                              spent: tr("Thực chi"),
+                              closing: tr("Số dư"),
+                            }[field],
                             before: change.before
                               ? money(change.before[field])
                               : tr("Chưa có"),
@@ -1053,7 +1057,7 @@ function ExpenseEditorForm({
                       )}
                   />
                 )}
-              </div>
+              </DialogPreview>
             )}
           </form>
         </ExpenseErrors.Provider>

@@ -151,3 +151,18 @@ Nhóm thao tác dùng flex căn giữa thay lưới chừa sẵn hai ô; một n
 ## Tiêu đề có minh họa — 26/10/2026
 
 Đồng bộ tỷ lệ chữ/hình cho năm trang tài chính và bốn trang dự kiến. Chi tiêu và Quỹ an toàn bổ sung hình tiêu đề; các nút thao tác tách khỏi vùng hình, giữ hành vi form/dialog và Help. Desktop dùng hình lớn cạnh chữ, điện thoại dành cả hàng cho chữ rồi đặt hình ở hàng tiếp theo. Xem [chi tiết chủ đề](themes.md).
+
+## Rà lỗi theo nhóm hành vi — 28/10/2026
+
+Từ ví dụ Chi tiêu, đã rà cùng nhóm lỗi ở mọi module: select khóa theo nghiệp vụ, màu nút xóa/ngừng, căn hàng/chiều rộng bảng dialog, nhãn mobile trong preview desktop, bộ lọc trạng thái và vòng ghi toàn sổ. Sửa primitive bảng/nút và năm repository; loại giao dịch sửa ở Đầu tư chuyển thành giá trị cố định. Xem [ma trận và kiểm chứng](expense-feedback-2026-10-28.md).
+
+
+## Menu, trường bắt buộc và toast — 28/10/2026
+
+Menu dùng scrollbar mảnh, nền trong suốt, rõ hơn khi hover/focus; giữ cuộn bằng chuột, cảm ứng và bàn phím. Menu mobile cuộn riêng trên màn hình thấp để vẫn tới được mục cuối. Link khai báo focus cho WebKit; sau native focus, cuộn tối thiểu để Firefox hiện đủ cả tên và nhãn trạng thái của mục nhiều dòng.
+
+`RequiredFieldsNote` thay câu dài “* là thông tin cần nhập.” bằng chú thích nhỏ “* Bắt buộc” / “* Required” căn phải. Dấu sao cạnh nhãn dùng màu chữ phụ thay vì màu lỗi; quy tắc required và lỗi tại trường giữ nguyên. Áp dụng cho đăng nhập, hồ sơ và năm editor tài chính.
+
+Toast dùng bề mặt có sắc độ nhẹ, cạnh màu trạng thái, icon, tiêu đề và nội dung tách rõ. Tiêu đề dùng chung: Thành công / Chưa thể hoàn tất / Cần kiểm tra, không khẳng định mọi thao tác là lưu dữ liệu. Thành công tự đóng sau 5 giây, tạm dừng khi hover hoặc focus và bắt đầu lại thời gian đọc khi rời. Lỗi/cảnh báo giữ tới khi đóng; thông báo kết quả lưu chưa xác nhận tiếp tục dùng warning và giữ bản nháp. Toast nằm trong dialog đang hoạt động, ở vùng riêng giữa header và phần nội dung cuộn để không che ô nhập hoặc nút lưu; vẫn nhận thao tác trên top layer. Nút đóng 44px, nội dung dài xuống dòng và cuộn riêng khi cần; giảm chuyển động bỏ animation.
+
+Đã rà soát catalog, landing copy và preview: đây là tinh chỉnh thành phần chung, không bổ sung khả năng hoặc đổi trạng thái module. Preview giữ dữ liệu cố định, không mô phỏng API tài khoản. Bằng chứng browser local và giới hạn tại [validation](../07-validation.md).

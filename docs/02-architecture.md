@@ -188,3 +188,12 @@ UI OTP dùng 8 input có nhãn truy cập riêng, giữ từng vị trí khi xó
 ## Ngôn ngữ trang công khai — 27/10/2026
 
 Layout công khai đọc `serverLocaleState()`, bọc một `LocaleProvider` và `ToastProvider` quanh `PublicChrome`; trang login dùng provider này thay cho provider riêng. Hai landing và preview là client components được SSR theo cookie, đổi ngôn ngữ bằng context và giữ state. Root HTML đọc locale server; provider cập nhật document lang/title phía client. SEO helpers nhận locale tùy chọn, mặc định vi, giữ canonical và indexing gate. Không đổi API, schema hoặc kiểm tra quyền server.
+
+## Ghi dữ liệu thay đổi — 28/10/2026
+
+Năm repository Chi tiêu, Thu nhập, Tiết kiệm, Đầu tư và Quỹ lưu snapshot độc lập sau `read()` trong transaction. `changedRecords` so sánh theo khóa ổn định và nội dung để chỉ upsert dòng mới/đã sửa; không giữ snapshot giữa request hoặc giữa owner. Các vòng ghi revision/giá/chốt/configuration cũ được bỏ qua, vẫn giữ toàn bộ dữ liệu khi tính nghiệp vụ. Chi tiêu chỉ kiểm migration metadata khi thực sự ghi phân loại; chỉ đối soát xóa phân loại khi danh sách bị bỏ mục. Khóa owner, version, RLS, rollback và idempotency giữ nguyên. GET vẫn đọc sổ đầy đủ; không có cache tài chính dùng chung. Xem [rà soát](features/expense-feedback-2026-10-28.md).
+
+
+## Thành phần phản hồi dùng chung — 28/10/2026
+
+`RequiredFieldsNote` tập trung chú thích bắt buộc và bản dịch cho đăng nhập, hồ sơ cùng năm editor. `ToastProvider` giữ success/error/warning và vị trí trong dialog đang hoạt động; `ToastViewport` có vùng riêng giữa header và body của native dialog; trình bày icon, tiêu đề, nội dung và trạng thái đọc để tạm dừng timeout thành công. CSS dùng token theme hiện có, không thêm thư viện hoặc thay đổi API/quy tắc ghi dữ liệu.

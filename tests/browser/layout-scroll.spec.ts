@@ -156,7 +156,7 @@ async function stationaryPickers(page: Page, requireOverflow = false) {
   if (requireOverflow) expect(overflow).toBe(true);
 }
 
-test("income geometry: arrows, whole labels, equal rows and stationary column controls in both languages", async ({
+test("income geometry: direct period selects, whole labels, equal rows and stationary column controls in both languages", async ({
   page,
 }, info) => {
   test.setTimeout(180000);
@@ -193,15 +193,15 @@ test("income geometry: arrows, whole labels, equal rows and stationary column co
             };
           }),
         );
-      expect(boxes).toHaveLength(4);
+      expect(boxes).toHaveLength(2);
+      await expect(controls.getByRole("button")).toHaveCount(0);
       for (let i = 1; i < boxes.length; i++) {
         expect(boxes[i].x).toBeGreaterThanOrEqual(boxes[i - 1].right);
         expect(Math.abs(boxes[i].bottom - boxes[0].bottom)).toBeLessThanOrEqual(
           1,
         );
       }
-      expect(boxes[0].h).toBeGreaterThanOrEqual(44);
-      expect(boxes[3].w).toBeGreaterThanOrEqual(44);
+      expect(boxes.every((box) => box.h >= 44 && box.w >= 44)).toBe(true);
       // Geometry alone misses selects whose value has been ellipsized by shared CSS.
       const textFits = await controls.locator("select").evaluateAll((selects) =>
         selects.every((element) => {
@@ -266,7 +266,10 @@ test("income geometry: arrows, whole labels, equal rows and stationary column co
       ).toBeLessThanOrEqual(1);
       expect((await filled.boundingBox())!.height).toBeGreaterThanOrEqual(48);
       const target = missing.locator(".income-missing-cell").first();
-      expect((await target.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      // Firefox can report a 44px target a fraction below its CSS height.
+      expect((await target.boundingBox())!.height).toBeGreaterThanOrEqual(
+        43.99,
+      );
       await stationaryPickers(page, width < 768);
       await fit(page);
     }

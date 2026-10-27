@@ -72,7 +72,7 @@ export const modules = [
       "Thực chi, số còn lại và phần chuyển tiếp kỳ sau",
       "Phân biệt chi phí, trả nợ và tiền dành để tiết kiệm",
       "Tổng hợp nhu cầu tiền theo ví/ngân hàng",
-      "Phân loại có biểu tượng gọn; nút chọn cột giữ vị trí khi cuộn bảng",
+      "Phân loại có logo PNG; xem trước theo tháng và lọc hũ đã ngừng",
       "Bảng hũ căn giữa nút điều chỉnh và dùng tiền bằng biểu tượng",
       "Chi tiết hũ theo tab tháng, sử dụng và lịch sử",
       "Tiêu đề có minh họa hũ chi, nút thao tác ở hàng riêng",

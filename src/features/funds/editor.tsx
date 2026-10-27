@@ -4,6 +4,7 @@ import {
   focusInvalidNumber,
 } from "@/components/localized-input";
 import { formatMonth } from "@/i18n/format";
+import { RequiredFieldsNote } from "@/components/required-fields-note";
 import { useI18n } from "@/i18n/provider";
 
 import type { FundCommandResult } from "@/application/funds";
@@ -551,12 +552,7 @@ function Editor({
         </div>
       }
     >
-      <p className="required-fields-note">
-        <span className="required-mark" aria-hidden="true">
-          *
-        </span>{" "}
-        {tr("là thông tin cần nhập.")}
-      </p>
+      <RequiredFieldsNote />
       <PrivacyReveal />
       <HelpButton
         pageId="funds"

@@ -1,4 +1,6 @@
 export const catalog = {
+  "Phân loại có logo PNG; xem trước theo tháng và lọc hũ đã ngừng":
+    "Categories with PNG logos; monthly change previews and stopped-jar filtering",
   "Có trong bản hiện tại": "Available in this version",
   "Đã có một phần": "Partly available",
   "Đang phát triển": "In development",

@@ -30,5 +30,14 @@
     "hsbc-symbol.svg": "Original emblem group only; viewBox 4 0.5 74.1 37.",
     "techcombank-symbol.svg": "Original two red polygon elements only; viewBox 322.98 0 83.02 55.35.",
     "mb-symbol.svg": "Original star rect/pattern/defs only; viewBox 0 0 58.4427 55."
+  },
+  "pngReview": "2026-10-28",
+  "pngVariants": {
+    "hsbc-symbol.png": "Lossless PNG format conversion of local hsbc-symbol.svg; original geometry, colors and transparency retained. Source resolution limits remain for favicons.",
+    "techcombank-symbol.png": "Lossless PNG format conversion of local techcombank-symbol.svg; original geometry, colors and transparency retained. Source resolution limits remain for favicons.",
+    "mb-symbol.png": "Lossless PNG format conversion of local mb-symbol.svg; original geometry, colors and transparency retained. Source resolution limits remain for favicons.",
+    "vietcombank-symbol.png": "Lossless PNG format conversion of local vietcombank-symbol.ico; original geometry, colors and transparency retained. Source resolution limits remain for favicons.",
+    "acb-symbol.png": "Lossless PNG format conversion of local acb-symbol.webp; original geometry, colors and transparency retained. Source resolution limits remain for favicons.",
+    "vpbank-symbol.png": "Lossless PNG format conversion of local vpbank.ico; original geometry, colors and transparency retained. Source resolution limits remain for favicons."
   }
 }

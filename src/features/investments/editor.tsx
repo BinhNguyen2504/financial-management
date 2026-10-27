@@ -1,5 +1,6 @@
 "use client";
 import { LocalizedInput } from "@/components/localized-input";
+import { RequiredFieldsNote } from "@/components/required-fields-note";
 import { useI18n } from "@/i18n/provider";
 
 import type { CommandResult } from "@/application/investments";
@@ -498,12 +499,7 @@ function Editor({
           void submit();
         }}
       >
-        <p className="required-fields-note">
-          <span className="required-mark" aria-hidden="true">
-            *
-          </span>{" "}
-          {tr("là thông tin cần nhập.")}
-        </p>
+        <RequiredFieldsNote />
         <PrivacyReveal />
         <HelpButton
           pageId="investments"
@@ -622,22 +618,27 @@ function Editor({
             <>
               <label>
                 {tr("Loại giao dịch")}
-                <select
-                  value={kind}
-                  disabled={mode.type === "revise"}
-                  onChange={(e) => {
-                    set("transactionKind", e.target.value);
-                    set("categoryId", "");
-                  }}
-                >
-                  {Object.entries(localizedTransactionNames).map(
-                    ([id, name]) => (
-                      <option key={id} value={id}>
-                        {name}
-                      </option>
-                    ),
-                  )}
-                </select>
+                {mode.type === "revise" ? (
+                  <span className="form-readonly-value">
+                    {localizedTransactionNames[kind]}
+                  </span>
+                ) : (
+                  <select
+                    value={kind}
+                    onChange={(e) => {
+                      set("transactionKind", e.target.value);
+                      set("categoryId", "");
+                    }}
+                  >
+                    {Object.entries(localizedTransactionNames).map(
+                      ([id, name]) => (
+                        <option key={id} value={id}>
+                          {name}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                )}
               </label>
               {input("date", tr("Ngày giao dịch"), "date")}
               {categorySelect()}

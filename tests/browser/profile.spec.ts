@@ -172,78 +172,57 @@ test("remote logout failure still exits financial screens when Auth clears the l
   await expect(page.getByLabel("Họ và tên", { exact: true })).toHaveCount(0);
 });
 
-test("period controls align and navigation stays within supported years", async ({
+test("period selects align without month navigation buttons and support all years", async ({
   page,
-}) => {
+}, info) => {
   await login(page);
   await page.goto("/income");
-  await expect(
-    page.getByRole("button", { name: "Tháng trước", exact: true }),
-  ).toBeVisible();
+  const period = page.locator(".income-period-controls");
+  const year = period.getByRole("combobox", { name: "Năm", exact: true });
+  const month = period.getByRole("combobox", { name: "Tháng", exact: true });
+  await expect(year).toBeVisible();
+  await expect(period.getByRole("button")).toHaveCount(0);
   for (const width of [320, 375, 768, 1024, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
-    const controls = await page
-      .locator(".income-period-controls")
-      .locator("select, button")
-      .evaluateAll((elements) =>
-        elements.map((el) => {
-          const r = el.getBoundingClientRect();
-          return { bottom: r.bottom, height: r.height, width: r.width };
-        }),
-      );
-    const rows =
-      width <= 400 ? [controls.slice(0, 2), controls.slice(2)] : [controls];
-    for (const row of rows)
-      expect(
-        Math.max(...row.map((r) => r.bottom)) -
-          Math.min(...row.map((r) => r.bottom)),
-      ).toBeLessThanOrEqual(1);
-    if (width <= 400) {
-      expect(controls[0].width).toBeGreaterThanOrEqual(100);
-      expect(controls[2].bottom - controls[2].height).toBeGreaterThan(
-        controls[0].bottom,
-      );
-    }
-    expect(controls.every((r) => r.height >= 44)).toBe(true);
+    const controls = await period.locator("select").evaluateAll((elements) =>
+      elements.map((el) => {
+        const r = el.getBoundingClientRect();
+        return { bottom: r.bottom, height: r.height, width: r.width };
+      }),
+    );
+    expect(controls).toHaveLength(2);
+    expect(
+      Math.abs(controls[0].bottom - controls[1].bottom),
+    ).toBeLessThanOrEqual(1);
+    expect(controls.every((r) => r.height >= 44 && r.width >= 44)).toBe(true);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
   }
-  await page
-    .getByRole("combobox", { name: "Năm", exact: true })
-    .selectOption("2000");
-  await page
-    .getByRole("combobox", { name: "Tháng", exact: true })
-    .selectOption("1");
-  await expect(
-    page.getByRole("button", { name: "Tháng trước", exact: true }),
-  ).toBeDisabled();
-  await page
-    .getByRole("combobox", { name: "Năm", exact: true })
-    .selectOption("2026");
-  await page.getByRole("button", { name: "Tháng trước", exact: true }).click();
-  await expect(
-    page.getByRole("combobox", { name: "Năm", exact: true }),
-  ).toHaveValue("2025");
-  await expect(
-    page.getByRole("combobox", { name: "Tháng", exact: true }),
-  ).toHaveValue("12");
-  await page.getByRole("button", { name: "Tháng sau", exact: true }).click();
-  await expect(
-    page.getByRole("combobox", { name: "Năm", exact: true }),
-  ).toHaveValue("2026");
-  await expect(
-    page.getByRole("combobox", { name: "Tháng", exact: true }),
-  ).toHaveValue("1");
-  await page
-    .getByRole("combobox", { name: "Năm", exact: true })
-    .selectOption("2099");
-  await page
-    .getByRole("combobox", { name: "Tháng", exact: true })
-    .selectOption("12");
-  await expect(
-    page.getByRole("button", { name: "Tháng sau", exact: true }),
-  ).toBeDisabled();
+  await year.focus();
+  await page.keyboard.press("Tab");
+  await expect(month).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(year).toBeFocused();
+  await year.selectOption("2000");
+  await month.selectOption("1");
+  await expect(year).toHaveValue("2000");
+  await expect(month).toHaveValue("1");
+  await year.selectOption("2099");
+  await month.selectOption("12");
+  await expect(year).toHaveValue("2099");
+  await expect(month).toHaveValue("12");
+  for (const [width, theme] of [
+    [1440, "light"],
+    [375, "dark"],
+  ] as const) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
+    await period.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: info.outputPath(`period-${width}-${theme}.png`),
+    });
+  }
 });

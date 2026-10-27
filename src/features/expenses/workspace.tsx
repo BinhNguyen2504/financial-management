@@ -165,10 +165,7 @@ export function ExpenseWorkspace({ configured }: { configured: boolean }) {
         (!kind || r.kind === kind) &&
         (!method || r.method === method) &&
         (!group || r.group === group) &&
-        (inactive ||
-          r.active ||
-          BigInt(r.available) > 0n ||
-          BigInt(r.spent) > 0n),
+        (inactive || r.active),
     ) ?? [];
   const yearRows =
     view?.rows.filter((r) => r.month.startsWith(String(selectedYear))) ?? [];

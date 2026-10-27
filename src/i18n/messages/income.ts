@@ -77,8 +77,6 @@ export const income = {
   "Đăng nhập": "Sign in",
   "Đang tải thu nhập…": "Loading income…",
   Năm: "Year",
-  "Tháng trước": "Previous month",
-  "Tháng sau": "Next month",
   "Thêm thu phát sinh": "Add one-off income",
   "Khu vực thu nhập": "Income sections",
   "Nhập thu nhập": "Enter income",

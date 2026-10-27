@@ -428,7 +428,14 @@ export function DialogChanges({
   numeric = false,
 }: {
   numeric?: boolean;
-  rows: { key: string; label: string; before: ReactNode; after: ReactNode }[];
+  rows: {
+    key: string;
+    label: string;
+    period?: string;
+    subject?: string;
+    before: ReactNode;
+    after: ReactNode;
+  }[];
 }) {
   const { t: tr } = useI18n();
 
@@ -447,10 +454,31 @@ export function DialogChanges({
       rowKey={(r) => r.key}
       label={tr("Ảnh hưởng trước và sau")}
       columns={[
+        ...(changedRows.some((r) => r.period)
+          ? [
+              {
+                label: tr("Tháng"),
+                kind: "date" as const,
+                render: (r: (typeof rows)[number]) => r.period ?? "—",
+              },
+            ]
+          : []),
+        ...(changedRows.some((r) => r.subject)
+          ? [
+              {
+                label: tr("Hũ"),
+                render: (r: (typeof rows)[number]) => r.subject ?? "—",
+              },
+            ]
+          : []),
         {
           label: tr("Thông tin"),
           render: (r) => r.label,
-          width: numeric ? "44%" : "20%",
+          width: changedRows.some((r) => r.period || r.subject)
+            ? undefined
+            : numeric
+              ? "44%"
+              : "20%",
         },
         { label: tr("Trước"), render: (r) => r.before, numeric },
         { label: tr("Sau"), render: (r) => r.after, numeric },

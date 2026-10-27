@@ -165,3 +165,19 @@ Các liên kết tới Trải nghiệm và các mục cùng trang cuộn mượt
 Mục này thay thế các giới hạn tiếng Việt trong ghi chú lịch sử phía trên. Header có bộ chọn Tiếng Việt/English cạnh đăng nhập/tài khoản trên desktop và mobile; ở màn hình hẹp, nhóm thao tác xuống dòng để giữ nhãn và vùng bấm. Toast xác nhận nằm phía dưới để không che bộ chọn và tài khoản. Lựa chọn áp dụng ngay cho hai landing, navigation/footer, CTA, FAQ, preview, accessibility và nội dung theo theme. VND giữ nguyên; số minh họa chuyển vi-VN/en-GB, giữ tab và trạng thái che tiền. Preview luôn dùng dữ liệu cố định, không đọc API tài chính.
 
 Layout công khai dùng một LocaleProvider chung cho trang chủ và login, cùng khóa cookie/localStorage `fm-locale` với Cài đặt. Cookie phục vụ HTML SSR; `lang` và title cập nhật khi đổi trực tiếp. Metadata, mô tả và JSON-LD theo cookie, canonical vẫn `/`; không thêm URL ngôn ngữ/hreflang. Ảnh chia sẻ hiện có vẫn bằng tiếng Việt. Quyền truy cập app tiếp tục do server kiểm tra, `/` luôn công khai.
+
+Kiểm chứng cuối 28/10/2026: 128/128 ca browser trong một lượt sạch, 222 unit tests, typecheck và production build đạt; SEO 30/30. Xem [kết quả và giới hạn môi trường](../07-validation.md#đổi-ngôn-ngữ-toàn-bộ-trang-chủ--28102026).
+
+### Đồng bộ phản hồi Chi tiêu — 28/10/2026
+
+Rà landing copy, catalog và preview cùng đợt sửa Chi tiêu: cập nhật scope phân loại/logo PNG, xem trước theo tháng và lọc hũ đã ngừng; subtitle Chi tiêu của preview phản ánh phân loại/bộ lọc trong app. Preview tiếp tục dùng dữ liệu cố định và không đọc API tài khoản. Shared LabelName dùng logo PNG và khoảng cách mới; không giả lập lưu hoặc tốc độ cập nhật cloud trong bản xem thử.
+
+
+### Rà soát thành phần chung — 28/10/2026
+
+Đợt tinh chỉnh scrollbar/chú thích bắt buộc/toast đã rà catalog, nội dung landing và preview. Không có khả năng nghiệp vụ mới nên các tên, summary và trạng thái hiện có vẫn phù hợp. Toast dùng chung cho đổi ngôn ngữ hoặc lỗi tài khoản trên trang công khai nhận giao diện mới; đăng nhập dùng chú thích bắt buộc gọn. Preview tiếp tục cố định, không thêm lệnh lưu hoặc truy cập API tài chính.
+
+
+## Đối chiếu bộ chọn kỳ — 28/10/2026
+
+Thu nhập chuyển sang chọn trực tiếp năm/tháng như Chi tiêu, bỏ nút tháng trước/sau. Đã rà catalog, copy landing và `product-preview.tsx`: preview chỉ hiển thị kỳ minh họa cố định 06/2026, không có nút chuyển tháng nên không cần thêm bộ chọn hoặc sửa số liệu. Mô tả và trạng thái module tiếp tục đúng; không đổi nội dung quảng bá cho tinh chỉnh điều khiển này. README, hướng UX và đặc tả Thu nhập cập nhật cùng source.

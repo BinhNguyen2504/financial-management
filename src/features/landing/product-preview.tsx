@@ -104,7 +104,7 @@ const data = {
   },
   budgets: {
     title: "Chăm chút cho tháng của bạn.",
-    subtitle: "Hũ chi tháng và tích lũy gọn gàng, dễ theo dõi số còn lại.",
+    subtitle: "Hũ chi tháng và tích lũy, có phân loại và bộ lọc hũ đã ngừng.",
     label: "Kế hoạch tháng",
     value: "12000000",
     secondary: "Số còn trong hũ",

@@ -1,5 +1,5 @@
 export const paymentBrands = [
-  { key: "hsbc", name: "HSBC", file: "hsbc-symbol.svg", aliases: ["hsbc"] },
+  { key: "hsbc", name: "HSBC", file: "hsbc-symbol.png", aliases: ["hsbc"] },
   { key: "momo", name: "MoMo", file: "momo.png", aliases: ["momo", "ví momo"] },
   { key: "timo", name: "Timo", file: "timo-symbol.png", aliases: ["timo"] },
   {
@@ -11,14 +11,14 @@ export const paymentBrands = [
   {
     key: "techcombank",
     name: "Techcombank",
-    file: "techcombank-symbol.svg",
+    file: "techcombank-symbol.png",
     aliases: ["techcombank", "tcb"],
   },
   { key: "vib", name: "VIB", file: "vib.png", aliases: ["vib"] },
   {
     key: "vietcombank",
     name: "Vietcombank",
-    file: "vietcombank-symbol.ico",
+    file: "vietcombank-symbol.png",
     aliases: ["vietcombank", "vcb"],
   },
   { key: "bidv", name: "BIDV", file: "bidv-symbol.png", aliases: ["bidv"] },
@@ -31,14 +31,14 @@ export const paymentBrands = [
   {
     key: "mb",
     name: "MB",
-    file: "mb-symbol.svg",
+    file: "mb-symbol.png",
     aliases: ["mb", "mbbank", "mb bank"],
   },
-  { key: "acb", name: "ACB", file: "acb-symbol.webp", aliases: ["acb"] },
+  { key: "acb", name: "ACB", file: "acb-symbol.png", aliases: ["acb"] },
   {
     key: "vpbank",
     name: "VPBank",
-    file: "vpbank.ico",
+    file: "vpbank-symbol.png",
     aliases: ["vpbank", "vp bank"],
   },
   {

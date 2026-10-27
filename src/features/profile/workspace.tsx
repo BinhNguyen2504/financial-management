@@ -1,4 +1,5 @@
 "use client";
+import { RequiredFieldsNote } from "@/components/required-fields-note";
 import { useI18n } from "@/i18n/provider";
 
 import { LoadingSpinner, LoadingStatus } from "@/components/loading";
@@ -156,12 +157,7 @@ function ProfileForm({ user }: { user: User }) {
         noValidate
         aria-busy={busy}
       >
-        <p className="required-fields-note">
-          <span className="required-mark" aria-hidden="true">
-            *
-          </span>{" "}
-          {tr("là thông tin cần nhập.")}
-        </p>
+        <RequiredFieldsNote />
         <fieldset disabled={busy}>
           <div className="profile-field">
             <label htmlFor="profile-name">

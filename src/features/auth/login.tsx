@@ -1,4 +1,5 @@
 "use client";
+import { RequiredFieldsNote } from "@/components/required-fields-note";
 import { useI18n } from "@/i18n/provider";
 
 import {
@@ -207,12 +208,7 @@ export function Login({
           </p>
         ) : (
           <form onSubmit={submit} className="expense-form" noValidate>
-            <p className="required-fields-note">
-              <span className="required-mark" aria-hidden="true">
-                *
-              </span>{" "}
-              {tr("là thông tin cần nhập.")}
-            </p>
+            <RequiredFieldsNote />
             <FormErrorSummary errors={fieldErrors} prefix="login-field-" />
             <label>
               Email

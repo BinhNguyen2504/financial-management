@@ -21,6 +21,20 @@ export function Navigation({ mobile = false }: { mobile?: boolean }) {
         <Link
           key={item.slug}
           href={`/${item.slug}`}
+          tabIndex={0}
+          onFocus={(event) => {
+            const link = event.currentTarget;
+            // Firefox can reveal only the first line of a wrapped navigation
+            // item. After native focus scrolling, keep its status tag visible too.
+            requestAnimationFrame(() => {
+              if (document.activeElement === link)
+                link.scrollIntoView({
+                  block: "nearest",
+                  inline: "nearest",
+                  behavior: "instant",
+                });
+            });
+          }}
           aria-label={`${item.title}${item.status === "planned" ? tr(" · Đang phát triển") : ""}`}
           title={`${item.title}${item.status === "planned" ? tr(" · Đang phát triển") : ""}`}
           aria-current={pathname === `/${item.slug}` ? "page" : undefined}

@@ -1,3 +1,4 @@
+import { changedRecords } from "./changed-records";
 import postgres from "postgres";
 import type { SavingsBook } from "../domain/savings/types";
 import type {
@@ -13,6 +14,7 @@ function adapter(
     sql: string,
     args: (string | number | null)[] = [],
   ) => db.unsafe<T[]>(sql, args);
+  let baseline: SavingsBook | undefined;
   return {
     async read() {
       const [head] = await query<{ version: number }>(
@@ -47,7 +49,7 @@ function adapter(
         `select version,to_char(at at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as at,action from public.savings_audit where owner_id=$1 order by version`,
         [owner],
       );
-      return {
+      const book: SavingsBook = {
         ...head,
         categories,
         revisions,
@@ -55,6 +57,8 @@ function adapter(
         closes,
         audit: [...audit],
       };
+      baseline = structuredClone(book);
+      return book;
     },
     async command(id) {
       const [r] = await query<StoredCommand>(
@@ -68,12 +72,20 @@ function adapter(
         "insert into public.savings_books(owner_id,version) values($1,$2) on conflict(owner_id) do update set version=excluded.version",
         [owner, book.version],
       );
-      for (const c of book.categories)
+      for (const c of changedRecords(
+        baseline?.categories,
+        book.categories,
+        (c) => c.id,
+      ))
         await query(
           "insert into public.savings_categories(owner_id,id,data) values($1,$2,$3::text::jsonb) on conflict(owner_id,id) do update set data=excluded.data where savings_categories.data is distinct from excluded.data",
           [owner, c.id, JSON.stringify(c)],
         );
-      for (const r of book.revisions) {
+      for (const r of changedRecords(
+        baseline?.revisions,
+        book.revisions,
+        (r) => r.id,
+      )) {
         const t =
           r.transaction ??
           book.revisions.find((x) => x.rootId === r.rootId && x.transaction)!
@@ -98,12 +110,20 @@ function adapter(
               [owner, r.id, a.lotId],
             );
       }
-      for (const p of book.prices)
+      for (const p of changedRecords(
+        baseline?.prices,
+        book.prices,
+        (p) => p.id,
+      ))
         await query(
           "insert into public.savings_prices(owner_id,id,category_id,sequence,data) values($1,$2,$3,$4,$5::text::jsonb) on conflict do nothing",
           [owner, p.id, p.categoryId, p.sequence, JSON.stringify(p)],
         );
-      for (const c of book.closes)
+      for (const c of changedRecords(
+        baseline?.closes,
+        book.closes,
+        (c) => c.id,
+      ))
         await query(
           "insert into public.savings_closes(owner_id,id,sequence,data) values($1,$2,$3,$4::text::jsonb) on conflict do nothing",
           [owner, c.id, c.sequence, JSON.stringify(c)],
@@ -113,6 +133,7 @@ function adapter(
         "insert into public.savings_audit(owner_id,version,at,action) values($1,$2,$3,$4::text::jsonb)",
         [owner, a.version, a.at, JSON.stringify(a.action)],
       );
+      baseline = structuredClone(book);
     },
     async remember(id, value) {
       await query(

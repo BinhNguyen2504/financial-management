@@ -95,7 +95,7 @@
 }
 .income-period-controls {
   display: grid;
-  grid-template-columns: 44px minmax(72px, 0.75fr) minmax(0, 1.25fr) 44px;
+  grid-template-columns: minmax(80px, 0.75fr) minmax(0, 1.25fr);
   gap: 6px;
   align-items: flex-end;
   width: 100%;
@@ -109,9 +109,6 @@
     calc(100% - 12px) 50%,
     calc(100% - 7px) 50%;
   font-size: 16px;
-}
-.income-period-controls .expense-icon-button {
-  flex: 0 0 44px;
 }
 @media (max-width: 360px) {
   .income-period-controls {

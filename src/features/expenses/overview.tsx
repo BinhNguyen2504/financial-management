@@ -118,14 +118,9 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
         <Garden />
       </section>
       <DailyNote />
-      <HelpButton
-        pageId="overview"
-        sectionId="terms"
-        label={tr("Đọc các chỉ số tháng")}
-      />
       {configured && <ImportSuggestion />}
       <section aria-labelledby="month-overview-title">
-        <div className="section-title">
+        <div className="section-title overview-month-heading">
           <div>
             <p className="eyebrow">{tr("TỪNG BƯỚC NHỎ, MỖI THÁNG")}</p>
             <h2 id="month-overview-title">
@@ -133,13 +128,18 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
                 ? tr("Các hũ của bạn · {0}", { 0: monthName(current, locale) })
                 : tr("Bức tranh tháng này")}
             </h2>
+            {total && (
+              <p className="overview-month-status">
+                {rows.length} {tr("hũ ·")}{" "}
+                {total.provisional ? tr("Có số tạm tính") : tr("Đã ghi nhận")}
+              </p>
+            )}
           </div>
-          {total && (
-            <span>
-              {rows.length} {tr("hũ ·")}{" "}
-              {total.provisional ? tr("Có số tạm tính") : tr("Đã ghi nhận")}
-            </span>
-          )}
+          <HelpButton
+            pageId="overview"
+            sectionId="terms"
+            label={tr("Đọc các chỉ số tháng")}
+          />
         </div>
         {loading && !view && (
           <LoadingStatus className="overview-loading">

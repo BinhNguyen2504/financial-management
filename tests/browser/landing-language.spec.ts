@@ -87,8 +87,20 @@ async function login(page: Page) {
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
+  // Finish Settings' initial read before a full navigation disposes its document.
+  // WebKit can surface that interrupted fetch as a pageerror even when it is caught.
+  const statusResponse = page.waitForResponse(
+    (response) => new URL(response.url()).pathname === "/api/v1/data/status",
+  );
   await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(/\/settings$/);
+  const response = await statusResponse;
+  expect(response.ok()).toBe(true);
+  await response.finished();
+  await expect(
+    page.getByText("Đang kiểm tra trạng thái dữ liệu…", { exact: true }),
+  ).toHaveCount(0);
+  await expect(page.locator(".settings-feedback-error")).toHaveCount(0);
 }
 
 test("guest header translates the full landing and preserves interactive preview state", async ({
@@ -132,7 +144,9 @@ test("guest header translates the full landing and preserves interactive preview
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await fit(page);
-    await page.evaluate(() => scrollTo(0, 0));
+    await page.evaluate(() =>
+      scrollTo({ top: 0, left: 0, behavior: "instant" }),
+    );
     await page.screenshot({
       path: testInfo.outputPath(`guest-en-${width}.png`),
     });

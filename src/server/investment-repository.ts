@@ -1,3 +1,4 @@
+import { changedRecords } from "./changed-records";
 import postgres from "postgres";
 import type { InvestmentBook } from "../domain/investments/types";
 import type {
@@ -13,6 +14,7 @@ function adapter(
     sql: string,
     args: (string | number | null)[] = [],
   ) => db.unsafe<T[]>(sql, args);
+  let baseline: InvestmentBook | undefined;
   return {
     async read() {
       const [head] = await query<{ version: number }>(
@@ -43,7 +45,7 @@ function adapter(
         `select version,to_char(at at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as at,action from public.investments_audit where owner_id=$1 order by version`,
         [owner],
       );
-      return {
+      const book: InvestmentBook = {
         ...head,
         categories,
         revisions: [...revisions, ...valuations].sort(
@@ -51,6 +53,8 @@ function adapter(
         ),
         audit: [...audit],
       };
+      baseline = structuredClone(book);
+      return book;
     },
     async command(id) {
       const [r] = await query<StoredCommand>(
@@ -64,12 +68,20 @@ function adapter(
         "insert into public.investments_books(owner_id,version) values($1,$2) on conflict(owner_id) do update set version=excluded.version",
         [owner, book.version],
       );
-      for (const c of book.categories)
+      for (const c of changedRecords(
+        baseline?.categories,
+        book.categories,
+        (c) => c.id,
+      ))
         await query(
           "insert into public.investments_categories(owner_id,id,data) values($1,$2,$3::text::jsonb) on conflict(owner_id,id) do update set data=excluded.data where investments_categories.data is distinct from excluded.data",
           [owner, c.id, JSON.stringify(c)],
         );
-      for (const r of book.revisions) {
+      for (const r of changedRecords(
+        baseline?.revisions,
+        book.revisions,
+        (r) => r.id,
+      )) {
         const t =
           r.transaction ??
           book.revisions.find((x) => x.rootId === r.rootId && x.transaction)!
@@ -92,6 +104,7 @@ function adapter(
         "insert into public.investments_audit(owner_id,version,at,action) values($1,$2,$3,$4::text::jsonb)",
         [owner, a.version, a.at, JSON.stringify(a.action)],
       );
+      baseline = structuredClone(book);
     },
     async remember(id, value) {
       await query(

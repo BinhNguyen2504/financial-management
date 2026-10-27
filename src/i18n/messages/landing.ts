@@ -1,5 +1,7 @@
 // Public product copy and fixed illustrative data only; never account data.
 export const landing = {
+  "Hũ chi tháng và tích lũy, có phân loại và bộ lọc hũ đã ngừng.":
+    "Monthly and accumulation jars, with categories and stopped-jar filtering.",
   "Vào ứng dụng": "Open app",
   "Bắt đầu hành trình của bạn": "Start your journey",
   "Bắt đầu sử dụng": "Get started",

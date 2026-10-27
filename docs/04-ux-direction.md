@@ -158,6 +158,8 @@ Thiếu metadata logo không khóa màn hình Chi tiêu hoặc thao tác hũ/ph�
 
 Nút Hướng dẫn nằm cạnh tiêu đề trên đủ 12 trang trong app, có biểu tượng sách và nhãn đầy đủ kể cả trên điện thoại. Desktop là bảng bên phải tối đa 640px, dưới 768px toàn màn hình. Tiêu đề/nút đóng cố định, phần đọc cuộn riêng; mục lục đưa focus đến tiêu đề mục. Nội dung 16px, theo theme hiện có, không có tour tự bật hoặc chuyển động bắt buộc.
 
+Tinh chỉnh Tổng quan 28/10/2026: nút Đọc các chỉ số tháng nằm trong cụm tiêu đề tháng, bên phải trên desktop; mobile không quá 639px đặt ở hàng riêng dưới tiêu đề với khoảng cách 16px. Số hũ/trạng thái ở dưới tên tháng, giữ nút trợ giúp tách rõ khỏi dòng TỪNG BƯỚC NHỎ, MỖI THÁNG.
+
 Các điểm Giải thích nằm cạnh tiêu đề và trong form, không lặp theo mọi dòng. Đóng Help bằng nút, Escape hoặc nền chỉ đóng lớp Help; giữ bản nháp, bộ lọc, scroll và focus của form cha. Ví dụ có nhãn Minh họa, không dùng số thật của tài khoản. Xem [Help](features/help.md).
 
 
@@ -231,3 +233,17 @@ Email thực tế của người dùng trả mã 8 chữ số. Biểu mẫu dùn
 ## Bộ chọn ngôn ngữ trang chủ — 27/10/2026
 
 Thay thế giới hạn tiếng Việt của trang công khai trong ghi chú cũ: header có select native Tiếng Việt/English cạnh đăng nhập hoặc tài khoản, có focus rõ và thông báo xác nhận theo ngôn ngữ mới. Ở màn hình hẹp, header cho nhóm thao tác xuống hàng, không rút tên ngôn ngữ. Dịch cả landing khách/thành viên, preview, menu/footer, CTA, FAQ và nhãn truy cập; giữ bản sắc marketing/themed, VND, trạng thái tab và che tiền. Dùng chung lựa chọn với Cài đặt và login.
+
+## Trạng thái điều khiển và bảng dialog — 28/10/2026
+
+Trường không thể thay đổi do quy tắc nghiệp vụ hiển thị là giá trị cố định; áp dụng cho loại phân loại Chi tiêu và loại giao dịch khi sửa Đầu tư. Nút xóa/ngừng giữ màu ngữ nghĩa ở hover/focus. Table dialog dùng căn giữa theo chiều dọc; logo và tên có khoảng cách rõ, tên dài xuống dòng. Mobile bỏ chiều rộng cố định của cột thao tác/ngày, căn nhãn với giá trị và giữ 44px cho nút. Preview Chi tiêu dùng primitive focus/cuộn chung, tách thời gian khỏi tên/chỉ tiêu. Xem [rà soát](features/expense-feedback-2026-10-28.md).
+
+
+## Tinh chỉnh phản hồi thao tác — 28/10/2026
+
+Scrollbar menu mảnh trên nền trong suốt; menu mobile giới hạn theo chiều cao viewport và cuộn riêng. Chú thích trường bắt buộc chuyển thành “* Bắt buộc” nhỏ, căn phải; dấu sao nhãn dùng màu phụ để dành màu lỗi cho thông tin cần sửa. Toast có icon, tiêu đề ngắn, nội dung chi tiết và cạnh màu theo success/error/warning, cùng bề mặt nhẹ và nút đóng dễ bấm. Thông báo thành công dừng tự đóng trong lúc đọc bằng chuột/bàn phím. Áp dụng cùng token hiện có cho sáng/tối; giữ hướng Zen và bản nháp. Xem [quy chuẩn giao diện](features/ui-feedback.md).
+
+
+## Bộ chọn kỳ Thu nhập — 28/10/2026
+
+Thu nhập bỏ hai nút tháng trước/sau, dùng trực tiếp select Năm và Tháng như Chi tiêu. Hai ô cùng hàng trên desktop/mobile, đủ vùng bấm 44px và không cắt giá trị. Chọn năm vẫn tải dữ liệu năm đó; chọn tháng giữ tab và bộ lọc báo cáo. Thay đổi này thay thế bố cục có mũi tên ngày 23/10, giữ lịch sử nghiệm thu cũ.

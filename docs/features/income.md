@@ -83,3 +83,8 @@ Bộ chọn kỳ hiển thị mũi tên hai đầu, tab một hàng cuộn ngang
 ## Tỷ lệ minh họa tiêu đề — 26/10/2026
 
 Giữ cảnh thu hoạch theo năm theme, chuyển sang bố cục tiêu đề chung với khung hình lớn 240–320px trên desktop/tablet, 216px ở hàng riêng trên điện thoại. Chữ có đủ chiều ngang, Help và lời nhắc hàng ngày giữ chức năng hiện có. Xem [chủ đề giao diện](themes.md).
+
+
+## Chọn năm/tháng trực tiếp — 28/10/2026
+
+Bỏ nút tháng trước/sau, giữ hai select Năm và Tháng cùng hàng như Chi tiêu, kể cả ở 320px. Chọn năm trong 2000–2099 tải đúng dữ liệu năm; chọn tháng vẫn giữ tab và bộ lọc báo cáo. Bàn phím Tab đi từ Năm đến Tháng; tháng tương lai tiếp tục chỉ xem, chưa ghi thực nhận. Quy tắc này thay thế phần mũi tên trong mục bố cục 23/10, không đổi dữ liệu hay API.

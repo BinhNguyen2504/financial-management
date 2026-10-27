@@ -19,10 +19,13 @@ const ToastContext = createContext<{
   activeDialog: HTMLDialogElement | null;
   toast: Toast | null;
   dismiss: () => void;
+  pause: (source: "pointer" | "focus", paused: boolean) => void;
 } | null>(null);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<Toast | null>(null);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [activeDialog, setActiveDialog] = useState<HTMLDialogElement | null>(
     null,
   );
@@ -37,19 +40,30 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("fm-dialog-stack-change", sync);
   }, []);
   useEffect(() => {
-    if (!toast || toast.kind !== "success") return;
+    if (!toast || toast.kind !== "success" || hovered || focused) return;
     const timer = window.setTimeout(
       () => setToast((current) => (current?.id === toast.id ? null : current)),
-      4000,
+      5000,
     );
     return () => window.clearTimeout(timer);
-  }, [toast]);
+  }, [toast, hovered, focused]);
+  useEffect(() => {
+    // A toast moves between viewports when the native dialog stack changes.
+    setHovered(false);
+    setFocused(false);
+  }, [activeDialog]);
   const value = {
-    show: (kind: ToastKind, message: string) =>
-      setToast({ id: ++nextId.current, kind, message }),
+    show: (kind: ToastKind, message: string) => {
+      setHovered(false);
+      setFocused(false);
+      setToast({ id: ++nextId.current, kind, message });
+    },
     activeDialog,
     toast,
     dismiss: () => setToast(null),
+    pause: (source: "pointer" | "focus", paused: boolean) => {
+      (source === "pointer" ? setHovered : setFocused)(paused);
+    },
   };
   return (
     <ToastContext.Provider value={value}>
@@ -80,24 +94,42 @@ export function ToastViewport({
       : !!context.activeDialog)
   )
     return null;
-  const { toast, dismiss } = context;
+  const { toast, dismiss, pause } = context;
   const Icon =
     toast.kind === "success"
       ? CheckCircle2
       : toast.kind === "error"
         ? AlertCircle
         : Info;
+  const title =
+    toast.kind === "success"
+      ? "Thành công"
+      : toast.kind === "error"
+        ? "Chưa thể hoàn tất"
+        : "Cần kiểm tra";
   return (
     <div
       className={`toast-viewport${dialogRef ? " toast-viewport--dialog" : ""}`}
     >
       <div
+        key={toast.id}
         className={`app-toast app-toast--${toast.kind}`}
         role={toast.kind === "error" ? "alert" : "status"}
+        aria-atomic="true"
         data-toast-kind={toast.kind}
+        onMouseEnter={() => pause("pointer", true)}
+        onMouseLeave={() => pause("pointer", false)}
+        onFocus={() => pause("focus", true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget))
+            pause("focus", false);
+        }}
       >
-        <Icon size={20} aria-hidden="true" />
-        <span>{tr(toast.message)}</span>
+        <Icon className="app-toast-icon" size={22} aria-hidden="true" />
+        <div className="app-toast-content">
+          <strong className="app-toast-title">{tr(title)}</strong>
+          <p className="app-toast-message">{tr(toast.message)}</p>
+        </div>
         <button
           type="button"
           onClick={dismiss}

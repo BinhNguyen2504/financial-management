@@ -410,8 +410,7 @@
   display: grid;
   gap: 14px;
 }
-.expense-preview td del,
-.expense-preview td span {
+.expense-preview td del {
   display: block;
 }
 .expense-preview td del {

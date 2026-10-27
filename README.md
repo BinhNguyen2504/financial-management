@@ -38,7 +38,9 @@ Tổng quan, Chi tiêu và Thu nhập giữ nội dung khi quay lại tab; dữ 
 
 Mỗi trang trong ứng dụng có **Hướng dẫn** cạnh tiêu đề, với đề mục đánh số, từ khóa và ví dụ được nhấn rõ. Nội dung bao gồm mục đích, tư duy sử dụng, thuật ngữ và thao tác. Có thể tra cứu ngay từ form rồi quay lại với bản nháp còn nguyên; ví dụ dùng số liệu minh họa cố định. Liên kết trong trang, mục lục Help, xem trước, phân trang và vị trí lỗi trong dialog cuộn mượt đến nội dung; tùy chọn giảm chuyển động bỏ hiệu ứng cuộn. Xem [Help theo từng trang](docs/features/help.md).
 
-Biểu mẫu tài chính đọc số tiền VND ngay dưới ô, đặt `*` sát nhãn cần nhập và báo lỗi tại đúng trường. Lưu thành công hoặc lỗi có thông báo chung; trường hợp chưa rõ kết quả lưu được nêu riêng và giữ bản nháp. Dialog giữ hàng nút thao tác khi cuộn; bước xem trước Quỹ an toàn ưu tiên những số thực sự thay đổi. Sidebar desktop có nút thu gọn ở mép phân cách, ngang hàng logo; biểu tượng ứng dụng vẫn hiện ở thanh mobile. Xem [quy chuẩn phản hồi giao diện](docs/features/ui-feedback.md).
+Trên Tổng quan, nút **Đọc các chỉ số tháng** nằm trong cụm tiêu đề tháng: bên phải trên desktop, hàng riêng có khoảng cách trên mobile; số hũ/trạng thái nằm dưới tên tháng.
+
+Biểu mẫu tài chính đọc số tiền VND ngay dưới ô, đặt `*` sát nhãn cần nhập và báo lỗi tại đúng trường. Chú thích gọn “* Bắt buộc” dùng chung cho form; menu có scrollbar mảnh, nền trong suốt. Toast phân cấp tiêu đề/nội dung với icon và màu theo trạng thái, hỗ trợ sáng/tối và giảm chuyển động. Lưu thành công hoặc lỗi có thông báo chung; trường hợp chưa rõ kết quả lưu được nêu riêng và giữ bản nháp. Dialog giữ hàng nút thao tác khi cuộn; bước xem trước Quỹ an toàn ưu tiên những số thực sự thay đổi. Sidebar desktop có nút thu gọn ở mép phân cách, ngang hàng logo; biểu tượng ứng dụng vẫn hiện ở thanh mobile. Xem [quy chuẩn phản hồi giao diện](docs/features/ui-feedback.md).
 
 ## Ngôn ngữ Anh/Việt
 
@@ -158,7 +160,7 @@ Khu vườn giữ thiết kế xanh lục hiện có; Dòng nước dùng xanh l
 
 ### Bố cục mobile và bảng — 23/10/2026
 
-Tab trong app và dialog giữ nhãn một dòng, cuộn ngang khi thiếu chỗ; preview mobile dùng cùng hành vi. Nút chọn cột giữ vị trí theo khung bảng khi cuộn dữ liệu. Thu nhập đặt mũi tên hai bên bộ chọn kỳ và giữ hàng nhập thiếu gọn, đều với hàng có số. Xem [ma trận rà soát toàn ứng dụng](docs/features/layout-scroll-2026-10-23.md) và [bằng chứng kiểm thử](docs/07-validation.md).
+Tab trong app và dialog giữ nhãn một dòng, cuộn ngang khi thiếu chỗ; preview mobile dùng cùng hành vi. Nút chọn cột giữ vị trí theo khung bảng khi cuộn dữ liệu. Thu nhập chọn trực tiếp năm/tháng trên cùng một hàng như Chi tiêu, không có nút tháng trước/sau; hàng nhập thiếu vẫn gọn, đều với hàng có số. Xem [ma trận rà soát toàn ứng dụng](docs/features/layout-scroll-2026-10-23.md) và [bằng chứng kiểm thử](docs/07-validation.md).
 
 ### Minh họa Tiết kiệm và Đầu tư — 26/10/2026
 
@@ -167,3 +169,7 @@ Mỗi trang có năm cảnh riêng theo theme: Tiết kiệm dùng nhà kính, b
 ### Tiêu đề và tỷ lệ minh họa — 26/10/2026
 
 Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn dùng bố cục tiêu đề chung: hình 240–320px cạnh chữ trên desktop/tablet, 216px ở hàng riêng dưới chữ trên điện thoại. Nút thao tác có hàng riêng. Chi tiêu thêm cảnh hũ, Quỹ thêm năm cảnh bảo vệ riêng theo theme; hình tiêu đề Quỹ là trang trí, tiến độ thật vẫn ở từng thẻ. Các trang dự kiến dùng cùng tỷ lệ nhưng giữ nhãn trạng thái. Preview thành viên có hình cho cả năm module; preview khách giữ nhận diện riêng. Xem [chủ đề giao diện](docs/features/themes.md).
+
+## Tinh chỉnh Chi tiêu — 28/10/2026
+
+Phân loại có logo PNG giữ màu/hình gốc, hàng tên căn giữa và khoảng cách biểu tượng rõ hơn. Trường loại cố định khi sửa; tạo mới vẫn chọn Phương thức/Nhóm mục đích. Bỏ “Gồm hũ đã ngừng” sẽ ẩn hũ không hoạt động trong tháng đang chọn, kể cả còn dư; lịch sử vẫn xem được khi bật lại. Xem trước tách Tháng, Hũ, Thông tin, Trước và Sau. Các module tài chính chỉ ghi những dòng thay đổi trong cùng transaction để giảm số lượt đi tới database; tốc độ cloud cần đo riêng. Xem [đợt rà soát](docs/features/expense-feedback-2026-10-28.md).

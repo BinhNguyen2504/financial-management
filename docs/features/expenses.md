@@ -111,3 +111,13 @@ Thanh nội dung và kiểu báo cáo dùng tab ngang. Bảng báo cáo/tổng k
 ## Minh họa và bố cục tiêu đề — 26/10/2026
 
 Tiêu đề luôn có cảnh hũ chi theo năm theme, kể cả trước khi có dữ liệu. Bố cục chung dùng hình lớn bên chữ trên desktop, hình ở hàng riêng trên điện thoại; Phân loại/Thêm hũ có hàng thao tác riêng và vẫn tuân thủ trạng thái chỉ đọc. Không đổi dữ liệu, bộ lọc hay nghiệp vụ chia hũ. Xem [tỷ lệ minh họa](themes.md).
+
+## Phân loại, bộ lọc và xem trước — 28/10/2026
+
+- Loại phân loại là dữ liệu cố định khi sửa, hiển thị bằng văn bản thay select bị vô hiệu hóa. Tạo mới vẫn chọn loại; tên, logo/icon tiếp tục sửa được. Quy tắc nghiệp vụ không đổi.
+- Hai tab phân loại căn giữa nội dung với nút 44px, icon cách tên 12px; tên dài xuống dòng. Logo sử dụng PNG từ asset local, bỏ nền trắng do CSS thêm; giữ màu, tỷ lệ và phần trắng thuộc chính logo.
+- “Gồm hũ đã ngừng” tắt sẽ loại mọi dòng inactive của tháng đang xem, kể cả hũ còn dư/đã chi. Bật lại để xem lịch sử. Tổng trong bảng tháng tính theo các dòng hiện; báo cáo năm giữ dữ liệu lịch sử đầy đủ.
+- Xem trước có các cột Tháng, Hũ, Thông tin, Trước, Sau. Dialog mở rộng khi có bảng ảnh hưởng; đưa focus/cuộn đến preview bằng primitive dùng chung. Mobile có nhãn từng trường; không lặp nhãn trên desktop.
+- Lưu chỉ gửi hũ, input tháng, lần sử dụng, năm, phân loại và audit mới/đã thay đổi. Transaction, RLS, khóa theo owner, version và biên nhận thử lại giữ nguyên.
+
+Xem [phạm vi rà soát và bằng chứng](expense-feedback-2026-10-28.md).

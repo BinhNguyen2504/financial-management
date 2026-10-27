@@ -1,4 +1,5 @@
 export const common = {
+  Hũ: "Jar",
   "Không tìm thấy trang": "Page not found",
   "Đường dẫn này chưa có trong ứng dụng.":
     "This address is not available in the application.",
@@ -51,6 +52,10 @@ export const common = {
   " · Đang phát triển": " · In development",
   "Đang phát triển": "In development",
   "Đóng thông báo": "Dismiss notification",
+  "Bắt buộc": "Required",
+  "Thành công": "Success",
+  "Chưa thể hoàn tất": "Could not complete",
+  "Cần kiểm tra": "Needs attention",
   "MỘT CHÚT BÌNH YÊN": "A MOMENT OF CALM",
   "Chưa bật được trang dự phòng ngoại tuyến. Hãy tải lại trang khi có kết nối.":
     "The offline fallback could not be enabled. Reload the page when connected.",

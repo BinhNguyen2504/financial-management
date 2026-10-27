@@ -1,3 +1,4 @@
+import { changedRecords } from "./changed-records";
 import postgres from "postgres";
 import { ExpenseError } from "../domain/expenses/engine";
 import type {
@@ -21,6 +22,7 @@ const json = (value: unknown) => JSON.stringify(value);
 export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
   const query = <T extends postgres.Row>(sql: string, params: Params = []) =>
     db.unsafe<T[]>(sql, params);
+  let baseline: ExpenseBook | undefined;
   return {
     async read() {
       const [header] = await query<{ start: string; version: number }>(
@@ -53,7 +55,7 @@ export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
         "select version,to_char(at at time zone 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as at,action,detail from public.expense_audit where owner_id=$1 order by version",
         [owner],
       );
-      return {
+      const book: ExpenseBook = {
         ...header,
         jars: [...jars],
         inputs: [...inputs],
@@ -61,7 +63,9 @@ export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
         years: [...years],
         labels: [...labels],
         audit: [...audit],
-      } satisfies ExpenseBook;
+      };
+      baseline = structuredClone(book);
+      return book;
     },
     async command(id) {
       const [row] = await query<{
@@ -75,7 +79,12 @@ export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
     },
     async save(book) {
       let hasLabelVisuals = false;
-      if (book.labels.length) {
+      const changedLabels = changedRecords(
+        baseline?.labels,
+        book.labels,
+        (l) => l.id,
+      );
+      if (changedLabels.length) {
         const [schema] = await query<{ ready: boolean }>(
           `select count(*) = 2 as ready from information_schema.columns
           where table_schema='public' and table_name='expense_labels'
@@ -84,7 +93,7 @@ export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
         hasLabelVisuals = schema.ready;
         if (
           !hasLabelVisuals &&
-          book.labels.some(
+          changedLabels.some(
             (label) => label.brandKey != null || label.iconKey != null,
           )
         )
@@ -99,20 +108,32 @@ export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
         on conflict(owner_id) do update set version=excluded.version`,
         [owner, book.start, book.version],
       );
-      for (const jar of book.jars)
+      for (const jar of changedRecords(
+        baseline?.jars,
+        book.jars,
+        (jar) => jar.id,
+      ))
         await query(
           `insert into public.expense_jars(owner_id,id,kind,start_month,opening,rules) values($1,$2,$3,$4,$5,$6::text::jsonb)
         on conflict(owner_id,id) do update set rules=excluded.rules where expense_jars.rules is distinct from excluded.rules`,
           [owner, jar.id, jar.kind, jar.start, jar.opening, json(jar.rules)],
         );
-      for (const i of book.inputs)
+      for (const i of changedRecords(
+        baseline?.inputs,
+        book.inputs,
+        (i) => `${i.jarId}/${i.month}`,
+      ))
         await query(
           `insert into public.expense_month_inputs(owner_id,jar_id,month,target,funding,extra,closing) values($1,$2,$3,$4,$5,$6,$7)
         on conflict(owner_id,jar_id,month) do update set target=excluded.target,funding=excluded.funding,extra=excluded.extra,closing=excluded.closing
         where (expense_month_inputs.target,expense_month_inputs.funding,expense_month_inputs.extra,expense_month_inputs.closing) is distinct from (excluded.target,excluded.funding,excluded.extra,excluded.closing)`,
           [owner, i.jarId, i.month, i.target, i.funding, i.extra, i.closing],
         );
-      for (const s of book.spends)
+      for (const s of changedRecords(
+        baseline?.spends,
+        book.spends,
+        (s) => s.id,
+      ))
         await query(
           `insert into public.expense_spends(owner_id,id,jar_id,date,amount,note,deleted) values($1,$2,$3,$4,$5,$6,$7)
         on conflict(owner_id,id) do update set date=excluded.date,amount=excluded.amount,note=excluded.note,deleted=excluded.deleted
@@ -120,7 +141,11 @@ export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
           [owner, s.id, s.jarId, s.date, s.amount, s.note, s.deleted],
         );
       // Insert or seal a year, but never UPDATE a sealed snapshot, even with equal data.
-      for (const y of book.years)
+      for (const y of changedRecords(
+        baseline?.years,
+        book.years,
+        (y) => y.year,
+      ))
         await query(
           `insert into public.expense_years(owner_id,year,closed_at,snapshot) values($1,$2,$3,$4::text::jsonb)
         on conflict(owner_id,year) do update set closed_at=excluded.closed_at,snapshot=excluded.snapshot
@@ -132,11 +157,16 @@ export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
             y.snapshot === null ? null : json(y.snapshot),
           ],
         );
-      await query(
-        "delete from public.expense_labels where owner_id=$1 and not (id=any($2::uuid[]))",
-        [owner, `{${book.labels.map((l) => l.id).join(",")}}`],
-      );
-      for (const l of book.labels) {
+      if (
+        baseline?.labels.some(
+          (old) => !book.labels.some((label) => label.id === old.id),
+        )
+      )
+        await query(
+          "delete from public.expense_labels where owner_id=$1 and not (id=any($2::uuid[]))",
+          [owner, `{${book.labels.map((l) => l.id).join(",")}}`],
+        );
+      for (const l of changedLabels) {
         if (hasLabelVisuals)
           await query(
             `insert into public.expense_labels(owner_id,id,kind,name,brand_key,icon_key) values($1,$2,$3,$4,$5,$6)
@@ -157,11 +187,16 @@ export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
             [owner, l.id, l.kind, l.name],
           );
       }
-      for (const a of book.audit)
+      for (const a of changedRecords(
+        baseline?.audit,
+        book.audit,
+        (a) => a.version,
+      ))
         await query(
           `insert into public.expense_audit(owner_id,version,at,action,detail) values($1,$2,$3,$4,$5::text::jsonb) on conflict do nothing`,
           [owner, a.version, a.at, a.action, json(a.detail)],
         );
+      baseline = structuredClone(book);
     },
     async remember(id, value) {
       await query(
