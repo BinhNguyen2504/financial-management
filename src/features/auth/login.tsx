@@ -40,10 +40,12 @@ export function Login({
   const emailKey = email.trim().toLowerCase();
   const wait = Math.max(
     0,
+    // eslint-disable-next-line react-hooks/refs -- The cooldown map is updated by events and rendered by the existing clock state.
     Math.ceil(((sendAfter.current.get(emailKey) ?? 0) - now) / 1000),
   );
   // Before hydration, native submission would navigate to /login? and lose the draft.
   const [ready, setReady] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- Keep native submission disabled until hydration has attached the form handlers.
   useEffect(() => setReady(true), []);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);

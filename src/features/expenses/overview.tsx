@@ -53,6 +53,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
       } finally {
         if (id === request.current) setLoading(false);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- Locale changes must not recreate the request controller or trigger a data reload.
     }, []),
     configured,
   );
@@ -60,6 +61,7 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
     if (!configured) return;
     void reload().catch(() => {});
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- Invalidate the latest request sequence on cleanup, including requests started after mount.
       request.current++;
     };
   }, [configured, reload]);

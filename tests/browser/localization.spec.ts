@@ -194,18 +194,18 @@ test("English covers workspaces, Help and the public home while account names st
     else if (value && typeof value === "object")
       Object.entries(value).forEach(([k, v]) => names(v, k));
   }
-  for (const module of [
+  for (const feature of [
     "expenses",
     "income",
     "savings",
     "investments",
     "funds",
   ]) {
-    const response = await page.request.get(`/api/v1/${module}`);
+    const response = await page.request.get(`/api/v1/${feature}`);
     expect(response.ok()).toBe(true);
     names(await response.json());
   }
-  for (const route of [...modules.map((module) => module.slug), "profile"]) {
+  for (const route of [...modules.map((feature) => feature.slug), "profile"]) {
     await page.goto(`/${route}`);
     await expect(page.locator("main h1")).toBeVisible();
     await page.waitForLoadState("networkidle");
@@ -435,13 +435,13 @@ test("blocked browser storage keeps language usable and English CSV has canonica
   await expect(
     page.getByRole("heading", { name: "Settings", exact: true }),
   ).toBeVisible();
-  for (const module of ["income", "savings", "investments"]) {
+  for (const feature of ["income", "savings", "investments"]) {
     const query =
-      module === "income"
+      feature === "income"
         ? "year=2026&from=1&to=10"
         : "from=2026-01-01&to=2026-10-22";
     const response = await context.request.get(
-      `/api/v1/${module}/reports?${query}&format=csv&locale=en`,
+      `/api/v1/${feature}/reports?${query}&format=csv&locale=en`,
     );
     expect(response.ok()).toBe(true);
     const csv = await response.text();

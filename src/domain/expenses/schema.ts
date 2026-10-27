@@ -1,23 +1,10 @@
+import { expenseDateSchema as dateSchema } from "../shared/schema";
+import { expenseMonthSchema as monthSchema } from "../shared/schema";
+import { expenseMoneySchema as moneySchema } from "../shared/schema";
 import { z } from "zod";
 import { brandKeys, labelIconKeys } from "./label-visuals";
 import { EMOJI_VALUES } from "./emoji";
 
-export const moneySchema = z
-  .string()
-  .regex(
-    /^(0|[1-9][0-9]{0,23})$/,
-    "Nhập số tiền VND nguyên, không âm, tối đa 24 chữ số.",
-  );
-export const monthSchema = z
-  .string()
-  .regex(/^(20[0-9]{2})-(0[1-9]|1[0-2])$/, "Tháng không hợp lệ.");
-export const dateSchema = z
-  .string()
-  .regex(/^20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/)
-  .refine(
-    (v) => new Date(`${v}T00:00:00Z`).toISOString().slice(0, 10) === v,
-    "Ngày không hợp lệ.",
-  );
 const id = z.uuid();
 const name = z.string().trim().min(1, "Cần nhập tên.").max(100);
 const config = {
@@ -111,3 +98,9 @@ export const commandSchema = z
   })
   .strict();
 export type ExpenseCommand = z.infer<typeof commandSchema>;
+
+export { moneySchema };
+
+export { monthSchema };
+
+export { dateSchema };

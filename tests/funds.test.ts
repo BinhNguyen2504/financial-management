@@ -15,7 +15,7 @@ import {
   type FundAction,
   type FundTransaction,
 } from "../src/domain/funds/schema";
-import type { FundBook } from "../src/domain/funds/types";
+
 import type { ExpenseBook } from "../src/domain/expenses/types";
 import { validateFundBook } from "../src/domain/funds/validate";
 import { parseBackup, backupTables } from "../src/domain/backup/format";

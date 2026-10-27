@@ -8,13 +8,13 @@ import {
 } from "@/components/dialog-content";
 import { useMoney } from "@/components/privacy";
 import type { IncomeRow } from "@/domain/income/types";
-import { monthName } from "@/features/expenses/format";
-import { ExpenseModal } from "@/features/expenses/modal";
+import { formatMonth as monthName } from "@/i18n/format";
+import { Modal as ExpenseModal } from "@/components/modal";
 import {
   Trash2 as DeleteActionIcon,
   Pencil as EditActionIcon,
 } from "lucide-react";
-import type { EditorMode } from "./editor";
+import type { EditorMode } from "./editor-config";
 
 export function IncomeDetails({
   rows,

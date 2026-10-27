@@ -4,15 +4,8 @@ import { FireScene } from "./fire-scene";
 import { EarthScene } from "./earth-scene";
 import type { VisualTheme } from "./visual-theme";
 
-export type GardenVariant =
-  | "garden"
-  | "jar"
-  | "sprout"
-  | "harvest"
-  | "grove"
-  | "path"
-  | "shelter"
-  | "balance";
+import type { GardenVariant } from "./garden-types";
+export type { GardenVariant } from "./garden-types";
 
 // Shared palette and drawing language; each context gets its own scene.
 export function Garden({

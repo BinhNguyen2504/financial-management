@@ -8,7 +8,7 @@ import { ThemeText } from "@/components/theme-decoration";
 import { positionKey } from "@/domain/funds/engine";
 import { fundIds, type FundId } from "@/domain/funds/schema";
 import type { FundView } from "@/domain/funds/types";
-import { ExpenseModal } from "@/features/expenses/modal";
+import { Modal as ExpenseModal } from "@/components/modal";
 import { Pencil as EditCommandGlyph } from "lucide-react";
 import { useId, useState, type KeyboardEvent } from "react";
 import {
@@ -17,11 +17,11 @@ import {
   guides as guidesSource,
   transactionNames as transactionNamesSource,
 } from "./content";
-import type { EditorMode } from "./editor";
+import type { EditorMode } from "./editor-config";
 import { FundLedger } from "./ledger";
 import { ProgressScene } from "./progress-scene";
 export function FundGuide({ fund }: { fund: FundId }) {
-  const { t: tr, config: localize, locale } = useI18n("funds");
+  const { t: tr, config: localize } = useI18n("funds");
 
   const guide = localize(guidesSource)[fund];
   return (
@@ -71,7 +71,7 @@ export function FundLocations({
   onEdit: (mode: EditorMode) => void;
   fundId?: FundId;
 }) {
-  const { t: tr, locale } = useI18n("funds");
+  const { t: tr } = useI18n("funds");
 
   const money = useMoney();
   return (
@@ -235,7 +235,7 @@ export function FundDetails({
   onClose: () => void;
   onEdit: (mode: EditorMode) => void;
 }) {
-  const { t: tr, config: localize, locale } = useI18n("funds");
+  const { t: tr, config: localize } = useI18n("funds");
   const localizedTabs = localize(tabs);
 
   const [tab, setTab] = useState(0),

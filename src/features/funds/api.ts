@@ -1,4 +1,4 @@
-import { responseFieldErrors, responseMessage } from "@/i18n/error-messages";
+import { jsonBody, requestJSON } from "@/lib/http-client";
 export class FundAPIError extends Error {
   constructor(
     message: string,
@@ -10,41 +10,13 @@ export class FundAPIError extends Error {
   }
 }
 export async function fundsJSON<T>(path = "", body?: unknown): Promise<T> {
-  let response: Response;
-  try {
-    response = await fetch(`/api/v1/funds${path}`, {
-      cache: "no-store",
-      ...(body === undefined
-        ? {}
-        : {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          }),
-    });
-  } catch {
-    throw new FundAPIError(
+  return requestJSON<T>(`/api/v1/funds${path}`, () => jsonBody(body), {
+    network:
       "Mất kết nối. Nội dung đang nhập được giữ; hãy thử lại khi có mạng.",
-      "NETWORK_ERROR",
-      0,
-    );
-  }
-  let data;
-  try {
-    data = await response.json();
-  } catch {
-    throw new FundAPIError(
-      "Phản hồi chưa hợp lệ. Hãy thử lại.",
-      "INVALID_RESPONSE",
-      response.status,
-    );
-  }
-  if (!response.ok)
-    throw new FundAPIError(
-      responseMessage(data, "Không thể truy cập Quỹ an toàn."),
-      data.code ?? "REQUEST_FAILED",
-      response.status,
-      responseFieldErrors(data),
-    );
-  return data as T;
+    invalidResponse: "Phản hồi chưa hợp lệ. Hãy thử lại.",
+    fallback: "Không thể truy cập Quỹ an toàn.",
+    fallbackCode: "REQUEST_FAILED",
+    error: (message, code, status, fields) =>
+      new FundAPIError(message, code, status ?? 0, fields),
+  });
 }

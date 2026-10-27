@@ -11,7 +11,7 @@ import type {
 import { formatDate, formatMonth } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 import { Pencil, Trash2 } from "lucide-react";
-import { kindNames, transactionNames, type EditorMode } from "./editor";
+import { kindNames, transactionNames, type EditorMode } from "./editor-config";
 
 export function SavingsCategoryTable({
   categories,

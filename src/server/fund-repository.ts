@@ -1,5 +1,6 @@
+import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
-import postgres from "postgres";
+import type postgres from "postgres";
 import { z } from "zod";
 import type { FundBook } from "../domain/funds/types";
 import { FundError, livingSource } from "../domain/funds/engine";
@@ -154,11 +155,7 @@ export function postgresFundRepository(sql: postgres.Sql): FundRepository {
       fn: (tx: FundTransactionRepository) => Promise<T>,
     ): Promise<T> {
       z.uuid().parse(owner);
-      return (await sql.begin(async (tx) => {
-        await tx.unsafe("set local role authenticated");
-        await tx.unsafe("select set_config('request.jwt.claims',$1,true)", [
-          JSON.stringify({ sub: owner, role: "authenticated" }),
-        ]);
+      return (await withOwnerTransaction(sql, owner, async (tx) => {
         const [ready] = await tx.unsafe<{ ready: boolean }[]>(
           "select to_regclass('public.funds_books') is not null as ready",
         );
@@ -169,11 +166,7 @@ export function postgresFundRepository(sql: postgres.Sql): FundRepository {
             "FUNDS_MIGRATION_REQUIRED",
           );
         // Match restore's global lock order: Expenses first, then Fund.
-        for (const key of [owner, `funds:${owner}`])
-          await tx.unsafe(
-            "select pg_advisory_xact_lock(hashtextextended($1,0))",
-            [key],
-          );
+        await lockOwner(tx, [owner, `funds:${owner}`]);
         return fn(adapter(tx, owner));
       })) as T;
     },

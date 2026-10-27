@@ -2,7 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { incomeJSON } from "../src/features/income/api";
 import { applyAction, toView } from "../src/domain/income/engine";
 import type { IncomeBook } from "../src/domain/income/types";
-import { buildReport, reportCSV } from "../src/domain/income/reports";
+import { buildReport } from "../src/domain/income/reports";
+import { reportCSV } from "../src/i18n/report-exports/income";
 import type { IncomeAction } from "../src/domain/income/schema";
 import {
   runIncomeCommand,

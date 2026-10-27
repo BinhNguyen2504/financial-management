@@ -114,7 +114,4 @@ export interface SavingsView {
   closed: string[];
   due: SavingsContract[];
 }
-export interface Clock {
-  today: string;
-  now: string;
-}
+export type { Clock } from "../shared/types";

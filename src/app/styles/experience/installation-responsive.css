@@ -1,0 +1,132 @@
+.install-platforms {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-block: 16px 24px;
+}
+.install-platforms button[aria-pressed="true"] {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.install-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 0;
+  list-style: none;
+  counter-reset: steps;
+}
+.install-steps li {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  counter-increment: steps;
+}
+.install-steps h3::before {
+  content: counter(steps);
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 14px;
+}
+.install-steps svg {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  margin: 16px auto 0;
+}
+.install-steps p {
+  margin-top: 8px;
+  color: var(--muted);
+}
+.install-steps + .install-caption {
+  margin-block: 24px 12px;
+  line-height: 1.6;
+}
+@media (min-width: 960px) {
+  html[data-sidebar="collapsed"] {
+    --sidebar-width: 80px;
+  }
+  html[data-sidebar="collapsed"] .sidebar {
+    padding-inline: 12px;
+  }
+  html[data-sidebar="collapsed"]
+    .sidebar
+    :is(.navigation-name, .development-tag, .nav-label, .sidebar-note),
+  html[data-sidebar="collapsed"] .brand > span:last-child {
+    display: none;
+  }
+  html[data-sidebar="collapsed"] .brand {
+    padding-inline: 0;
+    justify-content: center;
+  }
+  html[data-sidebar="collapsed"] .navigation a {
+    justify-content: center;
+    padding-inline: 10px;
+  }
+  html[data-sidebar="collapsed"] .navigation a:has(.development-tag)::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    position: absolute;
+    right: 7px;
+    top: 8px;
+  }
+}
+@media (max-width: 959px) {
+  .sidebar-toggle,
+  .desktop-label {
+    display: none;
+  }
+  .app-shell .topbar {
+    flex-wrap: nowrap;
+  }
+  .app-shell .mobile-brand {
+    display: inline-flex;
+    margin-right: auto;
+    font-size: 15px;
+  }
+}
+@media (max-width: 375px) {
+  .mobile-brand-sub {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .install-steps {
+    grid-template-columns: 1fr;
+  }
+  .theme-options label {
+    flex: 1 1 100%;
+  }
+  .income-select {
+    width: 100%;
+  }
+  .income-filters {
+    gap: 16px;
+  }
+  .income-item > .expense-actions {
+    min-width: 0;
+  }
+  .dialog-data-table .is-date {
+    width: auto;
+  }
+  .dialog-data-table .is-numeric {
+    white-space: normal;
+  }
+  .column-picker {
+    margin-right: 0;
+  }
+  .footer {
+    gap: 8px;
+  }
+}

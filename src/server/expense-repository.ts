@@ -1,5 +1,6 @@
+import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
-import postgres from "postgres";
+import type postgres from "postgres";
 import { ExpenseError } from "../domain/expenses/engine";
 import type {
   ExpenseBook,
@@ -217,16 +218,9 @@ export function postgresExpenseRepository(
     ): Promise<T> {
       if (!/^[0-9a-f-]{36}$/i.test(owner))
         throw new Error("Invalid authenticated owner");
-      const result = await sql.begin(async (tx) => {
-        await tx.unsafe("set local role authenticated");
-        await tx.unsafe("select set_config('request.jwt.claims', $1, true)", [
-          JSON.stringify({ sub: owner, role: "authenticated" }),
-        ]);
+      const result = await withOwnerTransaction(sql, owner, async (tx) => {
         // Serialize all commands for one owner, including first initialization and retries.
-        await tx.unsafe(
-          "select pg_advisory_xact_lock(hashtextextended($1, 0))",
-          [owner],
-        );
+        await lockOwner(tx, [owner]);
         return fn(transactionAdapter(tx, owner));
       });
       return result as T;

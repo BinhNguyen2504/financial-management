@@ -152,6 +152,7 @@ export function ThemePicker() {
   const value = displayMode(storedMode);
   const selected = visualTheme(storedVisual);
   function changePreference(set: (next: string) => void, next: string) {
+    // eslint-disable-next-line react-hooks/immutability -- Write the browser theme transition attribute before applying the selected preference.
     document.documentElement.dataset.themeTransition = "true";
     set(next);
   }

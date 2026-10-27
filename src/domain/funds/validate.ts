@@ -1,7 +1,7 @@
 import { applyAction } from "./engine";
 import type { FundBook, LivingSource } from "./types";
 import { fundIds } from "./schema";
-import { vietnamClock } from "../expenses/engine";
+import { vietnamClock } from "../shared/clock";
 function canonical(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
   if (value && typeof value === "object")

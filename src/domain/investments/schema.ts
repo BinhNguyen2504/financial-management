@@ -1,5 +1,6 @@
+import { monthSchema } from "../shared/schema";
 import { z } from "zod";
-import { moneySchema, monthSchema, dateSchema } from "../savings/schema";
+import { moneySchema, dateSchema } from "../shared/schema";
 export { moneySchema, monthSchema, dateSchema };
 const id = z.uuid();
 const text = z.string().trim().max(1000);

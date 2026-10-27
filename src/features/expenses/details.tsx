@@ -18,10 +18,10 @@ import {
   Palette,
   Settings2,
 } from "lucide-react";
-import type { EditorMode } from "./editor";
+import type { EditorMode } from "./editor-config";
 import { monthName } from "./format";
 import { LabelName } from "./label-visual";
-import { ExpenseModal } from "./modal";
+import { Modal as ExpenseModal } from "@/components/modal";
 
 const actionNames: Record<string, string> = {
   createJar: "Tạo hũ",

@@ -79,6 +79,7 @@ export function LabelVisual({
   return (
     <span className="label-visual" aria-hidden="true">
       {brand && failed !== brand.key ? (
+        // eslint-disable-next-line @next/next/no-img-element -- Render fixed 20px local brand symbols without changing the existing fallback or asset URL.
         <img
           src={`/brands/${brand.file}`}
           alt=""

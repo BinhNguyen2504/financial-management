@@ -20,9 +20,12 @@
     "data:investments:sample": "node scripts/sample-investments.mjs",
     "data:preview": "node scripts/preview-sample-data.mjs",
     "data:import": "node --env-file=.env.local scripts/import-sample-data.mjs",
-    "check": "npm test && npm run typecheck && npm run build",
+    "check": "npm run lint && npm run check:architecture && npm run format:check && npm test && npm run typecheck && npm run build",
     "data:funds:sample": "node scripts/run-typescript.mjs scripts/sample-funds.ts",
-    "data:funds:import": "node --env-file=.env.local scripts/run-typescript.mjs scripts/import-funds.ts"
+    "data:funds:import": "node --env-file=.env.local scripts/run-typescript.mjs scripts/import-funds.ts",
+    "lint": "eslint src tests scripts \"*.mjs\" \"*.mts\" \"*.ts\" --max-warnings=0",
+    "format:check": "prettier --check src tests scripts \"*.mjs\" \"*.mts\" \"*.ts\" package.json \".github/workflows/*.yml\"",
+    "check:architecture": "node scripts/check-architecture.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -42,9 +45,16 @@
     "@types/node": "^22",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.1",
     "prettier": "^3.9.10",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "eslint-config-next": {
+      "typescript-eslint": "8.55.0"
+    }
   }
 }

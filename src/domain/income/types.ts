@@ -33,10 +33,7 @@ export interface IncomeBook {
   oneOffs: OneOffIncome[];
   audit: { version: number; at: string; action: string; detail: unknown }[];
 }
-export interface Clock {
-  today: string;
-  now: string;
-}
+export type { Clock } from "../shared/types";
 export interface IncomeRow {
   key: string;
   categoryId: string | null;

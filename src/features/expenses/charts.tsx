@@ -1,4 +1,6 @@
 "use client";
+import { sliceOffsets } from "@/lib/chart-data";
+
 import { useI18n } from "@/i18n/provider";
 
 import { useChartTooltip } from "@/components/chart-tooltip";
@@ -43,7 +45,7 @@ export function DonutChart({
   const total = slices.reduce((n, r) => n + BigInt(r.value), 0n).toString();
   const selected =
     slices.find((r) => r.key === (tooltip.active ?? active)) ?? slices[0];
-  let offset = 0;
+  const offsets = sliceOffsets(slices);
   return (
     <div
       {...tooltip.container}
@@ -67,8 +69,7 @@ export function DonutChart({
               strokeWidth="15"
             />
             {slices.map((r, i) => {
-              const start = offset;
-              offset += r.percent;
+              const start = offsets[i];
               return (
                 <circle
                   key={r.key}

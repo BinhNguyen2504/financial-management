@@ -11,7 +11,7 @@ import type {
 } from "@/domain/investments/reports";
 import type { InvestmentCategory } from "@/domain/investments/types";
 import { useState } from "react";
-import { transactionNames } from "./editor";
+import { transactionNames } from "./editor-config";
 export function InvestmentReports({
   report,
   filter,

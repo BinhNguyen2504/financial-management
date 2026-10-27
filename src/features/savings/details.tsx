@@ -17,13 +17,13 @@ import type {
   SavingsTransaction,
   SavingsView,
 } from "@/domain/savings/types";
-import { ExpenseModal } from "@/features/expenses/modal";
+import { Modal as ExpenseModal } from "@/components/modal";
 import {
   Trash2 as DeleteCommandGlyph,
   Pencil as EditCommandGlyph,
 } from "lucide-react";
 import { useState } from "react";
-import { kindNames, transactionNames, type EditorMode } from "./editor";
+import { kindNames, transactionNames, type EditorMode } from "./editor-config";
 import { savingsImpact } from "./presentation";
 
 export function SavingsDetails({

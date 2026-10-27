@@ -74,6 +74,7 @@ export function UserProvider({
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Locale changes must not recreate the request controller or trigger a data reload.
   }, []);
   useEffect(() => {
     if (!configured) return;
@@ -85,6 +86,7 @@ export function UserProvider({
     });
     // The server already verified this user for the initial HTML. Repeating the
     // same lookup here would replace the account menu with a loading spinner.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve server-seeded identity and the existing subscription lifecycle.
     if (!initialUser) void reload();
     return () => subscription.unsubscribe();
   }, [reload, initialUser]);

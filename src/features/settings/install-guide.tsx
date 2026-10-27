@@ -184,6 +184,7 @@ export function InstallGuide() {
   const [installed, setInstalled] = useState(false);
   useEffect(() => {
     const agent = navigator.userAgent;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Reflect the browser installation environment after mount.
     setPlatform(
       /iPhone|iPad|iPod/.test(agent) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)

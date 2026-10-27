@@ -557,8 +557,8 @@ it("persists emoji metadata across reads without altering balances or overrides"
   const after = await readExpenseView(repository, user, clock);
   expect(after.book?.version).toBe(4);
   expect(after.book?.inputs).toEqual(before.book?.inputs);
-  expect(after.rows.map(({ emoji, ...r }) => r)).toEqual(
-    before.rows.map(({ emoji, ...r }) => r),
+  expect(after.rows.map(({ emoji: _emoji, ...r }) => r)).toEqual(
+    before.rows.map(({ emoji: _emoji, ...r }) => r),
   );
   expect(after.rows.find((r) => r.month === "2027-01")?.emoji).toBe("🌱");
   expect(after.rows.find((r) => r.month === "2026-12")?.emoji).toBeNull();

@@ -1,3 +1,7 @@
+import {
+  financialHeaders as headers,
+  type FinancialRouteContext as Context,
+} from "@/server/financial-api";
 import { BackupError, summarizeBackup } from "@/domain/backup/format";
 import { validateBackup } from "@/domain/backup/validate";
 import { ExpenseError } from "@/domain/expenses/engine";
@@ -12,12 +16,7 @@ import { z } from "zod";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-const headers = {
-  "Cache-Control": "private, no-store",
-  Vary: "Cookie, Authorization",
-  "X-Content-Type-Options": "nosniff",
-};
-type Context = { params: Promise<{ path?: string[] }> };
+
 function failure(error: unknown) {
   if (error instanceof BackupError || error instanceof ExpenseError)
     return jsonResponse(

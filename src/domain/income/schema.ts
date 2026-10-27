@@ -1,14 +1,8 @@
+import { yearSchema } from "../shared/schema";
+import { moneySchema } from "../shared/schema";
+
+import { monthSchema } from "../shared/schema";
 import { z } from "zod";
-export const monthSchema = z
-  .string()
-  .regex(/^20\d{2}-(0[1-9]|1[0-2])$/, "Tháng không hợp lệ.");
-export const yearSchema = z.number().int().min(2000).max(2099);
-export const moneySchema = z
-  .string()
-  .regex(
-    /^(0|[1-9][0-9]{0,23})$/,
-    "Nhập số tiền VND nguyên không âm, tối đa 24 chữ số.",
-  );
 const id = z.uuid();
 const name = z.string().trim().min(1, "Cần nhập tên.").max(100);
 const description = z.string().trim().max(1000);
@@ -79,3 +73,9 @@ export const commandSchema = z
   })
   .strict();
 export type IncomeCommand = z.infer<typeof commandSchema>;
+
+export { monthSchema };
+
+export { yearSchema };
+
+export { moneySchema };

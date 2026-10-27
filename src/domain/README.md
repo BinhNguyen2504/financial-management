@@ -10,7 +10,6 @@ Module `income/` quản lý thực nhận danh mục–tháng và khoản thu ph
 
 Module `investments/` quản lý tổng danh mục VND và nhiều ví tiền chờ, mua/bán với vốn bán nhập tay, định giá, revisions và báo cáo xuyên năm. Độc lập với `savings/`; không có mã/lô hoặc chốt tháng. Giao dịch và các mốc lưu trữ được kiểm tra lại khi sửa quá khứ.
 
-
 ## Bổ sung backup toàn tài khoản — 18/10/2026
 
 Module `backup/` định nghĩa FullBackup V2, allowlist 35 bảng (nhận cả V1), schema nghiêm ngặt và kiểm tra liên kết/replay trước khôi phục. Domain không đọc DB/Auth; `profile.ts` giữ validator hồ sơ dùng chung. Xem `docs/features/backup.md`.

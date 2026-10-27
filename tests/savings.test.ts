@@ -12,7 +12,8 @@ import {
   dateSchema,
   transactionSchema,
 } from "../src/domain/savings/schema";
-import { buildReport, reportCSV } from "../src/domain/savings/reports";
+import { buildReport } from "../src/domain/savings/reports";
+import { reportCSV } from "../src/i18n/report-exports/savings";
 import type { SavingsBook } from "../src/domain/savings/types";
 import { safeReturnPath } from "../src/lib/auth-return";
 const clock = { today: "2027-03-15", now: "2027-03-15T00:00:00Z" };

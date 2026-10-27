@@ -16,7 +16,7 @@ import {
   localDateTime,
   transactionNames as transactionNamesSource,
 } from "./content";
-import type { EditorMode } from "./editor";
+import type { EditorMode } from "./editor-config";
 export function FundLedger({
   view,
   fundId,

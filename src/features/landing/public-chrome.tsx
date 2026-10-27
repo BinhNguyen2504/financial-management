@@ -61,6 +61,7 @@ export function PublicChrome({
           <p>{tr("Quản lý tài chính trên web và thiết bị di động.")}</p>
         </div>
         <div>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- Keep the existing native fragment navigation and its full-page public-shell behavior. */}
           <a href="/#dang-phat-trien">{tr("Đang phát triển")}</a>
           <Link href="/overview" prefetch={false}>
             {tr("Mở không gian của bạn")}{" "}

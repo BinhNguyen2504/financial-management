@@ -1,4 +1,4 @@
-import type { GardenVariant } from "./garden";
+import type { GardenVariant } from "./garden-types";
 
 const ink = "var(--fire-ink)",
   fill = "var(--fire-fill)",

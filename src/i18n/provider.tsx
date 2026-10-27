@@ -127,6 +127,7 @@ export function useI18n(namespace: Namespace = "common") {
     () => translator(context.locale, namespace),
     [context.locale, namespace],
   );
+  // eslint-disable-next-line react-hooks/immutability -- This private memoized WeakMap caches translated immutable configuration by identity.
   const config = useMemo(() => {
     const cache = new WeakMap<object, unknown>();
     return <T,>(value: T): T => {

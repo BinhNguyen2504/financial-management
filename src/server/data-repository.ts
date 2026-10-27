@@ -1,4 +1,5 @@
-import postgres from "postgres";
+import { setTransactionOwner } from "./owner-transaction";
+import type postgres from "postgres";
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import {
@@ -124,10 +125,7 @@ export function postgresDataRepository(sql: postgres.Sql) {
     return (await sql.begin(
       snapshot ? "isolation level repeatable read read only" : "",
       async (tx) => {
-        await tx.unsafe("set local role authenticated");
-        await tx.unsafe("select set_config('request.jwt.claims',$1,true)", [
-          JSON.stringify({ sub: owner, role: "authenticated" }),
-        ]);
+        await setTransactionOwner(tx, owner);
         await schemaReady(tx);
         return fn(tx);
       },

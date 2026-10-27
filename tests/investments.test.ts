@@ -11,8 +11,9 @@ import {
   emptyBook,
   toView,
 } from "../src/domain/investments/engine";
-import { buildReport, reportCSV } from "../src/domain/investments/reports";
-import type { InvestmentBook } from "../src/domain/investments/types";
+import { buildReport } from "../src/domain/investments/reports";
+import { reportCSV } from "../src/i18n/report-exports/investments";
+
 const clock = { today: "2027-03-15", now: "2027-03-15T12:00:00Z" },
   start = "2026-12-01";
 function setup() {

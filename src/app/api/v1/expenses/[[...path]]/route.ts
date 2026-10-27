@@ -1,70 +1,30 @@
+import {
+  financialHeaders as headers,
+  type FinancialRouteContext as Context,
+  financialFailure,
+  readCommandJSON,
+  checkCommandOrigin,
+} from "@/server/financial-api";
 import { readExpenseView, runExpenseCommand } from "@/application/expenses";
 import { ExpenseError, vietnamClock } from "@/domain/expenses/engine";
 import { buildReport } from "@/domain/expenses/reports";
 import { commandSchema } from "@/domain/expenses/schema";
-import { fieldErrorsFromIssues } from "@/lib/field-errors";
 import { authenticatedOwner } from "@/server/auth";
 import { expenseRepository } from "@/server/database";
 import { jsonResponse } from "@/server/json-response";
-import { sameOrigin } from "@/server/request-origin";
 import { NextResponse } from "next/server";
-import { ZodError } from "zod";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-const headers = {
-  "Cache-Control": "private, no-store",
-  Vary: "Cookie, Authorization",
-  "X-Content-Type-Options": "nosniff",
-};
-type Context = { params: Promise<{ path?: string[] }> };
-const fieldNames: Record<string, string> = {
-  amount: "Số tiền",
-  opening: "Số dư đầu kỳ",
-  funding: "Tiền thêm theo tháng",
-  extra: "Tiền bổ sung",
-  closing: "Số dư cuối tháng",
-  target: "Mức riêng tháng",
-  name: "Tên",
-  description: "Mô tả",
-  method: "Phương thức",
-  group: "Nhóm mục đích",
-  month: "Tháng",
-  start: "Tháng bắt đầu",
-  date: "Ngày sử dụng",
-  note: "Ghi chú",
-};
+
 function failure(error: unknown) {
-  if (error instanceof ExpenseError)
-    return jsonResponse(
-      {
-        error: error.message,
-        code: error.code,
-        ...(error.fieldErrors ? { fieldErrors: error.fieldErrors } : {}),
-      },
-      { status: error.status, headers },
-    );
-  if (error instanceof ZodError)
-    return jsonResponse(
-      {
-        error: Object.values(fieldErrorsFromIssues(error.issues)).join("; "),
-        code: "INVALID_INPUT",
-        fieldErrors: fieldErrorsFromIssues(error.issues),
-      },
-      { status: 422, headers },
-    );
-  // Do not expose connection strings, SQL details, or financial request payloads.
-  console.error("Expense API failed", {
-    name: error instanceof Error ? error.name : "UnknownError",
+  return financialFailure(error, {
+    accepts: (error): error is ExpenseError => error instanceof ExpenseError,
+    log: "Expense API failed",
+    unavailable:
+      "Không thể truy cập dữ liệu. Hãy kiểm tra kết nối và thử lại; nội dung đang nhập vẫn được giữ.",
+    exposeDomainFields: true,
   });
-  return jsonResponse(
-    {
-      error:
-        "Không thể truy cập dữ liệu. Hãy kiểm tra kết nối và thử lại; nội dung đang nhập vẫn được giữ.",
-      code: "STORAGE_UNAVAILABLE",
-    },
-    { status: 503, headers },
-  );
 }
 export async function GET(request: Request, context: Context) {
   try {
@@ -150,27 +110,11 @@ export async function GET(request: Request, context: Context) {
 export async function POST(request: Request, context: Context) {
   try {
     const owner = await authenticatedOwner(request);
-    if (!request.headers.get("authorization") && !sameOrigin(request))
-      throw new ExpenseError(
-        "Nguồn yêu cầu không hợp lệ.",
-        403,
-        "INVALID_ORIGIN",
-      );
+    checkCommandOrigin(request, ExpenseError);
     const path = ((await context.params).path ?? []).join("/");
     if (path !== "commands" && path !== "preview")
       throw new ExpenseError("Đường dẫn không tồn tại.", 404);
-    if (!request.headers.get("content-type")?.startsWith("application/json"))
-      throw new ExpenseError("Yêu cầu phải là JSON.", 415);
-    if (Number(request.headers.get("content-length") ?? 0) > 100_000)
-      throw new ExpenseError("Yêu cầu quá lớn.", 413);
-    const body = await request.text();
-    if (body.length > 100_000) throw new ExpenseError("Yêu cầu quá lớn.", 413);
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(body);
-    } catch {
-      throw new ExpenseError("JSON không hợp lệ.", 400);
-    }
+    const parsed = await readCommandJSON(request, ExpenseError);
     const command = commandSchema.parse(parsed);
     const result = await runExpenseCommand(
       expenseRepository(),

@@ -1,0 +1,339 @@
+.expense-form label,
+.investment-form label,
+.savings-form label,
+.profile-field {
+  position: relative;
+}
+.required-mark {
+  color: var(--muted);
+  font-weight: 650;
+  display: inline;
+  white-space: nowrap;
+}
+/* Labels that contain their control use a vertical layout elsewhere; keep the
+   label text and required mark in one inline line before the control. */
+.expense-form label:has(> .required-mark),
+.investment-form label:has(> .required-mark) {
+  display: block;
+}
+.expense-form label:has(> .required-mark) > :is(input, select, textarea),
+.investment-form label:has(> .required-mark) > :is(input, select, textarea) {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+}
+label .required-mark::before {
+  content: "\00a0";
+}
+.required-fields-note {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.money-input-hint {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 5px;
+}
+.toast-viewport {
+  position: fixed;
+  z-index: 100;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  pointer-events: none;
+}
+.toast-viewport--dialog {
+  position: relative;
+  z-index: 5;
+  top: auto;
+  right: auto;
+  flex: none;
+  align-self: flex-end;
+  margin: 12px 16px 0;
+  width: min(420px, calc(100% - 32px));
+  max-height: min(220px, 30dvh);
+}
+.app-toast {
+  --toast-accent: var(--primary);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 8px 16px 16px;
+  border: 1px solid color-mix(in srgb, var(--toast-accent) 24%, var(--border));
+  border-left: 3px solid var(--toast-accent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--toast-accent) 4%, var(--surface));
+  color: var(--text);
+  box-shadow:
+    0 8px 28px #00000014,
+    0 2px 6px #0000000a;
+  max-height: inherit;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  animation: toast-appear 180ms ease-out;
+}
+.app-toast--success {
+  --toast-accent: var(--primary);
+}
+.app-toast--error {
+  --toast-accent: var(--danger);
+}
+.app-toast--warning {
+  --toast-accent: var(--warning);
+}
+.app-toast-icon {
+  flex: none;
+  margin-top: 1px;
+  color: var(--toast-accent);
+}
+.app-toast-content {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.app-toast-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+.app-toast .app-toast-message {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.app-toast button {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  margin-top: -10px;
+}
+.app-toast button:hover {
+  background: color-mix(in srgb, var(--toast-accent) 10%, transparent);
+}
+.app-toast button:focus-visible {
+  outline: 2px solid var(--toast-accent);
+  outline-offset: -2px;
+}
+@keyframes toast-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-toast {
+    animation: none;
+  }
+}
+.field-error,
+.form-field-error {
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 650;
+  display: block;
+  margin-top: 6px;
+}
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"],
+[data-invalid="true"] input {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 1px var(--danger);
+  background-color: var(--danger-soft) !important;
+}
+.form-error-summary {
+  padding: 16px;
+  border: 1px solid var(--danger);
+  border-radius: 12px;
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+.form-error-summary strong {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.form-error-summary ul {
+  padding-left: 22px;
+  margin: 8px 0 0;
+}
+.form-error-summary a {
+  text-decoration: underline;
+}
+.expense-notice,
+.data-warning {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--warning) 40%, var(--border));
+  border-radius: 12px;
+  color: var(--warning);
+  background: var(--warning-soft);
+  font-weight: 650;
+}
+.data-warning a,
+.data-warning button {
+  text-decoration: underline;
+  font-weight: 800;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
+}
+.status-missing {
+  color: var(--warning);
+  background: var(--warning-soft);
+  border-color: color-mix(in srgb, var(--warning) 40%, var(--border));
+}
+.status-inactive {
+  color: var(--muted);
+  background: var(--surface-alt);
+}
+.income-item.is-inactive {
+  background: var(--surface-alt);
+  border-style: dashed;
+}
+.income-item.is-missing {
+  border-left: 4px solid var(--warning);
+  background: color-mix(in srgb, var(--warning-soft) 45%, var(--surface));
+}
+.income-item.is-oneoff {
+  border-left: 4px solid var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 50%, var(--surface));
+}
+.income-configuration-note {
+  margin: 0 0 24px;
+  max-width: 75ch;
+}
+.income-list + .expense-section-heading {
+  margin-top: 32px;
+}
+.income-filters {
+  align-items: end;
+}
+.income-select:has(select option[value="custom"]) {
+  min-width: min(100%, 230px);
+}
+.income-select:has(select:disabled),
+.income-select:has(select option[value="columns"]) {
+  min-width: min(100%, 220px);
+}
+:is(
+    .expense-form,
+    .expense-filters,
+    .income-select,
+    .income-filters,
+    .dialog-filters,
+    .savings-workspace,
+    .investment-workspace,
+    .profile-form,
+    .funds-workspace
+  )
+  select:not([multiple]) {
+  padding-right: 38px;
+  min-width: 0;
+  min-height: 44px;
+  width: 100%;
+  text-overflow: ellipsis;
+}
+.income-select select {
+  max-width: none;
+}
+.income-missing-list {
+  display: grid;
+  gap: 8px;
+  margin-block: 16px 24px;
+}
+.income-missing-list button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  text-align: left;
+}
+.income-missing-cell {
+  width: 100%;
+  min-height: 44px;
+  color: var(--warning);
+  border: 1px dashed var(--warning);
+  border-radius: 8px;
+  background: var(--warning-soft);
+  font: inherit;
+  font-weight: 800;
+}
+.income-missing-cell:hover {
+  background: color-mix(in srgb, var(--warning) 15%, var(--warning-soft));
+}
+.dialog-data-table :is(th, td) {
+  vertical-align: middle;
+}
+.dialog-data-table .is-numeric {
+  white-space: nowrap;
+}
+.dialog-data-table .is-actions {
+  width: 112px;
+  text-align: center;
+}
+.dialog-data-table .is-actions .expense-actions {
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+.dialog-data-table .is-date {
+  width: 132px;
+  white-space: nowrap;
+}
+.dialog-tabs button {
+  color: var(--text);
+  font-weight: 750;
+  border-color: var(--border);
+}
+.dialog-tabs button[aria-selected="true"] {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: inset 0 -2px var(--primary);
+}
+.dialog-tabs-content {
+  min-height: min(460px, 50dvh);
+}
+.dialog-stable-tabs {
+  height: min(720px, calc(100dvh - 32px));
+}
+.dialog-stable-tabs .dialog-body {
+  flex: 1;
+}

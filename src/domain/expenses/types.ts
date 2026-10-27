@@ -84,10 +84,7 @@ export interface ExpenseBook {
   years: ExpenseYear[];
   audit: Audit[];
 }
-export interface Clock {
-  today: string;
-  now: string;
-}
+export type { Clock } from "../shared/types";
 export interface ExpenseView {
   book: ExpenseBook | null;
   rows: ExpenseRow[];

@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { moneySchema, monthSchema } from "../expenses/schema";
+import {
+  expenseMoneySchema as moneySchema,
+  expenseMonthSchema as monthSchema,
+} from "../shared/schema";
 export const fundIds = ["emergency", "rainy_day", "sinking"] as const;
 export const fundIdSchema = z.enum(fundIds);
 const name = z.string().trim().min(1).max(100);

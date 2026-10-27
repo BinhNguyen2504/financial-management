@@ -1,0 +1,148 @@
+.savings-chart-interactive {
+  position: relative;
+  min-width: 0;
+}
+.savings-chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  display: grid;
+  gap: 5px;
+  width: min(260px, calc(100% - 16px));
+  padding: 12px 14px;
+  transform: translateY(calc(-100% - 12px));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 6px 20px #0002;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.savings-chart-tooltip span {
+  color: var(--muted);
+}
+
+.income-chart [data-tooltip-key] {
+  cursor: pointer;
+}
+.income-chart [data-active] .income-bar {
+  fill: var(--accent);
+}
+.income-missing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.label-visual {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--primary);
+  vertical-align: middle;
+}
+.label-visual img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+.label-name {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  vertical-align: middle;
+  max-width: 100%;
+  white-space: normal;
+}
+.dialog-data-table .label-name {
+  min-height: 44px;
+  gap: 12px;
+}
+.dialog-data-table .label-name > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.label-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.label-select select {
+  flex: 1;
+}
+.form-field > label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.column-table table :is(th, td)[data-column-kind="money"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.column-table table :is(th, td)[data-column-kind="text"]:not(.is-numeric) {
+  text-align: left;
+}
+.column-table table :is(th, td)[data-column-kind="actions"] {
+  text-align: center;
+}
+.column-table table td[data-column-kind="actions"] .expense-actions {
+  justify-content: center;
+}
+.expense-desktop-table .column-table table {
+  min-width: calc(200px + var(--visible-columns) * 115px);
+}
+.emoji-search {
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.emoji-search input {
+  width: 100%;
+}
+
+.income-table-wrap .column-table-scroll {
+  scroll-padding-inline: 170px 16px;
+}
+.income-table :is(button, a) {
+  scroll-margin-block: 110px 24px;
+  scroll-margin-inline: 170px 24px;
+}
+@media (max-width: 650px) {
+  .income-table-wrap .column-table-scroll {
+    scroll-padding-inline-start: 150px;
+  }
+}
+
+.expense-section-heading {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.income-chart .expense-section-heading {
+  align-items: end;
+}
+
+.income-table small.status-missing {
+  color: var(--warning);
+  font-weight: 800;
+  padding: 4px 8px;
+  margin-top: 6px;
+}
+
+.column-table,
+.income-missing-cell {
+  position: relative;
+}
+
+.income-item h3:has(svg) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

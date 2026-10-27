@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { commandFingerprint } from "./shared/command-fingerprint";
 import { applyAction, IncomeError, toView } from "../domain/income/engine";
 import { commandSchema, type IncomeCommand } from "../domain/income/schema";
 import type { Clock, IncomeBook } from "../domain/income/types";
@@ -34,15 +34,6 @@ export interface IncomeRepository {
     fn: (tx: IncomeTransaction) => Promise<T>,
   ): Promise<T>;
 }
-function canonical(v: unknown): string {
-  if (Array.isArray(v)) return `[${v.map(canonical).join(",")}]`;
-  if (v && typeof v === "object")
-    return `{${Object.entries(v)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([k, val]) => `${JSON.stringify(k)}:${canonical(val)}`)
-      .join(",")}}`;
-  return JSON.stringify(v);
-}
 export async function runIncomeCommand(
   repository: IncomeRepository,
   owner: string,
@@ -51,9 +42,7 @@ export async function runIncomeCommand(
   preview = false,
 ): Promise<CommandResult> {
   const command = commandSchema.parse(input);
-  const fingerprint = createHash("sha256")
-    .update(canonical(command))
-    .digest("hex");
+  const fingerprint = commandFingerprint(command);
   return repository.transaction(owner, async (tx) => {
     const remembered = await tx.command(command.id);
     if (remembered) {

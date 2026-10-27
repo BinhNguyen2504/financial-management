@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { commandFingerprint } from "./shared/command-fingerprint";
 import { applyAction, FundError, toView } from "../domain/funds/engine";
 import { commandSchema, type FundCommand } from "../domain/funds/schema";
 import type { FundBook, FundState, LivingSource } from "../domain/funds/types";
@@ -27,15 +27,6 @@ export interface FundRepository {
     fn: (tx: FundTransactionRepository) => Promise<T>,
   ): Promise<T>;
 }
-function canonical(v: unknown): string {
-  if (Array.isArray(v)) return `[${v.map(canonical).join(",")}]`;
-  if (v && typeof v === "object")
-    return `{${Object.entries(v)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([k, x]) => `${JSON.stringify(k)}:${canonical(x)}`)
-      .join(",")}}`;
-  return JSON.stringify(v);
-}
 export async function runFundCommand(
   repository: FundRepository,
   owner: string,
@@ -44,7 +35,7 @@ export async function runFundCommand(
   preview = false,
 ): Promise<FundCommandResult> {
   const command = commandSchema.parse(raw),
-    fingerprint = createHash("sha256").update(canonical(command)).digest("hex");
+    fingerprint = commandFingerprint(command);
   return repository.transaction(owner, async (tx) => {
     const stored = await tx.command(command.id);
     if (stored) {

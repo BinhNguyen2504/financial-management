@@ -17,12 +17,12 @@ import type {
   InvestmentView,
   Position,
 } from "@/domain/investments/types";
-import { ExpenseModal } from "@/features/expenses/modal";
+import { Modal as ExpenseModal } from "@/components/modal";
 import {
   Trash2 as DeleteCommandGlyph,
   Pencil as EditCommandGlyph,
 } from "lucide-react";
-import { transactionNames, type EditorMode } from "./editor";
+import { transactionNames, type EditorMode } from "./editor-config";
 
 const fieldNames: Record<string, string> = {
   amount: "Số tiền trước phí / thuế",

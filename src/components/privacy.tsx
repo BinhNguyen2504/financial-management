@@ -1,7 +1,7 @@
 "use client";
 import { useI18n } from "@/i18n/provider";
 
-import { money } from "@/features/expenses/format";
+import { formatMoney as money } from "@/i18n/format";
 import { Eye, EyeOff } from "lucide-react";
 import {
   createContext,
@@ -38,6 +38,7 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
     } catch {
       /* Use the preference for this session. */
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Synchronize the scoped reveal state with the existing privacy boundary.
     setState({ hidden, ready: true, revision: 0 });
     const sync = (event: StorageEvent) => {
       if (event.key === STORAGE_KEY || event.key === null)

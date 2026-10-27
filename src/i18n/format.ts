@@ -17,7 +17,7 @@ export function formatDecimal(
   return `${sign}${BigInt(whole).toLocaleString(intlLocale(locale))}${fraction ? `${locale === "vi" ? "," : "."}${fraction}` : ""}`;
 }
 
-export function formatDate(value: string, locale: Locale = "vi") {
+export function formatDate(value: string, _locale: Locale = "vi") {
   const [year, month, day] = value.slice(0, 10).split("-");
   if (!day) return `${month}/${year}`;
   // Both selected locales use day/month/year. Never parse a date-only value as local time.

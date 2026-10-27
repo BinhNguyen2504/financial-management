@@ -126,9 +126,9 @@ async function login(page: Page, next = "/settings") {
   await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(new RegExp(`${next}$`));
 }
-async function command(page: Page, module: string, action: unknown) {
-  const view = await (await page.request.get(`/api/v1/${module}`)).json();
-  const r = await page.request.post(`/api/v1/${module}/commands`, {
+async function command(page: Page, feature: string, action: unknown) {
+  const view = await (await page.request.get(`/api/v1/${feature}`)).json();
+  const r = await page.request.post(`/api/v1/${feature}/commands`, {
     headers: { origin: origin() },
     data: {
       id: randomUUID(),
@@ -325,8 +325,8 @@ test("full transfer, optional profile failure/retry, download and responsive set
     ).toBeHidden();
     await target.goto("/settings");
     await expect(target.locator("#backup-file")).toBeDisabled();
-    for (const module of ["budgets", "savings", "investments"]) {
-      await target.goto(`/${module}`);
+    for (const feature of ["budgets", "savings", "investments"]) {
+      await target.goto(`/${feature}`);
       await expect(
         target.getByRole("button", { name: /Sao lưu JSON|Tải backup JSON/ }),
       ).toHaveCount(0);
@@ -381,7 +381,7 @@ test("retry after commit keeps one copy and leaves profile untouched by default"
     await context.close();
   }
 });
-test("empty suggestion, session dismissal, errors and single-module data detection", async ({
+test("empty suggestion, session dismissal, errors and single-feature data detection", async ({
   page,
 }) => {
   await login(page, "/overview");

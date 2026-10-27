@@ -1,16 +1,18 @@
 "use client";
+import { sliceOffsets } from "@/lib/chart-data";
+
 import { formatDate, formatMonth } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import { ColumnTable } from "@/components/column-table";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
 import type { SavingsReport } from "@/domain/savings/reports";
-import { donutSlices } from "@/features/expenses/chart-data";
-import { ratio } from "@/features/expenses/format";
+import { donutSlices } from "@/lib/chart-data";
+import { ratio } from "@/domain/shared/money";
 import { formatDecimal } from "@/i18n/format";
 import { useState } from "react";
 import { useChartTooltip } from "./chart-tooltip";
-import { kindNames } from "./editor";
+import { kindNames } from "./editor-config";
 export function SavingsReports({
   report: r,
   compact = false,
@@ -88,7 +90,7 @@ export function SavingsReports({
     ),
     selectedMark = marks.find((m) => m.key === timeline.active),
     selectedSlice = slices.find((s) => s.key === allocation.active);
-  let offset = 0;
+  const offsets = sliceOffsets(slices);
   return (
     <>
       {!compact && (
@@ -395,8 +397,7 @@ export function SavingsReports({
                     strokeWidth="20"
                   />
                   {slices.map((s, i) => {
-                    const start = offset;
-                    offset += s.percent;
+                    const start = offsets[i];
                     return (
                       <circle
                         key={s.key}

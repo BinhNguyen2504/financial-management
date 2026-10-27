@@ -530,7 +530,7 @@ test("foreground refresh keeps drafts on network failure and clears data on auth
   await page.route("**/api/v1/funds", (route) =>
     route.fulfill({
       status: 503,
-      json: { error: "Mạng kiểm thử tạm gián đoạn" },
+      json: { error: "Kết nối kiểm thử tạm gián đoạn" },
     }),
   );
   await page.clock.setFixedTime(Date.now() + 61000);
@@ -539,7 +539,7 @@ test("foreground refresh keeps drafts on network failure and clears data on auth
     window.dispatchEvent(new Event("focus"));
   });
   await expect(page.locator(".fund-workspace > [role=alert]")).toContainText(
-    "Mạng kiểm thử",
+    "Kết nối kiểm thử",
   );
   await expect(page.getByLabel("Số tiền (VND)", { exact: true })).toHaveValue(
     "500",

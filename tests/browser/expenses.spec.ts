@@ -1,3 +1,4 @@
+import { completeTestEmailLogin } from "./helpers/test-email-login";
 import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { toView, vietnamClock } from "../../src/domain/expenses/engine";
@@ -14,11 +15,7 @@ const prior =
 const email = () => `${randomUUID()}@example.test`;
 async function login(page: Page, address: string) {
   await page.goto("/login?next=/budgets");
-  await page.getByLabel("Email", { exact: true }).fill(address);
-  await page
-    .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
-    .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
+  await completeTestEmailLogin(page, address);
   await expect(
     page
       .getByRole("button", { name: "Chọn tháng bắt đầu" })

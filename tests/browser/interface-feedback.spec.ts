@@ -18,13 +18,13 @@ async function login(page: Page, path = "/income") {
   await expect(page).toHaveURL(new RegExp(`${path}$`));
   await expect(page.locator(".privacy-toggle")).toBeEnabled();
 }
-async function command(page: Page, module: string, action: unknown) {
+async function command(page: Page, feature: string, action: unknown) {
   const view = await (
     await page.request.get(
-      `/api/v1/${module}${module === "income" ? `?year=${year}` : ""}`,
+      `/api/v1/${feature}${feature === "income" ? `?year=${year}` : ""}`,
     )
   ).json();
-  const response = await page.request.post(`/api/v1/${module}/commands`, {
+  const response = await page.request.post(`/api/v1/${feature}/commands`, {
     headers: { origin: process.env.TEST_BASE_URL! },
     data: {
       id: randomUUID(),
@@ -341,28 +341,28 @@ test("unchanged drafts and field errors work consistently in savings and investm
   page,
 }) => {
   await login(page, "/savings");
-  for (const module of ["savings", "investments"] as const) {
-    await command(page, module, {
+  for (const feature of ["savings", "investments"] as const) {
+    await command(page, feature, {
       type: "createCategory",
       id: randomUUID(),
-      start: module === "savings" ? month : today,
+      start: feature === "savings" ? month : today,
       kind: "cash",
       name: "Ví kiểm tra biểu mẫu",
       description: "",
       emoji: "🌱",
-      ...(module === "savings" ? { unit: null } : {}),
+      ...(feature === "savings" ? { unit: null } : {}),
     });
-    await page.goto(`/${module}`);
+    await page.goto(`/${feature}`);
     await page
       .getByRole("tab", {
-        name: module === "savings" ? "Danh mục" : "Quản lý",
+        name: feature === "savings" ? "Danh mục" : "Quản lý",
         exact: true,
       })
       .click();
     await page
       .getByRole("button", {
         name:
-          module === "savings"
+          feature === "savings"
             ? "Sửa danh mục Ví kiểm tra biểu mẫu"
             : "Sửa Ví kiểm tra biểu mẫu",
         exact: true,
@@ -380,7 +380,7 @@ test("unchanged drafts and field errors work consistently in savings and investm
     await expect(preview).toBeDisabled();
     await page
       .getByRole("button", {
-        name: module === "investments" ? "Đóng form" : "Hủy",
+        name: feature === "investments" ? "Đóng form" : "Hủy",
         exact: true,
       })
       .click();
@@ -396,7 +396,7 @@ test("unchanged drafts and field errors work consistently in savings and investm
     ).toHaveAttribute("aria-invalid", "true");
     await page
       .getByRole("button", {
-        name: module === "investments" ? "Đóng form" : "Hủy",
+        name: feature === "investments" ? "Đóng form" : "Hủy",
         exact: true,
       })
       .click();

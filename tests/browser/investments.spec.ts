@@ -130,7 +130,7 @@ test("complete aggregate investing flow, reports, downloads and responsive light
     .getByLabel("Giá trị tài sản còn giữ sau giao dịch (VND)", { exact: true })
     .fill("95000000");
   await save(page);
-  let v = await view(page);
+  const v = await view(page);
   expect(v.state.positions.find((p) => p.id === asset)).toMatchObject({
     cost: "85010000",
     value: "95000000",

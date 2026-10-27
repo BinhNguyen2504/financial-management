@@ -1,4 +1,4 @@
-import { responseFieldErrors, responseMessage } from "@/i18n/error-messages";
+import { jsonBody, requestJSON, downloadFile } from "@/lib/http-client";
 export class SavingsAPIError extends Error {
   constructor(
     message: string,
@@ -10,54 +10,17 @@ export class SavingsAPIError extends Error {
   }
 }
 export async function savingsJSON<T>(path: string, body?: unknown): Promise<T> {
-  let response: Response;
-  try {
-    response = await fetch(`/api/v1/savings${path}`, {
-      cache: "no-store",
-      ...(body === undefined
-        ? {}
-        : {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          }),
-    });
-  } catch {
-    throw new SavingsAPIError(
+  return requestJSON<T>(`/api/v1/savings${path}`, () => jsonBody(body), {
+    network:
       "Mất kết nối. Nội dung đang nhập được giữ; hãy thử lại khi có mạng.",
-      "NETWORK_ERROR",
-      0,
-    );
-  }
-  let data;
-  try {
-    data = await response.json();
-  } catch {
-    throw new SavingsAPIError(
-      "Phản hồi chưa hợp lệ. Hãy thử lại.",
-      "INVALID_RESPONSE",
-      response.status,
-    );
-  }
-  if (!response.ok)
-    throw new SavingsAPIError(
-      responseMessage(data, "Không thể tải dữ liệu."),
-      data.code ?? "REQUEST_FAILED",
-      response.status,
-      responseFieldErrors(data),
-    );
-  return data as T;
+    invalidResponse: "Phản hồi chưa hợp lệ. Hãy thử lại.",
+    fallback: "Không thể tải dữ liệu.",
+    fallbackCode: "REQUEST_FAILED",
+    error: (message, code, status, fields) =>
+      new SavingsAPIError(message, code, status ?? 0, fields),
+  });
 }
+
 export async function downloadSavings(path: string, filename: string) {
-  const response = await fetch(`/api/v1/savings${path}`, { cache: "no-store" });
-  if (!response.ok) {
-    const v = await response.json();
-    throw new Error(v.error ?? "Không thể xuất dữ liệu.");
-  }
-  const url = URL.createObjectURL(await response.blob()),
-    a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return downloadFile(`/api/v1/savings${path}`, filename);
 }

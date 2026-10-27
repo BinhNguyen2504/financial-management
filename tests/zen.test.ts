@@ -55,9 +55,9 @@ describe("Jar emoji metadata", () => {
       clock,
     );
     expect(after.inputs).toEqual(b.inputs);
-    expect(materialize(after, clock).map(({ emoji, ...r }) => r)).toEqual(
-      before.map(({ emoji, ...r }) => r),
-    );
+    expect(
+      materialize(after, clock).map(({ emoji: _emoji, ...r }) => r),
+    ).toEqual(before.map(({ emoji: _emoji, ...r }) => r));
     expect(
       materialize(after, clock).find((r) => r.month === "2026-12")?.emoji,
     ).toBe("🍜");

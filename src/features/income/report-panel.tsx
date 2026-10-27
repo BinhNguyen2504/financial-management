@@ -7,7 +7,8 @@ import { ColumnTable } from "@/components/column-table";
 import { useMoney } from "@/components/privacy";
 import type { IncomeReport } from "@/domain/income/reports";
 import type { IncomeRow } from "@/domain/income/types";
-import { monthName, ratio } from "@/features/expenses/format";
+import { formatMonth as monthName } from "@/i18n/format";
+import { ratio } from "@/domain/shared/money";
 import { useState } from "react";
 import { missingIncomeRows } from "./missing-income";
 export function useDisplayMoney() {

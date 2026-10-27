@@ -1,131 +1,70 @@
 "use client";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { formatDate } from "@/i18n/format";
-import { useI18n } from "@/i18n/provider";
 
 import { Garden } from "@/components/garden";
 import { AssetScene } from "@/components/asset-scene";
 import { LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
-import { useMoney, useMoneyHidden } from "@/components/privacy";
-import { useToast } from "@/components/toast";
-import {
-  activeTransactions,
-  endOfMonth,
-  ruleAt,
-} from "@/domain/savings/engine";
-import { buildReport, type ReportFilter } from "@/domain/savings/reports";
+
+import { endOfMonth, ruleAt } from "@/domain/savings/engine";
+import { type ReportFilter } from "@/domain/savings/reports";
 import { monthSchema } from "@/domain/savings/schema";
-import type { CategoryPosition, SavingsView } from "@/domain/savings/types";
+import type { CategoryPosition } from "@/domain/savings/types";
 import { HelpButton, HelpPageTitle } from "@/features/help/provider";
 import { formatDecimal } from "@/i18n/format";
 import { Download, Plus, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { SavingsAPIError, downloadSavings, savingsJSON } from "./api";
+
 import { SavingsDetails } from "./details";
 import { SavingsCategoryTable, SavingsTransactionTable } from "./ledger-tables";
-import {
-  SavingsEditor,
-  kindNames,
-  transactionNames,
-  type EditorMode,
-} from "./editor";
-import { SavingsReports } from "./report-panel";
-export function SavingsWorkspace({
-  configured,
-  initialToday,
-}: {
-  configured: boolean;
-  initialToday: string;
-}) {
-  const { t: tr, locale, config: localize } = useI18n("savings");
+import { SavingsEditor } from "./editor";
 
-  const toast = useToast();
-  const money = useMoney(),
-    hidden = useMoneyHidden();
-  const [month, setMonth] = useState(initialToday.slice(0, 7)),
-    [view, setView] = useState<SavingsView | null>(null),
-    [tab, setTab] = useState("overview"),
-    [error, setError] = useState(""),
-    [status, setStatus] = useState(0),
-    [loading, setLoading] = useState(true);
-  const [editor, setEditor] = useState<EditorMode | null>(null),
-    [details, setDetails] = useState<string | null>(null);
-  const [filter, setFilter] = useState<ReportFilter>({
-    from: `${initialToday.slice(0, 4)}-01-01`,
-    to: initialToday,
-  });
-  const [activityCategory, setActivityCategory] = useState(""),
-    [activityKind, setActivityKind] = useState("");
-  const request = useRef(0);
-  const load = useCallback(async () => {
-    const n = ++request.current;
-    setLoading(true);
-    try {
-      const v = await savingsJSON<SavingsView>(`?month=${month}`);
-      if (request.current === n) {
-        setView(v);
-        setError("");
-        setStatus(0);
-      }
-      return v;
-    } catch (e) {
-      if (request.current === n) {
-        setError(e instanceof Error ? e.message : tr("Chưa tải được dữ liệu."));
-        setStatus(e instanceof SavingsAPIError ? e.status : 0);
-      }
-      throw e;
-    } finally {
-      if (request.current === n) setLoading(false);
-    }
-  }, [month]);
-  useEffect(() => {
-    if (configured) void load().catch(() => {});
-    else setLoading(false);
-  }, [configured, load]);
-  const today = view?.today ?? initialToday;
-  const categories = view?.book?.categories ?? [];
-  const report = (() => {
-    if (!view) return null;
-    try {
-      return buildReport(view.book, filter, {
-        today,
-        now: `${today}T00:00:00Z`,
-      });
-    } catch {
-      return null;
-    }
-  })();
-  const monthly = view
-    ? buildReport(
-        view.book,
-        { from: `${month}-01`, to: endOfMonth(month) },
-        { today, now: `${today}T00:00:00Z` },
-      )
-    : null;
-  const overviewReport = view
-    ? buildReport(
-        view.book,
-        { from: `${month.slice(0, 4)}-01-01`, to: endOfMonth(month) },
-        { today, now: `${today}T00:00:00Z` },
-      )
-    : null;
-  const transactions = view?.book
-    ? activeTransactions(view.book).map((r) => r.transaction)
-    : [];
-  const selected = details
-    ? view?.state.positions.find((p) => p.id === details)
-    : undefined;
-  const display = (v: string | null) =>
-    v === null ? tr("Thiếu định giá") : money(v);
-  async function download(path: string, name: string) {
-    try {
-      await downloadSavings(path, name);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : tr("Chưa xuất được dữ liệu."));
-    }
-  }
+import { kindNames, transactionNames } from "./editor-config";
+import { SavingsReports } from "./report-panel";
+import { useSavingsWorkspace } from "./use-savings-workspace";
+
+export function SavingsWorkspace(
+  props: Parameters<typeof useSavingsWorkspace>[0],
+) {
+  const controller = useSavingsWorkspace(props);
+  const {
+    localize,
+    tr,
+    display,
+    hidden,
+    locale,
+    money,
+    setDetails,
+    configured,
+    error,
+    status,
+    load,
+    loading,
+    view,
+    month,
+    today,
+    setMonth,
+    setEditor,
+    categories,
+    tab,
+    setTab,
+    monthly,
+    overviewReport,
+    activityCategory,
+    setActivityCategory,
+    activityKind,
+    setActivityKind,
+    monthlyTransactions,
+    setFilter,
+    filter,
+    report,
+    download,
+    reportTransactions,
+    selected,
+    editor,
+    toast,
+  } = controller;
   function position(p: CategoryPosition) {
     return (
       <>
@@ -175,17 +114,6 @@ export function SavingsWorkspace({
       </>
     );
   }
-  const monthlyTransactions = transactions.filter(
-    (t) =>
-      t.date >= `${month}-01` &&
-      t.date <= endOfMonth(month) &&
-      (!activityCategory ||
-        t.categoryId === activityCategory ||
-        ("cashCategoryId" in t && t.cashCategoryId === activityCategory)) &&
-      (!activityKind || t.kind === activityKind),
-  );
-  const reportIds = new Set(report?.effects.map((effect) => effect.id));
-  const reportTransactions = transactions.filter((t) => reportIds.has(t.id));
   return (
     <div className="savings-workspace" onMouseDownCapture={focusPointerControl}>
       <div className="expense-page-heading illustrated-heading">

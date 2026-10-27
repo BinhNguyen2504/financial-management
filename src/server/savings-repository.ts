@@ -1,5 +1,6 @@
+import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
-import postgres from "postgres";
+import type postgres from "postgres";
 import type { SavingsBook } from "../domain/savings/types";
 import type {
   SavingsRepository,
@@ -153,15 +154,8 @@ export function postgresSavingsRepository(
     ): Promise<T> {
       if (!/^[0-9a-f-]{36}$/i.test(owner))
         throw new Error("Invalid authenticated owner");
-      return (await sql.begin(async (tx) => {
-        await tx.unsafe("set local role authenticated");
-        await tx.unsafe("select set_config('request.jwt.claims',$1,true)", [
-          JSON.stringify({ sub: owner, role: "authenticated" }),
-        ]);
-        await tx.unsafe(
-          "select pg_advisory_xact_lock(hashtextextended($1,0))",
-          [`savings:${owner}`],
-        );
+      return (await withOwnerTransaction(sql, owner, async (tx) => {
+        await lockOwner(tx, [`savings:${owner}`]);
         return fn(adapter(tx, owner));
       })) as T;
     },

@@ -1,9 +1,6 @@
 import type { InvestmentAction, InvestmentTransaction } from "./schema";
 export type { InvestmentTransaction } from "./schema";
-export interface Clock {
-  today: string;
-  now: string;
-}
+export type { Clock } from "../shared/types";
 export interface CategoryRule {
   date: string;
   sequence: number;

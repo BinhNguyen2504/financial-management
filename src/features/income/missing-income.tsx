@@ -2,7 +2,7 @@
 import { useI18n } from "@/i18n/provider";
 
 import type { IncomeRow } from "@/domain/income/types";
-import { monthName } from "@/features/expenses/format";
+import { formatMonth as monthName } from "@/i18n/format";
 import { AlertCircle, PlusCircle } from "lucide-react";
 
 export function missingIncomeRows(rows: IncomeRow[], today: string) {

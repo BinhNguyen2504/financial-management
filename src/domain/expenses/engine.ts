@@ -19,19 +19,8 @@ export class ExpenseError extends Error {
     super(message);
   }
 }
-export function vietnamClock(date = new Date()): Clock {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Ho_Chi_Minh",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(date);
-  const part = (type: string) => parts.find((p) => p.type === type)!.value;
-  return {
-    today: `${part("year")}-${part("month")}-${part("day")}`,
-    now: date.toISOString(),
-  };
-}
+export { vietnamClock } from "../shared/clock";
+
 export function monthRange(start: Month, end: Month): Month[] {
   const result: Month[] = [];
   for (let m = start; m <= end;) {

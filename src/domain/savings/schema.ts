@@ -1,13 +1,7 @@
+import { dateSchema } from "../shared/schema";
 import { z } from "zod";
-import { moneySchema, monthSchema } from "../income/schema";
+import { moneySchema, monthSchema } from "../shared/schema";
 export { moneySchema, monthSchema };
-export const dateSchema = z
-  .string()
-  .regex(/^20\d{2}-\d{2}-\d{2}$/)
-  .refine((v) => {
-    const d = new Date(`${v}T00:00:00Z`);
-    return !Number.isNaN(d.valueOf()) && d.toISOString().slice(0, 10) === v;
-  }, "Ngày không hợp lệ.");
 const id = z.uuid();
 const text = z.string().trim().max(1000);
 const name = z.string().trim().min(1).max(100);
@@ -223,3 +217,5 @@ export const commandSchema = z
   })
   .strict();
 export type SavingsCommand = z.infer<typeof commandSchema>;
+
+export { dateSchema };

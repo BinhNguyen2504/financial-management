@@ -1,13 +1,10 @@
+import { completeTestEmailLogin } from "./helpers/test-email-login";
 import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 
 async function login(page: Page, address = `${randomUUID()}@example.test`) {
   await page.goto("/login?next=/profile");
-  await page.getByLabel("Email", { exact: true }).fill(address);
-  await page
-    .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
-    .click();
-  await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
+  await completeTestEmailLogin(page, address);
   await expect(page).toHaveURL(/\/profile$/);
   await expect(page.getByLabel("Họ và tên", { exact: true })).toBeVisible();
   return address;

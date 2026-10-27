@@ -1,4 +1,4 @@
-import { responseFieldErrors, responseMessage } from "@/i18n/error-messages";
+import { jsonBody, requestJSON } from "@/lib/http-client";
 export class IncomeAPIError extends Error {
   constructor(
     message: string,
@@ -10,41 +10,13 @@ export class IncomeAPIError extends Error {
   }
 }
 export async function incomeJSON<T>(path: string, body?: unknown): Promise<T> {
-  let response: Response;
-  try {
-    response = await fetch(`/api/v1/income${path}`, {
-      cache: "no-store",
-      ...(body === undefined
-        ? {}
-        : {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          }),
-    });
-  } catch {
-    throw new IncomeAPIError(
+  return requestJSON<T>(`/api/v1/income${path}`, () => jsonBody(body), {
+    network:
       "Mất kết nối. Nội dung đang nhập được giữ lại; hãy thử lại khi có mạng.",
-      "NETWORK_ERROR",
-      0,
-    );
-  }
-  let value;
-  try {
-    value = await response.json();
-  } catch {
-    throw new IncomeAPIError(
-      "Máy chủ chưa phản hồi dữ liệu hợp lệ. Vui lòng thử lại.",
-      "INVALID_RESPONSE",
-      response.status,
-    );
-  }
-  if (!response.ok)
-    throw new IncomeAPIError(
-      responseMessage(value, "Không thể tải dữ liệu."),
-      value.code ?? "REQUEST_FAILED",
-      response.status,
-      responseFieldErrors(value),
-    );
-  return value as T;
+    invalidResponse: "Máy chủ chưa phản hồi dữ liệu hợp lệ. Vui lòng thử lại.",
+    fallback: "Không thể tải dữ liệu.",
+    fallbackCode: "REQUEST_FAILED",
+    error: (message, code, status, fields) =>
+      new IncomeAPIError(message, code, status ?? 0, fields),
+  });
 }

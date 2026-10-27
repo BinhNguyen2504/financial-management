@@ -49,6 +49,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, [toast, hovered, focused]);
   useEffect(() => {
     // A toast moves between viewports when the native dialog stack changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset pause state when the native dialog stack moves the toast viewport.
     setHovered(false);
     setFocused(false);
   }, [activeDialog]);
@@ -90,7 +91,8 @@ export function ToastViewport({
   if (
     !context?.toast ||
     (dialogRef
-      ? context.activeDialog !== dialogRef.current
+      ? // eslint-disable-next-line react-hooks/refs -- Native dialog stack events trigger rendering; the ref identifies its existing DOM host.
+        context.activeDialog !== dialogRef.current
       : !!context.activeDialog)
   )
     return null;

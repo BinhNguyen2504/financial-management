@@ -9,18 +9,8 @@ export class IncomeError extends Error {
     super(message);
   }
 }
-export function incomeClock(): Clock {
-  const now = new Date();
-  return {
-    today: new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Ho_Chi_Minh",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(now),
-    now: now.toISOString(),
-  };
-}
+export { incomeClock } from "../shared/clock";
+
 export function ruleAt(category: IncomeCategory, month: string) {
   return category.rules
     .filter((r) => r.month <= month)

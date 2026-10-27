@@ -20,6 +20,7 @@ export function ImportSuggestion() {
   useEffect(() => {
     let active = true;
     const key = `fm-import-dismissed:${user?.id}`;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset the previous account suggestion before checking the new owner.
     setVisible(false);
     const refresh = async () => {
       if (!user || document.visibilityState !== "visible") return;
@@ -51,6 +52,7 @@ export function ImportSuggestion() {
       active = false;
       unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Key account-owned state to user identity; metadata refreshes must preserve drafts.
   }, [user?.id]);
   if (!visible) return null;
   return (

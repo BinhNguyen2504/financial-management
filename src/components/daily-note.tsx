@@ -30,6 +30,7 @@ export function DailyNote() {
       clearTimeout(timer);
       document.removeEventListener("visibilitychange", update);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Select the daily note on the existing date and visibility schedule.
   }, []);
   return (
     <aside className="daily-note">

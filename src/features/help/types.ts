@@ -16,3 +16,9 @@ export type HelpSection = {
 };
 export type HelpArticle = { sections: HelpSection[] };
 export type HelpArticles = Record<HelpPageId, HelpArticle>;
+
+export type HelpRequest = {
+  pageId: HelpPageId;
+  sectionId?: string;
+  pathname: string;
+};

@@ -1,4 +1,4 @@
-import type { GardenVariant } from "./garden";
+import type { GardenVariant } from "./garden-types";
 
 const ink = "var(--water-ink)",
   water = "var(--water-fill)",

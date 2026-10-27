@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { commandFingerprint } from "./shared/command-fingerprint";
 import {
   applyAction,
   changes,
@@ -28,15 +28,6 @@ export interface ExpenseRepository {
     fn: (transaction: ExpenseTransaction) => Promise<T>,
   ): Promise<T>;
 }
-function canonical(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
-  if (value !== null && typeof value === "object")
-    return `{${Object.entries(value)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([k, v]) => `${JSON.stringify(k)}:${canonical(v)}`)
-      .join(",")}}`;
-  return JSON.stringify(value);
-}
 export async function runExpenseCommand(
   repository: ExpenseRepository,
   owner: string,
@@ -45,9 +36,7 @@ export async function runExpenseCommand(
   preview = false,
 ): Promise<CommandResult> {
   const command = commandSchema.parse(input);
-  const fingerprint = createHash("sha256")
-    .update(canonical(command))
-    .digest("hex");
+  const fingerprint = commandFingerprint(command);
   return repository.transaction(owner, async (tx) => {
     const remembered = await tx.command(command.id);
     if (remembered) {
