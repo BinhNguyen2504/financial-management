@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { formatDate, formatTime } from "@/i18n/format";
@@ -166,18 +168,23 @@ export function SavingsWorkspace(
               <div className="savings-toolbar">
                 <MonthYearSelect
                   label={tr("Tháng đang xem")}
+                  labelAccessory={
+                    <StatusBadge
+                      size="compact"
+                      tone={view.closed.includes(month) ? "success" : "warning"}
+                    >
+                      {view.closed.includes(month)
+                        ? tr("Đã chốt")
+                        : month === today.slice(0, 7)
+                          ? tr("Tạm tính")
+                          : tr("Chưa chốt")}
+                    </StatusBadge>
+                  }
                   value={month}
                   min="2000-01"
                   max={today.slice(0, 7)}
                   onChange={setMonth}
                 />
-                <span className="pill">
-                  {view.closed.includes(month)
-                    ? tr("Đã chốt")
-                    : month === today.slice(0, 7)
-                      ? tr("Tạm tính")
-                      : tr("Chưa chốt")}
-                </span>
                 <div className="expense-actions">
                   <button
                     className="expense-secondary"
@@ -433,7 +440,7 @@ export function SavingsWorkspace(
                       label={`${tr("Giao dịch tháng")} ${month}`}
                       onEdit={setEditor}
                     />
-                    <details>
+                    <AnimatedDetails>
                       <summary>
                         {tr("Lịch sử thay đổi (")}
                         {view.book?.audit.length ?? 0})
@@ -446,7 +453,7 @@ export function SavingsWorkspace(
                           {"reason" in a.action ? ` · ${a.action.reason}` : ""}
                         </p>
                       ))}
-                    </details>
+                    </AnimatedDetails>
                   </section>
                 )}
                 {tab === "categories" && (

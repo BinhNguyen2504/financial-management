@@ -1,0 +1,127 @@
+/* Status colours stay semantic across all five visual identities. */
+:root,
+.public-shell.marketing-shell {
+  --badge-neutral-ink: #514e48;
+  --badge-neutral-fill: #eeece7;
+  --badge-info-ink: #285675;
+  --badge-info-fill: #e8f1f8;
+  --badge-success-ink: #305f42;
+  --badge-success-fill: #e8f2e9;
+  --badge-warning-ink: #79500f;
+  --badge-warning-fill: #fff1ce;
+  --badge-danger-ink: #973d35;
+  --badge-danger-fill: #fcece9;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --badge-neutral-ink: #dedbd3;
+    --badge-neutral-fill: #373936;
+    --badge-info-ink: #b7d8f2;
+    --badge-info-fill: #263b4d;
+    --badge-success-ink: #b7dfbf;
+    --badge-success-fill: #293e30;
+    --badge-warning-ink: #f3cf89;
+    --badge-warning-fill: #42351f;
+    --badge-danger-ink: #f7b5aa;
+    --badge-danger-fill: #482f2d;
+  }
+}
+:root[data-theme="dark"] {
+  --badge-neutral-ink: #dedbd3;
+  --badge-neutral-fill: #373936;
+  --badge-info-ink: #b7d8f2;
+  --badge-info-fill: #263b4d;
+  --badge-success-ink: #b7dfbf;
+  --badge-success-fill: #293e30;
+  --badge-warning-ink: #f3cf89;
+  --badge-warning-fill: #42351f;
+  --badge-danger-ink: #f7b5aa;
+  --badge-danger-fill: #482f2d;
+}
+.status-badge {
+  --badge-ink: var(--badge-neutral-ink);
+  --badge-fill: var(--badge-neutral-fill);
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--badge-ink) 42%, var(--badge-fill));
+  border-radius: 8px;
+  background: var(--badge-fill);
+  color: var(--badge-ink);
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-strong);
+  line-height: 1.5;
+  text-align: start;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.status-badge[data-size="compact"] {
+  padding: 2px 7px;
+  font-size: var(--font-size-12);
+}
+.status-badge[data-tone="info"] {
+  --badge-ink: var(--badge-info-ink);
+  --badge-fill: var(--badge-info-fill);
+}
+.status-badge[data-tone="success"] {
+  --badge-ink: var(--badge-success-ink);
+  --badge-fill: var(--badge-success-fill);
+}
+.status-badge[data-tone="warning"] {
+  --badge-ink: var(--badge-warning-ink);
+  --badge-fill: var(--badge-warning-fill);
+}
+.status-badge[data-tone="danger"] {
+  --badge-ink: var(--badge-danger-ink);
+  --badge-fill: var(--badge-danger-fill);
+}
+.status-badge.status-badge > svg {
+  flex: none;
+  width: 14px;
+  min-width: 14px;
+  max-width: 14px;
+  height: 14px;
+  margin: 0;
+  fill: none;
+  stroke: currentColor;
+}
+.status-badge-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Put the status next to the thing it describes; wrap the whole badge first. */
+.status-heading,
+.status-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-width: 0;
+}
+.status-heading > :is(h2, h3, h4) {
+  margin: 0;
+  min-width: 0;
+}
+:is(.status-heading, .status-meta) > .status-badge {
+  flex: none;
+}
+.status-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+.report-period-meta {
+  display: grid;
+  gap: 8px;
+  margin-block: 16px;
+}
+.report-period-meta > p {
+  margin: 0;
+}

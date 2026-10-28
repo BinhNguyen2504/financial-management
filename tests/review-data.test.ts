@@ -44,9 +44,15 @@ describe("Notion-inspired UI review dataset", () => {
       { type: "clearMonthly", categoryId, month: "2026-01" },
       clock,
     );
-    expect(() =>
-      applyAction(cleared, { type: "deleteCategory", categoryId }, clock),
-    ).toThrow(/đã có số thu/);
+    const deleted = applyAction(
+      cleared,
+      { type: "deleteCategory", categoryId },
+      clock,
+    );
+    expect(deleted.categories.find((c) => c.id === categoryId)?.deleted).toBe(
+      true,
+    );
+    expect(deleted.audit.slice(0, -1)).toEqual(cleared.audit);
   });
   it("uses Vietnam dates and rejects invalid dates or injected identifiers", () => {
     expect(vietnamToday(new Date("2026-12-31T18:00:00Z"))).toBe("2027-01-01");

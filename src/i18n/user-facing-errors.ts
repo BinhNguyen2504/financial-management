@@ -11,6 +11,8 @@ export function userFacingError(
   code?: string,
   fallback = "Chưa thể hoàn tất thao tác. Hãy thử lại.",
 ) {
+  if (code === "INVALID_RESPONSE")
+    return "Chưa nhận được dữ liệu. Hãy thử lại.";
   if (
     message.startsWith("Bản sao lưu không hợp lệ:") ||
     message.startsWith("File không phải bản sao lưu toàn tài khoản")

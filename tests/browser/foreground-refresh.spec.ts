@@ -10,7 +10,9 @@ async function login(page: Page) {
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
   await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
-  await expect(page.locator(".overview-start")).toBeVisible();
+  await expect(
+    page.locator('.overview-widget-grid[data-ready="true"]'),
+  ).toBeVisible();
 }
 
 async function command(
@@ -68,6 +70,18 @@ async function setup(page: Page, path: string) {
       description: "",
     });
   }
+  if (path === "/overview") {
+    const response = await page.request.put("/api/v1/overview/layout", {
+      headers: { origin: process.env.TEST_BASE_URL! },
+      data: {
+        schemaVersion: 1,
+        widgets: ["jars"],
+        jarIds: [id],
+        expectedRevision: 0,
+      },
+    });
+    expect(response.ok()).toBe(true);
+  }
   const now = Date.now();
   await page.clock.setFixedTime(now);
   await page.goto(path);
@@ -95,7 +109,11 @@ for (const path of ["/overview", "/budgets", "/income"]) {
     });
     if (isMobile) await page.setViewportSize({ width: 375, height: 812 });
     const pattern =
-      domain === "income" ? "**/api/v1/income?*" : "**/api/v1/expenses";
+      path === "/overview"
+        ? "**/api/v1/overview?*"
+        : domain === "income"
+          ? "**/api/v1/income?*"
+          : "**/api/v1/expenses";
     let release!: () => void;
     const gate = new Promise<void>((resolve) => {
       release = resolve;
@@ -171,7 +189,11 @@ test("background failures keep content, explicit retry recovers, and expired ses
   for (const path of ["/overview", "/budgets", "/income"]) {
     const { domain, now } = await setup(page, path);
     const pattern =
-      domain === "income" ? "**/api/v1/income?*" : "**/api/v1/expenses";
+      path === "/overview"
+        ? "**/api/v1/overview?*"
+        : domain === "income"
+          ? "**/api/v1/income?*"
+          : "**/api/v1/expenses";
     await page.route(pattern, (route) =>
       route.fulfill({
         status: 503,
@@ -196,7 +218,9 @@ test("background failures keep content, explicit retry recovers, and expired ses
     });
     const recovered = page.waitForResponse(
       (response) =>
-        response.url().includes(`/api/v1/${domain}`) &&
+        response
+          .url()
+          .includes(`/api/v1/${path === "/overview" ? "overview?" : domain}`) &&
         response.request().method() === "GET",
     );
     const retry = page.getByRole("button", {

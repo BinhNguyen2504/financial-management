@@ -32,6 +32,9 @@ export function LanguagePicker({ compact = false }: { compact?: boolean }) {
             English
           </option>
         </select>
+        <span className="public-language-code" aria-hidden="true">
+          {locale.toUpperCase()}
+        </span>
         <ChevronDown
           size={14}
           className="public-language-chevron"

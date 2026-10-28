@@ -135,3 +135,8 @@ Giữ bộ năm cảnh Đầu tư riêng, dùng bố cục tiêu đề chung tha
 ### Nhất quán toàn ứng dụng — 28/10/2026
 
 Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Thông tin danh mục và ghi chú dài dùng thành phần mở rộng chung. Lời nhắc lưu chưa xác nhận được rút gọn, vẫn nói rõ nội dung tạm giữ nguyên; logic khóa/retry không đổi. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).

@@ -1,4 +1,7 @@
 export const income = {
+  "{0} khoản cần bổ sung": "{0} entries to complete",
+  "{0} chưa nhập": "{0} not entered",
+
   "Cố định": "Regular",
   "Thu phát sinh": "One-off income",
   "Bảng thu nhập · VND": "Income table · VND",
@@ -54,7 +57,7 @@ export const income = {
   Nhập: "Enter",
   "Không thể tải dữ liệu. Hãy thử lại.": "Could not load data. Try again.",
   "Đã lưu. Chưa tải lại được dữ liệu; hãy thử tải lại.":
-    "Saved on the server. Could not refresh data; try refreshing.",
+    "Saved. Could not refresh data; try refreshing.",
   "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.":
     "Changes saved but data could not be refreshed.",
   "Chưa xuất được bảng dữ liệu. Hãy thử lại.":
@@ -154,8 +157,8 @@ export const income = {
     "Check the highlighted fields below.",
   "Không thể lưu. Kiểm tra kết nối và thử lại.":
     "Could not save. Check your connection and try again.",
-  "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.":
-    "Save result unconfirmed. Retry the same request.",
+  "Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra.":
+    "We could not confirm whether your changes were saved. Save again to check.",
   "Chưa hoàn tất. Hãy thử lại.": "Not completed. Try again.",
   Hủy: "Cancel",
   "Đang xử lý…": "Processing…",
@@ -164,8 +167,8 @@ export const income = {
   "Xác nhận lưu": "Confirm save",
   Lưu: "Save",
   "là thông tin cần nhập.": "is required.",
-  "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Lưu lại để kiểm tra cùng yêu cầu.":
-    "Save result unconfirmed. Keep your draft and click Save again to check the same request.",
+  "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm Lưu lại để kiểm tra.":
+    "We could not confirm whether your changes were saved. Your draft is kept; choose Save again to check.",
   "Hiểu khoản thu đang nhập": "Understand this income entry",
   "Đã tải dữ liệu mới. Kiểm tra nội dung trước khi lưu lại.":
     "New data loaded. Review your draft before saving again.",
@@ -173,8 +176,8 @@ export const income = {
     "Could not refresh data. Try again.",
   "Tải dữ liệu mới, giữ nội dung nhập": "Load new data, keep draft",
   "Thông tin thu nhập": "Income details",
-  "Xóa danh mục “{0}” chưa có số thu.":
-    "Delete category “{0}”, which has no recorded receipts.",
+  "Xóa danh mục “{0}”? Danh mục hiện không còn số thu ở bất kỳ tháng nào. Lịch sử thay đổi vẫn được giữ.":
+    "Delete category “{0}”? It has no remaining receipts in any month. Change history is preserved.",
   "Xóa số thu {0} của {1}? Tổng đã ghi nhận sẽ được tính lại. Lịch sử thay đổi vẫn được giữ.":
     "Delete the {0} receipt for {1}? The recorded total will be recalculated. Change history is preserved.",
   Tên: "Name",

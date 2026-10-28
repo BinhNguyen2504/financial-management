@@ -212,6 +212,52 @@ describe("Income PostgreSQL persistence and isolation", () => {
     expect(v.book!.oneOffs[0].deleted).toBe(true);
     expect(v.rows.some((r) => r.key === one)).toBe(false);
   });
+  it("deletes only categories with no remaining receipts across years and preserves their audit", async () => {
+    const { user, id } = await initialized();
+    await execute(user, 1, monthly(id, "2026-12", "0"));
+    await execute(user, 2, monthly(id, "2027-01", "10"));
+    await expect(
+      execute(user, 3, { type: "deleteCategory", categoryId: id }),
+    ).rejects.toThrow(/Ngừng/);
+    await execute(user, 3, {
+      type: "clearMonthly",
+      categoryId: id,
+      month: "2027-01",
+    });
+    await expect(
+      execute(user, 4, { type: "deleteCategory", categoryId: id }),
+    ).rejects.toThrow(/Ngừng/);
+    await execute(user, 4, {
+      type: "clearMonthly",
+      categoryId: id,
+      month: "2026-12",
+    });
+    const before = (await readIncomeView(repository, user, 2027, clock)).book!;
+    await execute(user, 5, { type: "deleteCategory", categoryId: id });
+    const after = await readIncomeView(repository, user, 2027, clock);
+    expect(after.rows).toEqual([]);
+    expect(after.book!.monthly).toEqual([]);
+    expect(after.book!.categories[0].deleted).toBe(true);
+    expect(after.book!.audit.slice(0, -1)).toEqual(before.audit);
+    expect(after.book!.audit.at(-1)?.action).toBe("deleteCategory");
+    expect((await readIncomeView(repository, user, 2026, clock)).rows).toEqual(
+      [],
+    );
+  });
+  it("rejects a stale deletion after another session records a receipt", async () => {
+    const { user, id } = await initialized();
+    await execute(user, 1, monthly(id));
+    await expect(
+      execute(user, 1, { type: "deleteCategory", categoryId: id }),
+    ).rejects.toMatchObject({ code: "VERSION_CONFLICT" });
+    await expect(
+      execute(user, 2, { type: "deleteCategory", categoryId: id }),
+    ).rejects.toThrow(/Ngừng/);
+    expect(
+      (await readIncomeView(repository, user, 2027, clock)).book!.categories[0]
+        .deleted,
+    ).toBe(false);
+  });
   it("preserves names and receipts after a stop and rolls over without duplicating money", async () => {
     const { user, id } = await initialized();
     await execute(user, 1, monthly(id));

@@ -120,8 +120,8 @@ export const funds = {
   "Chưa hoàn tất. Hãy thử lại.": "Not completed. Try again.",
   "Nhập thời điểm giao dịch hợp lệ.": "Enter a valid transaction time.",
   "Đã lưu thay đổi.": "Changes saved.",
-  "Chưa xác nhận được kết quả lưu. Kiểm tra hoặc thử lại cùng yêu cầu.":
-    "Save result unconfirmed. Check or retry the same request.",
+  "Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra.":
+    "We could not confirm whether your changes were saved. Save again to check.",
   "Chọn hũ sinh hoạt.": "Choose living cost jars.",
   "Chọn nơi giữ": "Choose holding location",
   " · Đã ngừng": " · Stopped",
@@ -133,8 +133,8 @@ export const funds = {
   "Xem trước thay đổi": "Preview changes",
   "là thông tin cần nhập.": "is required.",
   "Hiểu mục tiêu và số dư quỹ": "Understand fund targets and balances",
-  "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu để kiểm tra lại cùng yêu cầu.":
-    "Save result unconfirmed. Keep your draft and click Confirm save to check the same request.",
+  "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm Xác nhận lưu để kiểm tra.":
+    "We could not confirm whether your changes were saved. Your draft is kept; choose Confirm save to check.",
   "Tải dữ liệu mới, giữ nội dung nhập": "Load new data, keep draft",
   Bước: "Step",
   "Chi phí sinh hoạt": "Living costs",

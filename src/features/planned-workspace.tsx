@@ -1,9 +1,9 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
 import { Garden, type GardenVariant } from "@/components/garden";
 import { ModuleIcon } from "@/components/module-icon";
-import { ThemeText } from "@/components/theme-decoration";
 import {
   moduleStatusLabels as moduleStatusLabelsSource,
   type Module,
@@ -32,15 +32,16 @@ export function PlannedWorkspace({ item: sourceItem }: { item: Module }) {
       </Link>
       <div className="module-heading illustrated-heading">
         <div className="heading-copy">
-          <span className="pill">
-            {localize(moduleStatusLabelsSource)[item.status]} ·{" "}
-            <ThemeText name="developing" />
-          </span>
           <span className="module-icon">
             <ModuleIcon name={item.icon} size={27} />
           </span>
           <p className="eyebrow">{item.label}</p>
-          <HelpPageTitle>{item.title}</HelpPageTitle>
+          <div className="status-heading planned-title">
+            <HelpPageTitle>{item.title}</HelpPageTitle>
+            <StatusBadge tone="info" size="compact">
+              {localize(moduleStatusLabelsSource)[item.status]}
+            </StatusBadge>
+          </div>
           <p className="lead">{item.description}</p>
         </div>
         <div className="heading-art">
@@ -49,8 +50,12 @@ export function PlannedWorkspace({ item: sourceItem }: { item: Module }) {
       </div>
       <div className="spec-grid">
         <section className="panel">
-          <span className="pill">{tr("Phạm vi dự kiến")}</span>
-          <h2>{tr("Nội dung cần xây dựng")}</h2>
+          <div className="status-heading">
+            <h2>{tr("Nội dung cần xây dựng")}</h2>
+            <StatusBadge tone="info" size="compact">
+              {tr("Phạm vi dự kiến")}
+            </StatusBadge>
+          </div>
           <ul className="scope-list">
             {item.scope.map((text) => (
               <li key={text}>

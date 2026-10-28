@@ -1,4 +1,5 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { useI18n } from "@/i18n/provider";
 
@@ -240,11 +241,22 @@ export function ExpenseReports({
                   <td>{money(r.spent)}</td>
                   <td>{money(accumulation ? r.closing : r.over)}</td>
                   <td>
-                    {r.planned
-                      ? tr("Kế hoạch")
-                      : r.provisional
-                        ? tr("Có tạm tính")
-                        : tr("Đã kết thúc")}
+                    <StatusBadge
+                      size="compact"
+                      tone={
+                        r.planned
+                          ? "info"
+                          : r.provisional
+                            ? "warning"
+                            : "success"
+                      }
+                    >
+                      {r.planned
+                        ? tr("Kế hoạch")
+                        : r.provisional
+                          ? tr("Có tạm tính")
+                          : tr("Đã kết thúc")}
+                    </StatusBadge>
                   </td>
                 </tr>
               ))}

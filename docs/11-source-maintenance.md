@@ -72,3 +72,9 @@ Baseline cũng ghi nhận chuỗi lỗi giả lập “Mạng kiểm thử tạm
 ## Cập nhật trải nghiệm — 28/10/2026
 
 Đợt chuẩn hóa nội dung/giao diện bổ sung MonthYearSelect, MobileNavigation, token typography và giới hạn dialog theo visualViewport. HTTP giữ mã/status và định dạng dữ liệu; client đổi cách trình bày lỗi hạ tầng. Bộ dịch đã giới hạn mẫu tháng rút gọn T{0}/M{0} ở số tháng 1–12, khắc phục lỗi chuỗi tự do “Mạng…” bị nhận nhầm và đổi thành “Tạng…” được ghi nhận trong baseline ở trên. Xem [đặc tả và bằng chứng](features/usability-consistency-2026-10-28.md).
+
+## Tag trạng thái dùng chung — 28/10/2026
+
+`components/status-badge` nhận children đã dịch, tone (neutral/info/success/warning/danger), size (default/compact) và icon tùy chọn. Component chỉ trình bày, không tạo live region; giữ thông báo ở vùng status sẵn có. Màu chữ/nền dùng token badge riêng cho sáng/tối, giữ ý nghĩa màu qua năm visual themes. CSS icon chặn các rule SVG biểu đồ lan vào badge. Các class ngữ cảnh chỉ căn vị trí, không ghi đè màu, cỡ chữ hoặc trọng lượng. Xem [quy chuẩn tag](features/income-tags-2026-10-28.md).
+
+Bổ sung 29/10/2026: status-heading ghép tên với trạng thái; status-meta ghép các dữ kiện cùng phạm vi; status-stack đặt tag dưới ngày trong ô bảng. Nhóm dùng flex/grid và gap, không dùng dấu phân cách hay margin cố định để giả lập cột. MonthYearSelect nhận labelAccessory tùy chọn cho nhãn phụ như trạng thái tháng; aria-label của nhóm và các select không đổi.

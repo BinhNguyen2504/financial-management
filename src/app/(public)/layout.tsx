@@ -5,6 +5,8 @@ import { ToastProvider } from "@/components/toast";
 import { pageSession } from "@/server/page-auth";
 import "@/features/landing/landing.css";
 import "@/features/landing/marketing.css";
+import "@/features/landing/mobile-preview.css";
+import "@/features/landing/faq.css";
 
 export default async function PublicLayout({
   children,

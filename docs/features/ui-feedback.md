@@ -174,3 +174,8 @@ Native Modal, HTTP transport và HTTP error mapping được tái sử dụng qu
 ### Nhất quán toàn ứng dụng — 28/10/2026
 
 Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Khối nội dung mở rộng dùng cùng AnimatedDetails: chuyển chiều cao thật, đảo chiều khi bấm nhanh, không giữ chiều cao sau animation, giảm chuyển động tức thời. Menu popup giữ hành vi riêng. Phân cấp section và nội dung Việt/Anh đã đối chiếu trên toàn ứng dụng. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).

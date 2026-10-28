@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatedDetails } from "@/components/animated-details";
 import { formatMonth } from "@/i18n/format";
 
 import { useI18n } from "@/i18n/provider";
@@ -119,7 +120,7 @@ export function FundEditorPreview({
         {(changedLocationRows.length > 0 ||
           mode.type === "configure" ||
           old) && (
-          <details className="fund-preview-details">
+          <AnimatedDetails className="fund-preview-details">
             <summary>{tr("Chi tiết giao dịch và nơi giữ tiền")}</summary>
             {old && (
               <p>
@@ -146,7 +147,7 @@ export function FundEditorPreview({
                 hidden={hidden}
               />
             )}
-          </details>
+          </AnimatedDetails>
         )}
         <p className="fund-note">
           {tr("Chưa ghi dữ liệu. Kiểm tra nội dung rồi xác nhận lưu.")}

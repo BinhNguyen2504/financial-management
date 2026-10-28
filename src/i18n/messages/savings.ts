@@ -215,8 +215,8 @@ export const savings = {
   "Đã lưu thay đổi.": "Changes saved.",
   "Kiểm tra các trường được đánh dấu.": "Check the highlighted fields.",
   "Không thể lưu.": "Could not save.",
-  "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.":
-    "Save result unconfirmed. Retry the same request.",
+  "Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra.":
+    "We could not confirm whether your changes were saved. Save again to check.",
   "Chưa hoàn tất. Hãy thử lại.": "Not completed. Try again.",
   "Sửa giao dịch có lịch sử": "Edit transaction with history",
   Hủy: "Cancel",
@@ -224,8 +224,8 @@ export const savings = {
   "Xác nhận lưu": "Confirm save",
   "Xem trước thay đổi": "Preview changes",
   "là thông tin cần nhập.": "is required.",
-  "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu để kiểm tra lại cùng yêu cầu.":
-    "Save result unconfirmed. Keep your draft and click Confirm save to check the same request.",
+  "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm Xác nhận lưu để kiểm tra.":
+    "We could not confirm whether your changes were saved. Your draft is kept; choose Confirm save to check.",
   "Hiểu tài sản và giao dịch": "Understand assets and transactions",
   "Đã tải phiên bản mới. Kiểm tra rồi xem trước lại.":
     "New version loaded. Review and preview again.",

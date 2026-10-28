@@ -43,7 +43,7 @@ test("public landing and preview stay independent of financial APIs and account 
     preview.getByText("Dữ liệu minh họa", { exact: true }),
   ).toBeVisible();
   await expect(
-    preview.getByRole("tab", { name: "Chi tiêu", exact: true }),
+    preview.getByRole("tab", { name: "Tổng quan", exact: true }),
   ).toHaveAttribute("aria-selected", "true");
   await preview.getByRole("tab", { name: "Thu nhập", exact: true }).click();
   await expect(preview.getByRole("tabpanel")).toContainText("28.500.000 ₫");
@@ -158,7 +158,9 @@ test("member homepage is correct in server HTML and stays stable through delayed
   browser,
 }, info) => {
   await login(page);
-  await expect(page.locator(".overview-start")).toBeVisible();
+  await expect(
+    page.locator('.overview-widget-grid[data-ready="true"]'),
+  ).toBeVisible();
   await page.waitForLoadState("networkidle");
   await page.evaluate(() => {
     localStorage.setItem("fm-visual-theme", "water");

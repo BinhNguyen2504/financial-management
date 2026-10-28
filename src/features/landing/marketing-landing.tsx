@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { formatMoney } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
@@ -7,7 +9,6 @@ import {
   languageSummary,
   modules,
   moduleStatusLabels,
-  navigationSummary,
   publicHomeSummary,
 } from "@/features/catalog";
 import {
@@ -336,7 +337,7 @@ export function MarketingLanding() {
         id="dang-phat-trien"
         aria-labelledby="marketing-details-title"
       >
-        <div>
+        <div className="faq-section-intro">
           <p className="marketing-eyebrow">{tr("RÕ RÀNG NGAY TỪ ĐẦU")}</p>
           <h2 id="marketing-details-title">
             {tr("Hiểu sản phẩm.")}
@@ -348,12 +349,12 @@ export function MarketingLanding() {
               "Những điều có thể bạn muốn biết trước khi mở không gian của mình.",
             )}
           </p>
-          <span className="marketing-stage">
+          <StatusBadge tone="info" className="marketing-stage">
             {tr("Sản phẩm đang phát triển")}
-          </span>
+          </StatusBadge>
         </div>
-        <div className="marketing-faq">
-          <details open>
+        <div className="marketing-faq faq-list">
+          <AnimatedDetails>
             <summary>{tr("Tôi có thể sử dụng những gì hôm nay?")}</summary>
             <div className="marketing-answer">
               <p>
@@ -373,7 +374,7 @@ export function MarketingLanding() {
               </div>
               <p>
                 {tr(
-                  "Tổng quan tập trung vào hũ chi tiêu; chưa có tổng tài sản ròng toàn hệ thống. Các mục",
+                  "Tổng quan có 10 widget tùy chỉnh cho năm module; chưa có tổng tài sản ròng toàn hệ thống. Các mục",
                 )}{" "}
                 {modules
                   .filter((item) => item.status === "planned")
@@ -382,8 +383,8 @@ export function MarketingLanding() {
                 {tr("đang phát triển.")}
               </p>
             </div>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>
               {tr("Có cần liên kết tài khoản ngân hàng không?")}
             </summary>
@@ -394,8 +395,8 @@ export function MarketingLanding() {
                 )}
               </p>
             </div>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Bắt đầu sử dụng như thế nào?")}</summary>
             <div className="marketing-answer">
               <p>
@@ -405,8 +406,8 @@ export function MarketingLanding() {
               </p>
               <p>{tr(publicHomeSummary)}</p>
             </div>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Tôi có thể tự giữ bản sao dữ liệu không?")}</summary>
             <div className="marketing-answer">
               <p>
@@ -415,25 +416,24 @@ export function MarketingLanding() {
                 )}
               </p>
             </div>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Có thể dùng tiếng Anh không?")}</summary>
             <div className="marketing-answer">
               <p>{tr(languageSummary)}</p>
             </div>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Có dùng được trên điện thoại không?")}</summary>
             <div className="marketing-answer">
               <p>
                 {tr(
-                  "Bạn có thể dùng trên điện thoại và máy tính. Các cửa sổ dài có vùng cuộn riêng; chạm bên ngoài để đóng menu chức năng. Bạn cũng có thể thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.",
+                  "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu.",
                 )}
               </p>
-              <p>{tr(navigationSummary)}</p>
             </div>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Các con số trên trang này là của ai?")}</summary>
             <div className="marketing-answer">
               <p>
@@ -442,7 +442,7 @@ export function MarketingLanding() {
                 )}
               </p>
             </div>
-          </details>
+          </AnimatedDetails>
         </div>
       </section>
 

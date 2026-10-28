@@ -10,7 +10,7 @@
 
 **Sao lưu và khôi phục:** Cài đặt cho phép xuất JSON V2 đầy đủ năm module cùng lịch sử và hồ sơ, nhập sang tài khoản trống với tùy chọn khôi phục hồ sơ. File không mật khẩu, không chứa thông tin đăng nhập. Xuất file không phụ thuộc migration biên nhận import; khôi phục cần migration này. Cấu hình giới hạn truyền file phù hợp hosting; xem [đặc tả backup](docs/features/backup.md). Chưa áp dụng migration mới lên cloud.
 
-**Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, báo cáo bảng/biểu đồ và xuất CSV. Xem [đặc tả Thu nhập](docs/features/income.md).
+**Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, báo cáo bảng/biểu đồ và xuất CSV. Cho xóa danh mục khi không còn số thu ở bất kỳ tháng/năm nào; bản ghi 0 đồng vẫn chặn xóa. Xem [đặc tả Thu nhập](docs/features/income.md).
 
 **Đầu tư:** tổng tiền từng danh mục và nhiều ví tiền chờ; mở đầu, nạp/rút/chuyển, mua/bán với giá vốn bán nhập tay, phí/thuế, định giá, lãi/lỗ, sửa/hủy có lịch sử, báo cáo xuyên năm và CSV/JSON. Xóa/lưu trữ chỉ khi hết vốn và giá trị. Xem [đặc tả và migration Đầu tư](docs/features/investments.md). Độc lập với các module khác; chưa áp dụng migration Đầu tư lên cloud.
 
@@ -20,7 +20,11 @@ Trang `/` là landing công khai với preview tương tác bằng dữ liệu m
 
 Để xem Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư với dữ liệu mẫu local: `npm run data:preview`, dùng URL in ra với `review@example.test` / mã `12345678`. Bản preview dùng database/Auth local riêng. Xem [hướng dẫn dữ liệu review](docs/10-sample-data.md). Có thể bổ sung Đầu tư vào bộ review cùng tài khoản bằng `npm run data:investments:sample -- --base imports/<BỘ_MẪU_TIẾT_KIỆM>/sample-data.json`; bộ mới có reset 28 bảng, chỉ dùng sau khi chốt UI/UX.
 
+Tag trạng thái dùng nền nhẹ, viền rõ, chữ đậm và icon chung trên các module; đặt sát tên danh mục, kỳ hoặc số liệu liên quan, hỗ trợ sáng/tối và năm chủ đề. Xem [quy tắc danh mục và tag](docs/features/income-tags-2026-10-28.md).
+
 ## Landing và truy cập ứng dụng
+
+Tinh chỉnh 29/10/2026: preview mobile dùng khung điện thoại có vùng cuộn riêng; header gọn cùng hàng với VI/EN và icon tài khoản. FAQ có section rõ, mở/đóng mượt; các khối nội dung mở rộng trong ứng dụng dùng chung hành vi và hỗ trợ giảm chuyển động. Nội dung Việt/Anh ưu tiên công dụng và bước thao tác. Xem [đặc tả và phạm vi kiểm chứng](docs/features/responsive-disclosures-2026-10-29.md).
 
 Trang `/` có hai trải nghiệm: **khách chưa đăng nhập** xem landing marketing riêng với nền ngà, chữ đen và điểm nhấn cam đồng; **người đã đăng nhập** giữ trang giới thiệu theo chủ đề đã chọn, avatar/hồ sơ và nút Vào ứng dụng. Server xác minh phiên để HTML đầu tiên đã đúng bản khách hoặc thành viên; phiên hợp lệ không phải chờ JavaScript để đổi giao diện. Khi Auth gián đoạn, `/` vẫn trả nội dung công khai và nút tài khoản cho phép thử lại. Preview Thu nhập / Chi tiêu / Tiết kiệm / Đầu tư / Quỹ an toàn dùng dữ liệu cố định, chuyển tab và che/hiện tiền, không gọi API tài chính. Bản khách dùng biểu đồ trung tính, không đổi theo theme/chế độ lưu trong trình duyệt.
 
@@ -32,13 +36,13 @@ SEO của landing Việt/Anh theo lựa chọn cookie, mặc định tiếng Vi�
 
 ## Giao diện Zen
 
-Tổng quan và các màn hình dùng Nunito tiếng Việt, minh họa SVG cùng năm chủ đề **Khu vườn (xanh lục)**, **Dòng nước (xanh lam)**, **Kim ngân (vàng)**, **Lửa ấm (đỏ)** và **Đất lành (nâu)**. Đổi trong Cài đặt, áp dụng ngay cho app, landing sau đăng nhập, trang đăng nhập và trang mất kết nối (landing khách dùng nhận diện riêng); mỗi chủ đề có màu sáng/tối riêng, dùng chung lựa chọn Sáng/Tối/Theo hệ thống. Minh họa và lời dẫn đi theo chủ đề; emoji người dùng giữ nguyên. Logo hũ tích lũy/đồng xu dùng màu than–ngà chung cho cả năm chủ đề, đảo theo sáng/tối; favicon và icon cài app cùng biểu tượng. Tổng quan đọc dữ liệu hũ tháng hiện tại; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Biểu đồ Tiết kiệm có tooltip cho điểm, cột nạp/rút, lát donut và chú giải khi rê chuột, chạm hoặc dùng Tab. Nút mắt ở header che số tiền trong Chi tiêu, Thu nhập, Tiết kiệm (kể cả giá/lượng vàng), Đầu tư và Quỹ an toàn; form có nút hiện riêng. Nút chevron thu gọn/mở rộng menu desktop nằm trên mép phải sidebar, ngang hàng logo, với vòng tròn nhỏ và vùng bấm rộng. Các tùy chọn riêng tư, theme, sidebar và cột bảng được lưu trên trình duyệt; chủ đề/chế độ đồng bộ giữa các tab, không đồng bộ tài khoản và không nằm trong backup tài chính; không lưu bản nháp hay dữ liệu tài chính. Backup/CSV vẫn chứa số đầy đủ. Dialog các module có tóm tắt số liệu, tab theo nội dung, tìm kiếm/lọc và danh sách 20 dòng mỗi trang; mở form con rồi quay lại giữ vị trí. Xem [hướng UI/UX](docs/04-ux-direction.md).
+Tổng quan và các màn hình dùng Nunito tiếng Việt, minh họa SVG cùng năm chủ đề **Khu vườn (xanh lục)**, **Dòng nước (xanh lam)**, **Kim ngân (vàng)**, **Lửa ấm (đỏ)** và **Đất lành (nâu)**. Đổi trong Cài đặt, áp dụng ngay cho app, landing sau đăng nhập, trang đăng nhập và trang mất kết nối (landing khách dùng nhận diện riêng); mỗi chủ đề có màu sáng/tối riêng, dùng chung lựa chọn Sáng/Tối/Theo hệ thống. Minh họa và lời dẫn đi theo chủ đề; emoji người dùng giữ nguyên. Logo hũ tích lũy/đồng xu dùng màu than–ngà chung cho cả năm chủ đề, đảo theo sáng/tối; favicon và icon cài app cùng biểu tượng. Tổng quan dùng widget đọc năm module và lưu bố cục theo tài khoản; Chi tiêu hỗ trợ emoji có thể đổi và đồng bộ, thẻ mobile có số dư/tiến độ, báo cáo donut/thanh/đường với bảng thay thế. Biểu đồ Tiết kiệm có tooltip cho điểm, cột nạp/rút, lát donut và chú giải khi rê chuột, chạm hoặc dùng Tab. Nút mắt ở header che số tiền trong Chi tiêu, Thu nhập, Tiết kiệm (kể cả giá/lượng vàng), Đầu tư và Quỹ an toàn; form có nút hiện riêng. Nút chevron thu gọn/mở rộng menu desktop nằm trên mép phải sidebar, ngang hàng logo, với vòng tròn nhỏ và vùng bấm rộng. Các tùy chọn riêng tư, theme, sidebar và cột bảng được lưu trên trình duyệt; chủ đề/chế độ đồng bộ giữa các tab, không đồng bộ tài khoản và không nằm trong backup tài chính; không lưu bản nháp hay dữ liệu tài chính. Backup/CSV vẫn chứa số đầy đủ. Dialog các module có tóm tắt số liệu, tab theo nội dung, tìm kiếm/lọc và danh sách 20 dòng mỗi trang; mở form con rồi quay lại giữ vị trí. Xem [hướng UI/UX](docs/04-ux-direction.md).
 
 Tổng quan, Chi tiêu và Thu nhập giữ nội dung khi quay lại tab; dữ liệu đã tải ít nhất 60 giây được cập nhật ngầm, gộp các sự kiện quay lại trùng nhau. Có mạng trở lại hoặc đổi ngày Việt Nam sẽ kiểm tra sớm hơn (cách lần tải trước ít nhất 5 giây). Lần mở đầu hoặc đổi năm Thu nhập vẫn có trạng thái tải. Các trạng thái tải dữ liệu có vòng xoay kèm thông báo; nút gửi/lưu/khôi phục hiển thị tiến trình trong lúc chờ server. Hiệu ứng theo màu sáng/tối và dừng khi bật giảm chuyển động. Xem [phản hồi giao diện](docs/features/ui-feedback.md). Nếu gặp hydration diff `cz-shortcut-listen`, xem [cách xử lý extension](docs/08-troubleshooting.md).
 
 Mỗi trang trong ứng dụng có **Hướng dẫn** cạnh tiêu đề, với đề mục đánh số, từ khóa và ví dụ được nhấn rõ. Nội dung bao gồm mục đích, tư duy sử dụng, thuật ngữ và thao tác. Có thể tra cứu ngay từ form rồi quay lại với bản nháp còn nguyên; ví dụ dùng số liệu minh họa cố định. Liên kết trong trang, mục lục Help, xem trước, phân trang và vị trí lỗi trong dialog cuộn mượt đến nội dung; tùy chọn giảm chuyển động bỏ hiệu ứng cuộn. Xem [Help theo từng trang](docs/features/help.md).
 
-Trên Tổng quan, nút **Đọc các chỉ số tháng** nằm trong cụm tiêu đề tháng: bên phải trên desktop, hàng riêng có khoảng cách trên mobile; số hũ/trạng thái nằm dưới tên tháng.
+Trên Tổng quan, **Hướng dẫn** nằm cạnh tiêu đề và **Tùy chỉnh Tổng quan** mở danh sách 10 widget. Kỳ và trạng thái dữ liệu nằm trong từng widget; các thao tác nhập liệu mở module tương ứng.
 
 Biểu mẫu tài chính đọc số tiền VND ngay dưới ô, đặt `*` sát nhãn cần nhập và báo lỗi tại đúng trường. Chú thích gọn “* Bắt buộc” dùng chung cho form; menu có scrollbar mảnh, nền trong suốt. Toast phân cấp tiêu đề/nội dung với icon và màu theo trạng thái, hỗ trợ sáng/tối và giảm chuyển động. Lưu thành công hoặc lỗi có thông báo chung; trường hợp chưa rõ kết quả lưu được nêu riêng và giữ bản nháp. Dialog giữ hàng nút thao tác khi cuộn; bước xem trước Quỹ an toàn ưu tiên những số thực sự thay đổi. Sidebar desktop có nút thu gọn ở mép phân cách, ngang hàng logo; biểu tượng ứng dụng vẫn hiện ở thanh mobile. Xem [quy chuẩn phản hồi giao diện](docs/features/ui-feedback.md).
 
@@ -47,6 +51,8 @@ Biểu mẫu tài chính đọc số tiền VND ngay dưới ô, đặt `*` sát
 Chọn **Tiếng Việt** (mặc định) hoặc **English** trên thanh đầu trang, cạnh đăng nhập/tài khoản, hoặc trong Cài đặt → Ngôn ngữ / Language. Áp dụng ngay cho cả trang chủ khách và thành viên, preview, khung công khai, đăng nhập, ứng dụng, Help và lỗi/thông báo. Lựa chọn lưu trên trình duyệt, đồng bộ giữa các tab, không nằm trong backup hoặc đồng bộ tài khoản. Đổi ngôn ngữ giữ bộ lọc và bản nháp.
 
 English dùng `en-GB`: `1,000,000 ₫`, số lượng `1.25`, ngày `22/10/2026`; tiếng Việt dùng `1.000.000 ₫`, số lượng `1,25`. Vẫn dùng VND và giờ Việt Nam. CSV dịch tên cột/nhãn hệ thống, giữ số/ngày dạng chuẩn; JSON backup không đổi cấu trúc. Xem [đặc tả ngôn ngữ và logo](docs/features/localization.md).
+
+Phương án logo 29/10/2026: xem [ba biểu tượng và bảng so sánh](docs/design/logo-concepts/README.md). Đây là bản thiết kế để lựa chọn, chưa thay nhận diện đang dùng.
 
 ## Đọc bản kế hoạch
 
@@ -187,3 +193,7 @@ Chi tiêu (28/10): dialog “Phương thức và nhóm” dùng hàng gọn trê
 ## Chuẩn hóa trải nghiệm — 28/10/2026
 
 Nội dung dành cho người dùng phổ thông; cỡ chữ theo vai trò dùng chung; dialog mobile giới hạn chiều cao và cuộn bên trong; menu đóng khi chạm ngoài; tháng/năm dùng hai ô Năm rồi Tháng trên toàn ứng dụng. Xem [phạm vi và kiểm chứng](docs/features/usability-consistency-2026-10-28.md).
+
+## Tổng quan cá nhân hóa — 29/10/2026
+
+Tổng quan nay xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn: 6 widget mặc định, 4 widget tùy chọn. Thêm/ẩn/đổi thứ tự, chọn tối đa 5 hũ, xem thử rồi Lưu/Hủy; bố cục đồng bộ theo tài khoản. Số liệu giữ kỳ và trạng thái tạm tính/thiếu định giá, không cộng các sổ thành tài sản ròng. Cần áp dụng migration `202610290001_overview_layouts.sql` để lưu bố cục. Cấu hình này nằm ngoài backup và kiểm tra tài khoản trống; các tùy chọn theme/privacy/cột vẫn theo trình duyệt. Xem [đặc tả Tổng quan](docs/features/overview.md).

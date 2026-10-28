@@ -47,10 +47,10 @@ function article(
 export const articles: HelpArticles = {
   overview: article(
     [
-      "Dành cho lúc bạn muốn nhìn nhanh tháng hiện tại trước khi quyết định cần kiểm tra khoản nào. **Tổng quan hiện tập trung vào các hũ Chi tiêu**: kế hoạch, thực chi và tiền còn trong hũ.",
+      "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Sáu widget mặc định và bốn widget tùy chọn giúp bạn chọn điều cần nhìn trước.",
     ],
     [
-      "==Bắt đầu từ bức tranh tháng==, sau đó đi vào hũ cần chú ý. Một con số tổng chỉ hữu ích khi bạn biết nó thuộc kỳ nào và đã đủ thông tin chưa.",
+      "Đọc kỳ và tình trạng dữ liệu trước khi đọc số tiền. Thu nhập và Chi tiêu thuộc tháng hiện tại; tài sản và quỹ tính đến hôm nay theo giờ Việt Nam.",
     ],
     [
       term(
@@ -68,29 +68,44 @@ export const articles: HelpArticles = {
         "Còn trong hũ",
         "Phần tiền còn lại theo dữ liệu và quy tắc của các hũ; **không phải tổng tài sản ròng toàn ứng dụng**.",
       ),
+      term(
+        "known-value",
+        "Giá trị đã biết",
+        "Nếu thiếu định giá, chỉ phần đã có giá được trình bày và ghi rõ chưa đầy đủ. Giá cũ có cảnh báo; khoản thu chưa nhập khác với đã ghi nhận 0 đồng.",
+      ),
     ],
     [
       task(
         "read-overview",
         "Đọc bức tranh tháng",
-        "Khi muốn kiểm tra nhanh tình hình Chi tiêu.",
+        "Khi cần nhìn nhanh toàn bộ ứng dụng.",
         [
-          "Đọc tháng đang hiển thị cùng ba chỉ số Mức tháng, Thực chi, Còn trong hũ.",
-          "Xem phần Tiền đã đi đâu? và danh sách hũ để xác định khoản cần kiểm tra.",
-          "Mở Chi tiêu để xem chi tiết và điều chỉnh số thực tế nếu cần.",
+          "Đọc Cần chú ý rồi xem từng widget theo kỳ ghi bên dưới tiêu đề.",
+          "Mở module tương ứng để đối chiếu, nhập liệu hoặc cập nhật định giá.",
         ],
-        "Kết quả: biết nên kiểm tra hũ nào trước; số tổng không thay thế việc đối chiếu.",
+        "Kết quả: Các widget dùng dữ liệu thực đã ghi, không tự tạo giao dịch.",
+      ),
+      task(
+        "customize",
+        "Tùy chỉnh widget",
+        "Khi muốn chọn nội dung và thứ tự xem nhanh.",
+        [
+          "Mở Tùy chỉnh Tổng quan; bật hoặc tắt từng widget.",
+          "Dùng nút chuyển lên/xuống để đổi thứ tự; Hũ theo dõi cho chọn tối đa 5 hũ.",
+          "Chọn Xem thử bố cục để xem toàn trang; Lưu để đồng bộ tài khoản hoặc Hủy để bỏ thay đổi.",
+          "Khôi phục mặc định chỉ đổi bản xem thử; cần Lưu mới áp dụng.",
+        ],
+        "Kết quả: Mỗi loại có tối đa một widget. Có thể ẩn tất cả rồi thêm lại. Bố cục dùng chung giữa thiết bị khi tải lại, không nằm trong backup tài chính.",
       ),
       task(
         "start-overview",
         "Bắt đầu khi chưa có dữ liệu",
-        "Khi Tổng quan chưa có sổ Chi tiêu.",
+        "Khi một module chưa có sổ.",
         [
-          "Mở Chi tiêu từ nút bắt đầu hoặc menu.",
-          "Chọn tháng bắt đầu, thêm hũ và số dư đầu kỳ thực tế.",
-          "Quay lại Tổng quan để đọc phần tổng hợp.",
+          "Mở module muốn bắt đầu từ widget hoặc menu.",
+          "Ghi nhận dữ liệu thực theo hướng dẫn của module rồi quay lại Tổng quan.",
         ],
-        "Kết quả: Tổng quan sử dụng dữ liệu bạn đã ghi; không tự tạo tiền mẫu.",
+        "Kết quả: Mỗi module có trạng thái trống riêng; không cần tạo Chi tiêu trước khi xem các module khác.",
       ),
       task(
         "privacy",
@@ -100,15 +115,15 @@ export const articles: HelpArticles = {
           "Dùng nút ẩn/hiện tiền ở thanh đầu trang.",
           "Tiếp tục đọc cấu trúc và tỷ lệ; bật hiện tiền khi cần đối chiếu số cụ thể.",
         ],
-        "Kết quả: số tiền được che trên giao diện; thao tác này không sửa dữ liệu.",
+        "Kết quả: Số tiền được che trên giao diện và nội dung trợ năng; dữ liệu không bị sửa.",
       ),
     ],
     [
-      "Một hũ có mức tháng ==2.000.000 ₫== nhưng thực chi tạm tính cao hơn mức này là điểm cần kiểm tra. Mở Chi tiêu để đối chiếu tiền bổ sung và số dư đã nhập.",
+      "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn và Cần chú ý.",
     ],
     [
-      "Tổng quan chưa cộng Thu nhập, Tiết kiệm, Đầu tư và Quỹ an toàn thành tài sản ròng.",
-      "Các mục **đang phát triển** là giới thiệu định hướng, không phải báo cáo đã sẵn sàng.",
+      "Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.",
+      "Lỗi một nguồn không làm mất widget khác. Số liệu lần tải trước được ghi nhãn khi cập nhật thất bại. Bố cục xung đột cần tải bản mới, không tự ghi đè.",
     ],
   ),
   budgets: article(
@@ -335,7 +350,7 @@ export const articles: HelpArticles = {
         [
           "Mở quản lý danh mục và chọn sửa hoặc ngừng từ tháng phù hợp.",
           "Đọc xem trước ảnh hưởng từ tháng hiệu lực, kể cả các năm sau, rồi xác nhận.",
-          "**Chỉ dùng Xóa danh mục với nguồn chưa từng ghi số thu**; nguồn từng ghi tiền được ngừng để giữ lịch sử.",
+          "**Chỉ dùng Xóa danh mục khi không còn số thu ở bất kỳ tháng/năm nào**, kể cả khi đã xóa hết số thu cũ. Nếu còn bản ghi, kể cả 0 đồng, dùng Ngừng từ tháng.",
         ],
         "Kết quả: tiền đã ghi không bị xóa dây chuyền. Nhập 0 cũng được coi là đã có số thu.",
       ),
@@ -765,7 +780,7 @@ export const articles: HelpArticles = {
           "Nếu trình duyệt chưa tải, dùng liên kết Tải bản sao lưu.",
           "Kiểm tra file trong nơi tải xuống và cất bản sao ở nơi bạn kiểm soát.",
         ],
-        "Kết quả: có file sao lưu do bạn chủ động tạo; app không tự sao lưu file nền và không xác nhận thay trình duyệt rằng file đã lưu vào máy.",
+        "Kết quả: bạn có bản sao lưu để tự giữ. Kiểm tra thư mục tải xuống và cất file ở nơi an toàn.",
       ),
       task(
         "import",

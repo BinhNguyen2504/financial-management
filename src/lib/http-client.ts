@@ -33,7 +33,7 @@ export async function requestJSON<T>(
     value = await response.json();
   } catch {
     throw failure.error(
-      failure.invalidResponse,
+      userFacingError(failure.invalidResponse, "INVALID_RESPONSE"),
       "INVALID_RESPONSE",
       failure.omitInvalidResponseStatus ? undefined : response.status,
     );

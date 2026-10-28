@@ -206,9 +206,7 @@ export function useFundEditor({
       if (unknownWrite)
         toast(
           "warning",
-          tr(
-            "Chưa xác nhận được kết quả lưu. Kiểm tra hoặc thử lại cùng yêu cầu.",
-          ),
+          tr("Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra."),
         );
       else report(e);
       setConflict(

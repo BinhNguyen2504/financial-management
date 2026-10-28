@@ -1,0 +1,104 @@
+.faq-section {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: clamp(24px, 6vw, 80px);
+  padding-block: 64px 100px;
+}
+.faq-section-intro {
+  min-width: 0;
+  align-self: start;
+  padding: clamp(22px, 3vw, 36px);
+  border-radius: 20px;
+  background: var(--primary-soft);
+}
+.public-shell .faq-section-intro h2 {
+  margin-top: 0;
+  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+  line-height: 1.25;
+  font-weight: var(--weight-strong);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.public-shell .faq-section-intro > p {
+  font-size: var(--font-size-16);
+  line-height: 1.7;
+}
+.public-shell .faq-section-intro > .marketing-eyebrow {
+  margin-block: 0 16px;
+  font-size: var(--font-size-12);
+}
+.public-shell .faq-list {
+  min-width: 0;
+  margin: 0;
+  max-width: none;
+}
+.public-shell .faq-list > details {
+  padding-inline: 16px;
+  margin-bottom: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface);
+}
+.public-shell .faq-list > details[open] {
+  background: var(--primary-soft);
+}
+.public-shell .faq-list summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  padding: 18px 0;
+  list-style: none;
+  font-size: var(--font-size-16);
+  font-weight: var(--weight-strong);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.faq-list summary::-webkit-details-marker {
+  display: none;
+}
+.public-shell .faq-list summary::after {
+  content: "+";
+  flex: 0 0 24px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: var(--weight-regular);
+  color: var(--primary);
+  transition: transform 190ms ease;
+}
+.public-shell .faq-list details[open] > summary::after {
+  transform: rotate(45deg);
+}
+.public-shell .faq-list details[data-closing] > summary::after {
+  transform: none;
+}
+.public-shell .faq-list summary:hover {
+  color: var(--primary);
+}
+.public-shell .faq-list p,
+.public-shell .faq-list .marketing-answer {
+  font-size: var(--font-size-14);
+  line-height: 1.8;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.public-shell .faq-list details > p {
+  padding-bottom: 18px;
+}
+.public-shell .faq-list .marketing-answer {
+  padding-bottom: 20px;
+}
+@media (max-width: 800px) {
+  .faq-section {
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: 40px 64px;
+    gap: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .public-shell .faq-list summary::after {
+    transition: none;
+  }
+}

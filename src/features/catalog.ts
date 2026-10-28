@@ -9,18 +9,18 @@ export const moduleStatusLabels: Record<ModuleStatus, string> = {
 export const modules = [
   {
     slug: "overview",
-    status: "partial",
+    status: "implemented",
     title: "Tổng quan",
     icon: "overview",
     label: "Bức tranh tài chính",
     description:
-      "Nhìn lại kế hoạch, thực chi và số còn trong hũ của tháng hiện tại.",
+      "Xem nhanh năm module với 10 widget; thêm, ẩn và sắp xếp theo tài khoản.",
     scope: [
-      "Tài sản ròng và biến động theo thời gian",
-      "Thu, chi và phần tiền dành cho mục tiêu",
-      "Ngân sách, quỹ an toàn và công việc đến hạn",
+      "Thu nhập, Chi tiêu tháng này; Tiết kiệm, Đầu tư và Quỹ an toàn hiện tại",
+      "Cần chú ý, phân bổ chi tiêu, hũ theo dõi và sổ sắp đáo hạn",
+      "Bố cục widget đồng bộ theo tài khoản; không cộng các sổ thành tài sản ròng",
     ],
-    questions: ["Chỉ số nào bạn muốn nhìn thấy đầu tiên mỗi ngày?"],
+    questions: [],
   },
   {
     slug: "income",
@@ -32,6 +32,7 @@ export const modules = [
       "Theo dõi thu cố định, khoản phát sinh và báo cáo; nhận biết khoản còn thiếu và nhập ngay theo tháng.",
     scope: [
       "Tổng thực nhận mỗi tháng theo danh mục",
+      "Xóa danh mục khi không còn số thu; ngừng nguồn thu đang có dữ liệu",
       "Khoản thu phát sinh một lần",
       "Bảng, biểu đồ và xuất bảng dữ liệu",
       "Chi tiết khoản phát sinh có tìm kiếm và phân trang",
@@ -230,14 +231,14 @@ export const navigationModules = [...modules].sort(
 
 // Shared product capability; does not change the implementation status of any module.
 export const pageHelpSummary =
-  "Hướng dẫn dễ thấy cạnh tiêu đề mỗi trang: mục lục đánh số, tư duy sử dụng, thuật ngữ và từng thao tác, ngay cả khi đang nhập liệu.";
+  "Nút Hướng dẫn cạnh tiêu đề giúp bạn hiểu các khái niệm và thao tác, ngay cả khi đang nhập liệu.";
 
 // Public home presentation is independent of module implementation status.
 export const publicProductSummary =
   "Quản lý tài chính cá nhân với Financial Manager: theo dõi thu nhập, hũ chi tiêu, tiết kiệm, đầu tư và quỹ an toàn. Xem thử giao diện không cần tài khoản.";
 
 export const publicHomeSummary =
-  "Trang giới thiệu trước đăng nhập có thiết kế riêng; sau đăng nhập, trang chủ giữ chủ đề bạn đã chọn trong Cài đặt.";
+  "Sau khi đăng nhập, bạn có một không gian riêng với chủ đề yêu thích.";
 
 export const languageSummary =
   "Chọn Tiếng Việt hoặc English trên thanh đầu trang hoặc trong Cài đặt; lựa chọn dùng chung cho trang chủ, đăng nhập và ứng dụng, được ghi nhớ trên trình duyệt. Tiền tệ vẫn là VND.";

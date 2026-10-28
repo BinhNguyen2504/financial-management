@@ -1,4 +1,8 @@
 export const investments = {
+  "Lọc loại giao dịch chỉ áp dụng hoạt động; số dư và kết quả kỳ luôn dùng đầy đủ giao dịch.":
+    "Transaction type filters apply to activity only; balances and period results always use all transactions.",
+
+  "Tạm tính": "Provisional",
   "Thiếu định giá": "Missing valuation",
   "Bộ lọc báo cáo": "Report filters",
   "Kỳ báo cáo": "Report period",
@@ -162,8 +166,8 @@ export const investments = {
   "Đã lưu thay đổi.": "Changes saved.",
   "Kiểm tra các trường được đánh dấu.": "Check the highlighted fields.",
   "Không thể lưu.": "Could not save.",
-  "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.":
-    "Save result unconfirmed. Retry the same request.",
+  "Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra.":
+    "We could not confirm whether your changes were saved. Save again to check.",
   "Chưa hoàn tất. Hãy thử lại.": "Not completed. Try again.",
   "Không thể tính vốn tại ngày này. Hãy nhập giá vốn bán và xem trước để kiểm tra.":
     "Could not calculate capital on this date. Enter the sale cost basis and preview to check.",
@@ -174,8 +178,8 @@ export const investments = {
   "là thông tin cần nhập.": "is required.",
   "Hiểu vốn, giá trị và tiền chờ":
     "Understand capital, value and investment cash",
-  "Chưa xác nhận kết quả lưu. Nội dung được khóa; bấm xác nhận lại để kiểm tra cùng yêu cầu, không tạo giao dịch trùng.":
-    "Save result unconfirmed. The draft is locked; confirm again to check the same request without duplicating the transaction.",
+  "Chưa xác nhận kết quả lưu. Nội dung tạm giữ nguyên; bấm xác nhận lại để kiểm tra.":
+    "We could not confirm whether your changes were saved. Your draft is temporarily locked; confirm again to check.",
   "Thông tin giao dịch / danh mục": "Transaction / category details",
   "Cổ phiếu": "Shares",
   "Quỹ cổ phiếu": "Equity fund",

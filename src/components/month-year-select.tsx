@@ -11,6 +11,7 @@ export function MonthYearSelect({
   min = "2000-01",
   max = "2099-12",
   label,
+  labelAccessory,
   id,
   name,
   disabled = false,
@@ -26,6 +27,7 @@ export function MonthYearSelect({
   min?: string;
   max?: string;
   label?: string;
+  labelAccessory?: ReactNode;
   id?: string;
   name?: string;
   disabled?: boolean;
@@ -55,13 +57,18 @@ export function MonthYearSelect({
       aria-label={label ?? tr("Chọn tháng và năm")}
     >
       {label && (
-        <div className="month-year-legend">
-          {label}
-          {required && (
-            <span className="required-mark" aria-hidden="true">
-              *
-            </span>
-          )}
+        <div
+          className={`month-year-legend${labelAccessory ? " has-accessory" : ""}`}
+        >
+          <span>
+            {label}
+            {required && (
+              <span className="required-mark" aria-hidden="true">
+                *
+              </span>
+            )}
+          </span>
+          {labelAccessory}
         </div>
       )}
       <div className="month-year-controls">

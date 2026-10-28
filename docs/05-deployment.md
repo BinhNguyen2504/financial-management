@@ -135,3 +135,7 @@ Thiếu migration `202610180002_data_imports.sql` chỉ khóa khôi phục, khô
 ## Migration logo phân loại — 20/10/2026
 
 Áp dụng tiếp `supabase/migrations/202610190002_label_visuals.sql` một lần bằng SQL Editor/admin để lưu logo/icon phân loại. Khi thiếu riêng migration này, source mới vẫn đọc/lưu dữ liệu Chi tiêu không kèm metadata; lưu metadata trả `LABEL_VISUALS_MIGRATION_REQUIRED`. Đây là tương thích của repository Chi tiêu, không thay thế yêu cầu đủ migration của backup/import hoặc module khác. Không tự áp dụng migration hoặc đổi quyền runtime trong lượt chẩn đoán local này.
+
+## Cấu hình Tổng quan — 29/10/2026
+
+Trước khi dùng lưu bố cục widget, áp dụng migration `supabase/migrations/202610290001_overview_layouts.sql` theo quy trình migration của môi trường. Source không tự chạy migration cloud. Khi bảng chưa có, API bố cục trả `OVERVIEW_SCHEMA_REQUIRED`; Tổng quan vẫn đọc số liệu qua bố cục mặc định và hiển thị trạng thái chưa tải được cấu hình. Cấu hình widget dùng owner/RLS của ứng dụng và nằm ngoài backup tài chính; không cần chuyển dữ liệu tài chính hiện có.

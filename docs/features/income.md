@@ -16,7 +16,7 @@ Tinh chỉnh 26/10/2026: liên kết ngoài “Mở Supabase” trong trạng th
 
 Sửa tên/mô tả từ tháng hiệu lực, giữ tên các tháng trước. Báo cáo nhóm theo ID; ô từng tháng vẫn hiển thị tên cũ nếu khác tên tổng hợp hiện trong kỳ. Không tách danh mục khi đổi tên.
 
-Danh mục chưa từng có bất kỳ số thu nào (kể cả số 0) được xóa khỏi danh sách. Nếu đã ghi tiền rồi xóa số thu, danh mục vẫn dùng thao tác ngừng để giữ lịch sử. Nếu đã có số thu, dùng Ngừng từ tháng: bỏ dòng trống từ tháng đó, giữ các số thu đã ghi và cho sửa/xóa. Các cấu hình muộn hơn vẫn giữ tên/mô tả lịch sử nhưng bị đánh dấu ngừng để không tự khởi động lại danh mục. Không có tác vụ xóa dây chuyền tiền đã ghi.
+Cập nhật 28/10/2026: Danh mục được xóa khỏi danh sách khi hiện không còn bản ghi số thu ở bất kỳ tháng/năm nào, kể cả sau khi đã xóa hết số thu cũ. Bản ghi 0 đồng vẫn chặn xóa. Audit cũ không chặn xóa danh mục và tiếp tục được giữ; danh mục dùng cờ deleted, không xóa vật lý. Khi còn số thu, dùng Ngừng từ tháng: bỏ dòng trống từ tháng đó, giữ các số thu đã ghi và cho sửa/xóa. Các cấu hình muộn hơn vẫn giữ tên/mô tả lịch sử nhưng bị đánh dấu ngừng để không tự khởi động lại danh mục. Không có tác vụ xóa dây chuyền tiền đã ghi.
 
 Sửa/ngừng danh mục bắt buộc xem trước: phạm vi tháng hiệu lực trở đi, số dòng thay đổi ở các năm có cấu hình/dữ liệu và năm hiện tại; nêu rõ tiếp tục tác động các năm sau. Tổng tiền không đổi. Xóa số thu hoặc khoản phát sinh yêu cầu xác nhận số tiền/tháng. Audit trước/sau và command là lịch sử append-only.
 
@@ -96,3 +96,12 @@ Editor và workspace Thu nhập tách điều phối state khỏi hiển thị; 
 ### Nhất quán toàn ứng dụng — 28/10/2026
 
 Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.
+
+## Quy tắc xóa và tag — 28/10/2026
+
+Điều kiện Xóa/Ngừng kiểm tra toàn bộ sổ, không giới hạn năm đang xem. Sau khi xóa số thu cuối cùng, thao tác chuyển sang Xóa; danh mục đã ngừng hoặc chưa bắt đầu cũng xóa được khi không còn số thu. Server kiểm tra lại trong transaction và giữ version conflict/idempotency. Xem [đặc tả thay đổi và tag dùng chung](income-tags-2026-10-28.md).
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Nhóm khoản thu thiếu mở/đóng bằng thành phần chung, giữ trạng thái mở mặc định khi chỉ có một tháng. Thông báo chưa xác nhận lưu được rút gọn, cơ chế giữ bản nháp và tránh trùng giữ nguyên. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).

@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
 import { LanguagePicker } from "@/i18n/language-picker";
 
 import { LoadingSpinner, LoadingStatus } from "@/components/loading";
@@ -433,7 +434,7 @@ export function SettingsWorkspace() {
         <LanguagePicker />
         <ThemePicker />
       </section>
-      <details className="panel settings-install">
+      <AnimatedDetails className="panel settings-install">
         <summary>
           <Smartphone size={22} aria-hidden="true" />
           <span>
@@ -444,7 +445,7 @@ export function SettingsWorkspace() {
           </span>
         </summary>
         <InstallGuide />
-      </details>
+      </AnimatedDetails>
     </div>
   );
 }

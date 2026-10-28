@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { useI18n } from "@/i18n/provider";
@@ -305,10 +307,19 @@ export function ExpenseWorkspace(
                 </div>
               )}
               {selectedYear < currentYear && !outsideYears && (
-                <details className="panel expense-archive-summary">
+                <AnimatedDetails className="panel expense-archive-summary">
                   <summary>
-                    {tr("Tổng kết năm")} {selectedYear}
-                    {readonly ? tr(" · Đã lưu") : tr(" · Chưa chốt")}
+                    <span className="status-meta">
+                      <span>
+                        {tr("Tổng kết năm")} {selectedYear}
+                      </span>
+                      <StatusBadge
+                        size="compact"
+                        tone={readonly ? "success" : "warning"}
+                      >
+                        {readonly ? tr("Đã lưu") : tr("Chưa chốt")}
+                      </StatusBadge>
+                    </span>
                   </summary>
                   <p className="expense-muted">
                     {tr(
@@ -361,7 +372,7 @@ export function ExpenseWorkspace(
                       </tbody>
                     </ColumnTable>
                   </div>
-                </details>
+                </AnimatedDetails>
               )}
               <div className="expense-filters expense-filter-panel">
                 <label>
@@ -627,7 +638,7 @@ export function ExpenseWorkspace(
                               <strong>{money(row.closing)}</strong>
                             </div>
                             <JarProgress row={row} />
-                            <details className="jar-details">
+                            <AnimatedDetails className="jar-details">
                               <summary>{tr("Các khoản trong hũ")}</summary>
                               <dl>
                                 {[
@@ -651,7 +662,7 @@ export function ExpenseWorkspace(
                                     </div>
                                   ))}
                               </dl>
-                            </details>
+                            </AnimatedDetails>
                             {BigInt(row.over) > 0n && (
                               <p className="expense-over">
                                 {tr("Vượt mức")} {money(row.over)}

@@ -79,12 +79,12 @@ export const settings = {
     "All financial data restored. Open the modules to check it.",
   "Đã khôi phục dữ liệu tài chính và hồ sơ cá nhân.":
     "Financial data and personal profile restored.",
-  "Chưa xác nhận kết quả khôi phục. Giữ bản xem trước và thử lại cùng yêu cầu.":
-    "Restore result unconfirmed. Keep the preview and retry the same request.",
+  "Chưa xác nhận kết quả khôi phục. Bản xem trước được giữ; bấm khôi phục lại để kiểm tra.":
+    "We could not confirm whether your backup was restored. Your preview is kept; restore again to check.",
   "Dữ liệu tài chính đã khôi phục; hồ sơ cá nhân chưa lưu được.":
     "Financial data restored; personal profile could not be saved.",
-  "Chưa xác nhận kết quả khôi phục. Thử lại cùng yêu cầu.":
-    "Restore result unconfirmed. Retry the same request.",
+  "Chưa xác nhận kết quả khôi phục. Bấm khôi phục lại để kiểm tra.":
+    "We could not confirm whether your backup was restored. Restore again to check.",
   "Đã lưu hồ sơ cá nhân từ bản sao lưu.":
     "Personal profile restored from backup.",
   "KHÔNG GIAN CỦA BẠN": "YOUR WORKSPACE",

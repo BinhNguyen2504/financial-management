@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
 import {
@@ -214,11 +216,17 @@ export function InvestmentDetails({
           },
         ]}
       />
-      <details className="dialog-secondary-section">
-        <summary>{tr("Thông tin danh mục")}</summary>
+      <AnimatedDetails className="dialog-secondary-section">
+        <summary>
+          <span className="status-meta">
+            <span>{tr("Thông tin danh mục")}</span>
+            <StatusBadge size="compact" tone={p.active ? "success" : "neutral"}>
+              {p.active ? tr("Đang hoạt động") : tr("Đã lưu trữ")}
+            </StatusBadge>
+          </span>
+        </summary>
         <DialogNote text={p.description || tr("Chưa có mô tả.")} />
-        <p>{p.active ? tr("Đang hoạt động") : tr("Đã lưu trữ")}</p>
-      </details>
+      </AnimatedDetails>
     </ExpenseModal>
   );
 }
@@ -415,12 +423,12 @@ export function InvestmentTransactionDetails({
                         </strong>
                         <DialogNote text={r.reason} />
                         {r.transaction && (
-                          <details className="dialog-note">
+                          <AnimatedDetails className="dialog-note">
                             <summary>
                               {tr("Xem dữ liệu tại lần ghi này")}
                             </summary>
                             {facts(r.transaction)}
-                          </details>
+                          </AnimatedDetails>
                         )}
                       </>
                     ),

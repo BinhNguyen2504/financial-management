@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { sliceOffsets } from "@/lib/chart-data";
 
 import { formatDate, formatMonth } from "@/i18n/format";
@@ -316,7 +318,7 @@ export function SavingsReports({
             )}
           </div>
           {compact && (
-            <details>
+            <AnimatedDetails>
               <summary>{tr("Xem bảng diễn biến")}</summary>
               <div className="savings-table-scroll">
                 <ColumnTable
@@ -343,7 +345,7 @@ export function SavingsReports({
                   </tbody>
                 </ColumnTable>
               </div>
-            </details>
+            </AnimatedDetails>
           )}
           <p className="expense-muted">
             {chart === "flow" ? tr("Cột trái: nạp · cột phải: rút. ") : ""}
@@ -556,13 +558,24 @@ export function SavingsReports({
                       <td>{m.outflow === null ? "—" : money(m.outflow)}</td>
                       <td>{m.result === null ? "—" : money(m.result)}</td>
                       <td>
-                        {m.provisional
-                          ? tr("Tạm tính")
-                          : m.missing.length
-                            ? tr("Thiếu giá")
-                            : m.value === null
-                              ? tr("Chưa phát sinh")
-                              : tr("Đã ghi nhận")}
+                        <StatusBadge
+                          size="compact"
+                          tone={
+                            m.provisional || m.missing.length
+                              ? "warning"
+                              : m.value === null
+                                ? "neutral"
+                                : "success"
+                          }
+                        >
+                          {m.provisional
+                            ? tr("Tạm tính")
+                            : m.missing.length
+                              ? tr("Thiếu giá")
+                              : m.value === null
+                                ? tr("Chưa phát sinh")
+                                : tr("Đã ghi nhận")}
+                        </StatusBadge>
                       </td>
                     </tr>
                   ))}

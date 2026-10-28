@@ -115,3 +115,8 @@ Tiết kiệm tách model/replay khỏi xử lý command; editor tách action/co
 ### Nhất quán toàn ứng dụng — 28/10/2026
 
 Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Bảng diễn biến, hướng dẫn và ghi chú dài dùng thành phần mở rộng chung. Thông báo lưu chưa xác nhận nói rõ bước tiếp theo; request identity, bản nháp và lịch sử giữ nguyên. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).

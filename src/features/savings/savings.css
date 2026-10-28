@@ -195,18 +195,6 @@
 .savings-ledger-note {
   white-space: pre-line;
 }
-.savings-category-status {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: var(--surface-alt);
-  color: var(--muted);
-  font-size: var(--font-size-12);
-  white-space: nowrap;
-}
-.savings-category-status[data-active="true"] {
-  color: var(--text);
-}
 .savings-cell-label {
   display: none;
 }

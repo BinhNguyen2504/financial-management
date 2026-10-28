@@ -1,0 +1,370 @@
+.overview-workspace {
+  container-type: inline-size;
+}
+.overview-heading {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.overview-heading > div {
+  flex: 1;
+  min-width: 0;
+}
+.overview-heading h1 {
+  font-size: clamp(24px, 3vw, 32px);
+  margin: 0;
+}
+.overview-heading p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+.overview-heading > svg,
+.overview-heading > .garden {
+  width: 88px;
+  height: 72px;
+  flex: none;
+}
+.overview-widget-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+@container (min-width:760px) {
+  .overview-widget-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.overview-widget {
+  min-width: 0;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-wrap: anywhere;
+}
+.overview-widget > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.overview-widget h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.overview-widget header p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.overview-widget header > a {
+  flex: none;
+  font-size: 13px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.overview-widget dl {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.overview-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.overview-widget dt {
+  color: var(--muted);
+}
+.overview-widget dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.overview-value-main {
+  margin-bottom: 4px;
+}
+.overview-value-main dd {
+  font-size: clamp(22px, 3.5cqi, 30px);
+  font-weight: 700;
+  text-align: left;
+  margin-top: 6px;
+}
+.overview-widget p {
+  margin: 0;
+}
+.overview-empty,
+.overview-footnote {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.overview-footnote {
+  font-size: 13px;
+  margin: 18px 0 0;
+}
+.overview-warning {
+  color: var(--accent);
+}
+.overview-source-error {
+  padding: 12px;
+  background: var(--surface-alt);
+  border-radius: 8px;
+  font-size: 14px;
+}
+.overview-source-error button {
+  margin-top: 8px;
+  min-height: 44px;
+}
+.overview-list,
+.overview-attention {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+.overview-list li,
+.overview-attention a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.overview-list li > span,
+.overview-attention a > span {
+  min-width: 0;
+}
+.overview-list li > span:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.overview-list small,
+.overview-attention small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 3px;
+}
+.overview-attention a {
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+.overview-attention a:hover strong {
+  text-decoration: underline;
+}
+.overview-attention a > span:last-child {
+  white-space: nowrap;
+}
+.overview-fund-rows {
+  display: grid;
+  gap: 14px;
+}
+.overview-fund-rows > div > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+.overview-fund-rows progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin-top: 8px;
+  accent-color: var(--accent);
+}
+.overview-allocation {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.overview-allocation th {
+  text-align: left;
+  font-weight: 500;
+  width: 55%;
+  padding: 8px 12px 8px 0;
+}
+.overview-allocation td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.overview-allocation small {
+  display: block;
+  color: var(--muted);
+}
+.overview-bar {
+  display: block;
+  height: 6px;
+  background: var(--surface-alt);
+  border-radius: 4px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.overview-bar > span {
+  display: block;
+  background: var(--accent);
+  height: 100%;
+}
+.overview-widget .daily-note {
+  margin: 0;
+}
+.overview-refresh,
+.overview-preview-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.overview-customize {
+  display: grid;
+  gap: 12px;
+}
+.overview-option {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-alt);
+  border-radius: 10px;
+}
+.overview-option > label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 150px;
+  min-height: 44px;
+}
+.overview-option input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  accent-color: var(--accent);
+}
+.overview-option small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.overview-move {
+  display: flex;
+  gap: 8px;
+}
+.overview-move button {
+  min-width: 44px;
+  min-height: 44px;
+}
+.overview-jar-options {
+  flex-basis: 100%;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 8px 0 0;
+}
+.overview-jar-options label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+}
+.overview-empty-layout {
+  padding: 24px;
+}
+@media (max-width: 700px) {
+  .overview-heading {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .overview-heading > .garden,
+  .overview-heading > svg {
+    display: none;
+  }
+  .overview-heading > button {
+    flex-basis: 100%;
+  }
+  .overview-widget {
+    padding: 18px;
+  }
+  .overview-value {
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+  .overview-value dd {
+    margin-left: auto;
+  }
+}
+@media (max-width: 600px) {
+  .app-shell
+    .expense-dialog.dialog-shell.dialog-detail:has(.overview-customize) {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: var(--dialog-visible-top, 0px);
+    inset-block-end: auto;
+    width: 100vw;
+    max-width: 100vw;
+    height: var(--dialog-visible-height, 100dvh);
+    max-height: var(--dialog-visible-height, 100dvh);
+    margin: 0;
+    border-radius: 0;
+  }
+}
+
+.overview-preview-note {
+  flex-wrap: wrap;
+  padding: 12px 0;
+}
+.overview-preview-note > p {
+  flex-basis: 100%;
+}
+/* Scope beats the older generic .panel heading/list spacing. */
+.overview-workspace .overview-widget h2 {
+  margin: 0;
+}
+.overview-workspace .overview-widget ul {
+  padding: 0;
+  margin: 0;
+}
+.overview-workspace .overview-widget li + li {
+  margin-top: 0;
+}
+.overview-workspace .overview-attention {
+  gap: 10px;
+}
+.overview-workspace .overview-fund-rows progress {
+  appearance: none;
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface-alt);
+}
+.overview-fund-rows progress::-webkit-progress-bar {
+  background: var(--surface-alt);
+}
+.overview-fund-rows progress::-webkit-progress-value {
+  background: var(--primary);
+}
+.overview-fund-rows progress::-moz-progress-bar {
+  background: var(--primary);
+}
+
+.overview-heading {
+  position: relative;
+}
+.overview-heading .overview-refresh {
+  position: absolute;
+  right: 0;
+  bottom: -20px;
+  margin: 0;
+  font-size: 12px;
+}
+.overview-workspace .overview-heading .expense-primary,
+.overview-workspace .overview-heading .help-trigger {
+  box-shadow: none;
+}

@@ -30,3 +30,12 @@ Rà soát theo nhóm lỗi trên toàn ứng dụng: nội dung cho người dù
 Kết quả kiểm chứng cuối đợt được ghi tại [nhật ký validation](../07-validation.md). Môi trường là production build riêng, PostgreSQL local riêng, Auth double và trình duyệt mô phỏng; không chứng minh cloud deployment hoặc thiết bị vật lý.
 
 Chưa kiểm chứng trên thiết bị vật lý: mở/đóng bàn phím iOS Safari và Android Chrome, thanh địa chỉ thu/phóng, vùng an toàn khi mở từ màn hình chính, xoay máy trong lúc nhập và pinch zoom. Đây là bảng kiểm thiết bị riêng; không đánh dấu đạt từ browser emulation.
+
+## Bổ sung tag và danh mục Thu nhập — 28/10/2026
+
+Tag trạng thái chuyển sang StatusBadge chung: nền nhẹ, viền rõ, chữ đậm, icon trang trí và sắc thái theo nghĩa trạng thái. Nhóm tag xuống hàng khi thiếu chỗ, chữ không bị cắt. Quy tắc xóa Thu nhập xét số thu hiện còn ở mọi tháng/năm, bao gồm 0 đồng; lịch sử đã xóa hết không chặn xóa danh mục. Xem [đặc tả và nghiệm thu riêng](income-tags-2026-10-28.md).
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Tiếp nối đợt này bằng tinh chỉnh preview mobile, header, FAQ, phần mở rộng và nội dung phổ thông; giữ nguyên lịch sử bằng chứng bên trên. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).

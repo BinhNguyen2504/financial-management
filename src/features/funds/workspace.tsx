@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 
 import { SafetyScene } from "@/components/safety-scene";
 import { LoadingStatus } from "@/components/loading";
@@ -94,11 +96,12 @@ export function FundsWorkspace() {
         <>
           <section className="fund-welcome panel">
             <div>
-              <span className="pill">
-                <ShieldCheck size={16} aria-hidden="true" />{" "}
-                {tr("Chuẩn bị theo nhịp của bạn")}
-              </span>
               <h2>{tr("Hiểu trước, bắt đầu từng chút.")}</h2>
+              <div className="status-meta fund-welcome-status">
+                <StatusBadge tone="info" size="compact" icon={ShieldCheck}>
+                  {tr("Chuẩn bị theo nhịp của bạn")}
+                </StatusBadge>
+              </div>
               <p>
                 {tr(
                   "Chọn chi phí sinh hoạt từ Chi tiêu, tự đặt quy mô cho ba quỹ rồi ghi lại tiền đã dành riêng. Mỗi quỹ có một vai trò, một hành trình lớn lên.",
@@ -128,10 +131,10 @@ export function FundsWorkspace() {
                 </p>
                 <h2>{fundNames[id]}</h2>
                 <p>{guides[id].concept}</p>
-                <details>
+                <AnimatedDetails>
                   <summary>{tr("Tìm hiểu cách xây quỹ")}</summary>
                   <FundGuide fund={id} />
-                </details>
+                </AnimatedDetails>
               </article>
             ))}
           </div>
@@ -179,7 +182,7 @@ export function FundsWorkspace() {
                 {tr("Số tháng Emergency dùng mức sinh hoạt này.")}
               </p>
             </div>
-            <details>
+            <AnimatedDetails>
               <summary>{tr("Xem các hũ cấu thành")}</summary>
               {config.living.items.map((i) => (
                 <p key={i.jarId}>
@@ -187,7 +190,7 @@ export function FundsWorkspace() {
                 </p>
               ))}
               <Link href="/budgets">{tr("Mở Chi tiêu →")}</Link>
-            </details>
+            </AnimatedDetails>
           </section>
           {view.sourceChanged && (
             <section className="fund-source-change" role="status">

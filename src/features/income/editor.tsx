@@ -104,7 +104,7 @@ function IncomeEditorForm(props: Parameters<typeof useIncomeEditor>[0]) {
         {uncertain && (
           <p role="status" className="expense-notice">
             {tr(
-              "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Lưu lại để kiểm tra cùng yêu cầu.",
+              "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm Lưu lại để kiểm tra.",
             )}
           </p>
         )}

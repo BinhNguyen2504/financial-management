@@ -99,14 +99,7 @@
   color: var(--primary);
   line-height: 1.7;
 }
-.landing-stage {
-  font-size: var(--font-size-12);
-  white-space: nowrap;
-  border: 1px solid var(--border);
-  padding: 5px 12px;
-  border-radius: 30px;
-  color: var(--muted);
-}
+
 .hero-copy {
   display: grid;
   grid-template-columns: 1fr 280px;
@@ -222,12 +215,6 @@
 }
 .preview-demo-label {
   margin-left: auto;
-  font-size: var(--font-size-12);
-  padding: 3px 9px;
-  border-radius: 6px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  white-space: nowrap;
 }
 .preview-body {
   display: grid;
@@ -708,13 +695,7 @@
   flex-wrap: wrap;
   gap: 10px;
 }
-.planned-tags span {
-  padding: 7px 12px;
-  font-size: var(--font-size-12);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  color: var(--muted);
-}
+
 .landing-faq {
   margin-top: 72px;
   max-width: 800px;
@@ -1423,7 +1404,11 @@
 
 /* The public picker shares Settings' locale without hiding either language. */
 .public-header {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+.public-language-code,
+.preview-mobile-brand {
+  display: none;
 }
 .public-language {
   position: relative;
@@ -1461,10 +1446,11 @@
 }
 @media (max-width: 600px) {
   .public-account {
-    width: 100%;
-    justify-content: space-between;
+    width: auto;
+    flex: 0 0 auto;
+    justify-content: flex-end;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
   .public-account .public-enter {
     margin-left: auto;
@@ -1474,4 +1460,41 @@
 .public-shell + .toast-viewport {
   top: auto;
   bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* Fixed illustrative overview; uses no account data. */
+.preview-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.preview-overview-grid section {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--surface-alt);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow-wrap: anywhere;
+}
+.preview-overview-grid h3 {
+  font-size: 14px;
+  margin: 0;
+}
+.preview-overview-grid strong {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.preview-overview-grid small {
+  color: var(--muted);
+}
+.preview-overview-grid > p {
+  grid-column: 1/-1;
+  font-size: 12px;
+}
+@media (max-width: 600px) {
+  .preview-overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

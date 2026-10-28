@@ -1,4 +1,5 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
 
@@ -7,14 +8,13 @@ import { Garden } from "@/components/garden";
 import { LoadingSpinner, LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
 
-import { hasRecordedIncome, ruleAt } from "@/domain/income/engine";
+import { hasMonthlyIncome, ruleAt } from "@/domain/income/engine";
 import { type ReportFilter } from "@/domain/income/reports";
 import type { IncomeRow } from "@/domain/income/types";
 import { formatMonth as monthName } from "@/i18n/format";
 import { HelpButton, HelpPageTitle } from "@/features/help/provider";
 import {
   Archive,
-  CircleAlert,
   Trash2 as DeleteActionIcon,
   Trash2 as DeleteCommandGlyph,
   Download,
@@ -86,10 +86,14 @@ export function IncomeWorkspace(
         {list.map((r) => (
           <article className="income-item is-oneoff" key={r.key}>
             <div>
-              <h3>
-                <Sparkles size={17} aria-hidden="true" /> {r.name}
-              </h3>
-              <span className="status-badge">{tr("Thu phát sinh")}</span>
+              <div className="status-heading">
+                <h3>
+                  <Sparkles size={17} aria-hidden="true" /> {r.name}
+                </h3>
+                <StatusBadge tone="info" size="compact">
+                  {tr("Thu phát sinh")}
+                </StatusBadge>
+              </div>
               <p className="expense-muted">{monthName(r.month, locale)}</p>
               {r.description && (
                 <p className="expense-muted">{r.description}</p>
@@ -311,7 +315,14 @@ export function IncomeWorkspace(
                         className={`income-item${!r.active ? " is-inactive" : r.amount === null && !future ? " is-missing" : ""}`}
                       >
                         <div>
-                          <h3>{r.name}</h3>
+                          <div className="status-heading">
+                            <h3>{r.name}</h3>
+                            {!r.active && (
+                              <StatusBadge size="compact">
+                                {tr("Đã ngừng")}
+                              </StatusBadge>
+                            )}
+                          </div>
                           {r.description && (
                             <p className="expense-muted">{r.description}</p>
                           )}
@@ -319,16 +330,17 @@ export function IncomeWorkspace(
                         <div className="income-receipt">
                           <p className="income-amount">
                             {r.amount === null ? (
-                              <span className="status-badge status-missing">
-                                <CircleAlert size={15} aria-hidden="true" />
+                              <StatusBadge
+                                tone={future ? "info" : "warning"}
+                                size="compact"
+                              >
                                 {future
                                   ? tr("Chưa đến kỳ nhập")
                                   : tr("Chưa nhập")}
-                              </span>
+                              </StatusBadge>
                             ) : (
                               money(r.amount)
                             )}
-                            {!r.active && tr(" · đã ngừng")}
                           </p>
                           {r.note && r.note !== r.description && (
                             <p className="expense-muted">{r.note}</p>
@@ -405,25 +417,34 @@ export function IncomeWorkspace(
                   <div className="income-list">
                     {categories.map((c) => {
                       const rule = ruleAt(c, selectedMonth) ?? c.rules[0];
-                      const hasMoney = hasRecordedIncome(view.book!, c.id);
+                      const hasReceipts = hasMonthlyIncome(view.book!, c.id);
                       return (
                         <article
                           className={`income-item${selectedMonth >= c.start && !rule.active ? " is-inactive" : ""}`}
                           key={c.id}
                         >
                           <div>
-                            <h3>{rule.name}</h3>
-                            <p className="expense-muted">
-                              {tr("Từ")} {monthName(c.start, locale)} ·{" "}
-                              <span
-                                className={`status-badge ${!rule.active ? "status-inactive" : ""}`}
+                            <div className="status-heading">
+                              <h3>{rule.name}</h3>
+                              <StatusBadge
+                                size="compact"
+                                tone={
+                                  selectedMonth < c.start
+                                    ? "info"
+                                    : rule.active
+                                      ? "success"
+                                      : "neutral"
+                                }
                               >
                                 {selectedMonth < c.start
                                   ? tr("Chưa bắt đầu")
                                   : rule.active
                                     ? tr("Đang hoạt động")
                                     : tr("Đã ngừng")}
-                              </span>
+                              </StatusBadge>
+                            </div>
+                            <p className="expense-muted">
+                              {tr("Từ")} {monthName(c.start, locale)}
                             </p>
                             {rule.description && <p>{rule.description}</p>}
                           </div>
@@ -440,29 +461,33 @@ export function IncomeWorkspace(
                             >
                               <EditActionIcon size={18} aria-hidden="true" />
                             </button>
-                            {(!hasMoney ||
+                            {(!hasReceipts ||
                               (selectedMonth >= c.start && rule.active)) && (
                               <button
                                 className={
-                                  hasMoney
+                                  hasReceipts
                                     ? "expense-secondary expense-warning"
                                     : "expense-secondary expense-danger"
                                 }
                                 onClick={() =>
                                   open({
-                                    type: hasMoney ? "stop" : "deleteCategory",
+                                    type: hasReceipts
+                                      ? "stop"
+                                      : "deleteCategory",
                                     category: c,
                                   })
                                 }
                                 aria-label={tr("{0} danh mục {1}", {
-                                  0: hasMoney ? tr("Ngừng") : tr("Xóa"),
+                                  0: hasReceipts ? tr("Ngừng") : tr("Xóa"),
                                   1: rule.name,
                                 })}
                               >
-                                {hasMoney && (
+                                {hasReceipts && (
                                   <Archive size={17} aria-hidden="true" />
                                 )}
-                                {hasMoney ? tr("Ngừng từ tháng…") : tr("Xóa")}
+                                {hasReceipts
+                                  ? tr("Ngừng từ tháng…")
+                                  : tr("Xóa")}
                               </button>
                             )}
                           </div>
@@ -584,11 +609,11 @@ export function IncomeWorkspace(
                       <h2>{tr("Tổng đã ghi nhận trong kỳ")}</h2>
                       <strong>{displayMoney(report.total)}</strong>
                       {report.missing > 0 && (
-                        <p className="status-badge status-missing">
-                          <CircleAlert size={15} aria-hidden="true" />
-                          {report.missing}{" "}
-                          {tr("khoản thu cố định cần bổ sung.")}
-                        </p>
+                        <div className="status-meta income-summary-status">
+                          <StatusBadge tone="warning" size="compact">
+                            {tr("{0} khoản cần bổ sung", { 0: report.missing })}
+                          </StatusBadge>
+                        </div>
                       )}
                     </article>
                     <article>

@@ -129,7 +129,7 @@ function ExpenseEditorForm(props: Parameters<typeof useExpenseEditor>[0]) {
             {uncertain && (
               <p role="status" className="expense-notice">
                 {tr(
-                  "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu để kiểm tra lại cùng yêu cầu.",
+                  "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm Xác nhận lưu để kiểm tra.",
                 )}
               </p>
             )}

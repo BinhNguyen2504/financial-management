@@ -1,4 +1,5 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 
 import { ColumnTable } from "@/components/column-table";
 import { useMoney } from "@/components/privacy";
@@ -99,12 +100,12 @@ export function SavingsCategoryTable({
                   <span className="savings-cell-label" aria-hidden="true">
                     {tr("Trạng thái")}
                   </span>
-                  <span
-                    className="savings-category-status"
-                    data-active={r.active}
+                  <StatusBadge
+                    size="compact"
+                    tone={r.active ? "success" : "neutral"}
                   >
                     {r.active ? tr("Đang hoạt động") : tr("Đã lưu trữ")}
-                  </span>
+                  </StatusBadge>
                 </td>
                 <td role="cell">
                   <div className="expense-actions">

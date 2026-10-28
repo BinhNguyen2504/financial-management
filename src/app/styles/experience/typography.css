@@ -37,7 +37,27 @@ body {
   letter-spacing: -0.025em;
 }
 .app-shell h2 {
+  font-size: var(--text-section-title);
+  font-weight: var(--weight-strong);
   line-height: var(--leading-title);
+  text-wrap: balance;
+}
+.app-shell main h3 {
+  line-height: var(--leading-title);
+  overflow-wrap: anywhere;
+}
+.app-shell
+  main
+  :is(
+    .expense-section-heading,
+    .savings-section-heading,
+    .investment-section-heading
+  ) {
+  min-width: 0;
+  row-gap: 12px;
+}
+.app-shell main :is(.panel, .settings-section, .report-panel) > h2 {
+  margin-bottom: 16px;
 }
 .app-shell :is(p.lead, .panel > p, .help-content) {
   font-size: var(--text-body);

@@ -16,17 +16,12 @@ export function ruleAt(category: IncomeCategory, month: string) {
     .filter((r) => r.month <= month)
     .sort((a, b) => b.month.localeCompare(a.month))[0];
 }
-export function hasRecordedIncome(
+/** Existing receipts across every month/year, including an explicit zero. */
+export function hasMonthlyIncome(
   book: IncomeBook,
   categoryId: string,
 ): boolean {
-  return (
-    book.monthly.some((r) => r.categoryId === categoryId) ||
-    book.audit.some((entry) => {
-      const action = (entry.detail as { action?: IncomeAction } | null)?.action;
-      return action?.type === "setMonthly" && action.categoryId === categoryId;
-    })
-  );
+  return book.monthly.some((r) => r.categoryId === categoryId);
 }
 export function applyAction(
   source: IncomeBook | null,
@@ -96,7 +91,7 @@ export function applyAction(
       break;
     }
     case "deleteCategory": {
-      if (hasRecordedIncome(book, category!.id))
+      if (hasMonthlyIncome(book, category!.id))
         throw new IncomeError(
           "Danh mục đã có số thu. Hãy chọn Ngừng từ tháng để giữ lịch sử.",
         );

@@ -260,3 +260,12 @@ Danh sách hai trường dùng tên bên trái và cặp thao tác bên phải �
 ## Quy tắc nhất quán — 28/10/2026
 
 Viết cho người dùng phổ thông, ưu tiên dễ đọc và thao tác được. Hai ô Năm/Tháng cùng hàng; dialog mobile tối đa 90% vùng hiển thị, giữ góc bo và cuộn riêng; menu đóng khi chạm ngoài hoặc focus đi ra. Phân cấp chữ bằng vai trò, không thu nhỏ tùy trang để né tràn. Xem [đặc tả và phạm vi](features/usability-consistency-2026-10-28.md).
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Giữ nhận diện hiện tại. Header mobile ưu tiên cùng hàng với điều khiển gọn; preview là khung điện thoại cuộn nội bộ. FAQ là section riêng, mở độc lập và đẩy nội dung mượt. Nội dung thường trực chỉ giải thích điều cần cho người dùng quyết định hoặc thao tác. Xem [quy tắc và kiểm chứng](features/responsive-disclosures-2026-10-29.md).
+
+## Tổng quan theo nhu cầu — 29/10/2026
+
+Thay phần chào lớn bằng tiêu đề gọn; mặc định 6 widget bao phủ 5 module và việc cần chú ý. Bốn widget tùy chọn cho phân bổ, hũ, đáo hạn và lời nhắn theo theme. Tùy chỉnh có nút di chuyển thay vì phụ thuộc kéo thả; Xem thử/Lưu/Hủy, khôi phục mặc định phải Lưu. Hai cột khi vùng nội dung từ 760px, mobile một cột và dialog toàn màn hình. Dùng nhãn kỳ, thiếu định giá, tạm tính và lỗi từng nguồn. [Chi tiết](features/overview.md).

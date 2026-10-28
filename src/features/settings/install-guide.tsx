@@ -1,8 +1,9 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { useI18n } from "@/i18n/provider";
 
-import { CheckCircle2, Monitor, Smartphone } from "lucide-react";
+import { Monitor, Smartphone } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 const guides = {
@@ -207,10 +208,9 @@ export function InstallGuide() {
   return (
     <div>
       {installed && (
-        <p className="status-badge">
-          <CheckCircle2 size={18} aria-hidden="true" />
+        <StatusBadge tone="success">
           {tr("Bạn đang mở ứng dụng đã cài.")}
-        </p>
+        </StatusBadge>
       )}
       <ScrollTabs
         className="install-platforms"

@@ -1,4 +1,5 @@
 export const common = {
+  "Chưa nhận được dữ liệu. Hãy thử lại.": "Could not load the data. Try again.",
   "Hãy chọn bản sao lưu (.json) đã tải từ Cài đặt.":
     "Choose a backup (.json) downloaded from Settings.",
   "Tính năng này chưa sẵn sàng. Bạn có thể thử lại sau.":

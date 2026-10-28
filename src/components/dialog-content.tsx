@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { useI18n } from "@/i18n/provider";
 
@@ -85,10 +86,10 @@ export function DialogNote({ text }: { text?: string }) {
 
   if (!text) return null;
   return text.length > 140 ? (
-    <details className="dialog-note">
+    <AnimatedDetails className="dialog-note">
       <summary>{tr("Xem ghi chú")}</summary>
       <p>{text}</p>
-    </details>
+    </AnimatedDetails>
   ) : (
     <p className="dialog-note">{text}</p>
   );

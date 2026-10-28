@@ -86,3 +86,8 @@ UI sao lưu/khôi phục hỗ trợ Tiếng Việt/English. JSON V1/V2, tên tr�
 ### Nhất quán toàn ứng dụng — 28/10/2026
 
 Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Rút gọn thông báo chưa xác nhận khôi phục thành tình trạng và nút thao tác tiếp theo. Giữ bản xem trước và cơ chế retry tránh nhập trùng; mã lỗi/status không đổi. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).

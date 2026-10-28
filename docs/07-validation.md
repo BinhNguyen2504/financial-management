@@ -799,3 +799,64 @@ Môi trường: Node 22.12.0; production build local; PostgreSQL riêng với mi
 Tài liệu đã rà/đồng bộ: catalog và trạng thái module, landing copy, preview minh họa, README, kiến trúc/UX, đặc tả năm module, Help, hồ sơ, bản địa hóa, backup và bảo trì source. Preview giữ số liệu minh họa cố định; trạng thái module không thay đổi.
 
 Môi trường: production build local, PostgreSQL riêng, Auth double và browser/device profiles mô phỏng. Không chứng minh cloud deployment, Auth/PKCE thật hoặc thiết bị vật lý. Chưa thử bàn phím/thanh địa chỉ/vùng an toàn và chế độ màn hình chính trên iOS/Android thật; viewport 390×360 chỉ kiểm tra vùng hiển thị thấp.
+
+
+## Responsive landing và phần mở rộng toàn ứng dụng — 29/10/2026
+
+Phạm vi và hành vi: [đặc tả responsive/disclosure](features/responsive-disclosures-2026-10-29.md). Giữ các kết quả có ngày trước đó.
+
+- `npm test`: **261/261**. Bộ HTTP client giữ loại lỗi, mã và status, đồng thời kiểm thông báo phản hồi không đọc được bằng ngôn ngữ phổ thông.
+- Lint, Prettier, typecheck, `git diff --check` và kiểm liên kết tài liệu source mới đạt; architecture **255 TypeScript source files, 0 violations**.
+- Production build Webpack thành công trong thư mục app và PostgreSQL/Auth local riêng. Manifest xác nhận **285 source files** khớp snapshot production đang kiểm tra, không thay source ứng dụng giữa lượt hồi quy.
+- Hồi quy rộng **332/332** trong một lượt sạch (**15,8 phút**) trên Chromium desktop/mobile, Firefox và WebKit: landing/ngôn ngữ, layout/scroll, Help, usability, interface feedback, Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ và backup. Bao phủ dữ liệu mẫu, dialog lồng nhau, năm theme, hai ngôn ngữ, chữ 200%, conflict, retry và mất phản hồi sau khi ghi. Log: `artifacts/landing-refinement/final-browser.log`.
+- Acceptance cuối **20/20** trên Chromium desktop/mobile, Firefox và WebKit. Gồm tên tài khoản dài, header cùng hàng ở 320/390/600/768/1440px, hai ngôn ngữ, preview đủ năm mục, cuộn tới cuối, che tiền độc lập, bàn phím, FAQ nhiều câu, vị trí trung gian khi mở, bấm nhanh, nội dung tăng trong animation, `inert` khi đóng, giảm chuyển động, năm theme và no-JavaScript. Lượt này chạy riêng sau khi siết helper chờ đúng pathname đăng nhập và thêm tên dài; không cộng như 20 ca khác biệt với bộ hồi quy.
+- Đo riêng header/hero/preview ở 320–1440px, chữ 100%/200%: không có khối được đo vượt khung hoặc cắt nội dung. Xem `artifacts/landing-refinement/final-geometry.json`.
+- Đã mở **36 ảnh** của 12 route ở 390/768/1440px với tài khoản local trống, cùng ảnh preview/FAQ khách và thành viên. Không tràn ngang hoặc cắt tiêu đề trong số đo `final-app-headings.json`; dữ liệu mẫu, bảng và dialog lồng nhau được kiểm riêng trong regression usability/layout và các module.
+- **100 phép đo** chữ FAQ trên năm theme sáng/tối: tương phản nhỏ nhất **4,55:1**, không mẫu nào dưới 4,5:1 (`faq-contrast.json`).
+- Inspector cuối ở 1440/768/390px đạt **0 FAIL / 0 WARN với danh sách ngoại lệ nhận diện được ghi rõ**. Bản mặc định trước đó có 14 FAIL / 6 WARN theo heuristic gallery về palette, slogan, nhãn, thẻ, ảnh/video và mật độ motion; không coi đây là bằng chứng thiết kế mới đạt toàn bộ quy tắc mặc định. Đã xem đủ tám ảnh fold/sheet cuối. Tự chấm thị giác 7,1/10 theo rubric skill, có giới hạn do giữ thiết kế hiện tại. Xem `artifacts/landing-refinement/visual-review.md` và `inspection-final/report.json`.
+
+Hai lỗi trong lượt thăm dò đầu tiên là harness: helper tìm nút tiếng Việt sau khi đã đổi sang English, và kiểm chart trong viewport khi cả khung điện thoại còn nằm một phần bên dưới màn hình. Đã sửa helper/ngữ cảnh cuộn và chạy lại; lượt landing/ngôn ngữ trước hồi quy rộng đạt 80/80. Không đổi nghiệp vụ để làm test đạt.
+
+Tài liệu đã rà/đồng bộ: catalog, hai landing và preview, README, kiến trúc, hướng UX, UI feedback, Help, bản địa hóa, Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ và backup. Trạng thái module, số liệu mẫu và quyền truy cập không đổi.
+
+Môi trường: production local, PostgreSQL riêng, Auth double và browser/device profiles mô phỏng. Không ghi cloud và không chứng minh deployment, Supabase Auth/PKCE thật hoặc thiết bị vật lý. Chưa thử bàn phím, thanh địa chỉ thu/phóng, vùng an toàn và cảm giác cuộn lồng trên iOS/Android thật.
+
+Bốn liên kết ảnh Zen trong các mục validation lịch sử không còn file tương ứng trong output cache `artifacts/browser/` sau lượt chạy này. Giữ nguyên ghi nhận có ngày; không thay bằng ảnh mới rồi coi đó là bằng chứng của lượt cũ. Các liên kết tài liệu source vừa bổ sung đều trỏ tới file hiện có.
+
+
+### Đối chiếu thay đổi workspace trong lúc kiểm thử
+
+Trong khi lượt 332 ca chạy trên snapshot production cố định, workspace có thêm thay đổi về vị trí tag trạng thái, accessory của bộ chọn tháng/năm và heading trang dự kiến. Các thay đổi được giữ nguyên; kết quả 332 ca không được coi là bằng chứng cho phần source thêm sau snapshot đó.
+
+Đã build production mới và chạy bổ sung **36/36** trên bốn cấu hình trình duyệt: acceptance landing, tag trạng thái, dữ liệu mẫu/nested dialog/chữ 200% và typography/lỗi phổ thông của 12 route. Log và ảnh riêng tại `artifacts/landing-refinement/integration-browser*`, giữ bộ 332 ca độc lập. Các ca bổ sung có giao nhau với acceptance/hồi quy, không cộng như số ca khác biệt.
+
+Lượt chốt sau các tinh chỉnh tag cuối đạt **10/10** trên Chromium mobile và WebKit (production build mới): header với tên dài, preview điện thoại, tag trên các module/trang dự kiến, onboarding Quỹ và luồng Đầu tư đầy đủ. Log: `artifacts/landing-refinement/latest-browser.log`. Typecheck, lint và format check đã đối chiếu lại; `latest-manifest.json` ghi snapshot cuối và các khác biệt nếu có.
+
+## Thu nhập: xóa danh mục và bố trí tag — 29/10/2026
+
+- Quy tắc đã chốt: chỉ chặn Xóa danh mục khi còn bản ghi số thu ở bất kỳ tháng/năm nào, kể cả 0 đồng. Khi đã xóa hết số thu thì được xóa danh mục bằng cờ deleted; audit và command vẫn được giữ. UI và server dùng chung hasMonthlyIncome, kiểm tra trong transaction và giữ version conflict/idempotency. Không đổi API/schema/backup hoặc cần migration.
+- Tag dùng StatusBadge chung: nền nhẹ, viền rõ, chữ đậm, icon trang trí, sắc thái semantic sáng/tối. Bổ sung theo feedback 29/10: trạng thái nguồn đi cùng tên; ngày bắt đầu riêng; trạng thái Tiết kiệm gắn nhãn kỳ; ngày/phạm vi báo cáo và tag cùng nhóm, câu giải thích riêng; ngày/tag trong ô xếp có gap; tag tổng kỳ ngắn; footer tag căn phải theo tiền. Không thay dữ liệu hoặc phép tính tài chính.
+- Gate cuối `npm run check` bằng Node 22.12 đạt: ESLint 0 warning, kiến trúc 255 source files/0 vi phạm, Prettier, 30 file/261 unit tests, TypeScript và production build Turbopack. Log: `artifacts/badge-placement/check.log`. PostgreSQL integration ở pha đổi quy tắc xóa đạt 11 file/70 tests trên cluster local riêng, gồm xóa sau clear toàn bộ, chặn 0 ở năm khác, audit và stale deletion; pha bố trí chỉ đổi UI.
+- Lượt browser cuối: **44/44 đạt trong một lượt**, production build webpack riêng, Chromium desktop/mobile, Firefox desktop, WebKit iPhone mô phỏng, 1 worker. Chạy `income.spec.ts`, `status-badges.spec.ts`, `usability.spec.ts` với grep `income|status badges|status labels|status placement|shared month-year`. Gồm 28 ca Thu nhập, 12 ca màu/nhãn/vị trí và 4 ca bộ chọn kỳ dùng chung. Output/ảnh: `artifacts/browser-badge-placement/`; build log: `artifacts/badge-placement-next.log`; `.last-run.json` ghi passed, không có failedTests.
+- Màu và geometry: năm visual themes, sáng/tối, Việt/Anh, 320/375/1440px; phép đo bố trí thêm 768px và tên nguồn dài. Kiểm tra label/badge không đè nhau, ngày nằm dưới nhóm tên, tag không chen vào số tiền/thao tác, status kỳ nằm trong legend và controls có khoảng cách, giải thích báo cáo không chứa tag giữa câu. Các cặp token tag có tương phản tối thiểu 6,035:1; `artifacts/status-badge-contrast.json`. Kiểm tra phần tử render yêu cầu tối thiểu 4,5:1, font >=12px, border >=1px và không tràn trang.
+- Đã xem ảnh crop Thu nhập, bộ chọn kỳ Tiết kiệm, phạm vi báo cáo Đầu tư và tiêu đề trang dự kiến ở 320/1440px, cả sáng/tối. Nhóm tên dài xuống dòng cùng tag nguyên khối, ngày và actions giữ tách biệt. Ghi chú review: `artifacts/badge-placement/critique.md`. Đối chiếu 340 file source/public/config với bản dùng cho lượt browser cuối: 0 khác biệt; manifest `artifacts/badge-placement/source-manifest.json`.
+- Lịch sử lượt trước được giữ: hồi quy module/Help/landing/locale/keyboard có 114/116 đạt, hai ca Tiết kiệm dùng selector cũ `.pill`; sau cập nhật selector sang `.status-badge`, lượt tập trung Tiết kiệm và tag trên bốn browser profiles đạt 12/12. Bộ test tag mới cũng đã sửa việc đọc Auth response sau chuyển trang, fixture thiếu trạng thái và selector summary có subline trước lượt cuối 44/44. Không dùng các lượt lỗi harness làm bằng chứng app đã đạt.
+- Đã rà/đồng bộ catalog, Help Việt/Anh, README, đặc tả Thu nhập, quy chuẩn tag và bảo trì source; landing copy/preview vẫn phản ánh quy tắc hiện tại, số minh họa cố định và không đọc API tài chính tài khoản. Giữ các thay đổi khác đang có trong workspace.
+
+Môi trường là PostgreSQL local, Auth double và trình duyệt mô phỏng. Không triển khai/ghi cloud, không chứng minh Supabase Auth/PKCE thật hoặc thiết bị vật lý. Xem [quy tắc và vị trí tag](features/income-tags-2026-10-28.md).
+
+## Tổng quan cá nhân hóa — 29/10/2026
+
+Môi trường: Node 22.12, PostgreSQL local do runner sở hữu, Supabase Auth contract double, Next.js production build. Không ghi cloud, không coi browser emulation là kiểm chứng thiết bị vật lý.
+
+- Unit: **267/267**; PostgreSQL: **72/72**, gồm cấu hình mặc định không tạo dữ liệu, FORCE RLS/cách ly owner, revision xung đột và hai lần lưu đầu đồng thời. Cấu hình widget không ảnh hưởng tài khoản trống/backup.
+- Browser chấp nhận cuối: **28/28** qua Chromium desktop/mobile, Firefox và WebKit tại `artifacts/overview-acceptance-browser`; build log `artifacts/overview-acceptance-next.log`. Số liệu Tổng quan được đối chiếu với API của cả năm module, response không chứa book/audit.
+- Bao phủ thêm/ẩn/đổi thứ tự bằng bàn phím, chọn tối đa 5 hũ, xem thử/Hủy/khôi phục mặc định/Lưu, tài khoản trên trình duyệt thứ hai, lỗi lưu và xung đột, lỗi từng nguồn, giữ số lần tải trước, hết phiên, short/stale foreground, retry có spinner/aria-busy và không đổi vị trí nội dung khi refresh.
+- UI: 320/390/768/1440px, năm theme, sáng/tối, Việt/Anh, Privacy Mode và reduced motion. Dialog cấu hình tại 320px được đo toàn viewport, hỗ trợ Escape và trả focus về nút tùy chỉnh. Screenshots gồm `customize-320.png`, `overview-mobile.png`, `overview-desktop.png` trong từng project của thư mục chấp nhận.
+- Kiểm tra hồi quy landing public/preview độc lập, đăng nhập, Help preview, loading và cuộn preview điện thoại cũng đã qua trên bốn project trong vòng kiểm tra trước; nguồn preview luôn cố định, không gọi API tài chính.
+- Lint, architecture (**267 source files, 0 violations**), format check và typecheck qua. Production Webpack build trong runner qua; build mặc định được ghi bổ sung khi hoàn tất.
+- Inspector trên bản production với fixture local: **0 FAIL, 1 WARN** tại 1440/768/390. Giữ palette ứng dụng có sẵn bằng exception `palette-claude`; cảnh báo còn lại là nhãn sidebar hiện hữu. Đã mở cả sáu ảnh để review. Critique hai vòng: **7.6/10**, tại `artifacts/overview-review/critique.md`; số đo/ảnh tại `artifacts/overview-review/final-inspect/`.
+
+Các lỗi phát hiện trong quá trình kiểm chứng đã được sửa: serialization JSON của cấu hình, CSS dialog mobile bị luật dùng chung ghi đè, khoảng cách danh sách cũ và tiến độ quỹ mặc định của trình duyệt, trả focus WebKit, refresh đẩy nội dung và trạng thái chờ của nút thử lại. Kết quả chấp nhận nêu trên được lấy sau các sửa liên quan.
+
+Đã rà soát/cập nhật catalog, Help Việt/Anh, README, landing khách/thành viên và preview mẫu, tài liệu Tổng quan, kiến trúc, UX, khám phá tính năng và triển khai. Migration `202610290001_overview_layouts.sql` mới chỉ áp dụng vào database kiểm thử local; cloud/deployment và thiết bị thật chưa được xác nhận cho thay đổi này.

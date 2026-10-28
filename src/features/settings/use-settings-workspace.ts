@@ -289,7 +289,7 @@ export function useSettingsWorkspace() {
         setImportError(
           uncertain
             ? tr(
-                "Chưa xác nhận kết quả khôi phục. Giữ bản xem trước và thử lại cùng yêu cầu.",
+                "Chưa xác nhận kết quả khôi phục. Bản xem trước được giữ; bấm khôi phục lại để kiểm tra.",
               )
             : message(e),
         );
@@ -298,7 +298,9 @@ export function useSettingsWorkspace() {
           imported
             ? tr("Dữ liệu tài chính đã khôi phục; hồ sơ cá nhân chưa lưu được.")
             : uncertain
-              ? tr("Chưa xác nhận kết quả khôi phục. Thử lại cùng yêu cầu.")
+              ? tr(
+                  "Chưa xác nhận kết quả khôi phục. Bấm khôi phục lại để kiểm tra.",
+                )
               : message(e),
         );
       }

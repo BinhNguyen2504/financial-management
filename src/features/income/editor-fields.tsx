@@ -60,7 +60,10 @@ export function IncomeEditorFields({
       {deleting ? (
         <p className="expense-notice">
           {mode.type === "deleteCategory"
-            ? tr("Xóa danh mục “{0}” chưa có số thu.", { 0: config?.name })
+            ? tr(
+                "Xóa danh mục “{0}”? Danh mục hiện không còn số thu ở bất kỳ tháng nào. Lịch sử thay đổi vẫn được giữ.",
+                { 0: config?.name },
+              )
             : tr(
                 "Xóa số thu {0} của {1}? Tổng đã ghi nhận sẽ được tính lại. Lịch sử thay đổi vẫn được giữ.",
                 {

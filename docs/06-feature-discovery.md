@@ -69,3 +69,7 @@ Viết đặc tả ngắn trong `docs/features/<feature>.md`, ghi trạng thái 
 ## Help theo trang — 20/10/2026
 
 Đã bổ sung hướng dẫn trong source cho 12 trang; nút chung theo trang và các điểm giải thích tại chỗ, bao gồm trong form. Các trang planned chỉ giới thiệu và chỉ đến tính năng hiện có. Tên/trạng thái lấy từ catalog; không thêm module Help vào menu và không coi nội dung hướng dẫn là bằng chứng triển khai cloud. Xem [Help](features/help.md).
+
+## Tổng quan cá nhân hóa — 29/10/2026
+
+Đã chốt 10 widget, mặc định 6 widget bao phủ năm module và Cần chú ý. Người dùng thêm/ẩn/đổi thứ tự, chọn tối đa 5 hũ, xem thử rồi Lưu/Hủy; bố cục theo tài khoản. Kỳ tháng này/hiện tại, phần chào thu gọn, chưa có tài sản ròng liên module. [Đặc tả và ranh giới dữ liệu](features/overview.md).

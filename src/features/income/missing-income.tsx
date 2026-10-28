@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
 import type { IncomeRow } from "@/domain/income/types";
@@ -44,12 +46,15 @@ export function MissingIncome({
         <span>{tr("Chọn khoản bên dưới để bổ sung.")}</span>
       </div>
       {months.map((month) => (
-        <details key={month} open={months.length === 1}>
+        <AnimatedDetails key={month} open={months.length === 1}>
           <summary>
-            <span className="status-badge status-missing">
-              {monthName(month, locale)} ·{" "}
-              {missing.filter((row) => row.month === month).length}{" "}
-              {tr("danh mục chưa nhập")}
+            <span className="status-meta income-missing-month">
+              <time dateTime={month}>{monthName(month, locale)}</time>
+              <StatusBadge tone="warning" size="compact">
+                {tr("{0} chưa nhập", {
+                  0: missing.filter((row) => row.month === month).length,
+                })}
+              </StatusBadge>
             </span>
           </summary>
           <div className="income-missing-actions">
@@ -67,7 +72,7 @@ export function MissingIncome({
                 </button>
               ))}
           </div>
-        </details>
+        </AnimatedDetails>
       ))}
     </div>
   );

@@ -12,7 +12,9 @@ async function login(page: Page) {
   await page.getByLabel("Mã xác nhận", { exact: true }).fill("12345678");
   await expect(page).toHaveURL(/\/overview$/);
   // Finish the initial request before intercepting a subsequent navigation.
-  await expect(page.locator(".overview-start")).toBeVisible();
+  await expect(
+    page.locator('.overview-widget-grid[data-ready="true"]'),
+  ).toBeVisible();
 }
 
 for (const reduced of [false, true]) {
@@ -75,7 +77,7 @@ test("slow data requests show readable progress across workspaces and themes", a
       hydration.push(message.text());
   });
   const screens = [
-    ["/overview", "**/api/v1/expenses", "Đang chăm chút bức tranh tháng này…"],
+    ["/overview", "**/api/v1/overview?*", "Đang tải widget…"],
     ["/budgets", "**/api/v1/expenses", "Đang tải dữ liệu chi tiêu…"],
     ["/income", "**/api/v1/income?*", "Đang tải thu nhập…"],
     ["/savings", "**/api/v1/savings?*", "Đang mở sổ tiết kiệm…"],
@@ -95,7 +97,8 @@ test("slow data requests show readable progress across workspaces and themes", a
       await page.goto(path);
       const status = page
         .locator(".loading-status")
-        .filter({ hasText: message });
+        .filter({ hasText: message })
+        .first();
       await expect(status).toBeVisible();
       await expect(status).toHaveAttribute("role", "status");
       const spinner = status.locator(".loading-spinner");

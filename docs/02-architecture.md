@@ -210,3 +210,12 @@ Năm repository Chi tiêu, Thu nhập, Tiết kiệm, Đầu tư và Quỹ lưu 
 ## Thành phần trải nghiệm dùng chung — 28/10/2026
 
 MonthYearSelect sở hữu trình bày kỳ YYYY-MM, MobileNavigation sở hữu đóng menu, Modal sở hữu dialog stack và vùng hiển thị. Typography dùng token rem theo vai trò; lỗi hạ tầng được chuyển thành nội dung phổ thông ở client, giữ hợp đồng HTTP. Xem [quy tắc và phạm vi](features/usability-consistency-2026-10-28.md).
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+`AnimatedDetails` là client primitive dùng DOM native, chỉ bổ sung chuyển động; không thay ranh giới server/Auth hoặc API. Preview mobile dùng CSS responsive và trạng thái minh họa hiện có. Xem [quy tắc và kiểm chứng](features/responsive-disclosures-2026-10-29.md).
+
+## Tổng quan đa module — 29/10/2026
+
+Feature Tổng quan riêng thay route sử dụng ExpenseOverview. GET `/api/v1/overview` dùng application readers/domain summaries, chỉ trả DTO các nguồn cần dùng, lỗi nguồn độc lập, private/no-store. GET/PUT `/api/v1/overview/layout` dùng `overview_layouts`, FORCE RLS, khóa owner và revision để tránh ghi đè. Config display nằm ngoài backup tài chính và account emptiness. Giữ pageAccess và Auth/origin hiện có. Đọc nguồn độc lập, không cam kết snapshot toàn ứng dụng. Xem [đặc tả](features/overview.md).

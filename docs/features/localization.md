@@ -44,3 +44,12 @@ Hồi quy bố cục phát hiện `LocalizedInput` giữ chuỗi `000777` sau bl
 ### Nhất quán toàn ứng dụng — 28/10/2026
 
 Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Bộ chọn public mobile hiển thị VI/EN bằng nhãn trang trí; native select giữ tên Tiếng Việt/English và accessible name đầy đủ. Đổi ngôn ngữ giữ tab/che tiền của preview; FAQ đang mở tự co theo nội dung mới. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).
+
+## Tổng quan — 29/10/2026
+
+Namespace overview bổ sung nhãn widget, cấu hình, lỗi và Help; định dạng VND chính xác qua BigInt, ngày/giờ Việt Nam và định dạng số vi-VN/en-GB. Tên hũ và danh mục do người dùng đặt giữ nguyên.

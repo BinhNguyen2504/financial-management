@@ -1,4 +1,5 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
 import {
@@ -124,13 +125,13 @@ export function JarClassification({
 
   return (
     <div className="expense-jar-meta">
-      <span className="expense-kind-label">
+      <StatusBadge size="compact" tone="info" icon={false}>
         {row.kind === "monthly" ? tr("Chi tháng") : tr("Tích lũy")}
-      </span>
+      </StatusBadge>
       <LabelName name={row.method} labels={labels} />
       {row.group && <LabelName name={row.group} labels={labels} kind="group" />}
       {!row.active && (
-        <span className="expense-inactive-label">{tr("Đã ngừng")}</span>
+        <StatusBadge size="compact">{tr("Đã ngừng")}</StatusBadge>
       )}
     </div>
   );

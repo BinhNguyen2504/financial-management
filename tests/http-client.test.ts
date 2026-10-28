@@ -83,6 +83,7 @@ describe.each(modules)(
       expect(invalid).toBeInstanceOf(ErrorType);
       expect(invalid).toMatchObject({
         code: "INVALID_RESPONSE",
+        message: "Chưa nhận được dữ liệu. Hãy thử lại.",
         status: path === "expenses" ? undefined : 502,
       });
       fetch.mockImplementation(async () =>

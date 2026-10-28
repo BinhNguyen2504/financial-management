@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
 import { sliceOffsets } from "@/lib/chart-data";
 
 import { useI18n } from "@/i18n/provider";
@@ -144,7 +145,7 @@ export function DonutChart({
         </>,
       )}
       {table && (
-        <details className="chart-data-table">
+        <AnimatedDetails className="chart-data-table">
           <summary>{tr("Xem bảng dữ liệu")}</summary>
           <div className="expense-table-scroll">
             <table>
@@ -169,7 +170,7 @@ export function DonutChart({
               </tbody>
             </table>
           </div>
-        </details>
+        </AnimatedDetails>
       )}
     </div>
   );

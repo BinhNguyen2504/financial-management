@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { incomeJSON } from "../src/features/income/api";
-import { applyAction, toView } from "../src/domain/income/engine";
+import {
+  applyAction,
+  hasMonthlyIncome,
+  toView,
+} from "../src/domain/income/engine";
 import type { IncomeBook } from "../src/domain/income/types";
 import { buildReport } from "../src/domain/income/reports";
 import { reportCSV } from "../src/i18n/report-exports/income";
@@ -151,9 +155,52 @@ describe("Income monthly domain and reports", () => {
       categoryId: id,
       month: "2027-01",
     });
+    const deleted = applyAction(
+      cleared,
+      { type: "deleteCategory", categoryId: id },
+      clock,
+    );
+    expect(deleted.categories[0].deleted).toBe(true);
+    expect(deleted.audit.slice(0, -1)).toEqual(cleared.audit);
+    expect(deleted.audit.at(-1)?.action).toBe("deleteCategory");
+    expect(toView(deleted, 2027, clock).rows).toEqual([]);
+  });
+  it("checks every year and other categories without treating a cleared receipt as current data", () => {
+    const other = "10000000-0000-4000-8000-000000000009";
+    const b = book(set("2026-12", "0"), set("2027-01", "10"), {
+      ...create,
+      id: other,
+    });
+    expect(hasMonthlyIncome(b, id)).toBe(true);
+    expect(hasMonthlyIncome(b, other)).toBe(false);
+    const partial = applyAction(
+      b,
+      { type: "clearMonthly", categoryId: id, month: "2027-01" },
+      clock,
+    );
     expect(() =>
-      applyAction(cleared, { type: "deleteCategory", categoryId: id }, clock),
+      applyAction(partial, { type: "deleteCategory", categoryId: id }, clock),
     ).toThrow(/Ngừng/);
+    const empty = applyAction(
+      partial,
+      { type: "clearMonthly", categoryId: id, month: "2026-12" },
+      clock,
+    );
+    expect(hasMonthlyIncome(empty, id)).toBe(false);
+    const stopped = applyAction(
+      empty,
+      { type: "stopCategory", categoryId: id, month: "2027-01" },
+      clock,
+    );
+    expect(
+      applyAction(stopped, { type: "deleteCategory", categoryId: id }, clock)
+        .categories[0].deleted,
+    ).toBe(true);
+    const future = applyAction(null, { ...create, start: "2028-01" }, clock);
+    expect(
+      applyAction(future, { type: "deleteCategory", categoryId: id }, clock)
+        .categories[0].deleted,
+    ).toBe(true);
   });
   it("keeps later historical names when backdating a stop", () => {
     const b = book(

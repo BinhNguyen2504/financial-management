@@ -126,7 +126,7 @@ test("privacy persists without flashing and scopes form disclosure, charts and i
   await page.getByRole("button", { name: "Bảng", exact: true }).click();
   await expect(page.locator(".expense-report")).not.toContainText(formatted);
   await page.goto("/overview");
-  await expect(page.locator(".overview-metrics")).toBeVisible();
+  await expect(page.locator('[data-widget="expenses"] dl')).toBeVisible();
   await expect(page.locator("main")).not.toContainText(formatted);
   expect(await page.locator("body").ariaSnapshot()).not.toContain(formatted);
   await page.addInitScript(() => {
@@ -142,7 +142,7 @@ test("privacy persists without flashing and scopes form disclosure, charts and i
     });
   });
   await page.reload();
-  await expect(page.locator(".overview-metrics")).toBeVisible();
+  await expect(page.locator('[data-widget="expenses"] dl')).toBeVisible();
   expect(
     await page.evaluate(
       () => (window as unknown as { moneyFlashed: boolean }).moneyFlashed,
@@ -329,7 +329,7 @@ test("overview distinguishes auth, missing data and retry; privacy works with bl
   page,
 }) => {
   await setup(page);
-  await page.route("**/api/v1/expenses", (route) =>
+  await page.route("**/api/v1/overview?*", (route) =>
     route.fulfill({
       status: 401,
       json: { code: "UNAUTHENTICATED", error: "Phiên hết hạn" },
@@ -339,29 +339,35 @@ test("overview distinguishes auth, missing data and retry; privacy works with bl
   await expect(
     page.locator("main").getByRole("link", { name: "Đăng nhập", exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".overview-metrics")).toHaveCount(0);
-  await page.unroute("**/api/v1/expenses");
-  await page.route("**/api/v1/expenses", (route) => route.abort("failed"));
+  await expect(page.locator('[data-widget="expenses"] dl')).toHaveCount(0);
+  await page.unroute("**/api/v1/overview?*");
+  await page.route("**/api/v1/overview?*", (route) => route.abort("failed"));
   await page.reload();
   await expect(page.getByRole("button", { name: "Thử tải lại" })).toBeVisible();
-  await page.unroute("**/api/v1/expenses");
+  await page.unroute("**/api/v1/overview?*");
   await page.getByRole("button", { name: "Thử tải lại" }).click();
-  await expect(page.locator(".overview-metrics")).toBeVisible();
-  await page.route("**/api/v1/expenses", (route) =>
+  await expect(page.locator('[data-widget="expenses"] dl')).toBeVisible();
+  await page.route("**/api/v1/overview?*", (route) =>
     route.fulfill({
       json: {
-        book: null,
-        rows: [],
-        currentYear: Number(current.slice(0, 4)),
         today: `${current}-15`,
+        fetchedAt: new Date().toISOString(),
+        sources: {
+          expenses: {
+            status: "ready",
+            data: { empty: true, total: null, jars: [], groups: [], over: 0 },
+          },
+        },
       },
     }),
   );
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Gieo hạt đầu tiên cho tháng của bạn" }),
+    page
+      .locator('[data-widget="expenses"]')
+      .getByText("Chưa có dữ liệu. Mở module để bắt đầu ghi nhận."),
   ).toBeVisible();
-  await page.unroute("**/api/v1/expenses");
+  await page.unroute("**/api/v1/overview?*");
   await page.addInitScript(() => {
     const get = Storage.prototype.getItem,
       set = Storage.prototype.setItem;

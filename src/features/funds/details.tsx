@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { formatMonth } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
@@ -99,11 +101,11 @@ export function FundLocations({
       )}
       {view.book?.locations.map((l) => (
         <article className="fund-location" key={l.id}>
-          <div>
+          <div className="status-heading">
             <h4>{l.name}</h4>
-            <small>
+            <StatusBadge size="compact" tone={l.active ? "success" : "neutral"}>
               {l.active ? tr("Đang sử dụng") : tr("Đã ngừng sử dụng")}
-            </small>
+            </StatusBadge>
           </div>
           <dl>
             {(fundId ? [fundId] : fundIds).map((k) => (
@@ -149,7 +151,7 @@ export function FundHistory({ view }: { view: FundView }) {
                 .at(-1)
             : null;
         return (
-          <details key={a.version}>
+          <AnimatedDetails key={a.version}>
             <summary>
               #{a.version} · {displayTime(a.at, locale)} ·{" "}
               {a.action.type === "configure"
@@ -217,7 +219,7 @@ export function FundHistory({ view }: { view: FundView }) {
                 )}
               </>
             )}
-          </details>
+          </AnimatedDetails>
         );
       })}
     </section>

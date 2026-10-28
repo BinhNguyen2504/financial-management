@@ -531,7 +531,7 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
   await category(page, "Ví tích lũy");
   await category(page, "Vàng giữ lâu", "gold");
   await selectMonthYear(page, "Tháng đang xem", month);
-  await expect(page.locator(".savings-toolbar .pill")).toContainText(
+  await expect(page.locator(".savings-toolbar .status-badge")).toContainText(
     "Chưa chốt",
   );
   await openTx(page, "openingGold");

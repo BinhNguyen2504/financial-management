@@ -629,13 +629,7 @@
   margin-top: 23px;
 }
 .marketing-stage {
-  display: inline-block;
   margin-top: 24px;
-  padding: 5px 11px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  font-size: 10px;
-  color: var(--muted);
 }
 .marketing-faq details {
   border-bottom: 1px solid var(--border);

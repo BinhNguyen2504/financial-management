@@ -1,4 +1,6 @@
 export const catalog = {
+  "Xóa danh mục khi không còn số thu; ngừng nguồn thu đang có dữ liệu":
+    "Delete categories with no remaining receipts; stop sources that still have entries",
   "90 biểu tượng gợi ý, emoji từ bàn phím và 27 thương hiệu ngân hàng/ví":
     "90 suggested icons, keyboard emoji and 27 bank and wallet brands",
   "Phân loại có logo PNG; xem trước theo tháng và lọc hũ đã ngừng":
@@ -168,10 +170,10 @@ export const catalog = {
     "Whole-account backup and restore to an empty account; optional profile",
   "Thêm vào màn hình chính trên thiết bị có hỗ trợ":
     "Add to the home screen on supported devices",
-  "Hướng dẫn dễ thấy cạnh tiêu đề mỗi trang: mục lục đánh số, tư duy sử dụng, thuật ngữ và từng thao tác, ngay cả khi đang nhập liệu.":
-    "Guidance beside every page title: numbered contents, principles, terms and steps, including while entering data.",
-  "Trang giới thiệu trước đăng nhập có thiết kế riêng; sau đăng nhập, trang chủ giữ chủ đề bạn đã chọn trong Cài đặt.":
-    "A separate introduction page before sign-in; after sign-in, the home page uses your selected Settings theme.",
+  "Nút Hướng dẫn cạnh tiêu đề giúp bạn hiểu các khái niệm và thao tác, ngay cả khi đang nhập liệu.":
+    "Help beside each page title explains concepts and actions, even while you are entering data.",
+  "Sau khi đăng nhập, bạn có một không gian riêng với chủ đề yêu thích.":
+    "Once signed in, you have your own workspace with your favourite theme.",
   "Chọn Tiếng Việt/English, năm chủ đề và chế độ sáng/tối/theo hệ thống; sao lưu dữ liệu, khôi phục vào tài khoản trống và cài lên màn hình chính.":
     "Choose Vietnamese/English, five themes and light/dark/system mode; back up JSON, restore to an empty account and install on your home screen.",
   "Tiếng Việt/English với định dạng vi-VN/en-GB; cùng tiền VND và giờ Việt Nam":

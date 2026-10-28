@@ -1,4 +1,5 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
 import { navigationModules as navigationModulesSource } from "@/features/catalog";
@@ -46,7 +47,9 @@ export function Navigation({ mobile = false }: { mobile?: boolean }) {
           <ModuleIcon name={item.icon} />
           <span className="navigation-name">{item.title}</span>
           {item.status === "planned" && (
-            <span className="development-tag">{tr("Đang phát triển")}</span>
+            <StatusBadge tone="info" size="compact" className="development-tag">
+              {tr("Đang phát triển")}
+            </StatusBadge>
           )}
         </Link>
       ))}

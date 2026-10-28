@@ -140,3 +140,8 @@ Danh sách thương hiệu có 27 lựa chọn (21 ngân hàng, 6 ví), chia nh�
 ### Nhất quán toàn ứng dụng — 28/10/2026
 
 Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Bảng dữ liệu biểu đồ, thông tin hũ, nhóm hũ đã ngừng và khoản trong hũ dùng thành phần mở rộng chung. Giữ trạng thái mở mặc định của thông tin hũ; rút gọn lời nhắc lưu chưa xác nhận mà không đổi retry. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).

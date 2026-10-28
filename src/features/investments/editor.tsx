@@ -143,7 +143,7 @@ function Editor(props: Parameters<typeof useInvestmentEditor>[0]) {
         {uncertain && (
           <p className="expense-notice">
             {tr(
-              "Chưa xác nhận kết quả lưu. Nội dung được khóa; bấm xác nhận lại để kiểm tra cùng yêu cầu, không tạo giao dịch trùng.",
+              "Chưa xác nhận kết quả lưu. Nội dung tạm giữ nguyên; bấm xác nhận lại để kiểm tra.",
             )}
           </p>
         )}

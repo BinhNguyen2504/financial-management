@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
 import {
@@ -131,16 +133,19 @@ export function ExpenseDetails({
                   {
                     label: tr("Tháng"),
                     render: (r) => (
-                      <>
+                      <span className="status-stack">
                         {dateLabel(r.month, locale)}
                         {r.status !== "actual" && (
-                          <p className="expense-muted">
+                          <StatusBadge
+                            size="compact"
+                            tone={r.status === "planned" ? "info" : "warning"}
+                          >
                             {r.status === "planned"
                               ? tr("Kế hoạch")
                               : tr("Tạm tính")}
-                          </p>
+                          </StatusBadge>
                         )}
-                      </>
+                      </span>
                     ),
                   },
                   {
@@ -291,7 +296,7 @@ export function ExpenseDetails({
           },
         ]}
       />
-      <details className="dialog-secondary-section" open>
+      <AnimatedDetails className="dialog-secondary-section" open>
         <summary>{tr("Thông tin và quản lý hũ")}</summary>
         <DialogNote text={row.description || tr("Chưa có mô tả.")} />
         <p className="expense-muted">
@@ -333,7 +338,7 @@ export function ExpenseDetails({
             )}
           </div>
         )}
-      </details>
+      </AnimatedDetails>
     </ExpenseModal>
   );
 }

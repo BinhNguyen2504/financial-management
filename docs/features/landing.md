@@ -185,3 +185,12 @@ Thu nhập chuyển sang chọn trực tiếp năm/tháng như Chi tiêu, bỏ n
 ### Nhất quán toàn ứng dụng — 28/10/2026
 
 Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Thay thế ghi nhận lịch sử về header mobile xuống hàng: giờ dùng logo/tên, VI/EN và tài khoản cùng hàng ở cỡ chữ thường. Preview ≤600px là khung điện thoại cố định, cuộn nội bộ; giữ đủ năm mục, che tiền độc lập và dữ liệu hằng số. FAQ hai bản đóng tất cả ban đầu, mở nhiều câu; bản thành viên có section h2 riêng. Bỏ giải thích kỹ thuật khỏi copy xem thử. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).
+
+## Preview Tổng quan — 29/10/2026
+
+Thêm tab Tổng quan mặc định với 6 widget minh họa: Cần chú ý và năm module hiện có. Các số tiền dùng lại mẫu của từng tab, không cộng thành tài sản ròng. Copy nêu 10 widget và tùy chỉnh theo tài khoản. Preview vẫn chỉ dùng dữ liệu cố định, không gọi API tài chính; giữ slogan, nhận diện và ranh giới public/auth.

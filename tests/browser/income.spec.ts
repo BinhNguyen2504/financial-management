@@ -502,3 +502,165 @@ test("income API rejects forged auth, CSRF, cross-owner changes and invalid repo
     await other.close();
   }
 });
+
+test("income category deletion follows remaining receipts across years, including zero", async ({
+  page,
+}) => {
+  await login(page);
+  const id = randomUUID();
+  const name = "Nguồn thu có thể xóa";
+  expect(
+    (
+      await command(page, {
+        type: "createCategory",
+        id,
+        start: january,
+        name,
+        description: "",
+      })
+    ).ok(),
+  ).toBe(true);
+  expect(
+    (
+      await command(page, {
+        type: "setMonthly",
+        categoryId: id,
+        month: january,
+        amount: "0",
+        note: "",
+      })
+    ).ok(),
+  ).toBe(true);
+  expect(
+    (
+      await command(page, {
+        type: "setMonthly",
+        categoryId: id,
+        month: today.slice(0, 7),
+        amount: "100",
+        note: "",
+      })
+    ).ok(),
+  ).toBe(true);
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: `Ngừng danh mục ${name}`, exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: `Xóa danh mục ${name}`, exact: true }),
+  ).toHaveCount(0);
+  expect(
+    (
+      await command(page, {
+        type: "clearMonthly",
+        categoryId: id,
+        month: today.slice(0, 7),
+      })
+    ).ok(),
+  ).toBe(true);
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: `Ngừng danh mục ${name}`, exact: true }),
+  ).toBeVisible();
+  const blocked = await command(page, {
+    type: "deleteCategory",
+    categoryId: id,
+  });
+  expect(blocked.status()).toBe(422);
+  await page
+    .getByRole("button", { name: "Nhập thu nhập", exact: true })
+    .click();
+  await selectMonthYear(page, "Chọn tháng và năm", january);
+  await page
+    .getByRole("button", { name: `Xóa số thu ${name}`, exact: true })
+    .click();
+  await page.getByRole("button", { name: "Xác nhận xóa", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await page
+    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: `Xóa danh mục ${name}`, exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toContainText(
+    "hiện không còn số thu ở bất kỳ tháng nào",
+  );
+  await page.getByRole("button", { name: "Hủy", exact: true }).click();
+  await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
+  const before = (await view(page)).book!;
+  await page
+    .getByRole("button", { name: `Xóa danh mục ${name}`, exact: true })
+    .click();
+  await page.getByRole("button", { name: "Xác nhận xóa", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await expect(page.getByRole("heading", { name, exact: true })).toHaveCount(0);
+  const after = (await view(page)).book!;
+  expect(after.categories.find((c) => c.id === id)?.deleted).toBe(true);
+  expect(after.audit.slice(0, -1)).toEqual(before.audit);
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .click();
+  await expect(page.getByRole("heading", { name, exact: true })).toHaveCount(0);
+});
+
+test("income rejects deletion when another session records a receipt after the dialog opens", async ({
+  page,
+}) => {
+  await login(page);
+  const id = randomUUID();
+  expect(
+    (
+      await command(page, {
+        type: "createCategory",
+        id,
+        start: january,
+        name: "Nguồn thu phiên khác",
+        description: "",
+      })
+    ).ok(),
+  ).toBe(true);
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .click();
+  await page
+    .getByRole("button", {
+      name: "Xóa danh mục Nguồn thu phiên khác",
+      exact: true,
+    })
+    .click();
+  expect(
+    (
+      await command(page, {
+        type: "setMonthly",
+        categoryId: id,
+        month: january,
+        amount: "0",
+        note: "",
+      })
+    ).ok(),
+  ).toBe(true);
+  await page.getByRole("button", { name: "Xác nhận xóa", exact: true }).click();
+  await expect(page.getByRole("dialog")).toContainText("Dữ liệu đã thay đổi");
+  expect(
+    (await view(page)).book!.categories.find((c) => c.id === id)?.deleted,
+  ).toBe(false);
+  await page.getByRole("button", { name: "Hủy", exact: true }).click();
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", {
+      name: "Ngừng danh mục Nguồn thu phiên khác",
+      exact: true,
+    }),
+  ).toBeVisible();
+});

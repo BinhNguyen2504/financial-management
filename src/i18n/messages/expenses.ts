@@ -1,4 +1,6 @@
 export const expenses = {
+  "Đã lưu": "Saved",
+  "Chưa chốt": "Open",
   "Emoji từ bàn phím": "Emoji from keyboard",
   "Chỉ nhập một emoji.": "Enter a single emoji.",
   "Đang chọn: {0}": "Selected: {0}",
@@ -260,10 +262,10 @@ export const expenses = {
   "Không thể lưu. Vui lòng thử lại.": "Could not save. Try again.",
   "Chưa hoàn tất. Hãy thử lại.": "Not completed. Try again.",
   "Đã lưu thay đổi.": "Changes saved.",
-  "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và xác nhận lại cùng yêu cầu.":
-    "Save result unconfirmed. Keep your draft and confirm the same request again.",
-  "Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.":
-    "Save result unconfirmed. Retry the same request.",
+  "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm xác nhận lại để kiểm tra.":
+    "We could not confirm whether your changes were saved. Your draft is kept; confirm again to check.",
+  "Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra.":
+    "We could not confirm whether your changes were saved. Save again to check.",
   Hủy: "Cancel",
   "Đang lưu…": "Saving…",
   "Xác nhận chốt năm": "Confirm year close",
@@ -271,8 +273,8 @@ export const expenses = {
   "Đang kiểm tra…": "Checking…",
   "Xem trước thay đổi": "Preview changes",
   "là thông tin cần nhập.": "is required.",
-  "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và bấm Xác nhận lưu để kiểm tra lại cùng yêu cầu.":
-    "Save result unconfirmed. Keep your draft and click Confirm save to check the same request.",
+  "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm Xác nhận lưu để kiểm tra.":
+    "We could not confirm whether your changes were saved. Your draft is kept; choose Confirm save to check.",
   "Hiểu hũ và cách tính tiền": "Understand jars and calculations",
   "Thông tin cần nhập": "Required information",
   "Phương thức và nhóm mục đích": "Holding methods and purpose groups",

@@ -1,4 +1,5 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 import { formatMonth } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
@@ -185,9 +186,9 @@ export function IncomeReports({
                 <td key={m.month}>
                   {displayMoney(m.total)}
                   {m.missing > 0 && (
-                    <small className="status-badge status-missing">
+                    <StatusBadge tone="warning" size="compact">
                       {m.missing} {tr("danh mục chưa nhập")}
-                    </small>
+                    </StatusBadge>
                   )}
                 </td>
               ))}
@@ -325,9 +326,9 @@ export function IncomeReports({
                     {tr("· Phát sinh:")} {displayMoney(activeMonth.oneoff)}
                   </span>
                   {activeMonth.missing > 0 && (
-                    <span className="status-badge status-missing">
+                    <StatusBadge tone="warning" size="compact">
                       {activeMonth.missing} {tr("danh mục chưa nhập")}
-                    </span>
+                    </StatusBadge>
                   )}
                 </>
               ),

@@ -1,3 +1,4 @@
+import { postgresOverviewRepository } from "./overview-repository";
 import { postgresFundRepository } from "./fund-repository";
 import "server-only";
 import postgres from "postgres";
@@ -39,4 +40,8 @@ export function investmentRepository() {
 
 export function fundRepository() {
   return postgresFundRepository(databaseConnection());
+}
+
+export function overviewRepository() {
+  return postgresOverviewRepository(databaseConnection());
 }

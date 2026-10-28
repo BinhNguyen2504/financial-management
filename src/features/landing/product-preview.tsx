@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { formatMoney } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
@@ -17,13 +19,17 @@ import { ArrowDownLeft, ArrowUpRight, Eye, EyeOff } from "lucide-react";
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 
 const tabs = modules.filter((item) =>
-  ["income", "budgets", "savings", "investments", "funds"].includes(item.slug),
+  ["overview", "income", "budgets", "savings", "investments", "funds"].includes(
+    item.slug,
+  ),
 );
 const helpPreview = {
+  overview:
+    "Thêm, ẩn và sắp xếp 10 widget theo tài khoản. Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng.",
   budgets:
     "Chia trước, chi sau. Hũ là phần tiền dành cho một mục đích; ngân hàng, ví hay tiền mặt là nơi bạn quy ước để chi. Đối chiếu số còn lại để biết tháng này thừa thiếu ra sao.",
   income:
-    "Danh mục cố định là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng.",
+    "Danh mục cố định là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.",
   savings:
     "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.",
   investments:
@@ -34,9 +40,21 @@ const helpPreview = {
 // Fixed illustrative data, including in server-rendered public SEO content.
 // Never substitute account data or fetch financial APIs for this preview.
 const data = {
+  overview: {
+    title: "Một góc nhìn chung, từng khoản rõ ràng.",
+    subtitle: "6 widget mặc định · thêm, ẩn và sắp xếp theo tài khoản.",
+    label: "Tổng thực nhận",
+    value: "28500000",
+    secondary: "Widget mặc định",
+    secondaryValue: "6",
+    columns: ["Module", "Giá trị minh họa"],
+    rows: [],
+    chartLabel: "",
+    bars: [],
+  },
   funds: {
     title: "Từng bước vun đắp sự an tâm.",
-    subtitle: "Ba quỹ độc lập, cùng một nền tảng sinh hoạt đã xác nhận.",
+    subtitle: "Chuẩn bị từng quỹ dự phòng theo nhu cầu sinh hoạt của bạn.",
     label: "Tổng dự phòng",
     value: "42750000",
     secondary: "Emergency đủ trang trải",
@@ -126,7 +144,7 @@ const data = {
   },
   investments: {
     title: "Nhìn rõ những khoản đang đầu tư.",
-    subtitle: "Giá trị chính ở đầu, từng danh mục và ngày định giá rõ ràng.",
+    subtitle: "Theo dõi tài sản và tiền chờ, kèm ngày cập nhật giá trị.",
     label: "Tài sản trong Đầu tư",
     value: "72000000",
     secondary: "Danh mục và ví",
@@ -189,13 +207,18 @@ export function ProductPreview({
 }) {
   const { t: tr, locale } = useI18n("landing");
   const neutral = appearance === "marketing";
-  const [active, setActive] = useState<PreviewKey>("budgets");
+  const [active, setActive] = useState<PreviewKey>("overview");
   const [hidden, setHidden] = useState(false);
   const id = useId();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+  const workspace = useRef<HTMLDivElement>(null);
   const selected = data[active];
   const money = (value: string) =>
     hidden ? "•••••• ₫" : formatMoney(value, locale);
+  const selectTab = (key: PreviewKey) => {
+    setActive(key);
+    workspace.current?.scrollTo({ top: 0, behavior: "instant" });
+  };
   const changeTab = (
     event: KeyboardEvent<HTMLButtonElement>,
     index: number,
@@ -208,19 +231,24 @@ export function ProductPreview({
     else if (event.key === "End") next = tabs.length - 1;
     else return;
     event.preventDefault();
-    setActive(tabs[next].slug as PreviewKey);
+    selectTab(tabs[next].slug as PreviewKey);
     buttons.current[next]?.focus({ preventScroll: true });
   };
   return (
-    <div className="product-preview">
+    <div className="product-preview" data-ui>
       <div className="preview-toolbar">
+        <span className="preview-mobile-brand" aria-hidden="true">
+          <AppLogo size={22} />
+        </span>
         <div className="preview-window-dots" aria-hidden="true">
           <i />
           <i />
           <i />
         </div>
         <span>{tr("financial manager / không gian cá nhân")}</span>
-        <span className="preview-demo-label">{tr("Dữ liệu minh họa")}</span>
+        <StatusBadge tone="info" size="compact" className="preview-demo-label">
+          {tr("Dữ liệu minh họa")}
+        </StatusBadge>
       </div>
       <div className="preview-body">
         <aside className="preview-sidebar" aria-label={tr("Các mục minh họa")}>
@@ -245,7 +273,7 @@ export function ProductPreview({
                   buttons.current[index] = node;
                 }}
                 onKeyDown={(event) => changeTab(event, index)}
-                onClick={() => setActive(item.slug as PreviewKey)}
+                onClick={() => selectTab(item.slug as PreviewKey)}
               >
                 <ModuleIcon name={item.icon} size={19} />
                 {tr(item.title)}
@@ -266,7 +294,13 @@ export function ProductPreview({
             </small>
           </div>
         </aside>
-        <div className="preview-workspace">
+        <div
+          className="preview-workspace"
+          ref={workspace}
+          role="region"
+          aria-label={tr("Nội dung xem thử ứng dụng")}
+          tabIndex={0}
+        >
           <div className="preview-workspace-top">
             <dl
               className="preview-period"
@@ -297,7 +331,7 @@ export function ProductPreview({
               <span>{tr("Riêng tư")}</span>
             </button>
           </div>
-          <details className="preview-help" key={active}>
+          <AnimatedDetails className="preview-help" key={active}>
             <summary>
               {tr("Hướng dẫn ·")}{" "}
               {tr(modules.find((item) => item.slug === active)!.title)}
@@ -305,10 +339,10 @@ export function ProductPreview({
             <p>{tr(helpPreview[active])}</p>
             <small>
               {tr(
-                "Minh họa rút gọn. Trong ứng dụng, mỗi trang có mục lục đánh số, các ý chính được nhấn rõ và hướng dẫn từng thao tác; các biểu mẫu báo lỗi ngay tại trường cần sửa.",
+                "Trong ứng dụng, nút Hướng dẫn giúp bạn tìm hiểu từng mục khi cần.",
               )}
             </small>
-          </details>
+          </AnimatedDetails>
           {tabs.map((item) => (
             <div
               key={item.slug}
@@ -348,129 +382,177 @@ export function ProductPreview({
                     )}
                     {!neutral && active === "funds" && <SafetyScene />}
                   </div>
-                  <div className="preview-metrics">
-                    <div>
-                      <span>{tr(selected.label)}</span>
-                      <strong>{money(selected.value)}</strong>
-                      <small>
-                        <ArrowDownLeft size={14} aria-hidden="true" />
-                        {tr("Tháng 06 · Dữ liệu mẫu")}
-                      </small>
+                  {active === "overview" ? (
+                    <div className="preview-overview-grid">
+                      <section>
+                        <h3>{tr("Cần chú ý")}</h3>
+                        <p>{tr("Kiểm tra số dư hũ tháng này.")}</p>
+                        <small>{tr("Tạm tính · Dữ liệu mẫu")}</small>
+                      </section>
+                      <section>
+                        <h3>{tr("Thu nhập tháng này")}</h3>
+                        <strong>{money(data.income.value)}</strong>
+                        <small>{tr("Tổng thực nhận")}</small>
+                      </section>
+                      <section>
+                        <h3>{tr("Chi tiêu tháng này")}</h3>
+                        <strong>{money(data.budgets.value)}</strong>
+                        <small>{tr("Mức tháng")}</small>
+                        <span>
+                          {tr("Còn trong hũ")} ·{" "}
+                          {money(data.budgets.secondaryValue)}
+                        </span>
+                      </section>
+                      <section>
+                        <h3>{tr("Tiết kiệm hiện tại")}</h3>
+                        <strong>{money(data.savings.value)}</strong>
+                        <small>{tr("Theo định giá đã nhập")}</small>
+                      </section>
+                      <section>
+                        <h3>{tr("Đầu tư hiện tại")}</h3>
+                        <strong>{money(data.investments.value)}</strong>
+                        <small>{tr("Gồm khoản đầu tư và tiền chờ")}</small>
+                      </section>
+                      <section>
+                        <h3>{tr("Quỹ an toàn")}</h3>
+                        <strong>{money(data.funds.value)}</strong>
+                        <small>{tr("Sổ quỹ độc lập")}</small>
+                      </section>
+                      <p>
+                        {tr(
+                          "Minh họa · Các giá trị không cộng thành tài sản ròng.",
+                        )}
+                      </p>
                     </div>
-                    <div>
-                      <span>{tr(selected.secondary)}</span>
-                      <strong>
-                        {active === "budgets"
-                          ? money(selected.secondaryValue)
-                          : tr(selected.secondaryValue)}
-                      </strong>
-                      <small>
-                        <ArrowUpRight size={14} aria-hidden="true" />
-                        {tr("Theo nhịp của bạn")}
-                      </small>
-                    </div>
-                  </div>
-                  <div className="preview-detail-grid">
-                    <div className="preview-rows">
-                      <div className="preview-table-heading">
-                        <span>{tr(selected.columns[0])}</span>
-                        <span>{tr(selected.columns[1])}</span>
-                      </div>
-                      {selected.rows.map((row) => (
-                        <div className="preview-row" key={tr(row.name)}>
-                          <span
-                            className="preview-row-emoji"
-                            aria-hidden="true"
-                          >
-                            {neutral ? (
-                              <ModuleIcon name={item.icon} size={21} />
-                            ) : active === "funds" ? (
-                              <ThemeIcon size={21} />
-                            ) : (
-                              row.emoji
-                            )}
-                          </span>
-                          <div className="preview-row-info">
-                            <strong>{tr(row.name)}</strong>
-                            <small>
-                              {active === "funds"
-                                ? tr("Hoàn thành {0}%", { 0: row.percent })
-                                : tr(row.note)}
-                            </small>
-                            {active === "budgets" && (
-                              <span className="preview-payment">
-                                <LabelName
-                                  name={
-                                    row.name === "Sinh hoạt" ? "Timo" : "HSBC"
-                                  }
-                                />
-                              </span>
-                            )}
-                            <span
-                              className="preview-progress"
-                              hidden={active === "funds"}
-                            >
-                              <i style={{ width: `${row.percent}%` }} />
-                            </span>
-                          </div>
-                          <span className="preview-row-money">
-                            {money(row.amount)}
-                          </span>
+                  ) : (
+                    <>
+                      <div className="preview-metrics">
+                        <div>
+                          <span>{tr(selected.label)}</span>
+                          <strong>{money(selected.value)}</strong>
+                          <small>
+                            <ArrowDownLeft size={14} aria-hidden="true" />
+                            {tr("Tháng 06 · Dữ liệu mẫu")}
+                          </small>
                         </div>
-                      ))}
-                    </div>
-                    <div
-                      className={`preview-chart ${active === "funds" ? "preview-chart-funds" : ""}`}
-                    >
-                      <span>
-                        {neutral && active === "funds"
-                          ? tr("EMERGENCY · TIẾN ĐỘ DỰ PHÒNG")
-                          : tr(selected.chartLabel)}
-                      </span>
-                      {active === "funds" ? (
-                        <>
-                          {neutral ? (
-                            <div
-                              className="marketing-fund-progress"
-                              role="img"
-                              aria-label={tr(
-                                "Emergency Fund đã chuẩn bị 50% mục tiêu",
-                              )}
-                            >
-                              <span>
-                                50<small>%</small>
+                        <div>
+                          <span>{tr(selected.secondary)}</span>
+                          <strong>
+                            {active === "budgets"
+                              ? money(selected.secondaryValue)
+                              : tr(selected.secondaryValue)}
+                          </strong>
+                          <small>
+                            <ArrowUpRight size={14} aria-hidden="true" />
+                            {tr("Theo nhịp của bạn")}
+                          </small>
+                        </div>
+                      </div>
+                      <div className="preview-detail-grid">
+                        <div className="preview-rows">
+                          <div className="preview-table-heading">
+                            <span>{tr(selected.columns[0])}</span>
+                            <span>{tr(selected.columns[1])}</span>
+                          </div>
+                          {selected.rows.map((row) => (
+                            <div className="preview-row" key={tr(row.name)}>
+                              <span
+                                className="preview-row-emoji"
+                                aria-hidden="true"
+                              >
+                                {neutral ? (
+                                  <ModuleIcon name={item.icon} size={21} />
+                                ) : active === "funds" ? (
+                                  <ThemeIcon size={21} />
+                                ) : (
+                                  row.emoji
+                                )}
                               </span>
-                            </div>
-                          ) : (
-                            <ProgressScene fund="emergency" percent="50" />
-                          )}
-                          <p>
-                            {tr("Đã chuẩn bị 50% · Mức sinh hoạt")}{" "}
-                            {money("9000000")}
-                            {tr("/tháng")}
-                          </p>
-                        </>
-                      ) : (
-                        <div
-                          className="preview-bars"
-                          role="img"
-                          aria-label={tr(
-                            active === "budgets"
-                              ? "Minh họa mức thực chi khác nhau qua sáu tháng"
-                              : "Minh họa xu hướng qua sáu tháng",
-                          )}
-                        >
-                          {selected.bars.map((height, index) => (
-                            <div key={index}>
-                              <i style={{ height: `${height}%` }} />
-                              <small>{tr("T{0}", { 0: index + 1 })}</small>
+                              <div className="preview-row-info">
+                                <strong>{tr(row.name)}</strong>
+                                <small>
+                                  {active === "funds"
+                                    ? tr("Hoàn thành {0}%", { 0: row.percent })
+                                    : tr(row.note)}
+                                </small>
+                                {active === "budgets" && (
+                                  <span className="preview-payment">
+                                    <LabelName
+                                      name={
+                                        row.name === "Sinh hoạt"
+                                          ? "Timo"
+                                          : "HSBC"
+                                      }
+                                    />
+                                  </span>
+                                )}
+                                <span
+                                  className="preview-progress"
+                                  hidden={active === "funds"}
+                                >
+                                  <i style={{ width: `${row.percent}%` }} />
+                                </span>
+                              </div>
+                              <span className="preview-row-money">
+                                {money(row.amount)}
+                              </span>
                             </div>
                           ))}
                         </div>
-                      )}
-                      <small>{tr("Số liệu minh họa cố định")}</small>
-                    </div>
-                  </div>
+                        <div
+                          className={`preview-chart ${active === "funds" ? "preview-chart-funds" : ""}`}
+                        >
+                          <span>
+                            {neutral && active === "funds"
+                              ? tr("EMERGENCY · TIẾN ĐỘ DỰ PHÒNG")
+                              : tr(selected.chartLabel)}
+                          </span>
+                          {active === "funds" ? (
+                            <>
+                              {neutral ? (
+                                <div
+                                  className="marketing-fund-progress"
+                                  role="img"
+                                  aria-label={tr(
+                                    "Emergency Fund đã chuẩn bị 50% mục tiêu",
+                                  )}
+                                >
+                                  <span>
+                                    50<small>%</small>
+                                  </span>
+                                </div>
+                              ) : (
+                                <ProgressScene fund="emergency" percent="50" />
+                              )}
+                              <p>
+                                {tr("Đã chuẩn bị 50% · Mức sinh hoạt")}{" "}
+                                {money("9000000")}
+                                {tr("/tháng")}
+                              </p>
+                            </>
+                          ) : (
+                            <div
+                              className="preview-bars"
+                              role="img"
+                              aria-label={tr(
+                                active === "budgets"
+                                  ? "Minh họa mức thực chi khác nhau qua sáu tháng"
+                                  : "Minh họa xu hướng qua sáu tháng",
+                              )}
+                            >
+                              {selected.bars.map((height, index) => (
+                                <div key={index}>
+                                  <i style={{ height: `${height}%` }} />
+                                  <small>{tr("T{0}", { 0: index + 1 })}</small>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <small>{tr("Số liệu minh họa cố định")}</small>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </div>

@@ -169,7 +169,7 @@ export function useIncomeEditor({
       toast(
         unknownWrite ? "warning" : "error",
         unknownWrite
-          ? tr("Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu.")
+          ? tr("Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra.")
           : e instanceof Error
             ? e.message
             : tr("Chưa hoàn tất. Hãy thử lại."),

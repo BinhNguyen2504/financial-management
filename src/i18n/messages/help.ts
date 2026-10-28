@@ -263,8 +263,8 @@ export const help = {
     "Open category management and edit or stop from a suitable month.",
   "Đọc xem trước ảnh hưởng từ tháng hiệu lực, kể cả các năm sau, rồi xác nhận.":
     "Review the impact from the effective month, including later years, then confirm.",
-  "**Chỉ dùng Xóa danh mục với nguồn chưa từng ghi số thu**; nguồn từng ghi tiền được ngừng để giữ lịch sử.":
-    "**Delete a category only if it has never had a recorded receipt**; stop previously used sources to preserve history.",
+  "**Chỉ dùng Xóa danh mục khi không còn số thu ở bất kỳ tháng/năm nào**, kể cả khi đã xóa hết số thu cũ. Nếu còn bản ghi, kể cả 0 đồng, dùng Ngừng từ tháng.":
+    "**Delete a category only when it has no remaining receipts in any month/year**, including after all previous receipts have been cleared. If a receipt remains, including zero, use Stop from month.",
   "Kết quả: tiền đã ghi không bị xóa dây chuyền. Nhập 0 cũng được coi là đã có số thu.":
     "Result: recorded money is not deleted in a cascade. Entering 0 also counts as a recorded receipt.",
   "Đọc báo cáo và xuất bảng dữ liệu": "Read reports and export CSV",
@@ -614,8 +614,8 @@ export const help = {
     "If no download starts, use Save JSON file.",
   "Kiểm tra file trong nơi tải xuống và cất bản sao ở nơi bạn kiểm soát.":
     "Check the download folder and keep a copy somewhere you control.",
-  "Kết quả: có file sao lưu do bạn chủ động tạo; app không tự sao lưu file nền và không xác nhận thay trình duyệt rằng file đã lưu vào máy.":
-    "Result: a backup you explicitly created; the app does not save files in the background or claim that your browser saved the file to disk.",
+  "Kết quả: bạn có bản sao lưu để tự giữ. Kiểm tra thư mục tải xuống và cất file ở nơi an toàn.":
+    "Result: you have a backup to keep. Check your downloads folder and store the file somewhere safe.",
   "Xem trước và khôi phục": "Preview and restore",
   "Khi có bản sao toàn tài khoản và tài khoản đích còn trống.":
     "With a whole-account backup and an empty destination account.",

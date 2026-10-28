@@ -1,4 +1,5 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
 import { formatDate, formatMonth } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
@@ -172,13 +173,26 @@ export function InvestmentReports({
         </p>
       ) : (
         <>
-          <p className="expense-muted">
-            {tr("Số liệu đến")} {formatDate(report.asOf!, locale)}
-            {report.provisional ? tr(" · kỳ hiện tại tạm tính") : ""}
-            {tr(
-              ". Lọc loại giao dịch chỉ áp dụng hoạt động; số dư và kết quả kỳ luôn dùng đầy đủ giao dịch.",
-            )}
-          </p>
+          <div className="report-period-meta">
+            <div className="status-meta">
+              <span className="expense-muted">
+                {tr("Số liệu đến")}{" "}
+                <time dateTime={report.asOf!}>
+                  {formatDate(report.asOf!, locale)}
+                </time>
+              </span>
+              {report.provisional && (
+                <StatusBadge tone="warning" size="compact">
+                  {tr("Tạm tính")}
+                </StatusBadge>
+              )}
+            </div>
+            <p className="expense-muted">
+              {tr(
+                "Lọc loại giao dịch chỉ áp dụng hoạt động; số dư và kết quả kỳ luôn dùng đầy đủ giao dịch.",
+              )}
+            </p>
+          </div>
           <div className="investment-metrics">
             <article className="panel metric">
               <span>{tr("Tài sản đầu kỳ")}</span>
@@ -427,8 +441,16 @@ export function InvestmentReports({
                   {report.months.map((m) => (
                     <tr key={m.month}>
                       <th scope="row">
-                        {formatMonth(m.month!, locale)}
-                        {m.provisional ? tr(" · tạm tính") : ""}
+                        <span className="status-stack">
+                          <time dateTime={m.month!}>
+                            {formatMonth(m.month!, locale)}
+                          </time>
+                          {m.provisional && (
+                            <StatusBadge tone="warning" size="compact">
+                              {tr("Tạm tính")}
+                            </StatusBadge>
+                          )}
+                        </span>
                       </th>
                       <td>{m.value === null ? "—" : money(m.value)}</td>
                       <td>{m.inflow === null ? "—" : money(m.inflow)}</td>

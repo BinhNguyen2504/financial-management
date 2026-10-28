@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
 import { useI18n } from "@/i18n/provider";
 
 import {
@@ -575,12 +576,12 @@ export function SavingsDetails({
                               : tr("Hủy giao dịch")}
                             <DialogNote text={r.reason} />
                             {r.transaction && (
-                              <details className="dialog-note">
+                              <AnimatedDetails className="dialog-note">
                                 <summary>
                                   {tr("Xem dữ liệu tại lần ghi này")}
                                 </summary>
                                 {transactionFacts(r.transaction)}
-                              </details>
+                              </AnimatedDetails>
                             )}
                           </>
                         ),

@@ -217,12 +217,12 @@ export function useExpenseEditor({
         setUncertain(true);
         setError(
           tr(
-            "Chưa xác nhận kết quả lưu. Giữ nguyên nội dung và xác nhận lại cùng yêu cầu.",
+            "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm xác nhận lại để kiểm tra.",
           ),
         );
         toast(
           "warning",
-          tr("Chưa xác nhận được kết quả lưu. Thử lại cùng yêu cầu."),
+          tr("Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra."),
         );
       } else reportError(e);
     } finally {

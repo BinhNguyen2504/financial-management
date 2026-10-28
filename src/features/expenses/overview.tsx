@@ -1,4 +1,5 @@
 "use client";
+import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
 import { DailyNote } from "@/components/daily-note";
@@ -131,9 +132,16 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
                 : tr("Bức tranh tháng này")}
             </h2>
             {total && (
-              <p className="overview-month-status">
-                {rows.length} {tr("hũ ·")}{" "}
-                {total.provisional ? tr("Có số tạm tính") : tr("Đã ghi nhận")}
+              <p className="overview-month-status status-meta">
+                <span>
+                  {rows.length} {tr("hũ")}
+                </span>
+                <StatusBadge
+                  size="compact"
+                  tone={total.provisional ? "warning" : "success"}
+                >
+                  {total.provisional ? tr("Có số tạm tính") : tr("Đã ghi nhận")}
+                </StatusBadge>
               </p>
             )}
           </div>

@@ -203,27 +203,6 @@ textarea[aria-invalid="true"],
   text-decoration: underline;
   font-weight: var(--weight-strong);
 }
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 9px;
-  border-radius: 7px;
-  font-size: var(--font-size-12);
-  font-weight: var(--weight-strong);
-  color: var(--primary);
-  background: var(--primary-soft);
-  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
-}
-.status-missing {
-  color: var(--warning);
-  background: var(--warning-soft);
-  border-color: color-mix(in srgb, var(--warning) 40%, var(--border));
-}
-.status-inactive {
-  color: var(--muted);
-  background: var(--surface-alt);
-}
 .income-item.is-inactive {
   background: var(--surface-alt);
   border-style: dashed;

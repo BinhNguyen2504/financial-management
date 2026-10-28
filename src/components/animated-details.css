@@ -1,0 +1,16 @@
+.animated-details {
+  min-width: 0;
+  overflow-anchor: none;
+}
+.animated-details > summary {
+  min-height: 44px;
+  align-content: center;
+}
+.animated-details > summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+.animated-details[data-closing] > :not(summary) {
+  pointer-events: none;
+}

@@ -1,3 +1,4 @@
+import { overview } from "./overview";
 import { landing } from "./landing";
 import { auth } from "./auth";
 import { catalog } from "./catalog";
@@ -11,6 +12,7 @@ import { profile } from "./profile";
 import { savings } from "./savings";
 import { settings } from "./settings";
 export const english = {
+  ...overview,
   ...common,
   ...expenses,
   ...income,
@@ -27,6 +29,7 @@ export const english = {
 export type MessageKey = keyof typeof english;
 
 export const namespaces = {
+  overview,
   common,
   expenses,
   income,

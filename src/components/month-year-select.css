@@ -16,6 +16,15 @@
   font-weight: var(--weight-medium, 600);
   margin-bottom: 0.5rem;
 }
+.month-year-legend.has-accessory {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+.month-year-legend.has-accessory > .status-badge {
+  flex: none;
+}
 .month-year-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

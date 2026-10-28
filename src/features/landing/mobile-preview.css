@@ -1,0 +1,209 @@
+/* Shared by guest and member homes; the sample data stays the same at every size. */
+@media (max-width: 600px) {
+  .public-shell .public-header {
+    gap: 12px;
+    min-height: 80px;
+    padding: 16px 20px;
+  }
+  .public-shell .public-brand {
+    min-width: 0;
+    gap: 8px;
+    font-size: var(--font-size-14);
+  }
+  .public-shell .public-brand-mark {
+    width: 34px;
+    height: 38px;
+    flex-shrink: 0;
+  }
+  .public-shell .public-brand-sub {
+    font-size: var(--font-size-12);
+    letter-spacing: 1px;
+  }
+  .public-shell .public-account {
+    margin-left: auto;
+  }
+  .public-shell .public-language > svg:first-child {
+    display: none;
+  }
+  .public-language select {
+    width: 64px;
+    min-width: 0;
+    font-size: var(--font-size-16);
+    color: transparent;
+  }
+  .public-language option {
+    color: var(--text);
+    background: var(--surface);
+  }
+  .public-language-code {
+    display: block;
+    position: absolute;
+    left: 12px;
+    pointer-events: none;
+    font-size: var(--font-size-14);
+    font-weight: var(--weight-strong);
+  }
+  .public-shell .public-account .user-trigger {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+  }
+  .public-shell .public-account .user-trigger > svg {
+    display: block;
+  }
+  .public-shell .public-account .user-trigger > span:not(.user-avatar),
+  .public-shell .public-account .user-trigger > .user-chevron {
+    display: none;
+  }
+  .public-shell .public-account .user-loading {
+    width: 44px;
+  }
+  .public-shell .product-preview {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: min(100%, 360px);
+    height: min(720px, 80svh);
+    min-width: 0;
+    margin-inline: auto;
+    border: 6px solid var(--logo-bg);
+    border-radius: 30px;
+    box-shadow: none;
+    isolation: isolate;
+  }
+  .public-shell .preview-toolbar {
+    padding: 12px;
+    gap: 8px;
+    min-width: 0;
+    letter-spacing: normal;
+    background: var(--surface);
+  }
+  .public-shell .preview-toolbar .preview-window-dots,
+  .public-shell
+    .preview-toolbar
+    > span:not(.preview-demo-label, .preview-mobile-brand) {
+    display: none;
+  }
+  .public-shell .preview-toolbar > .preview-mobile-brand {
+    display: inline-flex;
+    color: var(--logo-bg);
+    flex-shrink: 0;
+  }
+  .public-shell .preview-demo-label {
+    min-width: 0;
+    font-size: var(--font-size-12);
+    white-space: normal;
+  }
+  .public-shell .preview-body {
+    min-height: 0;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .public-shell .preview-sidebar {
+    min-width: 0;
+    padding: 6px;
+    background: var(--surface);
+  }
+  .public-shell .preview-tabs.scroll-tabs {
+    gap: 4px;
+    scrollbar-width: thin;
+  }
+  .public-shell .preview-tabs.scroll-tabs > button {
+    padding: 8px 10px;
+    font-size: var(--font-size-14);
+    gap: 6px;
+  }
+  .public-shell .preview-workspace {
+    min-height: 0;
+    padding: 0 14px 20px;
+    overflow: auto;
+    scroll-padding-block: 90px 16px;
+    scrollbar-width: thin;
+    overflow-wrap: anywhere;
+    -webkit-overflow-scrolling: touch;
+  }
+  .public-shell .preview-workspace:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -3px;
+  }
+  .public-shell .preview-workspace-top {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding-block: 10px;
+    background: var(--canvas);
+  }
+  .public-shell .preview-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .public-shell .preview-heading h2 {
+    font-size: var(--font-size-20);
+    line-height: 1.35;
+    letter-spacing: -0.4px;
+  }
+  .public-shell .preview-heading > .garden-art {
+    width: 132px;
+    max-width: 100%;
+    align-self: center;
+  }
+  .public-shell .preview-metrics,
+  .public-shell .preview-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .public-shell .preview-metrics > div {
+    min-width: 0;
+    padding: 16px;
+  }
+  .public-shell .preview-metrics > div:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .public-shell .preview-metrics strong {
+    font-size: var(--font-size-24);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .public-shell .preview-row {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 8px 10px;
+  }
+  .public-shell .preview-row-money {
+    grid-column: 2;
+    margin-left: 0;
+    white-space: normal;
+    text-align: left;
+    font-size: var(--font-size-16);
+  }
+  .public-shell .preview-chart {
+    display: block;
+    min-width: 0;
+    padding-inline: 12px;
+  }
+  .public-shell .preview-help {
+    margin-inline: 0;
+  }
+  .public-shell .preview-help summary {
+    padding-block: 10px;
+  }
+  .public-shell .preview-help p {
+    font-size: var(--font-size-14);
+  }
+}
+/* Enlarged text may take a second row rather than cutting off essential actions. */
+@media (max-width: 380px) {
+  .public-shell .public-header {
+    column-gap: 8px;
+    flex-wrap: wrap;
+  }
+  .public-shell .public-brand {
+    flex: 0 1 auto;
+  }
+}

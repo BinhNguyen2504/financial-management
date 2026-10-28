@@ -49,10 +49,8 @@
   font-size: var(--text-metric);
   margin-bottom: 12px;
 }
-.fund-welcome .pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.fund-welcome-status {
+  margin-bottom: 14px;
 }
 .fund-welcome .fund-scene {
   max-height: 260px;

@@ -129,11 +129,11 @@
   align-items: end;
 }
 
-.income-table small.status-missing {
-  color: var(--warning);
-  font-weight: var(--weight-strong);
-  padding: 4px 8px;
+.income-table tfoot .status-badge {
+  display: flex;
+  width: fit-content;
   margin-top: 6px;
+  margin-inline-start: auto;
 }
 
 .column-table,

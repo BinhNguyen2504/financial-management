@@ -59,3 +59,12 @@ Tác vụ đổi ngôn ngữ trong Cài đặt nay chỉ cả bộ chọn header
 ### Nhất quán toàn ứng dụng — 28/10/2026
 
 Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.
+
+
+## Responsive và nội dung phổ thông — 29/10/2026
+
+Phần xem thử giải thích ngắn công dụng của Hướng dẫn; tài liệu sao lưu nói rõ kiểm tra file tải xuống và giữ file an toàn. Ghi chú dài và các phần mở rộng dùng primitive chung, giữ bàn phím/focus/no-JavaScript. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).
+
+## Hướng dẫn Tổng quan — 29/10/2026
+
+Help Việt/Anh bổ sung cách đọc năm module, kỳ hiện tại, giá trị đã biết, cá nhân hóa widget, chọn hũ, xem thử, Lưu/Hủy, xung đột bố cục và phạm vi backup. Giữ các anchor terms/read-overview/start-overview/privacy đang được dùng.

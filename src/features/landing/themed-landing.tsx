@@ -1,4 +1,6 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
+import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
 import { Garden } from "@/components/garden";
@@ -8,7 +10,6 @@ import {
   languageSummary,
   modules,
   moduleStatusLabels,
-  navigationSummary,
   pageHelpSummary,
 } from "@/features/catalog";
 import { StartLink } from "@/features/landing/account-actions";
@@ -60,7 +61,9 @@ export function ThemedLanding() {
             <span className="status-dot" />
             {tr("TÀI CHÍNH CÁ NHÂN, THEO NHỊP CỦA BẠN")}
           </span>
-          <span className="landing-stage">{tr("Đang phát triển")}</span>
+          <StatusBadge tone="info" size="compact" className="landing-stage">
+            {tr("Đang phát triển")}
+          </StatusBadge>
         </div>
         <div className="hero-copy">
           <h1 id="landing-title">
@@ -100,7 +103,7 @@ export function ThemedLanding() {
           <span>{tr("01 / MỘT GÓC KHÔNG GIAN CỦA BẠN")}</span>
           <p>
             {tr(
-              "Chuyển giữa các mục để khám phá số liệu chính, phần hướng dẫn và bảng có nhãn rõ ràng. Dữ liệu minh họa, không cần đăng nhập; khi nhập liệu thật, ứng dụng chỉ báo lưu thành công sau khi nhận xác nhận.",
+              "Khám phá các mục với dữ liệu minh họa. Thử che số tiền để xem cách bảo vệ sự riêng tư.",
             )}
           </p>
         </div>
@@ -230,7 +233,7 @@ export function ThemedLanding() {
               ))}
             <p>
               {tr(
-                "Tổng quan hiện tập trung vào các hũ chi tiêu. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.",
+                "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.",
               )}
             </p>
           </div>
@@ -240,7 +243,14 @@ export function ThemedLanding() {
               {modules
                 .filter((item) => item.status === "planned")
                 .map((item) => (
-                  <span key={item.slug}>{tr(item.title)}</span>
+                  <StatusBadge
+                    key={item.slug}
+                    size="compact"
+                    tone="info"
+                    icon={false}
+                  >
+                    {tr(item.title)}
+                  </StatusBadge>
                 ))}
             </div>
             <p>
@@ -250,9 +260,18 @@ export function ThemedLanding() {
             </p>
           </div>
         </div>
-        <div className="landing-faq">
-          <h3>{tr("Một vài điều bạn có thể muốn biết")}</h3>
-          <details>
+      </section>
+
+      <section
+        className="landing-container faq-section"
+        aria-labelledby="faq-title"
+      >
+        <div className="section-intro faq-section-intro">
+          <h2 id="faq-title">{tr("Một vài điều bạn có thể muốn biết")}</h2>
+          <p>{tr("Tìm câu trả lời để bắt đầu tự tin hơn.")}</p>
+        </div>
+        <div className="landing-faq faq-list">
+          <AnimatedDetails>
             <summary>
               {tr("Tôi chưa quen các khái niệm tài chính, bắt đầu thế nào?")}
             </summary>
@@ -262,37 +281,36 @@ export function ThemedLanding() {
                 "Mở nút Hướng dẫn cạnh tiêu đề trang hoặc phần giải thích cạnh thuật ngữ. Đóng hướng dẫn để tiếp tục với nội dung đang nhập.",
               )}
             </p>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Tôi có cần đăng nhập để dùng ứng dụng?")}</summary>
             <p>
               {tr(
                 "Có. Bạn có thể khám phá trang giới thiệu và dữ liệu minh họa trước. Để mở không gian tài chính, hãy nhập mã 8 chữ số gửi qua email. Mã dùng một lần, có hiệu lực 30 phút.",
               )}
             </p>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Dữ liệu trong phần trải nghiệm là của ai?")}</summary>
             <p>
               {tr(
                 "Đó là dữ liệu minh họa cố định, không lấy dữ liệu tài chính của bạn và không lưu thao tác vào tài khoản.",
               )}
             </p>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Có thể dùng tiếng Anh không?")}</summary>
             <p>{tr(languageSummary)}</p>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Có thể dùng trên điện thoại không?")}</summary>
             <p>
               {tr(
-                "Bạn có thể dùng trên điện thoại và máy tính, chọn tháng/năm theo cùng một cách ở các mục. Bạn cũng có thể thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.",
+                "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu.",
               )}
             </p>
-            <p>{tr(navigationSummary)}</p>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>
               {tr("Nếu mất tài khoản, tôi có thể lấy lại dữ liệu không?")}
             </summary>
@@ -301,15 +319,15 @@ export function ThemedLanding() {
                 "Trong Cài đặt, bạn có thể chủ động tải bản sao lưu toàn bộ dữ liệu và nhập lại vào tài khoản mới chưa có dữ liệu. File không mật khẩu; hãy tự giữ một bản ở nơi an toàn. Trang Cài đặt có liên kết lưu file trực tiếp nếu trình duyệt chưa bắt đầu tải. Hồ sơ cá nhân được khôi phục nếu bạn chọn.",
               )}
             </p>
-          </details>
-          <details>
+          </AnimatedDetails>
+          <AnimatedDetails>
             <summary>{tr("Ứng dụng đã hoàn thiện chưa?")}</summary>
             <p>
               {tr(
                 "Chưa. Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn đã có trong phiên bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản phẩm.",
               )}
             </p>
-          </details>
+          </AnimatedDetails>
         </div>
       </section>
 

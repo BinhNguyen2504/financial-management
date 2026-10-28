@@ -155,13 +155,6 @@
 }
 .development-tag {
   margin-left: 30px;
-  padding: 1px 7px;
-  font-size: var(--font-size-12);
-  font-weight: var(--weight-strong);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--muted);
-  white-space: nowrap;
 }
 .icon-action {
   display: inline-flex;

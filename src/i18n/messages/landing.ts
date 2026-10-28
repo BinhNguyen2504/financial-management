@@ -1,5 +1,8 @@
 // Public product copy and fixed illustrative data only; never account data.
 export const landing = {
+  "Nội dung xem thử ứng dụng": "App preview content",
+  "Tìm câu trả lời để bắt đầu tự tin hơn.":
+    "Find the answers you need to get started with confidence.",
   "Kỳ minh họa cố định": "Fixed illustrative period",
   "Hũ chi tháng và tích lũy, có emoji riêng, phân loại ngân hàng/ví và bộ lọc hũ đã ngừng.":
     "Monthly and accumulation jars, with custom emoji, bank and wallet categories, and stopped-jar filtering.",
@@ -92,8 +95,8 @@ export const landing = {
     "Yes. In Settings, download a backup and restore it to an empty account when needed. The file has no password; keep it somewhere safe.",
   "Có thể dùng tiếng Anh không?": "Can I use English?",
   "Có dùng được trên điện thoại không?": "Does it work on a phone?",
-  "Bạn có thể dùng trên điện thoại và máy tính. Các cửa sổ dài có vùng cuộn riêng; chạm bên ngoài để đóng menu chức năng. Bạn cũng có thể thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.":
-    "Use the app on your phone or computer. Long dialogs scroll internally; tap outside to close the navigation menu. You can also add the app to your home screen if your browser supports it. Data entry requires an internet connection.",
+  "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu.":
+    "Use the app on your phone or computer, or add it to your home screen if your browser supports it. An internet connection is needed to enter and save data.",
   "Các con số trên trang này là của ai?":
     "Whose numbers are shown on this page?",
   "Đây là dữ liệu minh họa cố định. Bản xem thử không đọc tài chính của bạn và không lưu thao tác vào tài khoản.":
@@ -105,16 +108,16 @@ export const landing = {
     "One income entry. One spending jar. One step forward.",
   "Chia trước, chi sau. Hũ là phần tiền dành cho một mục đích; ngân hàng, ví hay tiền mặt là nơi bạn quy ước để chi. Đối chiếu số còn lại để biết tháng này thừa thiếu ra sao.":
     "Allocate first, spend later. A jar is money set aside for a purpose; a bank, wallet or cash is where you plan to spend from. Check the remaining balance to understand this month's surplus or shortfall.",
-  "Danh mục cố định là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng.":
-    "A fixed category is a recurring income source, not necessarily a fixed amount. Additional income is a one-off entry. Not entered is different from a recorded zero.",
+  "Danh mục cố định là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.":
+    "A fixed category is a recurring income source, not necessarily a fixed amount. Additional income is a one-off entry. Not entered is different from a recorded zero. Delete a category when no receipts remain in any month; otherwise use Stop.",
   "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.":
     "Separate opening assets, new contributions and gains/losses. Moving savings between holdings changes where they are held, without increasing total assets.",
   "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví.":
     "Separate capital, available cash and investment results. Dated valuations help you read asset values correctly; updating a valuation does not change wallet cash.",
   "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt và hệ số bạn chọn; đổi mục tiêu không tự thêm tiền vào quỹ.":
     "Each of the three funds has its own purpose. Targets come from your living costs and chosen multipliers; changing a target does not add money to a fund.",
-  "Ba quỹ độc lập, cùng một nền tảng sinh hoạt đã xác nhận.":
-    "Three independent funds, based on the same confirmed living costs.",
+  "Chuẩn bị từng quỹ dự phòng theo nhu cầu sinh hoạt của bạn.":
+    "Build each reserve fund around your living expenses.",
   "3 tháng": "3 months",
   "Đã dự phòng": "Set aside",
   "27 / 54 triệu · Hoàn thành 50%": "27 / 54 million · 50% complete",
@@ -141,8 +144,8 @@ export const landing = {
   "Chi hàng tháng · Đã dùng 56%": "Monthly spending · 56% used",
   "THỰC CHI THEO THÁNG": "ACTUAL SPENDING BY MONTH",
   "Nhìn rõ những khoản đang đầu tư.": "See your investments clearly.",
-  "Giá trị chính ở đầu, từng danh mục và ngày định giá rõ ràng.":
-    "Key values up front, with clear portfolios and valuation dates.",
+  "Theo dõi tài sản và tiền chờ, kèm ngày cập nhật giá trị.":
+    "Track your assets and available cash, with a valuation date.",
   "1 danh mục · 1 ví": "1 portfolio · 1 wallet",
   "Định giá 30/06/2026": "Valued on 30/06/2026",
   "Tiền chờ · Không tính ROI": "Available cash · Excluded from ROI",
@@ -171,8 +174,8 @@ export const landing = {
   "Ẩn số tiền minh họa": "Hide illustrative amounts",
   "Riêng tư": "Privacy",
   "Hướng dẫn ·": "Help ·",
-  "Minh họa rút gọn. Trong ứng dụng, mỗi trang có mục lục đánh số, các ý chính được nhấn rõ và hướng dẫn từng thao tác; các biểu mẫu báo lỗi ngay tại trường cần sửa.":
-    "A simplified illustration. In the app, each page has numbered contents, highlighted key points and step-by-step guidance; forms show errors at the fields that need correction.",
+  "Trong ứng dụng, nút Hướng dẫn giúp bạn tìm hiểu từng mục khi cần.":
+    "In the app, use Help whenever you want to learn more about a section.",
   "Tháng 06 · Dữ liệu mẫu": "June · Sample data",
   "Theo nhịp của bạn": "At your own pace",
   "Hoàn thành {0}%": "{0}% complete",
@@ -220,8 +223,8 @@ export const landing = {
     "A tool born from a real need, for everyday life.",
   "Ít rối hơn. Có chủ đích hơn.": "Less clutter. More purpose.",
   "01 / MỘT GÓC KHÔNG GIAN CỦA BẠN": "01 / A GLIMPSE OF YOUR WORKSPACE",
-  "Chuyển giữa các mục để khám phá số liệu chính, phần hướng dẫn và bảng có nhãn rõ ràng. Dữ liệu minh họa, không cần đăng nhập; khi nhập liệu thật, ứng dụng chỉ báo lưu thành công sau khi nhận xác nhận.":
-    "Switch sections to explore key figures, guidance and clearly labelled tables. Illustrative data, no sign-in needed; when entering real data, the app confirms a successful save only after receiving confirmation.",
+  "Khám phá các mục với dữ liệu minh họa. Thử che số tiền để xem cách bảo vệ sự riêng tư.":
+    "Explore the sections with sample data. Try hiding amounts for more privacy.",
   "BẮT ĐẦU TỪ NHỮNG ĐIỀU THIẾT THỰC": "START WITH WHAT MATTERS",
   "Từng mảnh ghép.": "Each piece.",
   "Một bức tranh rõ hơn.": "A clearer picture.",
@@ -264,8 +267,6 @@ export const landing = {
   "Đó là dữ liệu minh họa cố định, không lấy dữ liệu tài chính của bạn và không lưu thao tác vào tài khoản.":
     "It is fixed illustrative data. The preview does not read your financial data or save actions to your account.",
   "Có thể dùng trên điện thoại không?": "Can I use it on a phone?",
-  "Bạn có thể dùng trên điện thoại và máy tính, chọn tháng/năm theo cùng một cách ở các mục. Bạn cũng có thể thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.":
-    "Use the app on your phone or computer, with consistent month and year selection throughout. You can also add the app to your home screen if your browser supports it. Data entry requires an internet connection.",
   "Nếu mất tài khoản, tôi có thể lấy lại dữ liệu không?":
     "Can I recover my data if I lose my account?",
   "Trong Cài đặt, bạn có thể chủ động tải bản sao lưu toàn bộ dữ liệu và nhập lại vào tài khoản mới chưa có dữ liệu. File không mật khẩu; hãy tự giữ một bản ở nơi an toàn. Trang Cài đặt có liên kết lưu file trực tiếp nếu trình duyệt chưa bắt đầu tải. Hồ sơ cá nhân được khôi phục nếu bạn chọn.":
