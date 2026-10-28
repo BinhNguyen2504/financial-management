@@ -13,13 +13,7 @@ import { ModuleIcon } from "@/components/module-icon";
 import { modules, navigationSummary } from "@/features/catalog";
 import { LabelName } from "@/features/expenses/label-visual";
 import { ProgressScene } from "@/features/funds/progress-scene";
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  ChevronDown,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Eye, EyeOff } from "lucide-react";
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 
 const tabs = modules.filter((item) =>
@@ -104,7 +98,8 @@ const data = {
   },
   budgets: {
     title: "Chăm chút cho tháng của bạn.",
-    subtitle: "Hũ chi tháng và tích lũy, có phân loại và bộ lọc hũ đã ngừng.",
+    subtitle:
+      "Hũ chi tháng và tích lũy, có emoji riêng, phân loại ngân hàng/ví và bộ lọc hũ đã ngừng.",
     label: "Kế hoạch tháng",
     value: "12000000",
     secondary: "Số còn trong hũ",
@@ -228,10 +223,7 @@ export function ProductPreview({
         <span className="preview-demo-label">{tr("Dữ liệu minh họa")}</span>
       </div>
       <div className="preview-body">
-        <aside
-          className="preview-sidebar"
-          aria-label={tr("Các mục trong preview")}
-        >
+        <aside className="preview-sidebar" aria-label={tr("Các mục minh họa")}>
           <span className="preview-logo">
             <AppLogo size={24} /> Financial Manager
           </span>
@@ -276,10 +268,19 @@ export function ProductPreview({
         </aside>
         <div className="preview-workspace">
           <div className="preview-workspace-top">
-            <span>
-              {tr("THÁNG 06 / 2026")}{" "}
-              <ChevronDown size={13} aria-hidden="true" />
-            </span>
+            <dl
+              className="preview-period"
+              aria-label={tr("Kỳ minh họa cố định")}
+            >
+              <div>
+                <dt>{tr("Năm")}</dt>
+                <dd>2026</dd>
+              </div>
+              <div>
+                <dt>{tr("Tháng")}</dt>
+                <dd>{tr("Tháng")} 6</dd>
+              </div>
+            </dl>
             <button
               className="preview-privacy"
               aria-label={tr(

@@ -107,3 +107,11 @@ Ba bảng Danh mục tiết kiệm, Giao dịch tháng và Giao dịch nguồn t
 Khi vùng bảng rộng tối đa 760px, từng hàng xếp dọc với nhãn trường, giữ đủ dữ liệu đang chọn và nút thao tác 44px. Tên, mô tả và ghi chú dài được xuống dòng. Số dòng đi theo bộ lọc; trạng thái trống giữ khung bảng. Bộ chọn cột dùng `ColumnTable`, lưu riêng cho từng bảng trong trình duyệt; tên giao dịch/danh mục và thao tác luôn hiện. Nút Lưu trữ mở luồng có tháng hiệu lực, giữ lịch sử như trước.
 
 Catalog, README, nội dung landing và preview minh họa đã được đối chiếu; preview vẫn dùng dữ liệu cố định, không gọi API tài chính. Không đổi công thức, schema, API hoặc ranh giới đăng nhập. Chi tiết kiểm chứng local trong [biên bản rà soát](savings-ledgers-2026-10-27.md).
+
+## Tổ chức source — 28/10/2026
+
+Tiết kiệm tách model/replay khỏi xử lý command; editor tách action/controller/trường nhập/preview, workspace tách hook dữ liệu. CSV có bản dịch ở lớp trình bày; giữ lượng vàng, lô, giá vốn, chốt tháng và retry như trước. Không đổi HTTP/schema hoặc áp migration cloud. Xem [hướng dẫn bảo trì](../11-source-maintenance.md) và [bằng chứng kiểm tra](../07-validation.md).
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

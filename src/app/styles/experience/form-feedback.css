@@ -6,7 +6,7 @@
 }
 .required-mark {
   color: var(--muted);
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   display: inline;
   white-space: nowrap;
 }
@@ -32,15 +32,15 @@ label .required-mark::before {
   justify-content: flex-end;
   gap: 5px;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-regular);
   line-height: 1.5;
 }
 .money-input-hint {
   display: block;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-regular);
   margin-top: 5px;
 }
 .toast-viewport {
@@ -81,7 +81,7 @@ label .required-mark::before {
   overflow-y: auto;
   overscroll-behavior: contain;
   pointer-events: auto;
-  font-size: 14px;
+  font-size: var(--font-size-14);
   line-height: 1.5;
   animation: toast-appear 180ms ease-out;
 }
@@ -106,13 +106,13 @@ label .required-mark::before {
 }
 .app-toast-title {
   display: block;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-strong);
 }
 .app-toast .app-toast-message {
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-size-14);
   line-height: 1.55;
 }
 .app-toast button {
@@ -153,8 +153,8 @@ label .required-mark::before {
 .field-error,
 .form-field-error {
   color: var(--danger);
-  font-size: 13px;
-  font-weight: 650;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
   display: block;
   margin-top: 6px;
 }
@@ -196,12 +196,12 @@ textarea[aria-invalid="true"],
   border-radius: 12px;
   color: var(--warning);
   background: var(--warning-soft);
-  font-weight: 650;
+  font-weight: var(--weight-medium);
 }
 .data-warning a,
 .data-warning button {
   text-decoration: underline;
-  font-weight: 800;
+  font-weight: var(--weight-strong);
 }
 .status-badge {
   display: inline-flex;
@@ -209,8 +209,8 @@ textarea[aria-invalid="true"],
   gap: 6px;
   padding: 3px 9px;
   border-radius: 7px;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-strong);
   color: var(--primary);
   background: var(--primary-soft);
   border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
@@ -294,7 +294,7 @@ textarea[aria-invalid="true"],
   border-radius: 8px;
   background: var(--warning-soft);
   font: inherit;
-  font-weight: 800;
+  font-weight: var(--weight-strong);
 }
 .income-missing-cell:hover {
   background: color-mix(in srgb, var(--warning) 15%, var(--warning-soft));
@@ -319,7 +319,7 @@ textarea[aria-invalid="true"],
 }
 .dialog-tabs button {
   color: var(--text);
-  font-weight: 750;
+  font-weight: var(--weight-strong);
   border-color: var(--border);
 }
 .dialog-tabs button[aria-selected="true"] {

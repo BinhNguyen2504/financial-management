@@ -128,9 +128,7 @@ export function useIncomeWorkspace({
     try {
       await reload();
     } catch {
-      setNotice(
-        tr("Đã lưu trên server. Chưa tải lại được dữ liệu; hãy thử tải lại."),
-      );
+      setNotice(tr("Đã lưu. Chưa tải lại được dữ liệu; hãy thử tải lại."));
       toast("warning", tr("Đã lưu thay đổi nhưng chưa tải lại được dữ liệu."));
     }
   }
@@ -161,7 +159,9 @@ export function useIncomeWorkspace({
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : tr("Không thể xuất CSV. Hãy thử lại."),
+        e instanceof Error
+          ? e.message
+          : tr("Chưa xuất được bảng dữ liệu. Hãy thử lại."),
       );
     }
   }

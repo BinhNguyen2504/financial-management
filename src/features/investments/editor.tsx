@@ -70,7 +70,7 @@ function Editor(props: Parameters<typeof useInvestmentEditor>[0]) {
             onClick={close}
             disabled={busy || uncertain}
           >
-            <X size={17} aria-hidden="true" /> {tr("Đóng form")}
+            <X size={17} aria-hidden="true" /> {tr("Đóng cửa sổ")}
           </button>
           <button
             form={formId}

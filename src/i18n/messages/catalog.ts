@@ -1,4 +1,6 @@
 export const catalog = {
+  "90 biểu tượng gợi ý, emoji từ bàn phím và 27 thương hiệu ngân hàng/ví":
+    "90 suggested icons, keyboard emoji and 27 bank and wallet brands",
   "Phân loại có logo PNG; xem trước theo tháng và lọc hũ đã ngừng":
     "Categories with PNG logos; monthly change previews and stopped-jar filtering",
   "Có trong bản hiện tại": "Available in this version",
@@ -21,7 +23,7 @@ export const catalog = {
     "Track regular categories, one-off income and reports; spot missing entries and record amounts by month.",
   "Tổng thực nhận mỗi tháng theo danh mục": "Monthly receipts by category",
   "Khoản thu phát sinh một lần": "One-off income entries",
-  "Bảng, biểu đồ và xuất CSV": "Tables, charts and CSV export",
+  "Bảng, biểu đồ và xuất bảng dữ liệu": "Tables, charts and CSV export",
   "Chi tiết khoản phát sinh có tìm kiếm và phân trang":
     "Searchable, paginated one-off income details",
   "Tab gọn trên mobile; nút chọn cột giữ vị trí khi cuộn bảng":
@@ -35,7 +37,7 @@ export const catalog = {
     "Expenses by category, account and purpose",
   "Chuyển tiền liên kết hai tài khoản trong một giao dịch":
     "Transfers linking two accounts in one transaction",
-  "Mẫu nhập nhanh, giao dịch định kỳ và nhập CSV có xem trước":
+  "Mẫu nhập nhanh, giao dịch định kỳ và nhập bảng dữ liệu có xem trước":
     "Quick entry, recurring transactions and CSV import with preview",
   "Bạn muốn ghi từng giao dịch hay tổng hợp theo ngày/tháng?":
     "Would you like individual entries or daily/monthly totals?",
@@ -110,8 +112,8 @@ export const catalog = {
     "Trades update assets and cash in one save",
   "Giá vốn bán nhập tay; phí, thuế, lãi/lỗ đã chốt và chưa chốt":
     "Manual cost basis on sales; fees, taxes, realised and unrealised profit/loss",
-  "Định giá có ngày; báo cáo xuyên năm, CSV và backup JSON":
-    "Dated valuations, reports across years, CSV and JSON backup",
+  "Định giá theo ngày; báo cáo nhiều năm, xuất bảng dữ liệu và sao lưu":
+    "Dated valuations; reports across years, data table export and backups",
   "Chi tiết giao dịch trước/sau, phiên bản sửa và giữ vị trí khi quay lại":
     "Before/after transaction details, revisions and preserved navigation position",
   "Quỹ an toàn": "Safety funds",
@@ -154,23 +156,23 @@ export const catalog = {
     "Which reports matter most when reviewing a month?",
   "Cài đặt": "Settings",
   "Không gian của bạn": "Your workspace",
-  "Chọn chủ đề Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành và chế độ sáng/tối/theo hệ thống, sao lưu JSON, khôi phục vào tài khoản trống và cài lên màn hình chính.":
+  "Chọn chủ đề Khu vườn/Dòng nước/Kim ngân/Lửa ấm/Đất lành và chế độ sáng/tối/theo hệ thống, sao lưu dữ liệu, khôi phục vào tài khoản trống và cài lên màn hình chính.":
     "Choose Garden/Water/Gold/Warm fire/Earth and light/dark/system mode, back up JSON, restore to an empty account and install on your home screen.",
-  "Đăng nhập bằng mã 8 chữ số qua email; dữ liệu cloud riêng, mặc định tiền VND":
-    "Sign in with an 8-digit email code; private cloud data, VND by default",
+  "Đăng nhập bằng mã 8 chữ số qua email; dữ liệu riêng tư, mặc định tiền VND":
+    "Sign in with an eight-digit email code; private data, VND by default",
   "Múi giờ Asia/Ho_Chi_Minh và định dạng Việt Nam":
     "Asia/Ho_Chi_Minh time zone and Vietnamese formats",
   "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt":
     "Five illustrated themes; appearance preferences saved in this browser",
-  "Backup toàn tài khoản và khôi phục vào tài khoản trống; hồ sơ tùy chọn":
+  "Sao lưu toàn bộ dữ liệu và khôi phục vào tài khoản chưa có dữ liệu; hồ sơ tùy chọn":
     "Whole-account backup and restore to an empty account; optional profile",
-  "PWA trên điện thoại/máy tính; chuẩn bị API cho app iOS":
-    "PWA on phone/computer; API preparation for an iOS app",
+  "Thêm vào màn hình chính trên thiết bị có hỗ trợ":
+    "Add to the home screen on supported devices",
   "Hướng dẫn dễ thấy cạnh tiêu đề mỗi trang: mục lục đánh số, tư duy sử dụng, thuật ngữ và từng thao tác, ngay cả khi đang nhập liệu.":
     "Guidance beside every page title: numbered contents, principles, terms and steps, including while entering data.",
   "Trang giới thiệu trước đăng nhập có thiết kế riêng; sau đăng nhập, trang chủ giữ chủ đề bạn đã chọn trong Cài đặt.":
     "A separate introduction page before sign-in; after sign-in, the home page uses your selected Settings theme.",
-  "Chọn Tiếng Việt/English, năm chủ đề và chế độ sáng/tối/theo hệ thống; sao lưu JSON, khôi phục vào tài khoản trống và cài lên màn hình chính.":
+  "Chọn Tiếng Việt/English, năm chủ đề và chế độ sáng/tối/theo hệ thống; sao lưu dữ liệu, khôi phục vào tài khoản trống và cài lên màn hình chính.":
     "Choose Vietnamese/English, five themes and light/dark/system mode; back up JSON, restore to an empty account and install on your home screen.",
   "Tiếng Việt/English với định dạng vi-VN/en-GB; cùng tiền VND và giờ Việt Nam":
     "Vietnamese/English with vi-VN/en-GB formats; VND and Vietnam time",

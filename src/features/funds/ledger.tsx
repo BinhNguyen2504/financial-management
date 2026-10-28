@@ -66,7 +66,7 @@ export function FundLedger({
   return (
     <section className="fund-ledger">
       <div className="fund-section-heading">
-        <h3>{tr("Giao dịch")}</h3>
+        <h2>{tr("Giao dịch")}</h2>
         <button
           className="expense-secondary"
           onClick={() => onEdit({ type: "transaction", fundId })}

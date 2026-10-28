@@ -172,12 +172,8 @@ export function InvestmentWorkspace(
       </header>
       {!configured ? (
         <section className="panel">
-          <h2>{tr("Kết nối dữ liệu Đầu tư")}</h2>
-          <p>
-            {tr(
-              "Cần cấu hình Auth, database và áp dụng migration Đầu tư để sử dụng.",
-            )}
-          </p>
+          <h2>{tr("Đầu tư chưa sẵn sàng")}</h2>
+          <p>{tr("Tính năng này chưa sẵn sàng. Bạn có thể thử lại sau.")}</p>
         </section>
       ) : (
         <>
@@ -229,7 +225,7 @@ export function InvestmentWorkspace(
               {status === 503 && (
                 <p>
                   {tr(
-                    "Kiểm tra kết nối và migration Đầu tư; nội dung trong form được giữ.",
+                    "Chưa tải được dữ liệu đầu tư. Hãy thử lại; nội dung đang nhập được giữ.",
                   )}
                 </p>
               )}

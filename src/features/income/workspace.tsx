@@ -1,4 +1,5 @@
 "use client";
+import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
 
 import { DailyNote } from "@/components/daily-note";
@@ -146,20 +147,8 @@ export function IncomeWorkspace(
       <DailyNote />
       {!configured ? (
         <section className="panel">
-          <h2>{tr("Chưa kết nối cloud")}</h2>
-          <p>
-            {tr(
-              "Thiết lập đăng nhập và cơ sở dữ liệu để lưu thu nhập riêng, đồng bộ giữa các thiết bị.",
-            )}
-          </p>
-          <a
-            className="text-link external-link"
-            href="https://supabase.com/dashboard"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {tr("Mở Supabase")}
-          </a>
+          <h2>{tr("Thu nhập chưa sẵn sàng")}</h2>
+          <p>{tr("Tính năng này chưa sẵn sàng. Bạn có thể thử lại sau.")}</p>
         </section>
       ) : (
         <>
@@ -193,34 +182,13 @@ export function IncomeWorkspace(
           {view && (
             <>
               <div className="expense-toolbar">
-                <div className="expense-actions income-period-controls">
-                  <label className="income-select">
-                    {tr("Năm")}
-                    <select
-                      value={year}
-                      onChange={(e) => setYear(Number(e.target.value))}
-                    >
-                      {Array.from({ length: 100 }, (_, i) => 2000 + i).map(
-                        (y) => (
-                          <option key={y}>{y}</option>
-                        ),
-                      )}
-                    </select>
-                  </label>
-                  <label className="income-select">
-                    {tr("Tháng")}
-                    <select
-                      value={month}
-                      onChange={(e) => setMonth(Number(e.target.value))}
-                    >
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                        <option key={m} value={m}>
-                          {tr("Tháng")} {m}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
+                <MonthYearSelect
+                  value={`${year}-${String(month).padStart(2, "0")}`}
+                  onChange={(period) => {
+                    setYear(Number(period.slice(0, 4)));
+                    setMonth(Number(period.slice(5, 7)));
+                  }}
+                />
                 <button
                   className="expense-primary"
                   onClick={() => open({ type: "oneoff" })}
@@ -608,7 +576,7 @@ export function IncomeWorkspace(
                       onClick={() => void download()}
                     >
                       <Download size={17} aria-hidden="true" />
-                      {tr("Xuất CSV")}
+                      {tr("Xuất bảng dữ liệu")}
                     </button>
                   </div>
                   <section className="income-summary">

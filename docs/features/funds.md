@@ -68,3 +68,11 @@ Tab chi tiết một hàng cuộn ngang, giữ nhãn đầy đủ và đưa mụ
 ## Minh họa và bố cục tiêu đề — 26/10/2026
 
 Tiêu đề luôn có cảnh bảo vệ riêng cho năm theme: cây/khiên, hải đăng, két dự phòng, vòm nến, vòm đá che mầm cây. Hình trang trí tĩnh, không biểu thị tỷ lệ giả; tiến độ thật vẫn do `ProgressScene` ở từng thẻ đảm nhiệm. Hình dùng tỷ lệ lớn chung với các trang tài chính; Nơi giữ tiền/Điều chỉnh mục tiêu ở hàng riêng khi đã thiết lập quỹ. Không đổi cấu hình, số tiền hoặc cách tính mục tiêu. Xem [tỷ lệ minh họa](themes.md).
+
+## Tổ chức source — 28/10/2026
+
+Quỹ tách action/controller/trường nhập/preview và hook workspace. Transaction helpers dùng chung vẫn giữ kiểm migration, khóa Chi tiêu trước Quỹ, timestamp gốc khi phút nhập không đổi và retry cùng command. Không đổi HTTP/schema hoặc áp migration cloud. Xem [hướng dẫn bảo trì](../11-source-maintenance.md) và [bằng chứng kiểm tra](../07-validation.md).
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

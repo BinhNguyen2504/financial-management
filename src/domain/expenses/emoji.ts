@@ -41,6 +41,54 @@ export const EMOJI_VALUES = [
   "💳",
   "📦",
   "💼",
+  "🍚",
+  "🍕",
+  "🍔",
+  "🥗",
+  "🧋",
+  "🍺",
+  "🥛",
+  "🧑‍🍳",
+  "🏠",
+  "🛏️",
+  "🛋️",
+  "🧹",
+  "🧺",
+  "🚿",
+  "💧",
+  "📶",
+  "🚕",
+  "🚆",
+  "🅿️",
+  "🧳",
+  "🏕️",
+  "📷",
+  "🎧",
+  "🎤",
+  "⚽",
+  "🏊",
+  "🧘",
+  "💅",
+  "💇",
+  "🪥",
+  "👓",
+  "👟",
+  "🎓",
+  "📝",
+  "👨‍👩‍👧‍👦",
+  "👵",
+  "🐶",
+  "🐱",
+  "💒",
+  "🎂",
+  "💰",
+  "🪙",
+  "📈",
+  "🤝",
+  "❤️",
+  "🪴",
+  "🔧",
+  "🧴",
 ] as const;
 export const EMOJI_NAMES = [
   "Ăn uống",
@@ -85,15 +133,77 @@ export const EMOJI_NAMES = [
   "Thẻ tín dụng",
   "Giao hàng",
   "Công việc",
+  "Cơm",
+  "Pizza",
+  "Đồ ăn nhanh",
+  "Ăn lành mạnh",
+  "Trà sữa",
+  "Đồ uống",
+  "Sữa",
+  "Nấu ăn",
+  "Mua nhà",
+  "Phòng ngủ",
+  "Nội thất",
+  "Dọn nhà",
+  "Giặt giũ",
+  "Vệ sinh",
+  "Tiền nước",
+  "Internet",
+  "Taxi",
+  "Tàu hỏa",
+  "Gửi xe",
+  "Hành lý",
+  "Cắm trại",
+  "Chụp ảnh",
+  "Tai nghe",
+  "Ca hát",
+  "Bóng đá",
+  "Bơi lội",
+  "Yoga",
+  "Làm móng",
+  "Cắt tóc",
+  "Chăm sóc răng",
+  "Kính mắt",
+  "Giày dép",
+  "Tốt nghiệp",
+  "Văn phòng phẩm",
+  "Gia đình",
+  "Cha mẹ",
+  "Chó",
+  "Mèo",
+  "Hôn lễ",
+  "Sinh nhật",
+  "Tiết kiệm",
+  "Tiền lẻ",
+  "Đầu tư",
+  "Từ thiện",
+  "Tình yêu",
+  "Cây cảnh",
+  "Dụng cụ",
+  "Chăm sóc da",
 ];
-export type JarEmoji = (typeof EMOJI_VALUES)[number];
+export type JarEmoji = string;
+
+// Unicode's recommended emoji sequences include flags, keycaps, skin tones and
+// ZWJ families. Also accept a single pictograph with an optional variation selector.
+const singleEmoji = new RegExp(
+  "^(?:\\p{RGI_Emoji}|\\p{Extended_Pictographic}\\uFE0F?)$",
+  "v",
+);
+export function isJarEmoji(value: string): boolean {
+  return (
+    value.length <= 32 &&
+    !/^\p{Emoji_Modifier}$/u.test(value) &&
+    singleEmoji.test(value)
+  );
+}
 
 export function jarEmoji(
   name: string,
   kind = "monthly",
   selected?: string | null,
 ): string {
-  if (selected && EMOJI_VALUES.includes(selected as JarEmoji)) return selected;
+  if (selected && isJarEmoji(selected)) return selected;
   const text = name
     .toLowerCase()
     .normalize("NFD")

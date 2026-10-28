@@ -174,7 +174,7 @@ test("period selects align without month navigation buttons and support all year
 }, info) => {
   await login(page);
   await page.goto("/income");
-  const period = page.locator(".income-period-controls");
+  const period = page.locator(".income-workspace .month-year-field");
   const year = period.getByRole("combobox", { name: "Năm", exact: true });
   const month = period.getByRole("combobox", { name: "Tháng", exact: true });
   await expect(year).toBeVisible();

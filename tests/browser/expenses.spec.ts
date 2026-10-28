@@ -1,3 +1,4 @@
+import { selectMonthYear } from "./helpers/month-year";
 import { completeTestEmailLogin } from "./helpers/test-email-login";
 import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
@@ -78,7 +79,7 @@ async function create(page: Page, name: string, kind = "monthly") {
   await page.getByRole("button", { name: "Thêm hũ", exact: true }).click();
   await page.getByLabel("Tên hũ", { exact: true }).fill(name);
   await page.getByRole("dialog").getByLabel("Loại hũ").selectOption(kind);
-  await page.getByLabel("Tháng bắt đầu", { exact: true }).fill(prior);
+  await selectMonthYear(page, "Tháng bắt đầu", prior);
   await page
     .getByLabel("Phương thức", { exact: true })
     .last()
@@ -92,7 +93,7 @@ test("monthly balances, accumulation uses, reports, responsive light/dark", asyn
 }, testInfo) => {
   await login(page, email());
   await page.getByRole("button", { name: "Chọn tháng bắt đầu" }).click();
-  await page.getByLabel("Tháng bắt đầu").fill(prior);
+  await selectMonthYear(page, "Tháng bắt đầu", prior);
   await confirm(page);
   await create(page, "Sinh hoạt kiểm thử");
   let data = await view(page);

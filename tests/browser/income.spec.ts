@@ -1,3 +1,4 @@
+import { selectMonthYear } from "./helpers/month-year";
 import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
@@ -71,7 +72,7 @@ async function addCategory(page: Page, name = "Lương thử nghiệm") {
     .getByRole("button", { name: "Thêm danh mục", exact: true })
     .click();
   await page.getByRole("dialog").getByLabel("Tên", { exact: true }).fill(name);
-  await page.getByLabel("Tháng bắt đầu", { exact: true }).fill(january);
+  await selectMonthYear(page, "Tháng bắt đầu", january);
   await save(page);
 }
 async function record(page: Page, name: string, amount: string) {
@@ -112,7 +113,9 @@ test("income CRUD, effective history, reports, CSV and responsive themes", async
   );
   expect((await response.json()).total).toBe("25000000");
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Xuất CSV", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Xuất bảng dữ liệu", exact: true })
+    .click();
   const download = await downloadPromise;
   const csv = await readFile((await download.path())!, "utf8");
   expect(csv).toContain('"25000000"');
@@ -180,7 +183,7 @@ test("income CRUD, effective history, reports, CSV and responsive themes", async
     .getByRole("dialog")
     .getByLabel("Tên", { exact: true })
     .fill("Lương mới");
-  await page.getByLabel("Tháng hiệu lực", { exact: true }).fill(february);
+  await selectMonthYear(page, "Tháng hiệu lực", february);
   await confirmPreview(page);
   await page
     .getByRole("button", { name: "Nhập thu nhập", exact: true })
@@ -201,9 +204,7 @@ test("income CRUD, effective history, reports, CSV and responsive themes", async
   await page
     .getByRole("button", { name: "Ngừng danh mục Lương mới", exact: true })
     .click();
-  await page
-    .getByLabel("Tháng hiệu lực", { exact: true })
-    .fill(`${history}-03`);
+  await selectMonthYear(page, "Tháng hiệu lực", `${history}-03`);
   await confirmPreview(page);
   await page
     .getByRole("button", { name: "Nhập thu nhập", exact: true })

@@ -332,8 +332,17 @@ test("drawer fits desktop, narrow phone, landscape and large text in both themes
       await expect(help(page).getByRole("navigation")).toBeVisible();
       await fit(help(page));
       const rect = await help(page).boundingBox();
-      expect(Math.round(rect!.width)).toBe(width < 768 ? width : 640);
-      expect(Math.round(rect!.x)).toBe(width < 768 ? 0 : width - 640);
+      const expectedWidth = width < 960 ? Math.min(640, width - 32) : 640;
+      expect(Math.round(rect!.width)).toBe(expectedWidth);
+      expect(Math.round(rect!.x)).toBe(
+        width < 960 ? (width - expectedWidth) / 2 : width - 640,
+      );
+      if (width < 960) {
+        expect(rect!.y).toBeGreaterThanOrEqual(16);
+        expect(rect!.height).toBeLessThanOrEqual(
+          page.viewportSize()!.height * 0.9 + 1,
+        );
+      }
       await expect(
         help(page).getByRole("button", { name: "Đóng", exact: true }),
       ).toBeInViewport();

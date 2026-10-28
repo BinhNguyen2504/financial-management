@@ -1,0 +1,84 @@
+/* Shared scale. Roles describe intent; primitive sizes are only defined here. */
+:root {
+  --font-size-12: 0.75rem;
+  --font-size-14: 0.875rem;
+  --font-size-16: 1rem;
+  --font-size-18: 1.125rem;
+  --font-size-20: 1.25rem;
+  --font-size-24: 1.5rem;
+  --font-size-28: 1.75rem;
+  --font-size-32: 2rem;
+  --text-body: var(--font-size-16);
+  --text-input: var(--font-size-16);
+  --text-label: var(--font-size-14);
+  --text-table: var(--font-size-14);
+  --text-action: var(--font-size-14);
+  --text-caption: var(--font-size-12);
+  --text-page-title: var(--font-size-32);
+  --text-section-title: var(--font-size-24);
+  --text-dialog-title: var(--font-size-20);
+  --text-group-title: var(--font-size-18);
+  --text-metric: clamp(1.5rem, 2.5vw, 2rem);
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-strong: 700;
+  --leading-body: 1.6;
+  --leading-title: 1.3;
+}
+body {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+.app-shell main :is(.page-heading, .module-heading, .heading-copy) h1,
+.app-shell main h1 {
+  font-size: var(--text-page-title);
+  line-height: var(--leading-title);
+  font-weight: var(--weight-strong);
+  letter-spacing: -0.025em;
+}
+.app-shell h2 {
+  line-height: var(--leading-title);
+}
+.app-shell :is(p.lead, .panel > p, .help-content) {
+  font-size: var(--text-body);
+}
+.app-shell main :is(button, summary),
+.dialog-shell button {
+  font-size: var(--text-action);
+}
+.app-shell main :is(input, select, textarea),
+.expense-dialog.dialog-shell :is(input, select, textarea) {
+  font-family: inherit;
+  font-size: var(--text-input);
+  line-height: 1.5;
+}
+.app-shell :is(table, .column-table, .income-table),
+.dialog-shell .dialog-data-table {
+  font-size: var(--text-table);
+}
+.app-shell :is(table th, .column-table th),
+.dialog-shell .dialog-data-table th {
+  font-size: var(--text-label);
+  font-weight: var(--weight-medium);
+  text-transform: none;
+  letter-spacing: normal;
+}
+.dialog-shell .expense-dialog-heading h2 {
+  font-size: var(--text-dialog-title);
+  line-height: var(--leading-title);
+}
+.dialog-shell :is(.dialog-body h3, fieldset > legend) {
+  font-size: var(--text-group-title);
+}
+.dialog-shell .dialog-body h4 {
+  font-size: var(--text-body);
+}
+.app-shell :is(.expense-amount-value, .income-amount, .savings-value),
+.dialog-shell :is(.dialog-summary-value, .is-numeric) {
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 959px) {
+  :root {
+    --text-page-title: var(--font-size-28);
+  }
+}

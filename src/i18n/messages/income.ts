@@ -53,11 +53,12 @@ export const income = {
   "Chọn khoản bên dưới để bổ sung.": "Choose an entry below to complete it.",
   Nhập: "Enter",
   "Không thể tải dữ liệu. Hãy thử lại.": "Could not load data. Try again.",
-  "Đã lưu trên server. Chưa tải lại được dữ liệu; hãy thử tải lại.":
+  "Đã lưu. Chưa tải lại được dữ liệu; hãy thử tải lại.":
     "Saved on the server. Could not refresh data; try refreshing.",
   "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.":
     "Changes saved but data could not be refreshed.",
-  "Không thể xuất CSV. Hãy thử lại.": "Could not export CSV. Try again.",
+  "Chưa xuất được bảng dữ liệu. Hãy thử lại.":
+    "Could not export the data table. Try again.",
   "Sửa {0}": "Edit {0}",
   Sửa: "Edit",
   "Xóa {0}": "Delete {0}",
@@ -68,9 +69,9 @@ export const income = {
   "Thu nhập": "Income",
   "Ghi nguồn thu đều đặn và khoản phát sinh, theo dõi từng tháng trong năm.":
     "Record regular sources and one-off income, and follow each month of the year.",
-  "Chưa kết nối cloud": "Cloud not connected",
-  "Thiết lập đăng nhập và cơ sở dữ liệu để lưu thu nhập riêng, đồng bộ giữa các thiết bị.":
-    "Set up sign-in and a database to save private income data and sync across devices.",
+  "Thu nhập chưa sẵn sàng": "Income is not available yet",
+  "Tính năng này chưa sẵn sàng. Bạn có thể thử lại sau.":
+    "This feature is not available yet. Please try again later.",
   "Mở Supabase": "Open Supabase",
   "Thử tải lại": "Try loading again",
   "Đăng nhập để quản lý thu nhập": "Sign in to manage income",
@@ -129,7 +130,7 @@ export const income = {
   "Phát sinh": "One-off",
   "Danh mục": "Category",
   "Tất cả danh mục": "All categories",
-  "Xuất CSV": "Export CSV",
+  "Xuất bảng dữ liệu": "Export data table",
   "Tổng đã ghi nhận trong kỳ": "Recorded total in period",
   "khoản thu cố định cần bổ sung.": "regular income entries need amounts.",
   "· tháng": "· month",

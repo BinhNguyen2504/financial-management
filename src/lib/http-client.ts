@@ -1,4 +1,5 @@
 import { responseFieldErrors, responseMessage } from "@/i18n/error-messages";
+import { userFacingError } from "@/i18n/user-facing-errors";
 
 interface RequestFailure {
   network: string;
@@ -37,13 +38,25 @@ export async function requestJSON<T>(
       failure.omitInvalidResponseStatus ? undefined : response.status,
     );
   }
-  if (!response.ok)
+  if (!response.ok) {
+    const fields = responseFieldErrors(value);
     throw failure.error(
-      responseMessage(value, failure.fallback),
+      userFacingError(
+        responseMessage(value, failure.fallback),
+        value.code,
+        failure.fallback,
+      ),
       value.code ?? failure.fallbackCode,
       response.status,
-      responseFieldErrors(value),
+      fields &&
+        Object.fromEntries(
+          Object.entries(fields).map(([field, message]) => [
+            field,
+            userFacingError(message),
+          ]),
+        ),
     );
+  }
   return value as T;
 }
 
@@ -61,7 +74,13 @@ export async function downloadFile(url: string, filename: string) {
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     const value = await response.json();
-    throw new Error(value.error ?? "Không thể xuất dữ liệu.");
+    throw new Error(
+      userFacingError(
+        responseMessage(value, "Không thể xuất dữ liệu."),
+        value.code,
+        "Không thể xuất dữ liệu.",
+      ),
+    );
   }
   const objectURL = URL.createObjectURL(await response.blob());
   const anchor = document.createElement("a");

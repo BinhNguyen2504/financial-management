@@ -1,5 +1,20 @@
-import { type SavingsTransaction } from "@/domain/savings/schema";
+import {
+  type SavingsAction,
+  type SavingsTransaction,
+} from "@/domain/savings/schema";
 import type { SavingsCategory } from "@/domain/savings/types";
+
+export const auditActionNames: Record<SavingsAction["type"], string> = {
+  createCategory: "Thêm danh mục",
+  configureCategory: "Sửa danh mục",
+  archiveCategory: "Lưu trữ danh mục",
+  restoreCategory: "Khôi phục danh mục",
+  postTransaction: "Ghi giao dịch",
+  reviseTransaction: "Sửa hoặc hủy giao dịch",
+  setPrice: "Cập nhật giá vàng",
+  closeMonth: "Chốt tháng",
+  reopenMonth: "Mở lại tháng",
+};
 
 export const transactionNames: Record<SavingsTransaction["kind"], string> = {
   openingCash: "Số dư tiền mở đầu",

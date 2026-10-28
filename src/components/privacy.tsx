@@ -141,7 +141,7 @@ export function PrivacyReveal() {
   const Icon = hidden ? Eye : EyeOff;
   return (
     <div className="privacy-form-note">
-      <span>{tr("Số tiền được giữ riêng trong form này.")}</span>
+      <span>{tr("Số tiền chỉ được hiện trong cửa sổ này.")}</span>
       <button
         type="button"
         className="expense-secondary"
@@ -150,7 +150,9 @@ export function PrivacyReveal() {
         onClick={scope.reveal}
       >
         <Icon size={17} aria-hidden="true" />
-        {hidden ? tr("Hiện tiền trong form") : tr("Ẩn tiền trong form")}
+        {hidden
+          ? tr("Hiện tiền trong cửa sổ này")
+          : tr("Ẩn tiền trong cửa sổ này")}
       </button>
     </div>
   );

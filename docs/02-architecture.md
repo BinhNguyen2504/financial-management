@@ -57,6 +57,10 @@ Khóa phiên bản thực tế trong `package-lock.json`. Dùng TypeScript 5.9 c
 
 ## Ranh giới source khi mở rộng
 
+Refactor 28/10/2026 giữ kiến trúc phân lớp và mọi HTTP/schema hiện có. Năm editor tách config, dựng action, hook điều phối, trường nhập và preview; workspace tách hook dữ liệu khỏi JSX. Validation/Clock/ngày/tiền dùng primitive trung lập; CSV có bản dịch nằm ở `i18n/report-exports`. Tiết kiệm/Đầu tư tách model, replay và command nhưng giữ entrypoint engine. Fingerprint command giữ thuật toán cũ; fingerprint backup độc lập. HTTP transport và thiết lập transaction/RLS dùng chung qua adapter của từng module, giữ thông báo, lỗi, kiểm migration và thứ tự khóa. Native dialog nằm ở components, alias ExpenseModal vẫn tương thích. Các phần của stylesheet experience được import theo thứ tự cascade cũ.
+
+Lint, kiểm tra import/cycle/client-server và định dạng là một phần của `npm run check` trong local/CI. Hướng dẫn trách nhiệm từng lớp, cấu trúc editor, ngoại lệ vòng đời và checklist thêm module nằm trong [bảo trì source](11-source-maintenance.md). Bằng chứng local theo đợt nằm trong [validation](07-validation.md); refactor không áp migration, đổi dữ liệu hoặc xác minh deployment.
+
 Tiết kiệm có `ledger-tables.tsx` (27/10/2026) dùng chung bảng giao dịch tháng và giao dịch nguồn báo cáo; workspace truyền giao dịch đã lọc cùng effects tương ứng. Bảng danh mục tra rule theo tháng đang xem, tên danh mục giao dịch tra theo ngày giao dịch. `ColumnTable` giữ cấu hình cột riêng trên trình duyệt, CSS container query chọn bố cục theo vùng nội dung. Không thêm request, thay đổi domain/schema hay quyền truy cập cho thay đổi bố cục này.
 
 - `src/app`: route web và `/api/v1`, chỉ chuyển request/response, không chứa công thức tài chính trong JSX.
@@ -197,3 +201,12 @@ Năm repository Chi tiêu, Thu nhập, Tiết kiệm, Đầu tư và Quỹ lưu 
 ## Thành phần phản hồi dùng chung — 28/10/2026
 
 `RequiredFieldsNote` tập trung chú thích bắt buộc và bản dịch cho đăng nhập, hồ sơ cùng năm editor. `ToastProvider` giữ success/error/warning và vị trí trong dialog đang hoạt động; `ToastViewport` có vùng riêng giữa header và body của native dialog; trình bày icon, tiêu đề, nội dung và trạng thái đọc để tạm dừng timeout thành công. CSS dùng token theme hiện có, không thêm thư viện hoặc thay đổi API/quy tắc ghi dữ liệu.
+
+
+## Emoji Chi tiêu và danh sách phân loại — 28/10/2026
+
+`isJarEmoji` dùng Unicode RGI để kiểm tra một emoji đơn hoặc ghép, loại văn bản/nhiều emoji và modifier đứng riêng. `jarEmojiSchema` dùng chung cho command và backup rules/snapshot; `JarEmoji` là chuỗi được kiểm tra ở ranh giới, bộ gợi ý không còn là enum giới hạn dữ liệu. Metadata tiếp tục lưu JSONB theo tháng, không thay tính tiền và không cần migration. `DialogList.renderItem` thêm cách trình bày danh sách gọn, tái dùng tìm kiếm/phân trang và giữ nguyên đường render bảng mặc định. Logo thương hiệu mở rộng vẫn là asset tĩnh cùng provenance, không gọi ngân hàng.
+
+## Thành phần trải nghiệm dùng chung — 28/10/2026
+
+MonthYearSelect sở hữu trình bày kỳ YYYY-MM, MobileNavigation sở hữu đóng menu, Modal sở hữu dialog stack và vùng hiển thị. Typography dùng token rem theo vai trò; lỗi hạ tầng được chuyển thành nội dung phổ thông ở client, giữ hợp đồng HTTP. Xem [quy tắc và phạm vi](features/usability-consistency-2026-10-28.md).

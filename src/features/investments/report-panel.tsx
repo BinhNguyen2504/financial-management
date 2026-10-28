@@ -1,4 +1,5 @@
 "use client";
+import { MonthYearSelect } from "@/components/month-year-select";
 import { formatDate, formatMonth } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
@@ -92,17 +93,12 @@ export function InvestmentReports({
           </select>
         </label>
         {period !== "custom" && (
-          <label>
-            {tr("Tháng tham chiếu")}
-            <input
-              type="month"
-              value={anchor}
-              max={today.slice(0, 7)}
-              onChange={(e) => {
-                if (e.target.value) range(period, e.target.value);
-              }}
-            />
-          </label>
+          <MonthYearSelect
+            label={tr("Tháng tham chiếu")}
+            value={anchor}
+            max={today.slice(0, 7)}
+            onChange={(value) => range(period, value)}
+          />
         )}
         <label>
           {tr("Từ ngày")}
@@ -167,7 +163,7 @@ export function InvestmentReports({
           onClick={onExport}
           disabled={!report}
         >
-          {tr("Xuất CSV")}
+          {tr("Xuất bảng dữ liệu")}
         </button>
       </section>
       {!report ? (

@@ -178,7 +178,9 @@ test("complete aggregate investing flow, reports, downloads and responsive light
     fullPage: true,
   });
   const csvPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Xuất CSV", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Xuất bảng dữ liệu", exact: true })
+    .click();
   const csv = await csvPromise;
   expect(await readFile((await csv.path())!, "utf8")).toContain("4800000");
   await page.getByRole("tab", { name: "Quản lý", exact: true }).click();
@@ -221,7 +223,7 @@ test("archive guard, sell all, restore and valuation correction history", async 
     page.getByRole("dialog").locator(".expense-error"),
   ).toContainText("hết giá vốn");
   page.once("dialog", (d) => d.accept());
-  await page.getByRole("button", { name: "Đóng form", exact: true }).click();
+  await page.getByRole("button", { name: "Đóng cửa sổ", exact: true }).click();
   await begin(page, "sell", asset);
   await page
     .getByLabel("Tiền bán trước phí/thuế (VND)", { exact: true })
@@ -362,7 +364,7 @@ test("sample portfolio, privacy scope, cross-year reports and full exports", asy
       .getByRole("button", { name: "Xem trước thay đổi", exact: true }),
   ).toBeDisabled();
   await page
-    .getByRole("button", { name: "Hiện tiền trong form", exact: true })
+    .getByRole("button", { name: "Hiện tiền trong cửa sổ này", exact: true })
     .click();
   await expect(
     page

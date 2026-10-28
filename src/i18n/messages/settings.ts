@@ -57,13 +57,13 @@ export const settings = {
     "This account has no data. You can restore your previous data in Settings.",
   "Đến phần nhập bản sao lưu": "Go to backup import",
   "Đóng gợi ý khôi phục": "Dismiss restore suggestion",
-  "File JSON không đọc được. Hãy chọn bản sao lưu được xuất từ Cài đặt.":
-    "Could not read this JSON file. Choose a backup exported from Settings.",
+  "Không đọc được bản sao lưu. Hãy chọn file được tải từ Cài đặt.":
+    "Could not read the backup. Choose a file downloaded from Settings.",
   "Chưa hoàn tất. Kiểm tra kết nối và thử lại.":
     "Not completed. Check your connection and try again.",
   "Chưa có dữ liệu": "No data yet",
-  "Chưa nhận được file JSON hợp lệ. Hãy tải lại trang và thử lại.":
-    "No valid JSON file received. Reload the page and try again.",
+  "Chưa nhận được bản sao lưu hợp lệ. Hãy tải lại trang và thử lại.":
+    "No valid backup was received. Reload the page and try again.",
   "File vượt giới hạn dung lượng hiện tại.":
     "The file exceeds the current size limit.",
   "Chưa thể khôi phục vào tài khoản này. Kiểm tra trạng thái tài khoản rồi thử lại.":
@@ -75,7 +75,7 @@ export const settings = {
   "Dữ liệu tài chính đã khôi phục. Chưa lưu được hồ sơ; hãy thử lại riêng bước hồ sơ.":
     "Financial data restored. Could not save the profile; retry the profile step separately.",
   "Đã khôi phục dữ liệu tài chính.": "Financial data restored.",
-  "Đã khôi phục toàn bộ dữ liệu tài chính. Bạn có thể mở các module để kiểm tra.":
+  "Đã khôi phục toàn bộ dữ liệu tài chính. Bạn có thể mở các mục để kiểm tra.":
     "All financial data restored. Open the modules to check it.",
   "Đã khôi phục dữ liệu tài chính và hồ sơ cá nhân.":
     "Financial data and personal profile restored.",
@@ -99,8 +99,8 @@ export const settings = {
   "Thử kết nối lại": "Try reconnecting",
   "Sao lưu dữ liệu": "Back up data",
   "Giữ một bản để có thể bắt đầu lại.": "Keep a copy so you can start again.",
-  "Tải toàn bộ dữ liệu thành một file JSON, lưu ở nơi bạn có thể truy cập khi mất tài khoản.":
-    "Download all data as one JSON file and keep it somewhere accessible if you lose your account.",
+  "Tải bản sao lưu toàn bộ dữ liệu và giữ ở nơi an toàn để có thể khôi phục khi cần.":
+    "Download a backup of all your data and keep it somewhere safe so you can restore it when needed.",
   "Đang xuất…": "Exporting…",
   "Tải bản sao lưu": "Download backup",
   "File không có mật khẩu và chứa số tiền đầy đủ, kể cả khi đang che tiền. Không kèm email hay thông tin đăng nhập.":
@@ -110,13 +110,13 @@ export const settings = {
   "Bản sao lưu đã sẵn sàng.": "Your backup is ready.",
   "Nếu trình duyệt chưa tải, chọn liên kết bên dưới.":
     "If the browser has not downloaded it, use the link below.",
-  "Lưu file JSON": "Save JSON file",
+
   "Khôi phục dữ liệu": "Restore data",
   "Dùng bản sao lưu từ tài khoản trước.":
     "Use a backup from your previous account.",
-  "Chọn file JSON đã xuất từ Cài đặt, kiểm tra nội dung rồi xác nhận. Chỉ khôi phục vào tài khoản chưa có dữ liệu.":
-    "Choose a JSON file exported from Settings, review its contents and confirm. Restore is available only for accounts without data.",
-  "Chọn file JSON sao lưu toàn tài khoản": "Choose a whole-account JSON backup",
+  "Chọn bản sao lưu đã tải từ Cài đặt, kiểm tra nội dung rồi xác nhận. Chỉ khôi phục vào tài khoản chưa có dữ liệu.":
+    "Choose a backup downloaded from Settings, review its contents and confirm. Restore is available only for accounts without data.",
+  "Chọn bản sao lưu toàn bộ dữ liệu": "Choose a full data backup",
   "Khôi phục chưa được bật trên hệ thống này.":
     "Restore is not enabled on this system yet.",
   "Bạn vẫn có thể tải bản sao lưu và giữ file để dùng sau.":
@@ -131,7 +131,7 @@ export const settings = {
   "Khôi phục": "Restore",
   "Chọn file khác": "Choose another file",
   "Nhập bản sao lưu": "Import backup",
-  "File JSON toàn tài khoản · Tối đa": "Whole-account JSON file · Maximum",
+  "Bản sao lưu (.json) · Tối đa": "Full backup (.json) · Maximum",
   "Bỏ file đã chọn": "Remove selected file",
   "Đang kiểm tra bản sao lưu…": "Checking backup…",
   "Xem trước bản sao lưu": "Backup preview",

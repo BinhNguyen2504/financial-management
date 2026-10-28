@@ -17,7 +17,7 @@
 }
 .column-picker {
   flex: 0 0 auto;
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .column-picker-trigger {
   display: inline-flex;
@@ -29,7 +29,7 @@
   border-radius: 8px;
   background: transparent;
   color: var(--muted);
-  font-weight: 700;
+  font-weight: var(--weight-strong);
   scroll-margin-block: 120px 24px;
 }
 .column-picker-trigger:is(:hover, [aria-expanded="true"]) {
@@ -52,7 +52,7 @@
   box-shadow:
     0 12px 40px #0003,
     0 2px 8px #0001;
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .column-picker-options:popover-open {
   display: flex;
@@ -71,12 +71,12 @@
 }
 .column-picker-heading h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--font-size-16);
   color: var(--text);
 }
 .column-picker-heading p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 .column-picker-heading .icon-action {
@@ -100,7 +100,7 @@
   border-radius: 8px;
   cursor: pointer;
   color: var(--text);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 .column-picker-row:hover {
   background: var(--surface-alt);
@@ -145,7 +145,7 @@
   gap: 6px;
   margin: 12px 18px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-size-12);
   flex-shrink: 0;
 }
 .column-picker-fixed svg {
@@ -160,7 +160,7 @@
 .column-picker-footer button {
   width: 100%;
   justify-content: center;
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .expense-section-tools {
   display: flex;
@@ -175,8 +175,8 @@
   gap: 5px 12px;
   margin-top: 6px;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-regular);
   line-height: 1.5;
 }
 .expense-kind-label {
@@ -189,5 +189,5 @@
   padding: 1px 6px;
   border: 1px dashed var(--border);
   border-radius: 5px;
-  font-weight: 650;
+  font-weight: var(--weight-medium);
 }

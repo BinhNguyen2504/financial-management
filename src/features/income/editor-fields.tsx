@@ -1,4 +1,5 @@
 "use client";
+import { MonthYearSelect } from "@/components/month-year-select";
 import { LocalizedInput } from "@/components/localized-input";
 
 import { MoneyHint } from "@/components/money-hint";
@@ -103,47 +104,37 @@ export function IncomeEditorFields({
               />
             </label>
           )}
-          <label>
-            {mode.type === "create"
-              ? tr("Tháng bắt đầu")
-              : needsPreview
-                ? tr("Tháng hiệu lực")
-                : tr("Tháng")}
-            <span className="required-mark" aria-hidden="true">
-              *
-            </span>
-            <input
-              aria-label={
-                mode.type === "create"
-                  ? tr("Tháng bắt đầu")
-                  : needsPreview
-                    ? tr("Tháng hiệu lực")
-                    : tr("Tháng")
-              }
-              id={
-                mode.type === "create"
-                  ? "income-field-start"
-                  : "income-field-month"
-              }
-              aria-invalid={!!(fieldErrors.month || fieldErrors.start)}
-              aria-describedby={
-                fieldErrors.start
-                  ? "income-error-start"
-                  : fieldErrors.month
-                    ? "income-error-month"
-                    : undefined
-              }
-              type="month"
-              required
-              min={"category" in mode ? mode.category.start : "2000-01"}
-              max={hasAmount ? today.slice(0, 7) : "2099-12"}
-              value={period}
-              disabled={busy || mode.type === "monthly"}
-              onChange={(e) => setPeriod(e.target.value)}
-            />
+          <MonthYearSelect
+            label={
+              mode.type === "create"
+                ? tr("Tháng bắt đầu")
+                : needsPreview
+                  ? tr("Tháng hiệu lực")
+                  : tr("Tháng")
+            }
+            id={
+              mode.type === "create"
+                ? "income-field-start"
+                : "income-field-month"
+            }
+            invalid={!!(fieldErrors.month || fieldErrors.start)}
+            describedBy={
+              fieldErrors.start
+                ? "income-error-start"
+                : fieldErrors.month
+                  ? "income-error-month"
+                  : undefined
+            }
+            required
+            min={"category" in mode ? mode.category.start : "2000-01"}
+            max={hasAmount ? today.slice(0, 7) : "2099-12"}
+            value={period}
+            disabled={busy || mode.type === "monthly"}
+            onChange={setPeriod}
+          >
             {fieldError("month")}
             {fieldError("start")}
-          </label>
+          </MonthYearSelect>
           {hasAmount && (
             <label>
               {tr("Số tiền thực nhận (VND)")}

@@ -1,5 +1,6 @@
 "use client";
 import { LocalizedInput } from "@/components/localized-input";
+import { MonthYearSelect } from "@/components/month-year-select";
 import { formatDate } from "@/i18n/format";
 
 import { decimalLabel } from "@/components/dialog-content";
@@ -56,6 +57,27 @@ export function SavingsEditorFields({
     secret = false,
     required = true,
   ) {
+    if (type === "month")
+      return (
+        <MonthYearSelect
+          key={key}
+          label={label}
+          value={f[key]}
+          id={`savings-field-${key}`}
+          name={key}
+          onChange={(value) => set(key, value)}
+          disabled={busy}
+          required={required}
+          invalid={!!fieldErrors[key]}
+          describedBy={fieldErrors[key] ? `savings-error-${key}` : undefined}
+        >
+          {fieldErrors[key] && (
+            <small id={`savings-error-${key}`} className="field-error">
+              {tr(fieldErrors[key])}
+            </small>
+          )}
+        </MonthYearSelect>
+      );
     return (
       <label key={key} htmlFor={`savings-field-${key}`}>
         {label}
@@ -225,7 +247,7 @@ export function SavingsEditorFields({
       {mode.type === "reopen" && (
         <p className="expense-notice">
           {tr(
-            "Tháng được chọn và các tháng đã chốt sau đó sẽ cần chốt lại. Snapshot cũ vẫn được giữ.",
+            "Tháng được chọn và các tháng đã chốt sau đó sẽ cần chốt lại. Bản chốt cũ vẫn được giữ.",
           )}
         </p>
       )}

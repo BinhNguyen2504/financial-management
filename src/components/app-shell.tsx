@@ -3,6 +3,7 @@ import { AppLogo } from "@/components/app-logo";
 import { useI18n } from "@/i18n/provider";
 
 import { Navigation } from "@/components/navigation";
+import { MobileNavigation } from "@/components/mobile-navigation";
 import { PrivacyProvider, PrivacyToggle } from "@/components/privacy";
 import { ThemeText } from "@/components/theme-decoration";
 import { ToastProvider } from "@/components/toast";
@@ -10,7 +11,6 @@ import { SidebarToggle } from "@/components/ui-preferences";
 import { UserMenu } from "@/components/user-menu";
 import { SessionBoundary } from "@/features/auth/session-boundary";
 import { HelpProvider } from "@/features/help/provider";
-import { Menu } from "lucide-react";
 import Link from "next/link";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -62,12 +62,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   </span>
                   <PrivacyToggle />
                   <UserMenu />
-                  <details className="mobile-menu">
-                    <summary>
-                      <Menu size={19} aria-hidden="true" /> Menu
-                    </summary>
-                    <Navigation mobile />
-                  </details>
+                  <MobileNavigation />
                 </header>
                 <main id="main" tabIndex={-1}>
                   {children}

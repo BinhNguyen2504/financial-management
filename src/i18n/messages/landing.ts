@@ -1,7 +1,8 @@
 // Public product copy and fixed illustrative data only; never account data.
 export const landing = {
-  "Hũ chi tháng và tích lũy, có phân loại và bộ lọc hũ đã ngừng.":
-    "Monthly and accumulation jars, with categories and stopped-jar filtering.",
+  "Kỳ minh họa cố định": "Fixed illustrative period",
+  "Hũ chi tháng và tích lũy, có emoji riêng, phân loại ngân hàng/ví và bộ lọc hũ đã ngừng.":
+    "Monthly and accumulation jars, with custom emoji, bank and wallet categories, and stopped-jar filtering.",
   "Vào ứng dụng": "Open app",
   "Bắt đầu hành trình của bạn": "Start your journey",
   "Bắt đầu sử dụng": "Get started",
@@ -87,12 +88,12 @@ export const landing = {
     "Sign in with an 8-digit code sent to your email. The code is single-use and valid for 30 minutes. Choose a section to manage first; Help beside the page title explains the terms and each step.",
   "Tôi có thể tự giữ bản sao dữ liệu không?":
     "Can I keep my own copy of my data?",
-  "Có. Trong Cài đặt, tải bản sao lưu JSON và khôi phục vào tài khoản trống khi cần. File không có mật khẩu; hãy giữ ở nơi an toàn.":
-    "Yes. In Settings, download a JSON backup and restore it to an empty account when needed. The file has no password; keep it somewhere safe.",
+  "Có. Trong Cài đặt, tải bản sao lưu và khôi phục vào tài khoản chưa có dữ liệu khi cần. File không có mật khẩu; hãy giữ ở nơi an toàn.":
+    "Yes. In Settings, download a backup and restore it to an empty account when needed. The file has no password; keep it somewhere safe.",
   "Có thể dùng tiếng Anh không?": "Can I use English?",
   "Có dùng được trên điện thoại không?": "Does it work on a phone?",
-  "Giao diện được thiết kế cho điện thoại và máy tính. Tab giữ nhãn đầy đủ; bảng rộng cuộn trong vùng riêng. Bản triển khai qua HTTPS hỗ trợ thêm vào màn hình chính. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.":
-    "The interface is designed for phones and computers. Tabs keep their full labels; wide tables scroll within their own area. HTTPS deployments support adding the app to your home screen. Offline data entry is not currently supported.",
+  "Bạn có thể dùng trên điện thoại và máy tính. Các cửa sổ dài có vùng cuộn riêng; chạm bên ngoài để đóng menu chức năng. Bạn cũng có thể thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.":
+    "Use the app on your phone or computer. Long dialogs scroll internally; tap outside to close the navigation menu. You can also add the app to your home screen if your browser supports it. Data entry requires an internet connection.",
   "Các con số trên trang này là của ai?":
     "Whose numbers are shown on this page?",
   "Đây là dữ liệu minh họa cố định. Bản xem thử không đọc tài chính của bạn và không lưu thao tác vào tài khoản.":
@@ -158,7 +159,7 @@ export const landing = {
   "financial manager / không gian cá nhân":
     "financial manager / personal workspace",
   "Dữ liệu minh họa": "Illustrative data",
-  "Các mục trong preview": "Preview sections",
+  "Các mục minh họa": "Preview sections",
   "Khám phá các tính năng": "Explore features",
   "Từng khoản tiền, rõ mục đích.": "Every amount, a clear purpose.",
   "Tải bản sao dữ liệu của bạn trong Cài đặt.":
@@ -246,7 +247,7 @@ export const landing = {
   "và điều gì ở phía trước.": "and what comes next.",
   "Ứng dụng vẫn đang phát triển. Cùng nhìn lại những gì đã có trong phiên bản hiện tại và những phần đang tiếp tục được xây dựng.":
     "The app is still in development. See what is available in the current version and what is still being built.",
-  "Tổng quan hiện tập trung vào các hũ chi tiêu. Báo cáo nằm trong từng module; chưa có tổng tài sản ròng toàn hệ thống.":
+  "Tổng quan hiện tập trung vào các hũ chi tiêu. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.":
     "Overview currently focuses on spending jars. Reports are within individual modules; application-wide net worth is not available.",
   "Đây là định hướng phát triển, chưa phải tính năng sẵn sàng sử dụng. Kết nối ngân hàng và nhập liệu ngoại tuyến hiện chưa có.":
     "These are development plans, not features ready to use. Bank connections and offline data entry are not currently available.",
@@ -260,14 +261,14 @@ export const landing = {
   "Có. Bạn có thể khám phá trang giới thiệu và dữ liệu minh họa trước. Để mở không gian tài chính, hãy nhập mã 8 chữ số gửi qua email. Mã dùng một lần, có hiệu lực 30 phút.":
     "Yes. You can explore the introduction and illustrative data first. To open your financial workspace, enter the 8-digit code sent to your email. The code is single-use and valid for 30 minutes.",
   "Dữ liệu trong phần trải nghiệm là của ai?": "Whose data is in the preview?",
-  "Đó là dữ liệu minh họa cố định. Preview không đọc dữ liệu tài chính của bạn và không lưu thao tác vào tài khoản.":
+  "Đó là dữ liệu minh họa cố định, không lấy dữ liệu tài chính của bạn và không lưu thao tác vào tài khoản.":
     "It is fixed illustrative data. The preview does not read your financial data or save actions to your account.",
   "Có thể dùng trên điện thoại không?": "Can I use it on a phone?",
-  "Giao diện được thiết kế cho cả điện thoại và máy tính. Tab giữ nhãn đầy đủ; bảng rộng cuộn trong vùng riêng. Bản triển khai qua HTTPS có nền PWA để thêm vào màn hình chính; hiện chưa hỗ trợ ghi dữ liệu khi mất mạng.":
-    "The interface is designed for phones and computers. Tabs keep full labels; wide tables scroll within their own area. HTTPS deployments support adding the PWA to your home screen; saving data offline is not currently supported.",
+  "Bạn có thể dùng trên điện thoại và máy tính, chọn tháng/năm theo cùng một cách ở các mục. Bạn cũng có thể thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.":
+    "Use the app on your phone or computer, with consistent month and year selection throughout. You can also add the app to your home screen if your browser supports it. Data entry requires an internet connection.",
   "Nếu mất tài khoản, tôi có thể lấy lại dữ liệu không?":
     "Can I recover my data if I lose my account?",
-  "Trong Cài đặt, bạn có thể chủ động tải bản sao lưu JSON toàn bộ dữ liệu và nhập lại vào tài khoản mới chưa có dữ liệu. File không mật khẩu; hãy tự giữ một bản ở nơi an toàn. Trang Cài đặt có liên kết lưu file trực tiếp nếu trình duyệt chưa bắt đầu tải. Hồ sơ cá nhân được khôi phục nếu bạn chọn.":
+  "Trong Cài đặt, bạn có thể chủ động tải bản sao lưu toàn bộ dữ liệu và nhập lại vào tài khoản mới chưa có dữ liệu. File không mật khẩu; hãy tự giữ một bản ở nơi an toàn. Trang Cài đặt có liên kết lưu file trực tiếp nếu trình duyệt chưa bắt đầu tải. Hồ sơ cá nhân được khôi phục nếu bạn chọn.":
     "In Settings, you can download a full JSON backup and import it into a new, empty account. The file has no password; keep a safe copy yourself. Settings has a direct download link if the browser does not start downloading. You can choose to restore your profile too.",
   "Ứng dụng đã hoàn thiện chưa?": "Is the app finished?",
   "Chưa. Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn đã có trong phiên bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản phẩm.":
@@ -281,8 +282,8 @@ export const landing = {
     "Manage your personal finances with Financial Manager: track income, spending jars, savings, investments and safety funds. Try the interface without an account.",
   "Chọn Tiếng Việt hoặc English trên thanh đầu trang hoặc trong Cài đặt; lựa chọn dùng chung cho trang chủ, đăng nhập và ứng dụng, được ghi nhớ trên trình duyệt. Tiền tệ vẫn là VND.":
     "Choose Vietnamese or English in the header or in Settings; your choice applies to the home page, sign-in and app, and is saved in this browser. Currency remains VND.",
-  "Trên máy tính, nút thu gọn và mở rộng menu nằm ở mép phải thanh điều hướng, ngang hàng logo.":
-    "On desktop, the menu collapse and expand button sits at the right edge of the navigation bar, level with the logo.",
+  "Trên máy tính, nút thu gọn menu nằm cạnh logo. Trên điện thoại, chạm bên ngoài menu để đóng.":
+    "On desktop, the collapse button is next to the logo. On your phone, tap outside the menu to close it.",
   "Quản lý tài chính cá nhân | Financial Manager":
     "Personal finance management | Financial Manager",
 } as const;

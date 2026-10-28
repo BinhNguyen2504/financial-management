@@ -166,3 +166,11 @@ Menu dùng scrollbar mảnh, nền trong suốt, rõ hơn khi hover/focus; giữ
 Toast dùng bề mặt có sắc độ nhẹ, cạnh màu trạng thái, icon, tiêu đề và nội dung tách rõ. Tiêu đề dùng chung: Thành công / Chưa thể hoàn tất / Cần kiểm tra, không khẳng định mọi thao tác là lưu dữ liệu. Thành công tự đóng sau 5 giây, tạm dừng khi hover hoặc focus và bắt đầu lại thời gian đọc khi rời. Lỗi/cảnh báo giữ tới khi đóng; thông báo kết quả lưu chưa xác nhận tiếp tục dùng warning và giữ bản nháp. Toast nằm trong dialog đang hoạt động, ở vùng riêng giữa header và phần nội dung cuộn để không che ô nhập hoặc nút lưu; vẫn nhận thao tác trên top layer. Nút đóng 44px, nội dung dài xuống dòng và cuộn riêng khi cần; giảm chuyển động bỏ animation.
 
 Đã rà soát catalog, landing copy và preview: đây là tinh chỉnh thành phần chung, không bổ sung khả năng hoặc đổi trạng thái module. Preview giữ dữ liệu cố định, không mô phỏng API tài khoản. Bằng chứng browser local và giới hạn tại [validation](../07-validation.md).
+
+## Tổ chức source — 28/10/2026
+
+Native Modal, HTTP transport và HTTP error mapping được tái sử dụng qua adapter; editor giữ draft/preview/submit/error/uncertain trong controller riêng. Tách source không thay toast, lỗi tại chỗ, vùng nút cố định, focus, cuộn, retry hoặc thông báo từng module. CSS tương tác được chia thành các phần có entrypoint theo thứ tự cascade cũ. Xem [hướng dẫn bảo trì](../11-source-maintenance.md).
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

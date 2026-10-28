@@ -33,7 +33,7 @@ export const modules = [
     scope: [
       "Tổng thực nhận mỗi tháng theo danh mục",
       "Khoản thu phát sinh một lần",
-      "Bảng, biểu đồ và xuất CSV",
+      "Bảng, biểu đồ và xuất bảng dữ liệu",
       "Chi tiết khoản phát sinh có tìm kiếm và phân trang",
       "Tab gọn trên mobile; nút chọn cột giữ vị trí khi cuộn bảng",
       "Tiêu đề có minh họa theo chủ đề, thích ứng màn hình",
@@ -52,7 +52,7 @@ export const modules = [
       "Thu nhập theo nguồn và thời điểm thực nhận",
       "Chi tiêu theo danh mục, tài khoản và mục đích",
       "Chuyển tiền liên kết hai tài khoản trong một giao dịch",
-      "Mẫu nhập nhanh, giao dịch định kỳ và nhập CSV có xem trước",
+      "Mẫu nhập nhanh, giao dịch định kỳ và nhập bảng dữ liệu có xem trước",
     ],
     questions: [
       "Bạn muốn ghi từng giao dịch hay tổng hợp theo ngày/tháng?",
@@ -73,6 +73,7 @@ export const modules = [
       "Phân biệt chi phí, trả nợ và tiền dành để tiết kiệm",
       "Tổng hợp nhu cầu tiền theo ví/ngân hàng",
       "Phân loại có logo PNG; xem trước theo tháng và lọc hũ đã ngừng",
+      "90 biểu tượng gợi ý, emoji từ bàn phím và 27 thương hiệu ngân hàng/ví",
       "Bảng hũ căn giữa nút điều chỉnh và dùng tiền bằng biểu tượng",
       "Chi tiết hũ theo tab tháng, sử dụng và lịch sử",
       "Tiêu đề có minh họa hũ chi, nút thao tác ở hàng riêng",
@@ -129,7 +130,7 @@ export const modules = [
       "Danh mục tổng tiền và nhiều ví tiền chờ, VND",
       "Mua/bán cập nhật tài sản và tiền chờ trong một lần lưu",
       "Giá vốn bán nhập tay; phí, thuế, lãi/lỗ đã chốt và chưa chốt",
-      "Định giá có ngày; báo cáo xuyên năm, CSV và backup JSON",
+      "Định giá theo ngày; báo cáo nhiều năm, xuất bảng dữ liệu và sao lưu",
       "Chi tiết giao dịch trước/sau, phiên bản sửa và giữ vị trí khi quay lại",
       "Minh họa danh mục riêng cho từng chủ đề giao diện",
     ],
@@ -193,13 +194,13 @@ export const modules = [
     icon: "settings",
     label: "Không gian của bạn",
     description:
-      "Chọn Tiếng Việt/English, năm chủ đề và chế độ sáng/tối/theo hệ thống; sao lưu JSON, khôi phục vào tài khoản trống và cài lên màn hình chính.",
+      "Chọn Tiếng Việt/English, năm chủ đề và chế độ sáng/tối/theo hệ thống; sao lưu dữ liệu, khôi phục vào tài khoản trống và cài lên màn hình chính.",
     scope: [
-      "Đăng nhập bằng mã 8 chữ số qua email; dữ liệu cloud riêng, mặc định tiền VND",
+      "Đăng nhập bằng mã 8 chữ số qua email; dữ liệu riêng tư, mặc định tiền VND",
       "Tiếng Việt/English với định dạng vi-VN/en-GB; cùng tiền VND và giờ Việt Nam",
       "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt",
-      "Backup toàn tài khoản và khôi phục vào tài khoản trống; hồ sơ tùy chọn",
-      "PWA trên điện thoại/máy tính; chuẩn bị API cho app iOS",
+      "Sao lưu toàn bộ dữ liệu và khôi phục vào tài khoản chưa có dữ liệu; hồ sơ tùy chọn",
+      "Thêm vào màn hình chính trên thiết bị có hỗ trợ",
     ],
     questions: [],
   },
@@ -242,4 +243,4 @@ export const languageSummary =
   "Chọn Tiếng Việt hoặc English trên thanh đầu trang hoặc trong Cài đặt; lựa chọn dùng chung cho trang chủ, đăng nhập và ứng dụng, được ghi nhớ trên trình duyệt. Tiền tệ vẫn là VND.";
 
 export const navigationSummary =
-  "Trên máy tính, nút thu gọn và mở rộng menu nằm ở mép phải thanh điều hướng, ngang hàng logo.";
+  "Trên máy tính, nút thu gọn menu nằm cạnh logo. Trên điện thoại, chạm bên ngoài menu để đóng.";

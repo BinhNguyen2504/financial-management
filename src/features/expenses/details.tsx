@@ -383,47 +383,37 @@ export function ExpenseLabels({
                 kind === "method" ? tr("Phương thức") : tr("Nhóm mục đích")
               }
               searchText={(l) => l.name}
-              columns={[
-                {
-                  label: tr("Tên"),
-                  render: (l) => (
-                    <strong>
-                      <LabelName
-                        name={l.name}
-                        labels={book.labels}
-                        kind={l.kind}
-                      />
-                    </strong>
-                  ),
-                },
-                {
-                  label: tr("Thao tác"),
-                  render: (l) => (
-                    <div className="expense-actions">
-                      <button
-                        type="button"
-                        className="expense-secondary icon-action action-edit"
-                        onClick={() => onEdit({ mode: "label", label: l })}
-                        aria-label={tr("Sửa")}
-                        title={tr("Sửa")}
-                      >
-                        <EditActionIcon size={18} aria-hidden="true" />
-                      </button>
-                      <button
-                        type="button"
-                        className="expense-secondary icon-action action-delete"
-                        onClick={() =>
-                          onEdit({ mode: "deleteLabel", label: l })
-                        }
-                        aria-label={tr("Xóa")}
-                        title={tr("Xóa")}
-                      >
-                        <DeleteActionIcon size={18} aria-hidden="true" />
-                      </button>
-                    </div>
-                  ),
-                },
-              ]}
+              renderItem={(label) => (
+                <div className="expense-label-row">
+                  <strong>
+                    <LabelName
+                      name={label.name}
+                      labels={book.labels}
+                      kind={label.kind}
+                    />
+                  </strong>
+                  <div className="expense-actions">
+                    <button
+                      type="button"
+                      className="expense-secondary icon-action action-edit"
+                      onClick={() => onEdit({ mode: "label", label })}
+                      aria-label={tr("Sửa {0}", { 0: label.name })}
+                      title={tr("Sửa")}
+                    >
+                      <EditActionIcon size={18} aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      className="expense-secondary icon-action action-delete"
+                      onClick={() => onEdit({ mode: "deleteLabel", label })}
+                      aria-label={tr("Xóa {0}", { 0: label.name })}
+                      title={tr("Xóa")}
+                    >
+                      <DeleteActionIcon size={18} aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
+              )}
             />
           ),
         }))}

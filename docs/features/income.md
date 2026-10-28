@@ -88,3 +88,11 @@ Giữ cảnh thu hoạch theo năm theme, chuyển sang bố cục tiêu đề c
 ## Chọn năm/tháng trực tiếp — 28/10/2026
 
 Bỏ nút tháng trước/sau, giữ hai select Năm và Tháng cùng hàng như Chi tiêu, kể cả ở 320px. Chọn năm trong 2000–2099 tải đúng dữ liệu năm; chọn tháng vẫn giữ tab và bộ lọc báo cáo. Bàn phím Tab đi từ Năm đến Tháng; tháng tương lai tiếp tục chỉ xem, chưa ghi thực nhận. Quy tắc này thay thế phần mũi tên trong mục bố cục 23/10, không đổi dữ liệu hay API.
+
+## Tổ chức source — 28/10/2026
+
+Editor và workspace Thu nhập tách điều phối state khỏi hiển thị; dựng action và xuất CSV có bản dịch nằm ở phần riêng. Giữ bộ chọn kỳ, bản nháp, dữ liệu chính xác và hành vi reload hiện có. Không đổi HTTP/schema hoặc áp migration cloud. Xem [hướng dẫn bảo trì](../11-source-maintenance.md) và [bằng chứng kiểm tra](../07-validation.md).
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

@@ -1,4 +1,5 @@
 import { responseMessage } from "@/i18n/error-messages";
+import { userFacingError } from "@/i18n/user-facing-errors";
 export class DataRequestError extends Error {
   constructor(
     message: string,
@@ -24,7 +25,10 @@ export async function dataRequest(path: string, init?: RequestInit) {
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     throw new DataRequestError(
-      responseMessage(body, "Chưa kết nối được dữ liệu. Hãy thử lại."),
+      userFacingError(
+        responseMessage(body, "Chưa kết nối được dữ liệu. Hãy thử lại."),
+        body.code,
+      ),
       response.status,
     );
   }

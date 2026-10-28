@@ -178,7 +178,7 @@ test("income geometry: direct period selects, whole labels, equal rows and stati
         (visual) => (document.documentElement.dataset.visualTheme = visual),
         index % 2 ? "water" : "forest",
       );
-      const controls = page.locator(".income-period-controls");
+      const controls = page.locator(".income-workspace .month-year-field");
       const boxes = await controls
         .locator("button, select")
         .evaluateAll((nodes) =>
@@ -274,7 +274,9 @@ test("income geometry: direct period selects, whole labels, equal rows and stati
       await fit(page);
     }
     await page.setViewportSize({ width: 320, height: 850 });
-    await page.locator(".income-period-controls").scrollIntoViewIfNeeded();
+    await page
+      .locator(".income-workspace .month-year-field")
+      .scrollIntoViewIfNeeded();
     await page.screenshot({
       path: info.outputPath(`income-${english ? "en" : "vi"}.png`),
       fullPage: true,

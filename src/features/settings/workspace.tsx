@@ -120,7 +120,7 @@ export function SettingsWorkspace() {
             </div>
             <p>
               {tr(
-                "Tải toàn bộ dữ liệu thành một file JSON, lưu ở nơi bạn có thể truy cập khi mất tài khoản.",
+                "Tải bản sao lưu toàn bộ dữ liệu và giữ ở nơi an toàn để có thể khôi phục khi cần.",
               )}
             </p>
             <div className="settings-actions">
@@ -173,7 +173,7 @@ export function SettingsWorkspace() {
                   download={prepared.name}
                 >
                   <FileJson size={17} aria-hidden="true" />
-                  {tr("Lưu file JSON")}
+                  {tr("Tải bản sao lưu")}
                 </a>
                 <small className="settings-file-name">
                   {prepared.name} ·{" "}
@@ -201,7 +201,7 @@ export function SettingsWorkspace() {
             </div>
             <p>
               {tr(
-                "Chọn file JSON đã xuất từ Cài đặt, kiểm tra nội dung rồi xác nhận. Chỉ khôi phục vào tài khoản chưa có dữ liệu.",
+                "Chọn bản sao lưu đã tải từ Cài đặt, kiểm tra nội dung rồi xác nhận. Chỉ khôi phục vào tài khoản chưa có dữ liệu.",
               )}
             </p>
             <input
@@ -211,7 +211,7 @@ export function SettingsWorkspace() {
               type="file"
               hidden
               accept=".json,application/json"
-              aria-label={tr("Chọn file JSON sao lưu toàn tài khoản")}
+              aria-label={tr("Chọn bản sao lưu toàn bộ dữ liệu")}
               aria-invalid={!!importError && !summary}
               aria-describedby={
                 importError && !summary ? "import-error" : undefined
@@ -283,7 +283,7 @@ export function SettingsWorkspace() {
                   </div>
                   {status && (
                     <p className="settings-hint">
-                      {tr("File JSON toàn tài khoản · Tối đa")}{" "}
+                      {tr("Bản sao lưu (.json) · Tối đa")}{" "}
                       {(status.maxBytes / 1024 / 1024).toLocaleString(
                         numberLocale,
                       )}{" "}

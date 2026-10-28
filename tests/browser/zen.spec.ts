@@ -88,7 +88,9 @@ test("privacy persists without flashing and scopes form disclosure, charts and i
   await expect(
     page.getByRole("button", { name: "Xem trước thay đổi" }),
   ).toBeDisabled();
-  await page.getByRole("button", { name: "Hiện tiền trong form" }).click();
+  await page
+    .getByRole("button", { name: "Hiện tiền trong cửa sổ này" })
+    .click();
   await expect(input).toHaveValue(amount);
   await input.fill("1234568");
   await page.getByRole("button", { name: "Xem trước thay đổi" }).click();
@@ -176,7 +178,9 @@ test("privacy persists without flashing and scopes form disclosure, charts and i
   await expect(page.getByLabel("Số tiền thực nhận (VND)")).toHaveValue(
     "••••••",
   );
-  await page.getByRole("button", { name: "Hiện tiền trong form" }).focus();
+  await page
+    .getByRole("button", { name: "Hiện tiền trong cửa sổ này" })
+    .focus();
   await page.keyboard.press("Space");
   await expect(page.getByLabel("Số tiền thực nhận (VND)")).toHaveValue(amount);
   await page.evaluate(() =>
@@ -376,4 +380,128 @@ test("overview distinguishes auth, missing data and retry; privacy works with bl
   await expect(page.locator("main")).not.toContainText(formatted);
   await page.getByRole("button", { name: "Hiện số tiền", exact: true }).click();
   await expect(page.locator("main")).toContainText(formatted);
+});
+
+test("keyboard emoji validates, survives reload and backup, and new Vietnamese brands can be saved", async ({
+  page,
+}, info) => {
+  const { id } = await setup(page);
+  const before = await view(page);
+  await page
+    .getByRole("button", { name: "Ăn uống riêng tư", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Đổi biểu tượng", exact: true })
+    .click();
+  const input = page.getByLabel("Emoji từ bàn phím", { exact: true });
+  const search = page.getByLabel("Tìm biểu tượng", { exact: true });
+  await search.fill("dau tu");
+  await expect(
+    page
+      .locator(".emoji-options")
+      .getByRole("button", { name: "Đầu tư", exact: true }),
+  ).toHaveCount(1);
+  await search.fill("khong-co-bieu-tuong-nay");
+  await expect(
+    page.getByText(
+      "Không tìm thấy biểu tượng. Bạn có thể nhập emoji từ bàn phím.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await search.fill("");
+  await expect(page.locator(".emoji-options button")).toHaveCount(90);
+  await input.fill("🦋");
+  await page
+    .getByRole("button", { name: "Xem trước thay đổi", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Xác nhận lưu", exact: true }),
+  ).toBeVisible();
+  await input.fill("🦋🌱");
+  await expect(input).toHaveAttribute("aria-invalid", "true");
+  await expect(
+    page.getByRole("button", { name: "Xác nhận lưu", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Xem trước thay đổi", exact: true })
+    .click();
+  await expect(input).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: "Xác nhận lưu", exact: true }),
+  ).toHaveCount(0);
+  await input.fill("🫶🏽");
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.screenshot({ path: info.outputPath("custom-emoji-320.png") });
+  await confirm(page);
+  await page.keyboard.press("Escape");
+  await page.reload();
+  const after = await view(page);
+  expect(after.rows.find((row) => row.jarId === id)?.emoji).toBe("🫶🏽");
+  expect(after.rows.map(({ emoji: _emoji, ...row }) => row)).toEqual(
+    before.rows.map(({ emoji: _emoji, ...row }) => row),
+  );
+  expect(after.book?.inputs).toEqual(before.book?.inputs);
+  await expect(
+    page.getByRole("button", { name: "Ăn uống riêng tư", exact: true }),
+  ).toContainText("🫶🏽");
+  const backupResponse = await page.request.get("/api/v1/data/backup");
+  expect(backupResponse.ok()).toBe(true);
+  const backup = await backupResponse.json();
+  expect(
+    backup.tables.expense_jars
+      .find((jar: { id: string }) => jar.id === id)
+      .rules.at(-1).emoji,
+  ).toBe("🫶🏽");
+  await page.getByRole("button", { name: "Phân loại", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Thêm phân loại", exact: true })
+    .click();
+  const editor = page.getByRole("dialog", {
+    name: "Phương thức và nhóm",
+    exact: true,
+  });
+  const brands = editor.getByLabel("Thương hiệu", { exact: true });
+  await expect(brands.locator("option")).toHaveCount(28);
+  for (const key of [
+    "agribank",
+    "sacombank",
+    "tpbank",
+    "shb",
+    "hdbank",
+    "msb",
+    "ocb",
+    "seabank",
+    "eximbank",
+    "lpbank",
+    "woori",
+    "vnpay",
+    "viettelmoney",
+    "vnptmoney",
+  ]) {
+    await brands.selectOption(key);
+    const image = editor.locator(".label-visual img");
+    await expect(image).toBeVisible();
+    await expect
+      .poll(() =>
+        image.evaluate(
+          (node: HTMLImageElement) => node.complete && node.naturalWidth > 0,
+        ),
+      )
+      .toBe(true);
+  }
+  await editor.getByLabel("Tên", { exact: true }).fill("Viettel Money");
+  await brands.selectOption("viettelmoney");
+  await confirm(page);
+  const saved = await view(page);
+  expect(
+    saved.book?.labels.find((label) => label.name === "Viettel Money")
+      ?.brandKey,
+  ).toBe("viettelmoney");
+  await expect(
+    page
+      .getByRole("dialog", { name: "Phương thức và nhóm", exact: true })
+      .locator(".expense-label-row")
+      .filter({ hasText: "Viettel Money" })
+      .locator("img"),
+  ).toHaveAttribute("src", "/brands/viettelmoney.png");
 });

@@ -146,14 +146,25 @@ describe("monetary drafts and presentation compatibility", () => {
     ).toBe("momo");
   });
   it("ships labeled jar choices and local assets for every offered brand", () => {
-    expect(EMOJI_VALUES.length).toBeGreaterThanOrEqual(40);
+    expect(EMOJI_VALUES.length).toBeGreaterThanOrEqual(90);
     expect(EMOJI_VALUES).toHaveLength(EMOJI_NAMES.length);
     expect(new Set(EMOJI_VALUES).size).toBe(EMOJI_VALUES.length);
     expect(suggestedBrand("  MOMO ")?.key).toBe("momo");
     expect(suggestedBrand("Quỹ MoMo gia đình")).toBeUndefined();
-    for (const brand of paymentBrands)
+    expect(paymentBrands).toHaveLength(27);
+    expect(suggestedBrand("  VIETTELPAY  ")?.key).toBe("viettelmoney");
+    expect(suggestedBrand("TPB")?.key).toBe("tpbank");
+    const sources = JSON.parse(
+      readFileSync("public/brands/sources.json", "utf8"),
+    ).sources;
+    for (const brand of paymentBrands) {
+      expect(brand.category).toMatch(/^(bank|wallet)$/);
+      expect(
+        sources[brand.file] ?? sources[brand.file.replace(/\.png$/, ".svg")],
+      ).toBeTruthy();
       expect(
         readFileSync(`public/brands/${brand.file}`).byteLength,
       ).toBeGreaterThan(100);
+    }
   });
 });

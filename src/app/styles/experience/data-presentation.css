@@ -16,7 +16,7 @@
   background: var(--surface);
   color: var(--text);
   box-shadow: 0 6px 20px #0002;
-  font-size: 13px;
+  font-size: var(--font-size-14);
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -78,7 +78,7 @@
 }
 .form-field > label {
   display: block;
-  font-weight: 700;
+  font-weight: var(--weight-strong);
   margin-bottom: 6px;
   color: var(--text);
 }
@@ -101,7 +101,7 @@
 }
 .emoji-search {
   margin: 12px 0;
-  font-size: 13px;
+  font-size: var(--font-size-14);
   color: var(--muted);
 }
 .emoji-search input {
@@ -131,7 +131,7 @@
 
 .income-table small.status-missing {
   color: var(--warning);
-  font-weight: 800;
+  font-weight: var(--weight-strong);
   padding: 4px 8px;
   margin-top: 6px;
 }

@@ -1,4 +1,5 @@
 export const savings = {
+  "Sửa hoặc hủy giao dịch": "Edit or void transaction",
   "{0} danh mục": "{0} categories",
   "{0} giao dịch · Mới nhất trước": "{0} transactions · Newest first",
   "Xem / sửa giao dịch {0}": "View / edit transaction {0}",
@@ -99,9 +100,9 @@ export const savings = {
   "ngày mai.": "tomorrow.",
   "Tiền, sổ tiết kiệm và vàng — từng bước vun đắp theo tháng.":
     "Cash, term deposits and gold — growing step by step, month by month.",
-  "Chưa kết nối dữ liệu Tiết kiệm": "Savings data is not connected",
-  "Cấu hình Supabase và PostgreSQL theo hướng dẫn dự án để sử dụng.":
-    "Configure Supabase and PostgreSQL using the project instructions.",
+  "Tiết kiệm chưa sẵn sàng": "Savings is not available yet",
+  "Tính năng này chưa sẵn sàng. Bạn có thể thử lại sau.":
+    "This feature is not available yet. Please try again later.",
   "Đăng nhập": "Sign in",
   "Thử lại": "Try again",
   "Đang cập nhật sổ tiết kiệm…": "Updating savings ledger…",
@@ -165,7 +166,7 @@ export const savings = {
   "Danh mục báo cáo": "Report category",
   "Loại tài sản lọc": "Asset type filter",
   "Loại giao dịch báo cáo": "Report transaction type",
-  "Xuất CSV": "Export CSV",
+  "Xuất bảng dữ liệu": "Export data table",
   "Giao dịch nguồn trong kỳ": "Source transactions in period",
   "Chưa có giao dịch.": "No transactions yet.",
   "Xem / sửa": "View / edit",
@@ -241,7 +242,7 @@ export const savings = {
   "Tháng hiệu lực": "Effective month",
   "Chỉ lưu trữ sau khi xử lý hết tiền, vàng và sổ tiền gửi. Chọn tháng sau lần giao dịch cuối; lịch sử và báo cáo vẫn được giữ.":
     "Archive only after clearing all cash, gold and term deposits. Choose a month after the last transaction; history and reports are preserved.",
-  "Tháng được chọn và các tháng đã chốt sau đó sẽ cần chốt lại. Snapshot cũ vẫn được giữ.":
+  "Tháng được chọn và các tháng đã chốt sau đó sẽ cần chốt lại. Bản chốt cũ vẫn được giữ.":
     "The selected month and later closed months will need closing again. Old snapshots are preserved.",
   "Chấp nhận giá vàng mang từ tháng trước":
     "Accept gold prices carried from a previous month",

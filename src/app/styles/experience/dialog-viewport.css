@@ -1,0 +1,53 @@
+/* All mobile dialogs share the same visible viewport, including the Help drawer. */
+@media (max-width: 959px) {
+  .expense-dialog.dialog-shell[open] {
+    --dialog-mobile-limit: min(
+      calc(var(--dialog-visible-height, 100dvh) * 0.9),
+      calc(
+        var(--dialog-visible-height, 100dvh) - 32px -
+          env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+      )
+    );
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: var(--dialog-visible-top, 0px);
+    inset-block-end: max(
+      0px,
+      calc(
+        100dvh - var(--dialog-visible-height, 100dvh) -
+          var(--dialog-visible-top, 0px)
+      )
+    );
+    margin: auto;
+    width: calc(100vw - 32px);
+    max-width: 960px;
+    height: auto;
+    max-height: var(--dialog-mobile-limit);
+    padding: 0;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .expense-dialog.dialog-shell.dialog-confirm {
+    max-width: 480px;
+  }
+  .expense-dialog.dialog-shell.dialog-help {
+    max-width: 640px;
+  }
+  .expense-dialog.dialog-shell.dialog-stable-tabs {
+    height: min(720px, var(--dialog-mobile-limit));
+  }
+  .dialog-shell > .expense-dialog-heading {
+    padding: 12px 16px;
+    min-height: 0;
+  }
+  .dialog-shell > .dialog-body {
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+    padding: 16px;
+    overscroll-behavior: contain;
+  }
+  .dialog-shell > .dialog-footer {
+    padding: 12px 16px;
+  }
+}

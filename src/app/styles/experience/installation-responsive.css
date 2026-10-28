@@ -33,7 +33,7 @@
   margin-right: 8px;
   background: var(--primary);
   color: var(--on-primary);
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .install-steps svg {
   display: block;
@@ -93,7 +93,7 @@
   .app-shell .mobile-brand {
     display: inline-flex;
     margin-right: auto;
-    font-size: 15px;
+    font-size: var(--font-size-16);
   }
 }
 @media (max-width: 375px) {

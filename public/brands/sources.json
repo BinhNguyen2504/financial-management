@@ -23,7 +23,24 @@
     "hsbc-symbol.svg": "https://www.hsbc.com.vn/content/dam/hsbc/hbvn/images/logos/hsbc-logo-dcm-41145.svg",
     "techcombank-symbol.svg": "https://techcombank.com/content/dam/techcombank/public-site/seo/techcombank_logo_svg_86201e50d1.svg",
     "mb-symbol.svg": "https://news.mbbank.com.vn/logo.svg",
-    "bidv-symbol.png": "https://bidv.com.vn/favicon.ico"
+    "bidv-symbol.png": "https://bidv.com.vn/favicon.ico",
+    "agribank.png": "https://www.agribank.com.vn/contenthandler/!ut/p/digest!XzWpHd4WWNGJyUWtkUvndg/dav/fs-type1/themes/AGBank3/images/favicon.ico",
+    "sacombank.png": "https://www.sacombank.com.vn/android-chrome-192x192.png",
+    "tpbank.png": "https://tpb.vn/wps/wcm/connect/90f5dc35-bac5-4032-b8ab-ad309077554b/logo-fix%281%29.png?MOD=AJPERES&CACHEID=ROOTWORKSPACE-90f5dc35-bac5-4032-b8ab-ad309077554b-pjudclH",
+    "shb.png": "https://www.shb.com.vn/",
+    "hdbank.png": "https://hdbank.com.vn/favicon.ico",
+    "msb.png": "https://www.msb.com.vn/msb-website/2026/01/Icon-MSB-1-150x150.png",
+    "ocb.png": "https://ocb.com.vn/assets/images/icons/favicon.svg",
+    "seabank.png": "https://www.seabank.com.vn/favicon.ico",
+    "eximbank.png": "https://eximbank.com.vn/favicon.ico",
+    "lpbank.png": "https://lpbank.com.vn/favicon.ico",
+    "woori.png": "https://woori.com.vn/wp-content/uploads/2024/08/cropped-Layer_1-192x192.png",
+    "vnpay.png": "https://vnpay.vn/apple-touch-icon.png",
+    "viettelmoney.png": "https://viettelmoney.vn/wp-content/uploads/2022/02/cropped-favicon-512-192x192.png",
+    "vnptmoney.png": "https://vnptpay.vn/web/resources/assets/img/vnpt_money/logo_2x.png",
+    "vietcombank-symbol.png": "https://www.vietcombank.com.vn/-/media/Default-Website/Default-Images/Icons/favicon.ico?ts=00010101000000",
+    "acb-symbol.png": "https://acb.com.vn/favicon.webp",
+    "vpbank-symbol.png": "https://www.vpbank.com.vn/favicon.ico"
   },
   "symbolReview": "2026-10-21",
   "symbolVariants": {
@@ -38,6 +55,21 @@
     "mb-symbol.png": "Lossless PNG format conversion of local mb-symbol.svg; original geometry, colors and transparency retained. Source resolution limits remain for favicons.",
     "vietcombank-symbol.png": "Lossless PNG format conversion of local vietcombank-symbol.ico; original geometry, colors and transparency retained. Source resolution limits remain for favicons.",
     "acb-symbol.png": "Lossless PNG format conversion of local acb-symbol.webp; original geometry, colors and transparency retained. Source resolution limits remain for favicons.",
-    "vpbank-symbol.png": "Lossless PNG format conversion of local vpbank.ico; original geometry, colors and transparency retained. Source resolution limits remain for favicons."
-  }
+    "vpbank-symbol.png": "Lossless PNG format conversion of local vpbank.ico; original geometry, colors and transparency retained. Source resolution limits remain for favicons.",
+    "agribank.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "sacombank.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "tpbank.png": "Original orange TPBank emblem extracted from official header PNG; x=0..33 in 133x30 source. No redraw or recoloring.",
+    "shb.png": "Original orange SHB emblem extracted from the embedded PNG in the official website security page; x=23..340 in the 1200x343 source. No redraw or recoloring. The website favicon is a generic WordPress icon and was rejected.",
+    "hdbank.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "msb.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "ocb.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "seabank.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "eximbank.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "lpbank.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "woori.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "vnpay.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "viettelmoney.png": "Official website icon converted to PNG without recoloring or stretching; source resolution retained.",
+    "vnptmoney.png": "Original VNPT Money emblem extracted from official header PNG; x=0..94 in 212x68 source. No redraw or recoloring."
+  },
+  "expandedReview": "2026-10-28"
 }

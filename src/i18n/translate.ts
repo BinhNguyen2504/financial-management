@@ -26,6 +26,9 @@ function matcher(template: string) {
     .map((part) => {
       if (/^\{\w+\}$/.test(part)) {
         names.push(part.slice(1, -1));
+        // A compact month label must not treat arbitrary words beginning with T/M
+        // as translated product copy (for example “Mạng” becoming “Tạng”).
+        if (template === "T{0}" || template === "M{0}") return "([1-9]|1[0-2])";
         return "([\\s\\S]*?)";
       }
       return part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

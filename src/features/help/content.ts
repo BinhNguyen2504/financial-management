@@ -177,6 +177,7 @@ export const articles: HelpArticles = {
           "Mở phần Phương thức và nhóm, chọn tab tương ứng để thêm hoặc sửa phân loại.",
           "Khi nhập hũ, chọn phân loại từ danh sách; có thể thêm ngay qua dialog con rồi quay lại bản nháp hũ.",
           "Chọn logo/biểu tượng nếu cần và xác nhận phần xem trước.",
+          "Danh sách thương hiệu chia thành ngân hàng và ví điện tử. Biểu tượng hũ có thể chọn từ gợi ý hoặc nhập một emoji từ bàn phím.",
         ],
         "Kết quả: có gợi ý phân loại để dùng cho hũ. Đổi tên trong danh sách gợi ý không tự đổi các tháng lịch sử đã lưu.",
       ),
@@ -340,14 +341,14 @@ export const articles: HelpArticles = {
       ),
       task(
         "reports",
-        "Đọc báo cáo và xuất CSV",
+        "Đọc báo cáo và xuất bảng dữ liệu",
         "Khi cần tổng hợp theo nguồn hoặc thời gian.",
         [
           "Chọn năm, cả năm/quý/khoảng tháng, loại cố định/phát sinh và danh mục.",
           "So sánh Bảng và Biểu đồ, kiểm tra Tổng đã ghi nhận cùng cảnh báo chưa nhập.",
-          "Xuất CSV theo bộ lọc đang chọn khi cần đối chiếu bên ngoài.",
+          "Xuất bảng dữ liệu theo bộ lọc đang chọn khi cần đối chiếu bên ngoài.",
         ],
-        "Kết quả: bảng, biểu đồ và file cùng phạm vi lọc. CSV có số tiền đầy đủ, kể cả khi giao diện đang ẩn tiền.",
+        "Kết quả: bảng, biểu đồ và file cùng phạm vi lọc. File xuất có số tiền đầy đủ, kể cả khi giao diện đang ẩn tiền.",
       ),
     ],
     [
@@ -470,7 +471,7 @@ export const articles: HelpArticles = {
         [
           "Chọn kỳ và bộ lọc danh mục, loại tài sản hoặc giao dịch trong Báo cáo.",
           "Đọc tài sản, vốn nạp ròng, kết quả kỳ và lãi/lỗ; dùng Bảng hoặc chú thích biểu đồ để kiểm tra số.",
-          "Xuất CSV theo phạm vi báo cáo; dùng Cài đặt cho sao lưu/khôi phục toàn tài khoản.",
+          "Xuất bảng dữ liệu theo phạm vi báo cáo; dùng Cài đặt cho sao lưu/khôi phục toàn tài khoản.",
         ],
         "Kết quả: báo cáo có thể đi qua nhiều năm. Thiếu giá không được coi là giá trị bằng 0; file xuất có dữ liệu đầy đủ.",
       ),
@@ -481,7 +482,7 @@ export const articles: HelpArticles = {
     ],
     [
       "Tài sản trong Tiết kiệm chưa phải tài sản ròng toàn ứng dụng. Không ghi lại cùng lượng vàng ở Đầu tư chỉ để tổng hợp.",
-      "Không ghi chuyển nội bộ thêm lần nữa thành thu nhập hoặc chi tiêu. Chọn Bên ngoài không tự tạo bản ghi ở module khác.",
+      "Không ghi chuyển nội bộ thêm lần nữa thành thu nhập hoặc chi tiêu. Chọn Bên ngoài không tự tạo bản ghi ở mục khác.",
     ],
   ),
   investments: article(
@@ -582,12 +583,12 @@ export const articles: HelpArticles = {
       ),
       task(
         "reports",
-        "Đọc báo cáo và xuất CSV",
+        "Đọc báo cáo và xuất bảng dữ liệu",
         "Khi tổng kết đầu tư trong một khoảng thời gian.",
         [
           "Chọn tháng/quý/năm hoặc khoảng ngày xuyên năm trong Báo cáo.",
           "Lọc danh mục/ví và loại giao dịch, đọc dòng tiền, kết quả kỳ, cơ cấu và bảng thay thế.",
-          "Kiểm tra ngày định giá, cảnh báo giá cũ/thiếu; xuất CSV nếu cần, sao lưu toàn tài khoản tại Cài đặt.",
+          "Kiểm tra ngày định giá, cảnh báo giá cũ/thiếu; xuất bảng dữ liệu nếu cần, sao lưu toàn tài khoản tại Cài đặt.",
         ],
         "Kết quả: lọc loại giao dịch chỉ lọc hoạt động, không loại lịch sử cần để tính số dư. Không cộng tài sản cuối các tháng với nhau.",
       ),
@@ -730,7 +731,7 @@ export const articles: HelpArticles = {
     [
       term(
         "backup",
-        "Sao lưu JSON",
+        "Sao lưu dữ liệu",
         "Bản sao toàn tài khoản gồm dữ liệu nghiệp vụ và lịch sử, có các trường hồ sơ được hỗ trợ. File không mã hóa và **luôn chứa đầy đủ số tiền dù đang bật ẩn tiền**.",
       ),
       term(
@@ -746,12 +747,12 @@ export const articles: HelpArticles = {
       term(
         "appearance",
         "Giao diện và tùy chọn trên trình duyệt",
-        "**Sáng, Tối hoặc Theo hệ thống**. Tùy chọn giao diện, sidebar và cột bảng trên trình duyệt không nằm trong backup tài chính.",
+        "**Sáng, Tối hoặc Theo hệ thống**. Tùy chọn giao diện, thanh điều hướng và cột bảng trên trình duyệt không nằm trong bản sao lưu dữ liệu tài chính.",
       ),
       term(
         "install",
         "Cài lên màn hình chính",
-        "Mở ứng dụng web qua biểu tượng trên thiết bị. Khả năng cài tùy trình duyệt và môi trường HTTPS; không đồng nghĩa với nhập dữ liệu khi mất mạng.",
+        "Mở ứng dụng bằng biểu tượng trên thiết bị nếu trình duyệt hỗ trợ. Bạn vẫn cần kết nối mạng để nhập dữ liệu.",
       ),
     ],
     [
@@ -760,8 +761,8 @@ export const articles: HelpArticles = {
         "Tạo và lưu bản sao",
         "Khi muốn giữ một bản dữ liệu để phục hồi sau này.",
         [
-          "Trong Sao lưu dữ liệu, tạo file JSON và chờ phản hồi thành công.",
-          "Nếu trình duyệt chưa tải, dùng liên kết Lưu file JSON.",
+          "Trong Sao lưu dữ liệu, tạo bản sao lưu và chờ phản hồi thành công.",
+          "Nếu trình duyệt chưa tải, dùng liên kết Tải bản sao lưu.",
           "Kiểm tra file trong nơi tải xuống và cất bản sao ở nơi bạn kiểm soát.",
         ],
         "Kết quả: có file sao lưu do bạn chủ động tạo; app không tự sao lưu file nền và không xác nhận thay trình duyệt rằng file đã lưu vào máy.",
@@ -771,12 +772,12 @@ export const articles: HelpArticles = {
         "Xem trước và khôi phục",
         "Khi có bản sao toàn tài khoản và tài khoản đích còn trống.",
         [
-          "Trong Khôi phục dữ liệu, chọn file JSON sao lưu toàn tài khoản.",
+          "Trong Khôi phục dữ liệu, chọn bản sao lưu toàn bộ dữ liệu.",
           "Đọc kết quả kiểm tra, phạm vi và các bước xem trước; chọn khôi phục hồ sơ nếu muốn.",
           "Xác nhận khôi phục và chờ kết quả; kiểm tra các trang nghiệp vụ sau khi hoàn tất.",
           "Nếu riêng cập nhật hồ sơ lỗi sau khi dữ liệu tài chính đã được khôi phục, dùng thao tác thử lại hồ sơ được cung cấp.",
         ],
-        "Kết quả: khôi phục dữ liệu vào tài khoản hiện tại. File riêng từng module/năm không dùng cho luồng này; tài khoản đã có dữ liệu không được ghi đè.",
+        "Kết quả: khôi phục dữ liệu vào tài khoản hiện tại. File riêng từng mục/năm không dùng cho luồng này; tài khoản đã có dữ liệu không được ghi đè.",
       ),
       task(
         "theme",
@@ -787,7 +788,7 @@ export const articles: HelpArticles = {
           "Chọn Sáng, Tối hoặc Theo hệ thống; mỗi chủ đề có bảng màu sáng/tối riêng và dùng chung chế độ bạn chọn.",
           "Với Theo hệ thống, app dùng lựa chọn sáng/tối của thiết bị.",
         ],
-        "Kết quả: màu sắc, minh họa và lời dẫn đổi ngay, được nhớ trên trình duyệt và cập nhật giữa các tab; dữ liệu và bản nháp đang nhập được giữ. Tùy chọn này không đồng bộ theo tài khoản và không nằm trong backup tài chính.",
+        "Kết quả: màu sắc, minh họa và lời dẫn đổi ngay, được nhớ trên trình duyệt và cập nhật giữa các tab; dữ liệu và bản nháp đang nhập được giữ. Tùy chọn này không đồng bộ theo tài khoản và không nằm trong bản sao lưu dữ liệu tài chính.",
       ),
       task(
         "install-app",
@@ -805,8 +806,8 @@ export const articles: HelpArticles = {
       "Bạn chuyển sang tài khoản mới chưa nhập dữ liệu: chọn file sao lưu toàn tài khoản, xem trước, để tắt khôi phục hồ sơ nếu chỉ muốn dữ liệu tài chính, rồi xác nhận.",
     ],
     [
-      "Ẩn tiền chỉ che giao diện, không làm file CSV/JSON ẩn số hoặc có mật khẩu.",
-      "Không cần và không nên xóa dữ liệu tài khoản đang dùng chỉ để thử nhập backup. Luồng hiện tại không gộp hai tài khoản.",
+      "Ẩn tiền chỉ che giao diện, không làm file bảng dữ liệu và bản sao lưu ẩn số hoặc có mật khẩu.",
+      "Không cần và không nên xóa dữ liệu tài khoản đang dùng chỉ để thử khôi phục bản sao lưu. Luồng hiện tại không gộp hai tài khoản.",
       "Cài biểu tượng không bật nhập ngoại tuyến hoặc kết nối ngân hàng.",
     ],
   ),
@@ -826,7 +827,7 @@ export const articles: HelpArticles = {
       term(
         "email",
         "Email đăng nhập và avatar",
-        "**Email trên trang chỉ đọc**; đây không phải form đổi email. Avatar lấy chữ cái đầu từ tên, hiện **không có tải ảnh đại diện**.",
+        "**Email trên trang chỉ để xem**, chưa hỗ trợ đổi email. Ảnh đại diện dùng chữ cái đầu từ tên; hiện **chưa hỗ trợ tải ảnh lên**.",
       ),
       term(
         "save",
@@ -862,7 +863,7 @@ export const articles: HelpArticles = {
     ],
     [
       "Nút Lưu đang tắt có thể vì chưa có thay đổi, không phải hồ sơ bị khóa.",
-      "Khôi phục hồ sơ từ backup là lựa chọn riêng trong Cài đặt và **không đổi email** đăng nhập.",
+      "Khôi phục hồ sơ từ bản sao lưu là lựa chọn riêng trong Cài đặt và **không đổi email** đăng nhập.",
     ],
   ),
   transactions: article(
@@ -889,14 +890,14 @@ export const articles: HelpArticles = {
           "Mở Chi tiêu để quản lý hũ và thực chi theo tháng.",
           "Giao dịch của Tiết kiệm, Đầu tư và Quỹ an toàn được ghi trong từng trang tương ứng.",
         ],
-        "Kết quả: sử dụng được sổ hiện có; dữ liệu giữa các module không tự liên kết thành ledger chung.",
+        "Kết quả: sử dụng được sổ hiện có; dữ liệu giữa các mục không tự liên kết thành ledger chung.",
       ),
     ],
     [
       "Muốn ghi lương đã nhận: dùng Thu nhập. Muốn đối chiếu còn bao nhiêu tiền trong hũ Sinh hoạt: dùng Chi tiêu.",
     ],
     [
-      "Các mục mô tả trên trang là dự kiến; chưa có nhập giao dịch chung, mẫu định kỳ hoặc nhập CSV chung để thao tác.",
+      "Các mục mô tả trên trang là dự kiến; chưa có nhập giao dịch chung, mẫu định kỳ hoặc nhập bảng dữ liệu chung để thao tác.",
     ],
   ),
   accounts: article(
@@ -910,7 +911,7 @@ export const articles: HelpArticles = {
       term(
         "account",
         "Tài khoản và nơi giữ",
-        "Tiền mặt, ví điện tử hoặc ngân hàng là các nơi giữ tiền. Phương thức trong Chi tiêu hiện chỉ là phân loại; ví trong từng module là sổ độc lập.",
+        "Tiền mặt, ví điện tử hoặc ngân hàng là các nơi giữ tiền. Phương thức trong Chi tiêu hiện chỉ là phân loại; ví trong từng mục là sổ độc lập.",
       ),
     ],
     [
@@ -920,10 +921,10 @@ export const articles: HelpArticles = {
         "Khi muốn tổ chức dữ liệu theo nơi tiền đang nằm.",
         [
           "Trong Chi tiêu, dùng Phương thức để phân loại hũ theo nơi chi.",
-          "Trong Tiết kiệm/Đầu tư, dùng ví của module đó; trong Quỹ an toàn, dùng Nơi giữ tiền.",
+          "Trong Tiết kiệm/Đầu tư, dùng ví của mục đó; trong Quỹ an toàn, dùng Nơi giữ tiền.",
           "Đối chiếu với app ngân hàng và ghi điều chỉnh phù hợp trong từng sổ.",
         ],
-        "Kết quả: nhìn rõ nơi giữ trong phạm vi từng module, chưa có số dư tài khoản chung tự đồng bộ.",
+        "Kết quả: nhìn rõ nơi giữ trong phạm vi từng mục, chưa có số dư tài khoản chung tự đồng bộ.",
       ),
     ],
     [
@@ -969,7 +970,7 @@ export const articles: HelpArticles = {
   ),
   reports: article(
     [
-      "Trang Báo cáo chung **đang phát triển**. Hiện báo cáo được cung cấp riêng trong các module đã triển khai.",
+      "Trang Báo cáo chung **đang phát triển**. Hiện báo cáo được cung cấp riêng trong các mục đã triển khai.",
     ],
     [
       "Đọc con số cùng kỳ, phạm vi và nguồn dữ liệu. ==Tổng số dư khác tổng dòng tiền, tiền góp khác lợi nhuận==; chỉ so sánh khi hiểu đang đo gì.",
@@ -977,7 +978,7 @@ export const articles: HelpArticles = {
     [
       term(
         "scope",
-        "Báo cáo theo module",
+        "Báo cáo theo từng mục",
         "Tổng hợp từ sổ của từng trang theo bộ lọc riêng. Không phải báo cáo tài sản ròng hợp nhất của toàn ứng dụng.",
       ),
       term(
@@ -994,7 +995,7 @@ export const articles: HelpArticles = {
         [
           "Vào Thu nhập, Chi tiêu, Tiết kiệm hoặc Đầu tư rồi mở phần Báo cáo.",
           "Chọn kỳ và bộ lọc phù hợp; đọc bảng, biểu đồ và nhãn thiếu dữ liệu/tạm tính.",
-          "Xuất CSV ở các module có nút xuất; dùng Cài đặt cho backup toàn tài khoản.",
+          "Xuất bảng dữ liệu ở các mục có nút xuất; dùng Cài đặt cho bản sao lưu toàn bộ dữ liệu.",
         ],
         "Kết quả: có báo cáo trong phạm vi sổ đang xem. Chi tiêu hiện báo cáo tương tác trong năm hiện tại; không suy thành báo cáo chung.",
       ),
@@ -1030,6 +1031,6 @@ articles.settings.sections
         "Kiểm tra định dạng gợi ý dưới ô tiền: 1.000.000 ₫ trong tiếng Việt hoặc 1,000,000 ₫ trong English.",
         "Nếu bản nháp đang có số chưa hợp lệ khi tab khác đổi ngôn ngữ, sửa theo định dạng được ghi tại ô; nội dung cũ không tự bị diễn giải lại.",
       ],
-      "Kết quả: trang chủ, preview, đăng nhập, giao diện ứng dụng và Help theo ngôn ngữ đã chọn, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong backup hoặc đồng bộ tài khoản.",
+      "Kết quả: trang chủ, phần minh họa, đăng nhập, giao diện ứng dụng và Trợ giúp theo ngôn ngữ đã chọn, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong bản sao lưu hoặc đồng bộ tài khoản.",
     ),
   );

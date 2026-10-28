@@ -1,4 +1,5 @@
 "use client";
+import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { useI18n } from "@/i18n/provider";
 import { ColumnPicker, ColumnTable } from "@/components/column-table";
@@ -156,11 +157,7 @@ export function ExpenseWorkspace(
         <section className="panel expense-setup">
           <Garden variant="jar" />
           <h2>{tr("Sẵn sàng cho những khoản chi của bạn")}</h2>
-          <p>
-            {tr(
-              "Cần kết nối dịch vụ đăng nhập và lưu trữ cloud trước khi bắt đầu. Khi kết nối xong, bạn chọn tháng bắt đầu và thêm các hũ của mình.",
-            )}
-          </p>
+          <p>{tr("Tính năng này chưa sẵn sàng. Bạn có thể thử lại sau.")}</p>
           <p className="expense-muted">
             {tr("Dữ liệu chi tiêu không được lưu tạm trong trình duyệt.")}
           </p>
@@ -235,65 +232,31 @@ export function ExpenseWorkspace(
               )}
               <div className="expense-toolbar">
                 <div className="expense-filters">
-                  <label>
-                    {tr("Năm")}
-                    <select
-                      value={selectedYear}
-                      onChange={(e) => {
-                        setYear(Number(e.target.value));
+                  <MonthYearSelect
+                    monthDisabled={(period) => period < view.book!.start}
+                    value={`${selectedYear}-${String(month ?? 1).padStart(2, "0")}`}
+                    onChange={(period) => {
+                      const nextYear = Number(period.slice(0, 4));
+                      if (nextYear !== selectedYear) {
                         setMethod("");
                         setGroup("");
                         setTab("month");
-                        const min = view.book!.start;
-                        if (
-                          Number(e.target.value) === Number(min.slice(0, 4)) &&
-                          (month ?? 1) < Number(min.slice(5))
-                        )
-                          setMonth(Number(min.slice(5)));
-                      }}
-                    >
-                      {Array.from(
-                        { length: 100 },
-                        (_, index) => 2099 - index,
-                      ).map((value) => {
-                        const entry = view.book!.years.find(
-                          (item) => item.year === value,
-                        );
-                        return (
-                          <option key={value} value={value}>
-                            {value}
-                            {entry?.closedAt
-                              ? tr(" · Đã chốt")
-                              : !entry
-                                ? tr(" · Chưa có dữ liệu")
-                                : value === currentYear
-                                  ? tr(" · Hiện tại")
-                                  : tr(" · Chưa chốt")}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </label>
-                  <label>
-                    {tr("Tháng")}
-                    <select
-                      value={month ?? 1}
-                      onChange={(e) => setMonth(Number(e.target.value))}
-                    >
-                      {Array.from({ length: 12 }, (_, i) => (
-                        <option
-                          key={i}
-                          value={i + 1}
-                          disabled={
-                            `${selectedYear}-${String(i + 1).padStart(2, "0")}` <
-                            view.book!.start
-                          }
-                        >
-                          {tr("Tháng")} {i + 1}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                      }
+                      setYear(nextYear);
+                      const requested =
+                        period < view.book!.start &&
+                        nextYear === Number(view.book!.start.slice(0, 4))
+                          ? view.book!.start
+                          : period;
+                      setMonth(Number(requested.slice(5, 7)));
+                    }}
+                    yearLabel={(value) => {
+                      const entry = view.book!.years.find(
+                        (item) => item.year === value,
+                      );
+                      return `${value}${entry?.closedAt ? tr(" · Đã chốt") : !entry ? tr(" · Chưa có dữ liệu") : value === currentYear ? tr(" · Hiện tại") : tr(" · Chưa chốt")}`;
+                    }}
+                  />
                 </div>
                 <ScrollTabs
                   className="expense-segment"

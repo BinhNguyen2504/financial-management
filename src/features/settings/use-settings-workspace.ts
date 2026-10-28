@@ -22,8 +22,10 @@ import "./settings.css";
 type Summary = ReturnType<typeof summarizeBackup> & { canImport: boolean };
 type PreparedFile = { url: string; name: string; size: number };
 function message(e: unknown) {
+  if (e instanceof BackupError)
+    return "Bản sao lưu chưa hợp lệ hoặc không tương thích. Hãy chọn file được tải từ Cài đặt.";
   if (e instanceof SyntaxError)
-    return "File JSON không đọc được. Hãy chọn bản sao lưu được xuất từ Cài đặt.";
+    return "Không đọc được bản sao lưu. Hãy chọn file được tải từ Cài đặt.";
   return e instanceof Error
     ? e.message
     : "Chưa hoàn tất. Kiểm tra kết nối và thử lại.";
@@ -155,7 +157,7 @@ export function useSettingsWorkspace() {
         setExportError(
           e instanceof SyntaxError || e instanceof BackupError
             ? tr(
-                "Chưa nhận được file JSON hợp lệ. Hãy tải lại trang và thử lại.",
+                "Chưa nhận được bản sao lưu hợp lệ. Hãy tải lại trang và thử lại.",
               )
             : message(e),
         );
@@ -265,7 +267,7 @@ export function useSettingsWorkspace() {
       setStatus((s) => (s ? { ...s, empty: false } : s));
       setImportNotice(
         tr(
-          "Đã khôi phục toàn bộ dữ liệu tài chính. Bạn có thể mở các module để kiểm tra.",
+          "Đã khôi phục toàn bộ dữ liệu tài chính. Bạn có thể mở các mục để kiểm tra.",
         ),
       );
       if (restoreProfile) {

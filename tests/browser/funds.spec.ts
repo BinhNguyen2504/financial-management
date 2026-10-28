@@ -367,7 +367,7 @@ for (const progressTheme of ["gold", "fire", "earth"] as const)
       page.getByRole("button", { name: "Xem trước thay đổi", exact: true }),
     ).toBeDisabled();
     await page
-      .getByRole("button", { name: "Hiện tiền trong form", exact: true })
+      .getByRole("button", { name: "Hiện tiền trong cửa sổ này", exact: true })
       .click();
     await expect(
       page.getByRole("button", { name: "Xem trước thay đổi", exact: true }),

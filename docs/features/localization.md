@@ -40,3 +40,7 @@ Unit tests bao phủ số lớn, chuẩn hóa, khóa/tham số dịch, Help và 
 ## Đồng bộ ô số khi rời trường — 23/10/2026
 
 Hồi quy bố cục phát hiện `LocalizedInput` giữ chuỗi `000777` sau blur dù form đã nhận `777`, vì giá trị chuẩn không đổi nên callback của form không tạo render mới. Component nay đồng bộ phần hiển thị của bản nháp hợp lệ về giá trị chuẩn khi rời ô, tiếp tục chuyển dấu thập phân theo ngôn ngữ hiện tại. Bản nháp lỗi giữ nguyên chữ/ngôn ngữ lúc nhập và tiếp tục chặn gửi. Các ca hồi quy Thu nhập/Chi tiêu và bộ Việt/Anh kiểm tra hành vi này cùng luồng giữ bản nháp.
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

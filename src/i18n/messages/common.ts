@@ -1,4 +1,18 @@
 export const common = {
+  "Hãy chọn bản sao lưu (.json) đã tải từ Cài đặt.":
+    "Choose a backup (.json) downloaded from Settings.",
+  "Tính năng này chưa sẵn sàng. Bạn có thể thử lại sau.":
+    "This feature is not available yet. Please try again later.",
+  "Menu chức năng": "Navigation menu",
+  "Chọn tháng và năm": "Choose month and year",
+  "Tính năng này tạm thời chưa sẵn sàng. Hãy thử lại sau; nội dung đang nhập được giữ.":
+    "This feature is temporarily unavailable. Try again later; your draft is preserved.",
+  "Chưa lưu được thay đổi này. Nội dung đang nhập được giữ; hãy thử lại sau.":
+    "This change has not been saved. Your draft is preserved; try again later.",
+  "Chưa thể hoàn tất thao tác. Hãy thử lại.":
+    "Could not complete this action. Try again.",
+  "Bản sao lưu chưa hợp lệ hoặc không tương thích. Hãy chọn file được tải từ Cài đặt.":
+    "This backup is invalid or incompatible. Choose a file downloaded from Settings.",
   Hũ: "Jar",
   "Không tìm thấy trang": "Page not found",
   "Đường dẫn này chưa có trong ứng dụng.":
@@ -69,10 +83,10 @@ export const common = {
   "Khôi phục mặc định": "Restore defaults",
   "Hiện số tiền": "Show amounts",
   "Ẩn số tiền": "Hide amounts",
-  "Số tiền được giữ riêng trong form này.":
+  "Số tiền chỉ được hiện trong cửa sổ này.":
     "Amounts stay private in this form.",
-  "Hiện tiền trong form": "Show amounts in this form",
-  "Ẩn tiền trong form": "Hide amounts in this form",
+  "Hiện tiền trong cửa sổ này": "Show amounts in this form",
+  "Ẩn tiền trong cửa sổ này": "Hide amounts in this form",
   "Chưa thể đăng xuất. Kiểm tra kết nối và thử lại.":
     "Could not sign out. Check your connection and try again.",
   "Đang tải thông tin cá nhân": "Loading personal details",

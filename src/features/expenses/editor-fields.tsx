@@ -1,4 +1,5 @@
 "use client";
+import { MonthYearSelect } from "@/components/month-year-select";
 import { LocalizedInput } from "@/components/localized-input";
 import { formatDate } from "@/i18n/format";
 
@@ -178,52 +179,44 @@ export function ExpenseEditorFields({
       {["initialize", "create", "configure", "stop", "emoji"].includes(
         editor.mode,
       ) && (
-        <label>
-          {editor.mode === "initialize" || editor.mode === "create"
-            ? tr("Tháng bắt đầu")
-            : tr("Áp dụng từ tháng")}
-          <span className="required-mark" aria-hidden="true">
-            *
-          </span>
-          <input
-            type="month"
-            aria-label={
-              editor.mode === "initialize" || editor.mode === "create"
-                ? tr("Tháng bắt đầu")
-                : tr("Áp dụng từ tháng")
-            }
-            name={
-              editor.mode === "initialize" || editor.mode === "create"
-                ? "start"
-                : "month"
-            }
-            id={
-              editor.mode === "initialize" || editor.mode === "create"
-                ? "expense-field-start"
-                : "expense-field-month"
-            }
-            aria-invalid={!!(fieldErrors.start || fieldErrors.month)}
-            aria-describedby={
-              fieldErrors.start || fieldErrors.month
-                ? editor.mode === "initialize" || editor.mode === "create"
-                  ? "expense-error-start"
-                  : "expense-error-month"
-                : undefined
-            }
-            value={period}
-            required
-            min={
-              editor.mode === "initialize"
-                ? "2000-01"
-                : (jar?.start ?? view.book?.start)
-            }
-            max={
-              editor.mode === "initialize"
-                ? view.today.slice(0, 7)
-                : `${view.currentYear}-12`
-            }
-            onChange={(e) => setPeriod(e.target.value)}
-          />
+        <MonthYearSelect
+          label={
+            editor.mode === "initialize" || editor.mode === "create"
+              ? tr("Tháng bắt đầu")
+              : tr("Áp dụng từ tháng")
+          }
+          name={
+            editor.mode === "initialize" || editor.mode === "create"
+              ? "start"
+              : "month"
+          }
+          id={
+            editor.mode === "initialize" || editor.mode === "create"
+              ? "expense-field-start"
+              : "expense-field-month"
+          }
+          invalid={!!(fieldErrors.start || fieldErrors.month)}
+          describedBy={
+            fieldErrors.start || fieldErrors.month
+              ? editor.mode === "initialize" || editor.mode === "create"
+                ? "expense-error-start"
+                : "expense-error-month"
+              : undefined
+          }
+          value={period}
+          required
+          min={
+            editor.mode === "initialize"
+              ? "2000-01"
+              : (jar?.start ?? view.book?.start)
+          }
+          max={
+            editor.mode === "initialize"
+              ? view.today.slice(0, 7)
+              : `${view.currentYear}-12`
+          }
+          onChange={setPeriod}
+        >
           {(fieldErrors.start || fieldErrors.month) && (
             <small
               id={
@@ -236,7 +229,7 @@ export function ExpenseEditorFields({
               {tr(fieldErrors.start || fieldErrors.month)}
             </small>
           )}
-        </label>
+        </MonthYearSelect>
       )}
       {(editor.mode === "create" || editor.mode === "emoji") && (
         <EmojiPicker
@@ -504,10 +497,21 @@ export function ExpenseEditorFields({
                 }}
               >
                 <option value="">{tr("Không chọn thương hiệu")}</option>
-                {paymentBrands.map((brand) => (
-                  <option key={brand.key} value={brand.key}>
-                    {brand.name}
-                  </option>
+                {(["bank", "wallet"] as const).map((category) => (
+                  <optgroup
+                    key={category}
+                    label={
+                      category === "bank" ? tr("Ngân hàng") : tr("Ví điện tử")
+                    }
+                  >
+                    {paymentBrands
+                      .filter((brand) => brand.category === category)
+                      .map((brand) => (
+                        <option key={brand.key} value={brand.key}>
+                          {brand.name}
+                        </option>
+                      ))}
+                  </optgroup>
                 ))}
               </select>
             </label>
@@ -590,7 +594,7 @@ export function ExpenseEditorFields({
         <p>
           {tr("Năm")} {editor.year}{" "}
           {tr(
-            "sẽ được khóa để lưu trữ. Số dư đã chuyển tiếp được giữ; sau chốt chỉ có thể xem và xuất backup. Hãy hoàn tất số dư tháng 12 và các lần sử dụng trước khi chốt.",
+            "sẽ được khóa để lưu trữ. Số dư đã chuyển tiếp được giữ; sau chốt chỉ có thể xem và tải bản sao lưu. Hãy hoàn tất số dư tháng 12 và các lần sử dụng trước khi chốt.",
           )}
         </p>
       )}

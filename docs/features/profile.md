@@ -42,3 +42,7 @@ Nút Quay lại đứng cùng vùng tiêu đề; thẻ hồ sơ giới hạn chi
 ## Anh/Việt — 22/10/2026
 
 Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định dạng vi-VN/en-GB, vẫn VND và giờ Việt Nam. Tên/ghi chú và dữ liệu tài chính giữ nguyên. Không có migration hay đổi cấu trúc backup. Xem [đặc tả ngôn ngữ](localization.md).
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

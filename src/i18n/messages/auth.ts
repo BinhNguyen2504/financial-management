@@ -41,8 +41,8 @@ export const auth = {
   "Đăng nhập": "Sign in",
   "Dữ liệu tài chính của bạn được lưu riêng và đồng bộ giữa các thiết bị.":
     "Your financial data is stored privately and synced between devices.",
-  "Dịch vụ đăng nhập chưa được kết nối. Cần hoàn tất cấu hình cloud để bắt đầu sử dụng.":
-    "The sign-in service is not connected. Complete cloud configuration to start.",
+  "Đăng nhập hiện chưa sẵn sàng. Vui lòng thử lại sau.":
+    "Sign-in is not available yet. Please try again later.",
   "là thông tin cần nhập.": "is required.",
   "Mã xác nhận": "Confirmation code",
   "Đang xử lý…": "Processing…",

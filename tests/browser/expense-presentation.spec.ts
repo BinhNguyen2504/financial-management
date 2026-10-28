@@ -200,3 +200,104 @@ test("column popover stays above a scrolling dialog and Escape only dismisses th
   await page.keyboard.press("Escape");
   await expect(parent).toBeHidden();
 });
+
+test("classification rows stay balanced with long names, search, pagination and nested editors", async ({
+  page,
+}, info) => {
+  await seed(page, 1);
+  const current = await (await page.request.get("/api/v1/expenses")).json();
+  let version = current.book.version;
+  const longName =
+    "Ví gia đình dành cho sinh hoạt và những chuyến du lịch cuối tuần";
+  for (let i = 0; i < 22; i++) {
+    const response = await page.request.post("/api/v1/expenses/commands", {
+      headers: { origin: process.env.TEST_BASE_URL! },
+      data: {
+        id: randomUUID(),
+        expectedVersion: version++,
+        action: {
+          type: "upsertLabel",
+          id: randomUUID(),
+          kind: "method",
+          name: i === 0 ? longName : `Ví ${i}`,
+        },
+      },
+    });
+    expect(response.ok(), await response.text()).toBe(true);
+  }
+  await page.reload();
+  await page.getByRole("button", { name: "Phân loại", exact: true }).click();
+  const dialog = page.getByRole("dialog", {
+    name: "Phương thức và nhóm",
+    exact: true,
+  });
+  const panel = dialog.getByRole("tabpanel").filter({ visible: true });
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: width < 500 ? 844 : 1000 });
+    const rows = panel.locator(".expense-label-row");
+    await expect(rows).toHaveCount(20);
+    expect(
+      await dialog
+        .locator(".dialog-body")
+        .evaluate((body) => body.scrollWidth <= body.clientWidth + 1),
+    ).toBe(true);
+    const row = rows.first();
+    const rowBox = (await row.boundingBox())!;
+    const actions = (await row.locator(".expense-actions").boundingBox())!;
+    expect(actions.x + actions.width).toBeLessThanOrEqual(
+      rowBox.x + rowBox.width + 1,
+    );
+    for (const button of await row.getByRole("button").all()) {
+      const bounds = (await button.boundingBox())!;
+      expect(bounds.width).toBeGreaterThanOrEqual(43.99);
+      expect(bounds.height).toBeGreaterThanOrEqual(43.99);
+    }
+    await page.screenshot({ path: info.outputPath(`labels-${width}.png`) });
+  }
+  await page.setViewportSize({ width: 320, height: 740 });
+  await panel.getByLabel("Tìm kiếm", { exact: true }).fill("Ví gia đình");
+  await expect(panel.locator(".expense-label-row")).toHaveCount(1);
+  await panel
+    .getByRole("button", { name: `Sửa ${longName}`, exact: true })
+    .click();
+  await expect(
+    page.getByRole("dialog", { name: "Phương thức và nhóm", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Hủy", exact: true }).click();
+  await expect(panel.getByLabel("Tìm kiếm", { exact: true })).toHaveValue(
+    "Ví gia đình",
+  );
+  await expect(
+    panel.getByRole("button", { name: `Sửa ${longName}`, exact: true }),
+  ).toBeFocused();
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.screenshot({ path: info.outputPath("labels-long-dark-320.png") });
+  await panel.getByLabel("Tìm kiếm", { exact: true }).fill("");
+  await panel.getByRole("button", { name: "Trang sau", exact: true }).click();
+  await expect(panel.locator(".expense-label-row")).toHaveCount(5);
+  await dialog.getByRole("tab", { name: /Nhóm mục đích/ }).click();
+  await expect(
+    dialog
+      .getByRole("tabpanel")
+      .filter({ visible: true })
+      .locator(".expense-label-row"),
+  ).toHaveCount(1);
+  await dialog.getByRole("tab", { name: /Nhóm mục đích/ }).press("ArrowLeft");
+  await expect(panel.locator(".expense-label-row")).toHaveCount(5);
+  await panel
+    .getByLabel("Tìm kiếm", { exact: true })
+    .fill("khong-khop-bat-ky-phan-loai-nao");
+  await expect(panel.locator(".dialog-empty")).toBeVisible();
+  await expect(panel.locator("h3")).toBeHidden();
+  await panel.getByLabel("Tìm kiếm", { exact: true }).fill("");
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect(
+    dialog.getByRole("button", { name: "Thêm phân loại", exact: true }),
+  ).toBeInViewport();
+  expect(
+    await dialog
+      .locator(".dialog-body")
+      .evaluate((body) => body.scrollWidth <= body.clientWidth + 1),
+  ).toBe(true);
+  await page.screenshot({ path: info.outputPath("labels-landscape.png") });
+});

@@ -190,21 +190,23 @@ export interface DialogFilter<T> {
 export function DialogList<T>({
   items,
   rowKey,
-  columns,
+  columns = [],
   searchText,
   filters = [],
   getDate,
   empty = "Chưa có dữ liệu.",
   label = "Danh sách",
+  renderItem,
 }: {
   items: T[];
   rowKey: (item: T) => string;
-  columns: DialogColumn<T>[];
+  columns?: DialogColumn<T>[];
   searchText?: (item: T) => string;
   filters?: DialogFilter<T>[];
   getDate?: (item: T) => string;
   empty?: string;
   label?: string;
+  renderItem?: (item: T) => ReactNode;
 }) {
   const { t: tr } = useI18n();
 
@@ -243,7 +245,7 @@ export function DialogList<T>({
   }
   return (
     <div
-      className="dialog-collection"
+      className={`dialog-collection${renderItem ? " dialog-collection-compact" : ""}`}
       aria-label={tr(label)}
       onChange={(event) => event.stopPropagation()}
     >
@@ -327,7 +329,13 @@ export function DialogList<T>({
           </p>
         )}
       </div>
-      {visible.length ? (
+      {visible.length && renderItem ? (
+        <ul className="dialog-compact-list" aria-label={tr(label)}>
+          {visible.map((item) => (
+            <li key={rowKey(item)}>{renderItem(item)}</li>
+          ))}
+        </ul>
+      ) : visible.length ? (
         <ColumnTable
           tableId={`dialog:${columns.map((column) => translate("vi", column.label)).join("/")}`}
           className="dialog-data-table"

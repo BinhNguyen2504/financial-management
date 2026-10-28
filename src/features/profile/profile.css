@@ -26,7 +26,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .user-avatar {
   display: inline-flex;
@@ -38,8 +38,8 @@
   border-radius: 50%;
   background: var(--primary-soft);
   color: var(--primary);
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-strong);
 }
 .user-loading {
   min-width: 44px;
@@ -65,7 +65,7 @@
   overflow-wrap: anywhere;
 }
 .user-identity span {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   color: var(--muted);
 }
 .user-popover a,
@@ -81,7 +81,7 @@
   background: transparent;
   color: var(--text);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--font-size-14);
   text-decoration: none;
   cursor: pointer;
   text-align: left;
@@ -129,18 +129,18 @@
   flex-basis: 64px;
   width: 64px;
   height: 64px;
-  font-size: 22px;
+  font-size: var(--font-size-20);
 }
 .profile-identity > div {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 .profile-identity h2 {
-  font-size: 22px;
+  font-size: var(--font-size-20);
 }
 .profile-identity p {
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .profile-form fieldset {
   display: grid;
@@ -167,21 +167,21 @@
 .profile-form select {
   width: 100%;
   min-width: 0;
-  font-size: 16px;
+  font-size: var(--font-size-16);
 }
 .profile-form input[readonly] {
   color: var(--muted);
   background: var(--surface-alt);
 }
 .profile-hint {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   color: var(--muted);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
 }
 .profile-field-error {
   color: var(--accent);
-  font-size: 13px;
-  font-weight: 400;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-regular);
 }
 .profile-form [aria-invalid="true"] {
   border-color: var(--accent);

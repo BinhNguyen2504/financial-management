@@ -18,19 +18,19 @@
 }
 .income-summary h2,
 .income-summary h3 {
-  font-size: 14px;
+  font-size: var(--font-size-14);
   color: var(--muted);
 }
 .income-summary strong {
   display: block;
   margin-block: 8px;
-  font-size: clamp(22px, 3vw, 34px);
+  font-size: var(--text-metric);
   color: var(--primary);
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
 .income-summary p {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   margin-top: 8px;
 }
 .income-workspace,
@@ -72,8 +72,8 @@
   overflow-wrap: anywhere;
 }
 .income-amount {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: var(--font-size-20);
+  font-weight: var(--weight-medium);
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
@@ -81,7 +81,7 @@
   display: grid;
   gap: 6px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .income-select select {
   min-height: 44px;
@@ -92,28 +92,6 @@
   color: var(--text);
   background-color: var(--surface);
   font: inherit;
-}
-.income-period-controls {
-  display: grid;
-  grid-template-columns: minmax(80px, 0.75fr) minmax(0, 1.25fr);
-  gap: 6px;
-  align-items: flex-end;
-  width: 100%;
-  max-width: 340px;
-}
-.income-workspace .income-period-controls select:not([multiple]) {
-  width: 100%;
-  min-width: 0;
-  padding-inline: 4px 20px;
-  background-position:
-    calc(100% - 12px) 50%,
-    calc(100% - 7px) 50%;
-  font-size: 16px;
-}
-@media (max-width: 360px) {
-  .income-period-controls {
-    gap: 4px;
-  }
 }
 .income-filters {
   display: flex;
@@ -131,7 +109,7 @@
 .income-table {
   border-collapse: collapse;
   width: 100%;
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .income-table caption {
   text-align: left;
@@ -165,12 +143,12 @@
 .income-table thead th,
 .income-table tfoot {
   background: var(--surface-alt);
-  font-weight: 650;
+  font-weight: var(--weight-medium);
 }
 .income-table small {
   display: block;
   color: var(--muted);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
 }
 .income-table th button {
   font: inherit;
@@ -195,7 +173,7 @@
   margin-block: 20px;
 }
 .income-quarter-grid h3 {
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .income-quarter-grid p {
   overflow-wrap: anywhere;
@@ -243,7 +221,7 @@
   stroke-width: 4;
 }
 .income-chart g:focus text {
-  font-weight: 700;
+  font-weight: var(--weight-strong);
   text-decoration: underline;
 }
 .income-share-list {
@@ -255,7 +233,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 14px;
+  font-size: var(--font-size-14);
   flex-wrap: wrap;
 }
 .income-track {
@@ -275,7 +253,7 @@
   background: var(--surface-alt);
   padding: 16px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .income-preview ul {
   max-height: 220px;

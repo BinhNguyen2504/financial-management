@@ -22,8 +22,8 @@
   background: var(--surface);
   color: var(--text);
   font: inherit;
-  font-size: 13px;
-  font-weight: 650;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -118,7 +118,7 @@
   scroll-padding-top: 24px;
 }
 .help-content {
-  font-size: 16px;
+  font-size: var(--font-size-16);
   line-height: 1.75;
   overflow-wrap: anywhere;
 }
@@ -126,7 +126,7 @@
   margin: 12px 0;
 }
 .help-content strong {
-  font-weight: 800;
+  font-weight: var(--weight-strong);
   color: var(--text);
 }
 .help-content .help-emphasis {
@@ -141,9 +141,9 @@
 }
 .help-content .help-eyebrow {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-size-12);
   letter-spacing: 0.1em;
-  font-weight: 800;
+  font-weight: var(--weight-strong);
   margin: 0 8px 8px;
 }
 .help-toc ol {
@@ -160,7 +160,7 @@
   background: transparent;
   color: var(--text);
   font: inherit;
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   text-align: left;
   padding: 9px 8px;
   width: 100%;
@@ -173,8 +173,8 @@
 .help-item-number {
   color: var(--primary);
   font-variant-numeric: tabular-nums;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-strong);
   flex: none;
 }
 .help-section {
@@ -186,7 +186,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 20px;
+  font-size: var(--font-size-20);
   line-height: 1.4;
   margin: 0 0 20px;
 }
@@ -200,8 +200,8 @@
   border-radius: 12px;
   background: var(--primary-soft);
   color: var(--primary);
-  font-size: 14px;
-  font-weight: 800;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-strong);
   font-variant-numeric: tabular-nums;
 }
 .help-item + .help-item {
@@ -213,7 +213,7 @@
   display: flex;
   align-items: baseline;
   gap: 10px;
-  font-size: 17px;
+  font-size: var(--font-size-18);
   line-height: 1.5;
   margin: 0 0 8px;
 }
@@ -225,7 +225,7 @@
 }
 .help-item li::marker {
   color: var(--primary);
-  font-weight: 800;
+  font-weight: var(--weight-strong);
 }
 .help-item li + li {
   margin-top: 12px;
@@ -251,8 +251,8 @@
   gap: 8px;
   align-items: center;
   color: var(--primary);
-  font-size: 13px;
-  font-weight: 800;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-strong);
   margin: 0 0 10px;
 }
 .help-section-pitfalls .help-callout-label {
@@ -274,7 +274,7 @@
   padding: 12px 14px;
   border-radius: 12px;
   background: var(--canvas);
-  font-size: 0.9375em;
+  font-size: var(--font-size-16);
 }
 .help-result > svg {
   margin-top: 5px;
@@ -285,9 +285,8 @@
 }
 @media (max-width: 767px) {
   .expense-dialog.dialog-help {
-    width: 100vw;
-    border-radius: 0;
-    border: 0;
+    width: calc(100vw - 32px);
+    border-radius: 16px;
   }
   .dialog-help > .expense-dialog-heading,
   .dialog-help .dialog-body {

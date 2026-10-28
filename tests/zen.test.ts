@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { applyAction, materialize } from "../src/domain/expenses/engine";
 import { expenseActionSchema } from "../src/domain/expenses/schema";
-import { jarEmoji } from "../src/domain/expenses/emoji";
+import { jarEmoji, isJarEmoji } from "../src/domain/expenses/emoji";
+import { tableSchemas } from "../src/domain/backup/format";
 import { donutSlices } from "../src/features/expenses/chart-data";
 const clock = { today: "2027-02-15", now: "2027-02-15T09:00:00Z" };
 const id = "10000000-0000-4000-8000-000000000001";
@@ -115,6 +116,70 @@ describe("Jar emoji metadata", () => {
         clock,
       ),
     ).toThrow(/Năm đã chốt/);
+  });
+  it("accepts one keyboard emoji including combined Unicode sequences", () => {
+    for (const emoji of ["🦋", "🫶🏽", "👨‍👩‍👧‍👦", "🇻🇳", "1️⃣", "🐈‍⬛", "❤"]) {
+      expect(isJarEmoji(emoji)).toBe(true);
+      expect(jarEmoji("Ăn uống", "monthly", emoji)).toBe(emoji);
+      for (const action of [
+        { type: "setJarEmoji", jarId: id, month: "2027-01", emoji },
+        {
+          type: "createJar",
+          id,
+          kind: "monthly",
+          start: "2027-01",
+          opening: "0",
+          name: "Test",
+          description: "",
+          method: "Ví",
+          group: "",
+          amount: "1",
+          emoji,
+        },
+      ])
+        expect(expenseActionSchema.safeParse(action).success).toBe(true);
+    }
+    for (const value of [
+      "",
+      "abc",
+      "1",
+      "🏡🌱",
+      "<script>",
+      "🏽",
+      "🇻",
+      "👨‍",
+      "a🦋",
+      "🦋".repeat(100),
+    ])
+      expect(isJarEmoji(value)).toBe(false);
+  });
+  it("round trips custom emoji in backup rules and closed snapshots", () => {
+    const book = applyAction(
+      initial(),
+      { type: "setJarEmoji", jarId: id, month: "2027-01", emoji: "👨‍👩‍👧‍👦" },
+      clock,
+    );
+    const jar = book.jars[0];
+    const record = {
+      id: jar.id,
+      kind: jar.kind,
+      start_month: jar.start,
+      opening: jar.opening,
+      rules: jar.rules,
+    };
+    expect(
+      tableSchemas.expense_jars.parse(JSON.parse(JSON.stringify(record))),
+    ).toEqual(record);
+    const closed = {
+      year: 2027,
+      closed_at: clock.now,
+      snapshot: materialize(book, clock).filter((row) =>
+        row.month.startsWith("2027"),
+      ),
+    };
+    expect(
+      tableSchemas.expense_years.parse(JSON.parse(JSON.stringify(closed))),
+    ).toEqual(closed);
   });
   it("rejects unsupported emoji at the API boundary", () => {
     expect(

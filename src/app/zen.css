@@ -15,12 +15,12 @@
   padding-right: 32px;
 }
 body {
-  font-weight: 400;
+  font-weight: var(--weight-regular);
 }
 h1,
 h2,
 h3 {
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 h1 {
   letter-spacing: -1.2px;
@@ -38,19 +38,19 @@ h1 span {
   border-radius: 15px;
 }
 .nav-label {
-  font-size: 11px;
+  font-size: var(--font-size-12);
   letter-spacing: 1.2px;
 }
 .navigation a {
   border-radius: 13px;
   min-height: 48px;
-  font-size: 15px;
+  font-size: var(--font-size-16);
 }
 .sidebar {
   padding-top: 28px;
 }
 .sidebar-note {
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .sidebar-note p {
   line-height: 1.6;
@@ -60,7 +60,7 @@ h1 span {
   border-bottom-color: transparent;
 }
 .eyebrow {
-  font-size: 11px;
+  font-size: var(--font-size-12);
   margin-bottom: 12px;
   letter-spacing: 1.3px;
 }
@@ -73,7 +73,7 @@ h1 span {
 }
 .metric h3,
 .metric p {
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .button,
 .expense-primary,
@@ -105,7 +105,7 @@ button:disabled {
   background: var(--surface);
   color: var(--text);
   border-radius: 30px;
-  font-size: 14px;
+  font-size: var(--font-size-14);
   white-space: nowrap;
   margin-left: auto;
 }
@@ -122,7 +122,7 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .money-text {
   font-variant-numeric: tabular-nums;
@@ -144,13 +144,13 @@ button:disabled {
   background: var(--primary-soft);
 }
 .welcome-garden h1 {
-  font-size: clamp(32px, 3.2vw, 46px);
+  font-size: var(--text-metric);
   line-height: 1.22;
 }
 .welcome-garden .lead {
   max-width: 510px;
   margin-top: 16px;
-  font-size: 16px;
+  font-size: var(--font-size-16);
 }
 .welcome-garden .expense-primary {
   margin-top: 24px;
@@ -167,14 +167,14 @@ button:disabled {
   color: var(--primary);
 }
 .daily-note p {
-  font-size: 15px;
+  font-size: var(--font-size-16);
   color: var(--muted);
 }
 .daily-note p > span:first-child {
   display: block;
-  font-size: 10px;
+  font-size: var(--font-size-12);
   letter-spacing: 1.3px;
-  font-weight: 700;
+  font-weight: var(--weight-strong);
   color: var(--primary);
   margin-bottom: 3px;
 }
@@ -192,7 +192,7 @@ button:disabled {
 .overview-month-status {
   margin: 8px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-size-12);
 }
 .overview-metrics {
   display: grid;
@@ -217,8 +217,8 @@ button:disabled {
   background: var(--accent-soft);
 }
 .overview-metric .metric-value {
-  font-size: clamp(20px, 2.3vw, 32px);
-  font-weight: 600;
+  font-size: var(--text-metric);
+  font-weight: var(--weight-medium);
   line-height: 1.6;
   margin: 5px 0 9px;
   overflow-wrap: anywhere;
@@ -238,11 +238,11 @@ button:disabled {
 }
 .overview-detail-grid .panel h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--font-size-20);
 }
 .overview-jars .text-link {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .overview-jar {
   display: grid;
@@ -253,14 +253,14 @@ button:disabled {
   border-bottom: 1px solid var(--border);
 }
 .overview-jar strong {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
   overflow-wrap: anywhere;
   display: block;
 }
 .overview-jar small {
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-size-12);
   display: block;
 }
 .overview-jar > span:last-child {
@@ -278,7 +278,7 @@ button:disabled {
   height: 44px;
   border-radius: 14px;
   background: var(--primary-soft);
-  font-size: 25px;
+  font-size: var(--font-size-24);
   flex-shrink: 0;
 }
 .overview-start {
@@ -289,11 +289,11 @@ button:disabled {
   padding: 28px;
 }
 .overview-start h3 {
-  font-size: 21px;
+  font-size: var(--font-size-20);
 }
 .overview-start p {
   margin-top: 10px;
-  font-size: 15px;
+  font-size: var(--font-size-16);
   color: var(--muted);
   max-width: 620px;
 }
@@ -312,11 +312,11 @@ button:disabled {
   padding: 28px 4px 0;
 }
 .next-chapters h2 {
-  font-size: 18px;
+  font-size: var(--font-size-18);
 }
 .next-chapters p {
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--font-size-14);
   margin-top: 10px;
   max-width: 660px;
 }
@@ -357,10 +357,10 @@ button:disabled {
   padding: 20px;
 }
 .expense-metrics h2 {
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .expense-metrics p {
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 .expense-filters select,
 .expense-form input,
@@ -372,10 +372,10 @@ button:disabled {
 .expense-form input,
 .expense-form select,
 .expense-form textarea {
-  font-size: 16px;
+  font-size: var(--font-size-16);
 }
 .expense-filters select {
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .expense-filter-panel {
   border-radius: 16px;
@@ -388,7 +388,7 @@ button:disabled {
 }
 .expense-segment button {
   border-radius: 10px;
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .expense-table-scroll {
   border-radius: 16px;
@@ -407,7 +407,7 @@ button:disabled {
   width: 36px;
   height: 36px;
   border-radius: 11px;
-  font-size: 22px;
+  font-size: var(--font-size-20);
 }
 .expense-notice {
   border-radius: 12px;
@@ -433,8 +433,8 @@ button:disabled {
   margin-top: 8px;
   max-width: 230px;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-regular);
 }
 .jar-progress > div {
   height: 6px;
@@ -457,9 +457,9 @@ button:disabled {
 }
 .jar-growth {
   margin-top: 9px;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--muted);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
 }
 .jar-balance {
   display: grid;
@@ -467,12 +467,12 @@ button:disabled {
   margin-top: 18px;
 }
 .jar-balance > span {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   color: var(--muted);
 }
 .jar-balance > strong {
-  font-size: 27px;
-  font-weight: 600;
+  font-size: var(--font-size-28);
+  font-weight: var(--weight-medium);
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
 }
@@ -482,7 +482,7 @@ button:disabled {
 }
 .jar-details summary,
 .chart-data-table summary {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   color: var(--primary);
   min-height: 44px;
   padding: 12px 0;
@@ -495,8 +495,8 @@ button:disabled {
 }
 .emoji-picker legend {
   padding: 0 6px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
 }
 .emoji-picker button {
   border: 1px solid var(--border);
@@ -513,13 +513,13 @@ button:disabled {
 }
 .emoji-auto {
   padding: 9px 12px;
-  font-size: 14px;
+  font-size: var(--font-size-14);
   display: flex;
   gap: 10px;
   align-items: center;
 }
 .emoji-auto span {
-  font-size: 22px;
+  font-size: var(--font-size-20);
 }
 .emoji-options {
   display: flex;
@@ -528,7 +528,7 @@ button:disabled {
   margin-top: 14px;
 }
 .emoji-options button {
-  font-size: 25px;
+  font-size: var(--font-size-24);
 }
 .donut-layout {
   display: grid;
@@ -559,12 +559,12 @@ button:disabled {
 }
 .donut-center > span,
 .donut-center small {
-  font-size: 11px;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 .donut-center strong {
-  font-size: clamp(13px, 1.3vw, 18px);
-  font-weight: 600;
+  font-size: var(--text-metric);
+  font-weight: var(--weight-medium);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
@@ -585,7 +585,7 @@ button:disabled {
   border-radius: 10px;
   background: transparent;
   color: var(--text);
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .chart-legend button[aria-pressed="true"] {
   background: var(--surface-alt);
@@ -598,14 +598,14 @@ button:disabled {
   display: inline-grid;
   place-items: center;
   color: var(--on-chart);
-  font-size: 11px;
+  font-size: var(--font-size-12);
 }
 .chart-tooltip {
   padding: 12px;
   background: var(--primary-soft);
   border-radius: 12px;
   color: var(--text);
-  font-size: 13px;
+  font-size: var(--font-size-14);
   overflow-wrap: anywhere;
 }
 .chart-empty {
@@ -620,11 +620,11 @@ button:disabled {
 }
 .chart-empty p {
   color: var(--text);
-  font-size: 15px;
+  font-size: var(--font-size-16);
 }
 .chart-empty > span {
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .chart-data-table {
   margin-top: 12px;
@@ -650,7 +650,7 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 .chart-months {
@@ -666,7 +666,7 @@ button:disabled {
   color: var(--muted);
   background: var(--surface);
   border-radius: 10px;
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .chart-months button[aria-pressed="true"] {
   color: var(--primary);
@@ -710,7 +710,7 @@ button:disabled {
 }
 @media (max-width: 959px) {
   .mobile-brand {
-    font-size: 17px;
+    font-size: var(--font-size-18);
   }
   .topbar {
     position: sticky;
@@ -734,7 +734,7 @@ button:disabled {
     padding: 10px 16px;
   }
   .mobile-brand {
-    font-size: 15px;
+    font-size: var(--font-size-16);
     max-width: 100px;
     line-height: 1.3;
   }
@@ -755,14 +755,14 @@ button:disabled {
     border-radius: 24px;
   }
   .welcome-garden h1 {
-    font-size: 34px;
+    font-size: var(--font-size-32);
   }
   .welcome-garden > .garden-art {
     max-width: 230px;
     margin: 12px 0 -12px;
   }
   .welcome-garden .lead {
-    font-size: 15px;
+    font-size: var(--font-size-16);
   }
   .welcome-garden .expense-primary {
     margin-top: 20px;
@@ -776,7 +776,7 @@ button:disabled {
     margin-top: 4px;
   }
   .daily-note p {
-    font-size: 14px;
+    font-size: var(--font-size-14);
   }
   .section-title {
     flex-wrap: wrap;
@@ -803,11 +803,11 @@ button:disabled {
     margin: 0;
   }
   .overview-metric .metric-value {
-    font-size: 26px;
+    font-size: var(--font-size-24);
     margin: 3px 0;
   }
   .overview-metric h3 {
-    font-size: 14px;
+    font-size: var(--font-size-14);
   }
   .overview-detail-grid .panel {
     padding: 18px;
@@ -822,7 +822,7 @@ button:disabled {
     justify-self: center;
   }
   .overview-start h3 {
-    font-size: 20px;
+    font-size: var(--font-size-20);
   }
   .donut-layout {
     grid-template-columns: 1fr;
@@ -832,10 +832,10 @@ button:disabled {
     max-width: 230px;
   }
   .donut-center strong {
-    font-size: 18px;
+    font-size: var(--font-size-18);
   }
   .chart-legend button {
-    font-size: 14px;
+    font-size: var(--font-size-14);
   }
   .expense-metrics .metric {
     padding: 16px 12px;
@@ -851,20 +851,20 @@ button:disabled {
     width: 180px;
   }
   .expense-setup h2 {
-    font-size: 22px;
+    font-size: var(--font-size-20);
   }
   .expense-jar-card {
     padding: 20px;
   }
   .expense-jar-card .jar-progress {
     max-width: none;
-    font-size: 12px;
+    font-size: var(--font-size-12);
   }
   .expense-jar-card .expense-actions {
     margin-top: 16px;
   }
   .expense-filters select {
-    font-size: 16px;
+    font-size: var(--font-size-16);
   }
   .expense-report {
     padding: 18px;
@@ -892,4 +892,41 @@ button:disabled {
     transition: none !important;
     animation: none !important;
   }
+}
+
+.emoji-custom {
+  display: grid;
+  gap: 6px;
+  margin-block: 16px;
+}
+.emoji-custom-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.emoji-custom-input input {
+  width: 104px;
+  min-width: 0;
+  min-height: 44px;
+  font-size: var(--font-size-20);
+}
+.emoji-custom small {
+  color: var(--muted);
+}
+.emoji-custom .field-error {
+  color: var(--danger);
+}
+.emoji-selection {
+  font-size: var(--font-size-14);
+}
+.emoji-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: 8px;
+}
+.emoji-options button {
+  padding: 4px;
+  min-width: 0;
+  height: 48px;
 }

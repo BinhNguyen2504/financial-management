@@ -3,7 +3,12 @@ import { expenseMonthSchema as monthSchema } from "../shared/schema";
 import { expenseMoneySchema as moneySchema } from "../shared/schema";
 import { z } from "zod";
 import { brandKeys, labelIconKeys } from "./label-visuals";
-import { EMOJI_VALUES } from "./emoji";
+import { isJarEmoji } from "./emoji";
+
+export const jarEmojiSchema = z
+  .string()
+  .max(32)
+  .refine(isJarEmoji, "Chỉ nhập một emoji.");
 
 const id = z.uuid();
 const name = z.string().trim().min(1, "Cần nhập tên.").max(100);
@@ -20,7 +25,7 @@ export const expenseActionSchema = z.discriminatedUnion("type", [
       type: z.literal("setJarEmoji"),
       jarId: id,
       month: monthSchema,
-      emoji: z.enum(EMOJI_VALUES).nullable(),
+      emoji: jarEmojiSchema.nullable(),
     })
     .strict(),
   z.object({ type: z.literal("initialize"), start: monthSchema }).strict(),
@@ -31,7 +36,7 @@ export const expenseActionSchema = z.discriminatedUnion("type", [
       kind: z.enum(["monthly", "accumulation"]),
       start: monthSchema,
       opening: moneySchema,
-      emoji: z.enum(EMOJI_VALUES).nullable().optional(),
+      emoji: jarEmojiSchema.nullable().optional(),
       ...config,
     })
     .strict(),

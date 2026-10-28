@@ -10,8 +10,8 @@ import {
   moneySchema as money,
   monthSchema as month,
   dateSchema as date,
+  jarEmojiSchema,
 } from "../expenses/schema";
-import { EMOJI_VALUES } from "../expenses/emoji";
 import {
   transactionSchema as savingsTransaction,
   actionSchema as savingsAction,
@@ -43,14 +43,14 @@ const metadata = {
 };
 const expenseRule = z.strictObject({
   ...metadata,
-  emoji: z.enum(EMOJI_VALUES).nullable().optional(),
+  emoji: jarEmojiSchema.nullable().optional(),
   month,
   method: name,
   group: z.string().max(100),
   amount: money,
 });
 const expenseRow = z.strictObject({
-  emoji: z.enum(EMOJI_VALUES).nullable().optional(),
+  emoji: jarEmojiSchema.nullable().optional(),
   jarId: uuid,
   month,
   kind: z.enum(["monthly", "accumulation"]),

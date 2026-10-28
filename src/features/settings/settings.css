@@ -8,13 +8,13 @@
 }
 .settings-heading .lead {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-16);
 }
 .settings-section-heading {
   margin-bottom: 1.25rem;
 }
 .settings-section-heading h2 {
-  font-size: 1.25rem;
+  font-size: var(--font-size-20);
   margin: 0 0 0.5rem;
 }
 .settings-section-heading p {
@@ -48,13 +48,13 @@
   align-items: center;
 }
 .settings-card-heading h3 {
-  font-size: 1.125rem;
+  font-size: var(--font-size-18);
   margin: 0 0 0.25rem;
 }
 .settings-card-heading p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-14);
 }
 .settings-card-icon {
   display: grid;
@@ -76,7 +76,7 @@
   display: flex;
   gap: 0.5rem;
   align-items: start;
-  font-size: 0.85rem;
+  font-size: var(--font-size-14);
   line-height: 1.6;
   color: var(--muted);
 }
@@ -108,7 +108,7 @@
   display: flex;
   gap: 0.5rem;
   align-items: start;
-  font-weight: 700;
+  font-weight: var(--weight-strong);
 }
 .settings-file-name {
   display: block;
@@ -124,7 +124,7 @@
   gap: 0.75rem;
   margin: 1.25rem 0;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: var(--font-size-12);
 }
 .settings-import-steps li {
   display: flex;
@@ -138,11 +138,11 @@
   height: 22px;
   border: 1px solid var(--border);
   border-radius: 50%;
-  font-size: 0.75rem;
+  font-size: var(--font-size-12);
 }
 .settings-import-steps [aria-current] {
   color: var(--primary);
-  font-weight: 700;
+  font-weight: var(--weight-strong);
 }
 .settings-import-steps [aria-current] > span {
   background: var(--primary);
@@ -162,7 +162,7 @@
   overflow-wrap: anywhere;
   min-width: 0;
   flex: 1;
-  font-size: 0.875rem;
+  font-size: var(--font-size-14);
 }
 .settings-icon-button {
   padding: 0 !important;
@@ -175,14 +175,14 @@
   padding-top: 1.25rem;
 }
 .backup-summary h4 {
-  font-size: 1rem;
+  font-size: var(--font-size-16);
   margin: 0 0 1rem;
 }
 .backup-metadata {
   display: grid;
   gap: 0.75rem;
   margin: 0;
-  font-size: 0.875rem;
+  font-size: var(--font-size-14);
 }
 .backup-metadata dt {
   color: var(--muted);
@@ -203,13 +203,13 @@
   border-radius: 12px;
 }
 .backup-counts dt {
-  font-size: 0.8rem;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 .backup-counts dd {
   margin: 0.25rem 0 0;
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: var(--weight-strong);
+  font-size: var(--font-size-14);
 }
 .backup-profile-option {
   display: flex;
@@ -217,7 +217,7 @@
   align-items: start;
   min-height: 44px;
   margin: 1.25rem 0;
-  font-size: 0.9rem;
+  font-size: var(--font-size-14);
 }
 .backup-profile-option input {
   flex: 0 0 auto;
@@ -228,7 +228,7 @@
 }
 .backup-profile-option small {
   display: block;
-  font-size: 0.8rem;
+  font-size: var(--font-size-12);
   color: var(--muted);
   margin-top: 0.35rem;
 }
@@ -246,7 +246,7 @@
 .settings-install summary::after {
   content: "+";
   margin-left: auto;
-  font-size: 1.4rem;
+  font-size: var(--font-size-24);
   color: var(--muted);
 }
 .settings-install[open] summary::after {
@@ -255,8 +255,8 @@
 .settings-install summary small {
   display: block;
   color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 400;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-regular);
   margin-top: 0.25rem;
 }
 .settings-install > div {
@@ -289,7 +289,7 @@
     padding: 1.125rem;
   }
   .settings-section-heading p {
-    font-size: 0.9rem;
+    font-size: var(--font-size-14);
   }
   .settings-install summary {
     padding: 1.125rem;

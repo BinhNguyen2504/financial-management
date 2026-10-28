@@ -76,7 +76,7 @@ Khi che, lớp hiển thị thay giá trị bằng `•••••• ₫` tron
 
 Form che cả ô tiền và bản xem trước. Nút “Hiện tiền trong form” chỉ mở phạm vi form hiện tại; đóng form hoặc rời nền sẽ che lại. Các form nhập tiền cần được mở số trước khi xem trước/lưu, và nội dung nhập vẫn được giữ khi che lại.
 
-`JarRule.emoji` và `ExpenseRow.emoji` là trường tùy chọn; hũ cũ dùng gợi ý tự động. `createJar` chấp nhận emoji tùy chọn. Command `setJarEmoji` nhận `jarId`, `month`, `emoji` (một giá trị trong bộ hỗ trợ hoặc null để tự động), dùng cơ chế version/idempotency/audit hiện tại. Command chỉ thay metadata trong rules JSONB, giữ nguyên input, trạng thái hoạt động và mọi phép tính tiền. Năm đã chốt không được chỉnh; snapshot cũ không bị viết lại. Không cần migration database mới.
+`JarRule.emoji` và `ExpenseRow.emoji` là trường tùy chọn; hũ cũ dùng gợi ý tự động. `createJar` chấp nhận emoji tùy chọn. Command `setJarEmoji` nhận `jarId`, `month`, `emoji` (một emoji Unicode hợp lệ, bao gồm emoji ghép, hoặc null để tự động), dùng cơ chế version/idempotency/audit hiện tại. Command chỉ thay metadata trong rules JSONB, giữ nguyên input, trạng thái hoạt động và mọi phép tính tiền. Năm đã chốt không được chỉnh; snapshot cũ không bị viết lại. Không cần migration database mới.
 
 ## Trạng thái và truy cập
 
@@ -247,3 +247,16 @@ Scrollbar menu mảnh trên nền trong suốt; menu mobile giới hạn theo ch
 ## Bộ chọn kỳ Thu nhập — 28/10/2026
 
 Thu nhập bỏ hai nút tháng trước/sau, dùng trực tiếp select Năm và Tháng như Chi tiêu. Hai ô cùng hàng trên desktop/mobile, đủ vùng bấm 44px và không cắt giá trị. Chọn năm vẫn tải dữ liệu năm đó; chọn tháng giữ tab và bộ lọc báo cáo. Thay đổi này thay thế bố cục có mũi tên ngày 23/10, giữ lịch sử nghiệm thu cũ.
+
+## Refactor source — 28/10/2026
+
+Các editor, workspace, dialog và CSS được tổ chức lại để bảo trì; thiết kế và luồng thao tác hiện tại giữ nguyên. Controller tiếp tục sở hữu draft, filter, preview và trạng thái chưa xác định kết quả lưu; không remount form để đồng bộ dữ liệu hoặc locale. Dialog stack/focus/scroll lock dùng một primitive chung; các phần của stylesheet tương tác giữ nguyên thứ tự và specificity. Quy ước source và cách kiểm hồi quy được ghi trong [hướng dẫn bảo trì](11-source-maintenance.md); các mốc UX trước vẫn là lịch sử độc lập.
+
+
+## Dialog phân loại Chi tiêu — 28/10/2026
+
+Danh sách hai trường dùng tên bên trái và cặp thao tác bên phải ở mọi độ rộng. Bỏ nhãn “Tên/Thao tác” lặp trên từng thẻ mobile; giữ 44px cho mỗi nút, 8px giữa nút và cho tên dài xuống dòng. Bộ emoji 90 gợi ý có ô nhập emoji riêng và lỗi tại ô; tìm kiếm không xóa biểu tượng đã chọn. Chọn thương hiệu phân nhóm ngân hàng/ví, giữ logo màu gốc. Chi tiết tại [Chi tiêu](features/expenses.md#phân-loại-mobile-emoji-và-thương-hiệu--28102026).
+
+## Quy tắc nhất quán — 28/10/2026
+
+Viết cho người dùng phổ thông, ưu tiên dễ đọc và thao tác được. Hai ô Năm/Tháng cùng hàng; dialog mobile tối đa 90% vùng hiển thị, giữ góc bo và cuộn riêng; menu đóng khi chạm ngoài hoặc focus đi ra. Phân cấp chữ bằng vai trò, không thu nhỏ tùy trang để né tràn. Xem [đặc tả và phạm vi](features/usability-consistency-2026-10-28.md).

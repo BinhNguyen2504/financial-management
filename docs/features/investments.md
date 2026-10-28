@@ -127,3 +127,11 @@ Tiêu đề dùng vườn cây ăn quả, thuyền buồm, cân tài sản, lò 
 ## Tỷ lệ minh họa tiêu đề — 26/10/2026
 
 Giữ bộ năm cảnh Đầu tư riêng, dùng bố cục tiêu đề chung thay các kích thước cũ 180/120/96px. Khung hình mới 240–320px trên desktop/tablet và 216px ở hàng riêng dưới chữ trên điện thoại. Không đổi cảnh khởi đầu hoặc các chỉ số tài chính. Xem [chủ đề giao diện](themes.md).
+
+## Tổ chức source — 28/10/2026
+
+Đầu tư tách model/replay khỏi xử lý command; editor tách action/controller/trường nhập/preview, workspace tách hook dữ liệu. CSV có bản dịch ở lớp trình bày; giữ vốn nhập tay, phí/thuế, lịch sử và retry như trước. Không đổi HTTP/schema hoặc áp migration cloud. Xem [hướng dẫn bảo trì](../11-source-maintenance.md) và [bằng chứng kiểm tra](../07-validation.md).
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

@@ -9,7 +9,7 @@
   margin-bottom: 26px;
 }
 .expense-page-heading h1 {
-  font-size: clamp(32px, 4vw, 44px);
+  font-size: var(--text-metric);
 }
 .expense-page-heading .lead {
   margin-top: 10px;
@@ -33,9 +33,9 @@
   gap: 7px;
   padding: 10px 14px;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-14);
   line-height: 1.4;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface);
@@ -66,7 +66,7 @@
 }
 .expense-muted {
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .expense-status:empty,
 .expense-error:empty {
@@ -74,7 +74,7 @@
 }
 .expense-status {
   color: var(--primary);
-  font-size: 14px;
+  font-size: var(--font-size-14);
   margin-bottom: 14px;
 }
 .expense-error {
@@ -82,7 +82,7 @@
   border: 1px solid var(--accent);
   background: var(--accent-soft);
   color: var(--accent);
-  font-size: 14px;
+  font-size: var(--font-size-14);
   line-height: 1.6;
   border-radius: 12px;
   overflow-wrap: anywhere;
@@ -106,7 +106,7 @@
   margin-top: 0;
 }
 .expense-notice {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   padding: 13px 16px;
   background: var(--primary-soft);
   color: var(--text);
@@ -160,8 +160,8 @@
   border-radius: 7px;
   color: var(--muted);
   background: transparent;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
 }
 .expense-segment button[aria-pressed="true"] {
   border-color: var(--border);
@@ -179,8 +179,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
   min-width: 0;
 }
 .expense-filters label {
@@ -209,10 +209,10 @@
   color: var(--text);
   border-radius: 7px;
   font: inherit;
-  font-size: 16px;
+  font-size: var(--font-size-16);
 }
 .expense-filters select {
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .expense-filters .expense-checkbox {
   flex-direction: row;
@@ -236,13 +236,13 @@
   padding: 18px 14px;
 }
 .expense-metrics h2 {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--muted);
   letter-spacing: 0;
 }
 .expense-metrics p {
-  font-size: clamp(15px, 1.35vw, 21px);
-  font-weight: 650;
+  font-size: var(--text-metric);
+  font-weight: var(--weight-medium);
   margin-top: 12px;
   color: var(--text);
   font-variant-numeric: tabular-nums;
@@ -261,7 +261,7 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .expense-table-scroll caption {
   text-align: left;
@@ -280,8 +280,8 @@
 }
 .expense-table-scroll thead th {
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-medium);
   background: var(--surface-alt);
   white-space: nowrap;
 }
@@ -304,7 +304,7 @@
 }
 .expense-table-scroll tbody th {
   min-width: 170px;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 .expense-table-scroll tbody tr:last-child > * {
   border-bottom: 0;
@@ -313,8 +313,8 @@
   display: block;
   margin-top: 4px;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-regular);
 }
 .expense-name-button {
   display: inline-flex;
@@ -326,7 +326,7 @@
   border: 0;
   color: var(--primary);
   font: inherit;
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   text-align: left;
   overflow-wrap: anywhere;
 }
@@ -344,7 +344,7 @@
 }
 .expense-over {
   color: var(--accent) !important;
-  font-size: 12px;
+  font-size: var(--font-size-12);
 }
 .expense-dialog {
   width: min(760px, calc(100vw - 32px));
@@ -388,8 +388,8 @@
 }
 .expense-form small {
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-regular);
 }
 .expense-form-grid {
   display: grid;
@@ -415,7 +415,7 @@
 }
 .expense-preview td del {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-size-12);
 }
 .expense-setup {
   display: grid;
@@ -443,7 +443,7 @@
 }
 .expense-empty p {
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .expense-subheading {
   margin: 26px 0 14px;
@@ -455,8 +455,8 @@
 .expense-archive-summary summary {
   min-height: 44px;
   padding: 10px 0;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--font-size-16);
+  font-weight: var(--weight-medium);
 }
 .expense-history-item {
   display: flex;
@@ -466,7 +466,7 @@
   gap: 14px;
   padding: 14px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .expense-history-item > div:first-child {
   flex: 1;
@@ -489,7 +489,7 @@
   flex-wrap: wrap;
   gap: 12px 24px;
   margin: 18px 0;
-  font-size: 13px;
+  font-size: var(--font-size-14);
   color: var(--muted);
 }
 .expense-report-totals strong {
@@ -507,7 +507,7 @@
   gap: 8px;
   justify-content: space-between;
   margin-bottom: 6px;
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .expense-chart-item > div:first-child span {
   color: var(--muted);
@@ -540,7 +540,7 @@
 }
 .expense-line-chart text {
   fill: var(--muted);
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .expense-chart-axis {
   stroke: var(--border);
@@ -567,7 +567,7 @@
   margin: 20px auto;
 }
 .auth-panel h1 {
-  font-size: 32px;
+  font-size: var(--font-size-32);
 }
 .auth-panel .expense-form {
   margin-top: 25px;
@@ -594,7 +594,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .expense-metrics p {
-    font-size: 18px;
+    font-size: var(--font-size-18);
   }
 }
 @media (max-width: 639px) {
@@ -606,7 +606,7 @@
   }
   .expense-primary,
   .expense-secondary {
-    font-size: 13px;
+    font-size: var(--font-size-14);
   }
   .expense-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -616,7 +616,7 @@
     padding: 15px 12px;
   }
   .expense-metrics p {
-    font-size: 16px;
+    font-size: var(--font-size-16);
     overflow-wrap: anywhere;
   }
   .expense-metrics .metric:last-child {
@@ -642,7 +642,7 @@
     padding: 18px;
   }
   .expense-jar-card .expense-name-button {
-    font-size: 17px;
+    font-size: var(--font-size-18);
   }
   .expense-jar-card dl {
     display: grid;
@@ -651,13 +651,13 @@
     margin: 15px 0;
   }
   .expense-jar-card dt {
-    font-size: 12px;
+    font-size: var(--font-size-12);
     color: var(--muted);
   }
   .expense-jar-card dd {
     margin: 3px 0 0;
-    font-size: 15px;
-    font-weight: 600;
+    font-size: var(--font-size-16);
+    font-weight: var(--weight-medium);
     font-variant-numeric: tabular-nums;
     overflow-wrap: anywhere;
   }
@@ -667,7 +667,7 @@
     padding: 18px 16px max(18px, env(safe-area-inset-bottom));
   }
   .expense-dialog-heading h2 {
-    font-size: 19px;
+    font-size: var(--font-size-18);
   }
   .expense-form-grid {
     grid-template-columns: 1fr;
@@ -678,4 +678,33 @@
   .expense-report {
     padding: 16px;
   }
+}
+
+/* Classification rows retain one reading order on phones and desktop. */
+.expense-label-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+}
+.expense-label-row > strong {
+  min-width: 0;
+  font-size: var(--font-size-14);
+}
+.expense-label-row .label-name > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.expense-label-row .expense-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin: 0;
+}
+.expense-label-row .icon-action {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
 }

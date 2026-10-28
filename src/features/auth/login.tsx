@@ -204,9 +204,7 @@ export function Login({
         </p>
         {!configured ? (
           <p className="expense-notice">
-            {tr(
-              "Dịch vụ đăng nhập chưa được kết nối. Cần hoàn tất cấu hình cloud để bắt đầu sử dụng.",
-            )}
+            {tr("Đăng nhập hiện chưa sẵn sàng. Vui lòng thử lại sau.")}
           </p>
         ) : (
           <form onSubmit={submit} className="expense-form" noValidate>

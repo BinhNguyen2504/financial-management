@@ -129,7 +129,7 @@ export function useInvestmentEditor({
   function close() {
     if (
       (draft === originalDraft && !f.reason) ||
-      window.confirm(tr("Đóng form và bỏ nội dung chưa lưu?"))
+      window.confirm(tr("Đóng cửa sổ và bỏ nội dung chưa lưu?"))
     )
       onClose();
   }
@@ -154,7 +154,7 @@ export function useInvestmentEditor({
   async function submit() {
     if (unchanged) return;
     if (hidden) {
-      setError(tr("Hãy hiện tiền trong form để kiểm tra trước khi lưu."));
+      setError(tr("Hãy hiện tiền để kiểm tra trước khi lưu."));
       return;
     }
     setBusy(true);

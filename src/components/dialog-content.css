@@ -7,7 +7,7 @@
   border-radius: 22px;
   color: var(--text);
   background: var(--surface);
-  font-size: 15px;
+  font-size: var(--text-body, 1rem);
   line-height: 1.55;
 }
 .expense-dialog.dialog-shell[open] {
@@ -38,9 +38,9 @@
 }
 .dialog-shell .expense-dialog-heading h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: var(--font-size-20);
   line-height: 1.3;
-  font-weight: 750;
+  font-weight: var(--weight-strong);
   overflow-wrap: anywhere;
 }
 .dialog-shell .expense-dialog-heading > button {
@@ -50,7 +50,7 @@
 }
 .dialog-description {
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-size-14);
   margin: 6px 0 0;
 }
 .dialog-body {
@@ -82,14 +82,14 @@
   min-width: 112px;
 }
 .dialog-shell h3 {
-  font-size: 16px;
-  font-weight: 750;
+  font-size: var(--text-group-title);
+  font-weight: var(--weight-strong);
   line-height: 1.4;
   margin: 0 0 12px;
 }
 .dialog-shell h4 {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-strong);
   margin: 16px 0 8px;
 }
 .dialog-shell p {
@@ -120,13 +120,13 @@
 }
 .dialog-summary-label {
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-size-14);
   margin: 0 0 4px;
 }
 .dialog-summary-value {
   display: block;
-  font-size: 28px;
-  font-weight: 750;
+  font-size: var(--font-size-28);
+  font-weight: var(--weight-strong);
   line-height: 1.3;
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
@@ -145,18 +145,18 @@
 }
 .dialog-facts dt {
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-size-14);
   margin-bottom: 4px;
 }
 .dialog-facts dd {
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   margin: 0;
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
 }
 .dialog-note {
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--font-size-14);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   margin: 8px 0;
@@ -188,8 +188,8 @@
   border-radius: 10px;
   background: transparent;
   color: var(--muted);
-  font-size: 14px;
-  font-weight: 650;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
 }
 .dialog-tabs button[aria-selected="true"] {
   color: var(--text);
@@ -200,7 +200,7 @@
   padding: 0 6px;
   border-radius: 6px;
   background: var(--surface);
-  font-size: 12px;
+  font-size: var(--font-size-12);
   font-variant-numeric: tabular-nums;
 }
 .dialog-tabs-content > [hidden] {
@@ -220,7 +220,7 @@
   gap: 5px;
   flex: 1 1 145px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-size-14);
   min-width: 0;
 }
 .dialog-filters label:has(input[type="search"]) {
@@ -236,10 +236,10 @@
   color: var(--text);
   background: var(--surface);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .dialog-result-count {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   color: var(--muted);
   margin: 12px 0;
 }
@@ -247,7 +247,7 @@
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .dialog-data-table :is(th, td) {
   padding: 12px 10px;
@@ -258,8 +258,8 @@
 }
 .dialog-data-table th {
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-strong);
   background: var(--canvas);
 }
 .dialog-data-table .is-numeric {
@@ -267,7 +267,7 @@
   font-variant-numeric: tabular-nums;
 }
 .dialog-data-table strong {
-  font-weight: 700;
+  font-weight: var(--weight-strong);
 }
 .dialog-data-table p {
   margin: 5px 0 0;
@@ -278,7 +278,7 @@
   flex-wrap: wrap;
 }
 .dialog-data-table .expense-actions button {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   padding: 7px 10px;
 }
 .dialog-cell-label {
@@ -298,7 +298,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 16px;
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .dialog-list-start {
   scroll-margin-top: 100px;
@@ -311,7 +311,7 @@
 .dialog-secondary-section > summary {
   min-height: 44px;
   cursor: pointer;
-  font-weight: 650;
+  font-weight: var(--weight-medium);
 }
 .dialog-shell :is(.expense-form, .investment-form, .savings-form) {
   gap: 20px;
@@ -320,8 +320,8 @@
   min-width: 0;
 }
 .dialog-shell fieldset > legend {
-  font-size: 16px;
-  font-weight: 750;
+  font-size: var(--text-group-title);
+  font-weight: var(--weight-strong);
   padding-bottom: 12px;
 }
 .dialog-shell
@@ -355,18 +355,18 @@
 @media (max-width: 640px) {
   .expense-dialog.dialog-shell {
     width: calc(100vw - 16px);
-    max-height: calc(100dvh - 16px);
+    max-height: var(--dialog-mobile-limit);
     border-radius: 16px;
   }
   .expense-dialog.dialog-detail,
   .expense-dialog.dialog-form {
-    height: calc(100dvh - 16px);
+    height: auto;
   }
   .dialog-shell > .expense-dialog-heading {
     padding: max(14px, env(safe-area-inset-top)) 16px 14px;
   }
   .dialog-shell .expense-dialog-heading h2 {
-    font-size: 20px;
+    font-size: var(--font-size-20);
   }
   .dialog-body {
     padding: 16px;
@@ -387,14 +387,14 @@
     margin-bottom: 16px;
   }
   .dialog-summary-value {
-    font-size: 24px;
+    font-size: var(--font-size-24);
   }
   .dialog-tabs {
     top: -16px;
   }
   .dialog-tabs button {
     padding-inline: 8px;
-    font-size: 13px;
+    font-size: var(--font-size-14);
   }
   .dialog-filters label {
     flex-basis: calc(50% - 6px);
@@ -403,7 +403,7 @@
     flex-basis: 100%;
   }
   .dialog-shell :is(input, select, textarea) {
-    font-size: 16px;
+    font-size: var(--font-size-16);
   }
   .dialog-data-table,
   .dialog-data-table tbody,
@@ -446,7 +446,7 @@
   .dialog-cell-label {
     display: block;
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--font-size-12);
     text-align: left;
   }
   .dialog-data-table .is-actions .expense-actions {
@@ -461,4 +461,19 @@
     ) {
     padding: 14px;
   }
+}
+
+.dialog-compact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dialog-compact-list > li + li {
+  border-top: 1px solid var(--border);
+}
+.dialog-collection-compact {
+  margin-top: 0;
+}
+.dialog-collection-compact .dialog-list-start > h3 {
+  display: none;
 }

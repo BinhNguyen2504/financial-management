@@ -181,3 +181,7 @@ Rà landing copy, catalog và preview cùng đợt sửa Chi tiêu: cập nhật
 ## Đối chiếu bộ chọn kỳ — 28/10/2026
 
 Thu nhập chuyển sang chọn trực tiếp năm/tháng như Chi tiêu, bỏ nút tháng trước/sau. Đã rà catalog, copy landing và `product-preview.tsx`: preview chỉ hiển thị kỳ minh họa cố định 06/2026, không có nút chuyển tháng nên không cần thêm bộ chọn hoặc sửa số liệu. Mô tả và trạng thái module tiếp tục đúng; không đổi nội dung quảng bá cho tinh chỉnh điều khiển này. README, hướng UX và đặc tả Thu nhập cập nhật cùng source.
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

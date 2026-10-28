@@ -411,7 +411,7 @@ export function MarketingLanding() {
             <div className="marketing-answer">
               <p>
                 {tr(
-                  "Có. Trong Cài đặt, tải bản sao lưu JSON và khôi phục vào tài khoản trống khi cần. File không có mật khẩu; hãy giữ ở nơi an toàn.",
+                  "Có. Trong Cài đặt, tải bản sao lưu và khôi phục vào tài khoản chưa có dữ liệu khi cần. File không có mật khẩu; hãy giữ ở nơi an toàn.",
                 )}
               </p>
             </div>
@@ -427,7 +427,7 @@ export function MarketingLanding() {
             <div className="marketing-answer">
               <p>
                 {tr(
-                  "Giao diện được thiết kế cho điện thoại và máy tính. Tab giữ nhãn đầy đủ; bảng rộng cuộn trong vùng riêng. Bản triển khai qua HTTPS hỗ trợ thêm vào màn hình chính. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.",
+                  "Bạn có thể dùng trên điện thoại và máy tính. Các cửa sổ dài có vùng cuộn riêng; chạm bên ngoài để đóng menu chức năng. Bạn cũng có thể thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.",
                 )}
               </p>
               <p>{tr(navigationSummary)}</p>

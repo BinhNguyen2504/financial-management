@@ -279,52 +279,7 @@ export function useExpenseEditor({
     if (added?.kind === "method") setMethod(added.name);
     if (added?.kind === "group") setGroup(added.name);
   };
-  const changeEmoji = (
-    value:
-      | "🍜"
-      | "🏡"
-      | "🚲"
-      | "🌱"
-      | "☕"
-      | "🛒"
-      | "💡"
-      | "📚"
-      | "💚"
-      | "✈️"
-      | "🎁"
-      | "🐾"
-      | "🎨"
-      | "🫙"
-      | "🚗"
-      | "🚌"
-      | "🏍️"
-      | "⛽"
-      | "🧾"
-      | "📱"
-      | "💻"
-      | "🎮"
-      | "🎵"
-      | "🎬"
-      | "🏋️"
-      | "🩺"
-      | "💊"
-      | "👕"
-      | "👶"
-      | "🧸"
-      | "💍"
-      | "🏖️"
-      | "🍎"
-      | "🥦"
-      | "🍰"
-      | "🏫"
-      | "🛠️"
-      | "🛡️"
-      | "🏦"
-      | "💳"
-      | "📦"
-      | "💼"
-      | null,
-  ) => {
+  const changeEmoji = (value: JarEmoji | null) => {
     setEmoji(value);
     setPreview(null);
     command.current = null;

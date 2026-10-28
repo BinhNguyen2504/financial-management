@@ -14,14 +14,14 @@
   align-self: end;
 }
 .illustrated-heading > .heading-copy h1 {
-  font-size: clamp(32px, 3.4vw, 44px);
+  font-size: var(--text-metric);
   line-height: 1.18;
   margin: 8px 0 12px;
   text-wrap: balance;
 }
 .illustrated-heading > .heading-copy > p:last-child {
   max-width: 60ch;
-  font-size: 16px;
+  font-size: var(--font-size-16);
   line-height: 1.65;
 }
 .illustrated-heading > .heading-art {
@@ -78,7 +78,7 @@
     justify-self: center;
   }
   .illustrated-heading > .heading-copy h1 {
-    font-size: clamp(30px, 7vw, 36px);
+    font-size: var(--text-metric);
   }
   .illustrated-heading > .heading-actions {
     margin-top: 4px;

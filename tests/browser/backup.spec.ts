@@ -33,7 +33,7 @@ test("backup remains available without import readiness and errors stay beside e
   const backup = JSON.parse(await readFile((await file.path())!, "utf8"));
   expect(Object.keys(backup.tables)).toHaveLength(35);
   await expect(
-    exportCard.getByRole("link", { name: "Lưu file JSON", exact: true }),
+    exportCard.getByRole("link", { name: "Tải bản sao lưu", exact: true }),
   ).toBeVisible();
   await page.route("**/api/v1/data/backup", (r) =>
     r.fulfill({
@@ -47,7 +47,7 @@ test("backup remains available without import readiness and errors stay beside e
   await expect(exportCard.getByRole("alert")).toContainText("Chưa kết nối");
   await expect(importCard.getByRole("alert")).toHaveCount(0);
   await expect(
-    exportCard.getByRole("link", { name: "Lưu file JSON", exact: true }),
+    exportCard.getByRole("link", { name: "Tải bản sao lưu", exact: true }),
   ).toHaveCount(0);
 });
 test("explicit save link downloads valid JSON when automatic download is blocked", async ({
@@ -74,7 +74,7 @@ test("explicit save link downloads valid JSON when automatic download is blocked
     page.getByRole("button", { name: "Đang xuất…", exact: true }),
   ).toBeDisabled();
   release();
-  const link = page.getByRole("link", { name: "Lưu file JSON", exact: true });
+  const link = page.getByRole("link", { name: "Tải bản sao lưu", exact: true });
   await expect(link).toBeVisible();
   await expect(link).toHaveAttribute("href", /^blob:/);
   const download = page.waitForEvent("download");
@@ -110,9 +110,11 @@ test("status failure does not silently disable export; unexpected HTML is reject
     name: "Sao lưu dữ liệu",
     exact: true,
   });
-  await expect(exportCard.getByRole("alert")).toContainText("file JSON hợp lệ");
+  await expect(exportCard.getByRole("alert")).toContainText(
+    "bản sao lưu hợp lệ",
+  );
   await expect(
-    exportCard.getByRole("link", { name: "Lưu file JSON", exact: true }),
+    exportCard.getByRole("link", { name: "Tải bản sao lưu", exact: true }),
   ).toHaveCount(0);
 });
 async function login(page: Page, next = "/settings") {

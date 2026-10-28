@@ -230,7 +230,7 @@ export function ThemedLanding() {
               ))}
             <p>
               {tr(
-                "Tổng quan hiện tập trung vào các hũ chi tiêu. Báo cáo nằm trong từng module; chưa có tổng tài sản ròng toàn hệ thống.",
+                "Tổng quan hiện tập trung vào các hũ chi tiêu. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.",
               )}
             </p>
           </div>
@@ -275,7 +275,7 @@ export function ThemedLanding() {
             <summary>{tr("Dữ liệu trong phần trải nghiệm là của ai?")}</summary>
             <p>
               {tr(
-                "Đó là dữ liệu minh họa cố định. Preview không đọc dữ liệu tài chính của bạn và không lưu thao tác vào tài khoản.",
+                "Đó là dữ liệu minh họa cố định, không lấy dữ liệu tài chính của bạn và không lưu thao tác vào tài khoản.",
               )}
             </p>
           </details>
@@ -287,7 +287,7 @@ export function ThemedLanding() {
             <summary>{tr("Có thể dùng trên điện thoại không?")}</summary>
             <p>
               {tr(
-                "Giao diện được thiết kế cho cả điện thoại và máy tính. Tab giữ nhãn đầy đủ; bảng rộng cuộn trong vùng riêng. Bản triển khai qua HTTPS có nền PWA để thêm vào màn hình chính; hiện chưa hỗ trợ ghi dữ liệu khi mất mạng.",
+                "Bạn có thể dùng trên điện thoại và máy tính, chọn tháng/năm theo cùng một cách ở các mục. Bạn cũng có thể thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Hiện chưa hỗ trợ nhập dữ liệu khi mất mạng.",
               )}
             </p>
             <p>{tr(navigationSummary)}</p>
@@ -298,7 +298,7 @@ export function ThemedLanding() {
             </summary>
             <p>
               {tr(
-                "Trong Cài đặt, bạn có thể chủ động tải bản sao lưu JSON toàn bộ dữ liệu và nhập lại vào tài khoản mới chưa có dữ liệu. File không mật khẩu; hãy tự giữ một bản ở nơi an toàn. Trang Cài đặt có liên kết lưu file trực tiếp nếu trình duyệt chưa bắt đầu tải. Hồ sơ cá nhân được khôi phục nếu bạn chọn.",
+                "Trong Cài đặt, bạn có thể chủ động tải bản sao lưu toàn bộ dữ liệu và nhập lại vào tài khoản mới chưa có dữ liệu. File không mật khẩu; hãy tự giữ một bản ở nơi an toàn. Trang Cài đặt có liên kết lưu file trực tiếp nếu trình duyệt chưa bắt đầu tải. Hồ sơ cá nhân được khôi phục nếu bạn chọn.",
               )}
             </p>
           </details>

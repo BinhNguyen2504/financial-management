@@ -13,7 +13,7 @@ export const investments = {
   "Tất cả danh mục và ví": "All portfolios and wallets",
   "Loại giao dịch báo cáo": "Report transaction type",
   "Tất cả loại": "All types",
-  "Xuất CSV": "Export CSV",
+  "Xuất bảng dữ liệu": "Export data table",
   "Chọn khoảng ngày hợp lệ, bắt đầu không muộn hơn hôm nay.":
     "Choose a valid date range, starting no later than today.",
   "Số liệu đến": "Figures as at",
@@ -86,16 +86,16 @@ export const investments = {
   "Đầu tư": "Investments",
   "Theo dõi từng danh mục, giữ rõ dòng tiền và những thay đổi theo thời gian.":
     "Follow each portfolio, with clear cash flow and changes over time.",
-  "Kết nối dữ liệu Đầu tư": "Connect Investments data",
-  "Cần cấu hình Auth, database và áp dụng migration Đầu tư để sử dụng.":
-    "Configure Auth, the database and the Investments migration to use this feature.",
+  "Đầu tư chưa sẵn sàng": "Investments are not available yet",
+  "Tính năng này chưa sẵn sàng. Bạn có thể thử lại sau.":
+    "This feature is not available yet. Please try again later.",
   "Xem tài sản tại ngày": "View assets as at",
   "Ghi giao dịch": "Record transaction",
   "Thêm danh mục": "Add category",
   "Tải lại": "Refresh",
   "Đăng nhập lại": "Sign in again",
-  "Kiểm tra kết nối và migration Đầu tư; nội dung trong form được giữ.":
-    "Check your connection and the Investments migration; your form draft is preserved.",
+  "Chưa tải được dữ liệu đầu tư. Hãy thử lại; nội dung đang nhập được giữ.":
+    "Could not load investments. Try again; your draft is preserved.",
   "Đang tải danh mục…": "Loading portfolios…",
   "Tài sản trong Đầu tư": "Assets in Investments",
   "Vốn còn giữ": "Capital retained",
@@ -153,11 +153,11 @@ export const investments = {
   "Xóa / lưu trữ danh mục": "Delete / archive category",
   "Khôi phục danh mục": "Restore category",
   "Hủy giao dịch": "Void transaction",
-  "Đóng form và bỏ nội dung chưa lưu?":
+  "Đóng cửa sổ và bỏ nội dung chưa lưu?":
     "Close the form and discard unsaved changes?",
   "Danh mục / ví": "Portfolio / wallet",
   "Chọn danh mục / ví": "Choose a portfolio / wallet",
-  "Hãy hiện tiền trong form để kiểm tra trước khi lưu.":
+  "Hãy hiện tiền để kiểm tra trước khi lưu.":
     "Show amounts in this form to review before saving.",
   "Đã lưu thay đổi.": "Changes saved.",
   "Kiểm tra các trường được đánh dấu.": "Check the highlighted fields.",
@@ -167,7 +167,7 @@ export const investments = {
   "Chưa hoàn tất. Hãy thử lại.": "Not completed. Try again.",
   "Không thể tính vốn tại ngày này. Hãy nhập giá vốn bán và xem trước để kiểm tra.":
     "Could not calculate capital on this date. Enter the sale cost basis and preview to check.",
-  "Đóng form": "Close form",
+  "Đóng cửa sổ": "Close form",
   "Đang kiểm tra…": "Checking…",
   "Xác nhận lưu": "Confirm save",
   "Xem trước thay đổi": "Preview changes",

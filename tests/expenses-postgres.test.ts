@@ -549,7 +549,7 @@ it("persists emoji metadata across reads without altering balances or overrides"
     type: "setJarEmoji" as const,
     jarId: id,
     month: "2027-01",
-    emoji: "🌱" as const,
+    emoji: "👨‍👩‍👧‍👦" as const,
   };
   const requestId = randomUUID();
   await execute(user, 3, action, requestId);
@@ -560,7 +560,7 @@ it("persists emoji metadata across reads without altering balances or overrides"
   expect(after.rows.map(({ emoji: _emoji, ...r }) => r)).toEqual(
     before.rows.map(({ emoji: _emoji, ...r }) => r),
   );
-  expect(after.rows.find((r) => r.month === "2027-01")?.emoji).toBe("🌱");
+  expect(after.rows.find((r) => r.month === "2027-01")?.emoji).toBe("👨‍👩‍👧‍👦");
   expect(after.rows.find((r) => r.month === "2026-12")?.emoji).toBeNull();
   expect(after.book?.audit.at(-1)?.action).toBe("setJarEmoji");
 });

@@ -1,3 +1,4 @@
+import { selectMonthYear } from "./helpers/month-year";
 import { expect, test, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
@@ -76,7 +77,7 @@ test("savings ledgers keep fields, filters, privacy and actions usable across wi
     });
     expect(response.ok(), await response.text()).toBe(true);
   }
-  await page.getByLabel("Tháng đang xem", { exact: true }).fill(month);
+  await selectMonthYear(page, "Tháng đang xem", month);
   await page.getByRole("button", { name: "Tải lại", exact: true }).click();
   await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
   const monthlyTable = page.getByRole("table", {
@@ -193,7 +194,7 @@ test("savings ledgers keep fields, filters, privacy and actions usable across wi
     }),
   ).toBeVisible();
   await page.reload();
-  await page.getByLabel("Tháng đang xem", { exact: true }).fill(month);
+  await selectMonthYear(page, "Tháng đang xem", month);
   await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
   await expect(monthlyTable.getByRole("row")).toHaveCount(4);
   await expect(
@@ -292,7 +293,7 @@ async function category(page: Page, name: string, kind = "cash") {
     .getByRole("button", { name: "Thêm danh mục", exact: true })
     .click();
   await page.getByLabel("Tên danh mục", { exact: true }).fill(name);
-  await page.getByLabel("Tháng bắt đầu", { exact: true }).fill(month);
+  await selectMonthYear(page, "Tháng bắt đầu", month);
   await page.getByLabel("Loại tài sản", { exact: true }).selectOption(kind);
   if (kind === "gold")
     await page.getByLabel("Đơn vị vàng", { exact: true }).selectOption("chỉ");
@@ -368,7 +369,7 @@ test("savings chart tooltips show hovered data, preserve keyboard focus and mask
     ).toBe(true);
   }
   await page.reload();
-  await page.getByLabel("Tháng đang xem").fill(month);
+  await selectMonthYear(page, "Tháng đang xem", month);
   const point = page
     .locator(".savings-chart-mark")
     .filter({ has: page.locator(".savings-point") })
@@ -529,7 +530,7 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
   await login(page);
   await category(page, "Ví tích lũy");
   await category(page, "Vàng giữ lâu", "gold");
-  await page.getByLabel("Tháng đang xem").fill(month);
+  await selectMonthYear(page, "Tháng đang xem", month);
   await expect(page.locator(".savings-toolbar .pill")).toContainText(
     "Chưa chốt",
   );
@@ -572,7 +573,9 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
   await page.getByLabel("Biểu đồ", { exact: true }).selectOption("flow");
   await page.getByLabel("Phân bố theo", { exact: true }).selectOption("kind");
   const csvPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Xuất CSV", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Xuất bảng dữ liệu", exact: true })
+    .click();
   const csv = await readFile((await (await csvPromise).path())!, "utf8");
   expect(csv).toContain("64000000");
   expect(csv).toContain("50000000");
@@ -607,7 +610,7 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
     page.getByLabel("Số tiền (VND)", { exact: true }),
   ).toBeDisabled();
   await page
-    .getByRole("button", { name: "Hiện tiền trong form", exact: true })
+    .getByRole("button", { name: "Hiện tiền trong cửa sổ này", exact: true })
     .click();
   await expect(page.getByLabel("Số tiền (VND)", { exact: true })).toBeEnabled();
   await page.getByRole("button", { name: "Đóng", exact: true }).click();
@@ -681,7 +684,7 @@ test("deposits, atomic rollover, monthly locks, archive and historical reporting
     },
   });
   expect(locked.status()).toBe(409);
-  await page.getByLabel("Tháng đang xem").fill(month);
+  await selectMonthYear(page, "Tháng đang xem", month);
   await page.getByRole("button", { name: "Tải lại", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Mở lại tháng", exact: true }),
@@ -831,7 +834,7 @@ test("lost commit response retries once; empty categories archive and restore wi
   await page
     .getByRole("button", { name: "Lưu trữ Ví gốc", exact: true })
     .click();
-  await page.getByLabel("Tháng hiệu lực").fill(today.slice(0, 7));
+  await selectMonthYear(page, "Tháng hiệu lực", today.slice(0, 7));
   await save(page);
   await expect(
     page.getByRole("button", { name: "Khôi phục Ví gốc", exact: true }),

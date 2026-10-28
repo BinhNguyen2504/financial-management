@@ -1,6 +1,7 @@
 "use client";
+import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
-import { formatDate } from "@/i18n/format";
+import { formatDate, formatTime } from "@/i18n/format";
 
 import { Garden } from "@/components/garden";
 import { AssetScene } from "@/components/asset-scene";
@@ -9,7 +10,6 @@ import { focusPointerControl } from "@/components/pointer-focus";
 
 import { endOfMonth, ruleAt } from "@/domain/savings/engine";
 import { type ReportFilter } from "@/domain/savings/reports";
-import { monthSchema } from "@/domain/savings/schema";
 import type { CategoryPosition } from "@/domain/savings/types";
 import { HelpButton, HelpPageTitle } from "@/features/help/provider";
 import { formatDecimal } from "@/i18n/format";
@@ -20,7 +20,7 @@ import { SavingsDetails } from "./details";
 import { SavingsCategoryTable, SavingsTransactionTable } from "./ledger-tables";
 import { SavingsEditor } from "./editor";
 
-import { kindNames, transactionNames } from "./editor-config";
+import { auditActionNames, kindNames, transactionNames } from "./editor-config";
 import { SavingsReports } from "./report-panel";
 import { useSavingsWorkspace } from "./use-savings-workspace";
 
@@ -132,12 +132,8 @@ export function SavingsWorkspace(
       </div>
       {!configured ? (
         <section className="panel">
-          <h2>{tr("Chưa kết nối dữ liệu Tiết kiệm")}</h2>
-          <p>
-            {tr(
-              "Cấu hình Supabase và PostgreSQL theo hướng dẫn dự án để sử dụng.",
-            )}
-          </p>
+          <h2>{tr("Tiết kiệm chưa sẵn sàng")}</h2>
+          <p>{tr("Tính năng này chưa sẵn sàng. Bạn có thể thử lại sau.")}</p>
         </section>
       ) : (
         <>
@@ -168,22 +164,13 @@ export function SavingsWorkspace(
           {view && (
             <>
               <div className="savings-toolbar">
-                <label>
-                  {tr("Tháng đang xem")}
-                  <input
-                    type="month"
-                    value={month}
-                    min="2000-01"
-                    max={today.slice(0, 7)}
-                    onChange={(e) => {
-                      if (
-                        monthSchema.safeParse(e.target.value).success &&
-                        e.target.value <= today.slice(0, 7)
-                      )
-                        setMonth(e.target.value);
-                    }}
-                  />
-                </label>
+                <MonthYearSelect
+                  label={tr("Tháng đang xem")}
+                  value={month}
+                  min="2000-01"
+                  max={today.slice(0, 7)}
+                  onChange={setMonth}
+                />
                 <span className="pill">
                   {view.closed.includes(month)
                     ? tr("Đã chốt")
@@ -453,7 +440,9 @@ export function SavingsWorkspace(
                       </summary>
                       {[...(view.book?.audit ?? [])].reverse().map((a) => (
                         <p key={a.version}>
-                          #{a.version} · {a.at} · {a.action.type}
+                          {tr("Lần ghi")} #{a.version} ·{" "}
+                          {formatTime(a.at, locale)} ·{" "}
+                          {tr(auditActionNames[a.action.type])}
                           {"reason" in a.action ? ` · ${a.action.reason}` : ""}
                         </p>
                       ))}
@@ -624,7 +613,7 @@ export function SavingsWorkspace(
                         }}
                       >
                         <Download size={16} aria-hidden="true" />
-                        {tr("Xuất CSV")}
+                        {tr("Xuất bảng dữ liệu")}
                       </button>
                     </section>
                     {report ? (

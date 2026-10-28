@@ -52,7 +52,7 @@ Backup JSON theo năm có `schemaVersion: 1`, trạng thái draft/closed, kỳ, 
 
 Lệnh JSON: `{ "id": "UUID", "expectedVersion": 2, "action": { "type": "..." } }`. Action gồm initialize, createJar, configureJar, setJarEmoji, stopJar, editMonth, upsertSpend, deleteSpend, upsertLabel, deleteLabel, closeYear. Schema kiểm đầu vào ở `src/domain/expenses/schema.ts`; types view và report cùng module. Không nhận owner từ request.
 
-Biểu tượng: `createJar` nhận thêm `emoji` tùy chọn. `setJarEmoji` có payload `{ "type": "setJarEmoji", "jarId": "UUID", "month": "2026-10", "emoji": "🌱" }`; emoji phải nằm trong bộ hỗ trợ ở `src/domain/expenses/emoji.ts`, hoặc null để tự động theo tên. Lưu trong rules JSONB và trả qua `ExpenseRow.emoji`, cùng tháng hiệu lực/version/audit như các lệnh khác. Lệnh không đổi mức tháng, inputs hoặc trạng thái hoạt động; năm đã chốt bị từ chối. Dữ liệu cũ thiếu trường này vẫn đọc được, không cần migration SQL.
+Biểu tượng: `createJar` nhận thêm `emoji` tùy chọn. `setJarEmoji` có payload `{ "type": "setJarEmoji", "jarId": "UUID", "month": "2026-10", "emoji": "🌱" }`; emoji phải là một emoji Unicode hợp lệ (kể cả chuỗi ghép gia đình, màu da, quốc kỳ), tối đa 32 UTF-16 code units, hoặc null để tự động theo tên. Cùng validator được dùng ở giao diện, API và backup; bộ gợi ý không giới hạn các emoji được nhập. Lưu trong rules JSONB và trả qua `ExpenseRow.emoji`, cùng tháng hiệu lực/version/audit như các lệnh khác. Lệnh không đổi mức tháng, inputs hoặc trạng thái hoạt động; năm đã chốt bị từ chối. Dữ liệu cũ thiếu trường này vẫn đọc được, không cần migration SQL.
 
 Web dùng cookie; POST cookie yêu cầu Origin khớp origin công khai. Native dùng `Authorization: Bearer <Supabase access token>` và cùng hợp đồng JSON. Mọi response có `Cache-Control: private, no-store`. Lỗi 401: đăng nhập; 403: nguồn request; 409: version/idempotency/năm đã chốt; 422: dữ liệu không hợp lệ; 503: chưa cấu hình hoặc lỗi lưu trữ. Flutter chưa được triển khai.
 
@@ -121,3 +121,22 @@ Tiêu đề luôn có cảnh hũ chi theo năm theme, kể cả trước khi có
 - Lưu chỉ gửi hũ, input tháng, lần sử dụng, năm, phân loại và audit mới/đã thay đổi. Transaction, RLS, khóa theo owner, version và biên nhận thử lại giữ nguyên.
 
 Xem [phạm vi rà soát và bằng chứng](expense-feedback-2026-10-28.md).
+
+## Tổ chức source — 28/10/2026
+
+Editor Chi tiêu tách cấu hình mode, dựng action, controller draft/preview/lưu, trường nhập và preview; dialog dùng primitive chung với alias ExpenseModal tương thích. Luồng phân loại lồng nhau và trạng thái lưu chưa xác định giữ nguyên. Không đổi HTTP/schema hoặc áp migration cloud. Xem [hướng dẫn bảo trì](../11-source-maintenance.md) và [bằng chứng kiểm tra](../07-validation.md).
+
+
+## Phân loại mobile, emoji và thương hiệu — 28/10/2026
+
+Dialog “Phương thức và nhóm” dùng danh sách hàng gọn: tên/logo bên trái, hai nút sửa/xóa 44px với khoảng cách 8px bên phải. Tên dài xuống dòng; tìm kiếm và phân trang 20 mục vẫn giữ trạng thái khi mở/đóng form con. Danh sách hai trường không cần chọn cột; các bảng chi tiết khác giữ bộ chọn cột hiện có.
+
+Bộ gợi ý tăng từ 42 lên 90 emoji với tên Việt/Anh và tìm không dấu. Ô “Emoji từ bàn phím” cho nhập/dán một emoji chưa có trong gợi ý, báo lỗi tại chỗ với văn bản hoặc nhiều emoji. Hỗ trợ màu da, gia đình ghép, quốc kỳ và keycap; xóa ô hoặc chọn “Tự động theo tên” trở về gợi ý. Lưu vẫn theo tháng hiệu lực, không đổi số tiền hoặc lịch sử đã chốt. Backup khôi phục cả emoji nhập riêng trong rules và snapshot; không cần migration SQL.
+
+Danh sách thương hiệu có 27 lựa chọn (21 ngân hàng, 6 ví), chia nhóm trong select. Bổ sung Agribank, Sacombank, TPBank, SHB, HDBank, MSB, OCB, SeABank, Eximbank, LPBank, Woori Bank, VNPAY, Viettel Money và VNPT Money. Logo PNG cục bộ lấy từ website chính thức; provenance tại `public/brands/sources.json`. Một số favicon có độ phân giải gốc thấp. Đây là lựa chọn nhận diện khi người dùng tạo phân loại; không tự tạo phân loại, kết nối hay lấy số dư ngân hàng.
+
+Đã rà catalog, landing/preview minh họa cố định, README, Help, kiến trúc và UX; bằng chứng hiện tại xem [validation](../07-validation.md).
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

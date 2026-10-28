@@ -380,7 +380,7 @@ test("unchanged drafts and field errors work consistently in savings and investm
     await expect(preview).toBeDisabled();
     await page
       .getByRole("button", {
-        name: feature === "investments" ? "Đóng form" : "Hủy",
+        name: feature === "investments" ? "Đóng cửa sổ" : "Hủy",
         exact: true,
       })
       .click();
@@ -396,7 +396,7 @@ test("unchanged drafts and field errors work consistently in savings and investm
     ).toHaveAttribute("aria-invalid", "true");
     await page
       .getByRole("button", {
-        name: feature === "investments" ? "Đóng form" : "Hủy",
+        name: feature === "investments" ? "Đóng cửa sổ" : "Hủy",
         exact: true,
       })
       .click();

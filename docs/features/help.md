@@ -33,7 +33,7 @@ Ví dụ có nhãn Minh họa, dùng số liệu cố định, không truy cập
 
 `src/features/help/` có `types.ts`, `registry.ts`, `content.ts`, `provider.tsx`, `text.tsx` và stylesheet. `HelpPageId` lấy slug catalog cộng profile; registry lấy tên/trạng thái từ catalog. Section/item có ID ổn định; `openHelp(pageId, sectionId?)` dùng chung với `HelpButton`. Nội dung tải bằng dynamic import khi mở, có trạng thái tải/lỗi/thử lại, không phụ thuộc API tài chính. Mục lục không thay URL.
 
-Controller nằm trong SessionBoundary. Help mở bằng biến thể của ExpenseModal để dùng cùng stack, inert, khóa cuộn và phục hồi focus. Nội dung giữ trong bundle source, không thêm API, database hay CMS. Mỗi trang private vẫn await pageAccess.
+Controller nằm trong SessionBoundary. Help mở bằng biến thể của native Modal dùng chung để dùng cùng stack, inert, khóa cuộn và phục hồi focus; alias ExpenseModal tiếp tục tương thích. Refactor 28/10 tách panel tải/hiển thị bài khỏi provider điều khiển. Nội dung giữ trong bundle source, không thêm API, database hay CMS. Mỗi trang private vẫn await pageAccess.
 
 Public landing có FAQ dùng mô tả chung trong catalog; preview dùng phần giải thích rút gọn cố định cho năm tab, không mount controller của app hoặc gọi API tài chính.
 
@@ -55,3 +55,7 @@ Help trong app dùng lựa chọn Tiếng Việt/English của Cài đặt. Hai 
 ## Hướng dẫn đổi ngôn ngữ trang chủ — 27/10/2026
 
 Tác vụ đổi ngôn ngữ trong Cài đặt nay chỉ cả bộ chọn header công khai và radio Cài đặt. Kết quả bao gồm trang chủ khách/thành viên, preview, khung công khai và đăng nhập; hai bản Help giữ cùng ID tác vụ và giới hạn lưu theo trình duyệt.
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

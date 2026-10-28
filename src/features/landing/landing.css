@@ -22,8 +22,8 @@
   display: inline-flex;
   align-items: center;
   gap: 11px;
-  font-size: 17px;
-  font-weight: 750;
+  font-size: var(--font-size-18);
+  font-weight: var(--weight-strong);
   line-height: 1.15;
   letter-spacing: -0.35px;
   flex-shrink: 0;
@@ -39,9 +39,9 @@
 }
 .public-brand-sub {
   display: block;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   letter-spacing: 1.6px;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   margin-top: 4px;
 }
 .public-nav {
@@ -49,7 +49,7 @@
   gap: 28px;
   margin: 0 auto;
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--font-size-14);
 }
 .public-nav a {
   display: inline-flex;
@@ -70,7 +70,7 @@
   border-color: transparent;
   background: transparent;
   padding: 8px 12px;
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .public-account .user-trigger:hover {
   background: var(--primary-soft);
@@ -93,14 +93,14 @@
   gap: 16px;
 }
 .landing-kicker {
-  font-size: 11px;
-  font-weight: 750;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-strong);
   letter-spacing: 1.9px;
   color: var(--primary);
   line-height: 1.7;
 }
 .landing-stage {
-  font-size: 11px;
+  font-size: var(--font-size-12);
   white-space: nowrap;
   border: 1px solid var(--border);
   padding: 5px 12px;
@@ -115,10 +115,10 @@
   margin: 32px 0;
 }
 .public-shell h1 {
-  font-size: clamp(42px, 4.9vw, 70px);
+  font-size: clamp(2.625rem, 4.9vw, 4.375rem);
   line-height: 1.14;
   letter-spacing: -2.8px;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 .hero-copy h1 span {
   color: var(--primary);
@@ -127,7 +127,7 @@
   padding-bottom: 4px;
 }
 .hero-aside > p {
-  font-size: 16px;
+  font-size: var(--font-size-16);
   line-height: 1.85;
   color: var(--text);
 }
@@ -135,7 +135,7 @@
   display: block;
   max-width: 245px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-size-12);
   line-height: 1.8;
   margin-top: 15px;
 }
@@ -147,7 +147,7 @@
   margin-top: 34px;
 }
 .hero-bottom > p {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 .landing-actions {
@@ -164,8 +164,8 @@
   justify-content: center;
   gap: 12px;
   min-height: 48px;
-  font-size: 14px;
-  font-weight: 650;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
 }
 .landing-button {
   padding: 15px 23px;
@@ -186,7 +186,7 @@
   color: var(--primary);
 }
 .landing-text-link {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   min-height: 44px;
   gap: 6px;
 }
@@ -206,7 +206,7 @@
   gap: 20px;
   padding: 14px 22px;
   border-bottom: 1px solid var(--border);
-  font-size: 10px;
+  font-size: var(--font-size-12);
   color: var(--muted);
   letter-spacing: 0.5px;
 }
@@ -222,7 +222,7 @@
 }
 .preview-demo-label {
   margin-left: auto;
-  font-size: 10px;
+  font-size: var(--font-size-12);
   padding: 3px 9px;
   border-radius: 6px;
   background: var(--primary-soft);
@@ -243,16 +243,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 750;
-  font-size: 12px;
+  font-weight: var(--weight-strong);
+  font-size: var(--font-size-12);
   letter-spacing: -0.2px;
 }
 .preview-logo svg {
   color: var(--logo-bg);
 }
 .preview-sidebar > p {
-  font-size: 8px;
-  font-weight: 700;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-strong);
   letter-spacing: 1.1px;
   color: var(--muted);
   margin: 36px 12px 12px;
@@ -273,12 +273,12 @@
   border-radius: 11px;
   background: transparent;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-size-12);
 }
 .preview-tabs button[aria-selected="true"] {
   background: var(--primary-soft);
   color: var(--primary);
-  font-weight: 750;
+  font-weight: var(--weight-strong);
 }
 .preview-tabs button:hover {
   color: var(--primary);
@@ -287,13 +287,13 @@
 .preview-sidebar-note {
   margin-top: auto;
   padding: 70px 10px 0;
-  font-size: 10px;
+  font-size: var(--font-size-12);
 }
 .preview-sidebar-note small {
   display: block;
   margin-top: 6px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-size-12);
   line-height: 1.8;
 }
 .preview-workspace {
@@ -307,11 +307,32 @@
   align-items: center;
   gap: 12px;
 }
+.preview-period {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--text-label);
+}
+.preview-period > div {
+  min-width: 0;
+}
+.preview-period dt {
+  color: var(--muted);
+  font-size: var(--text-caption);
+}
+.preview-period dd {
+  margin: 2px 0 0;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
 .preview-workspace-top > span {
   display: flex;
   gap: 8px;
   align-items: center;
-  font-size: 9px;
+  font-size: var(--font-size-12);
   letter-spacing: 0.9px;
   color: var(--muted);
 }
@@ -327,7 +348,7 @@
   border: 1px solid var(--border);
   border-radius: 22px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--font-size-12);
 }
 .preview-privacy[aria-pressed="true"] {
   color: var(--primary);
@@ -337,19 +358,19 @@
   margin: 18px 0 24px;
 }
 .preview-heading > div > p {
-  font-size: 10px;
+  font-size: var(--font-size-12);
   color: var(--primary);
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   margin-bottom: 6px;
 }
 .preview-heading h2 {
-  font-size: 25px;
-  font-weight: 600;
+  font-size: var(--font-size-24);
+  font-weight: var(--weight-medium);
   letter-spacing: -0.7px;
 }
 .preview-heading > div > span {
   display: block;
-  font-size: 11px;
+  font-size: var(--font-size-12);
   color: var(--muted);
   margin-top: 7px;
 }
@@ -372,13 +393,13 @@
   background: var(--primary-soft);
 }
 .preview-metrics span {
-  font-size: 11px;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 .preview-metrics strong {
-  font-size: clamp(20px, 2.2vw, 29px);
+  font-size: clamp(1.25rem, 2.2vw, 1.8125rem);
   color: var(--primary);
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   letter-spacing: -0.7px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -388,7 +409,7 @@
   gap: 5px;
   align-items: center;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-size-12);
 }
 .preview-detail-grid {
   display: grid;
@@ -403,7 +424,7 @@
   justify-content: space-between;
   padding: 0 0 11px;
   border-bottom: 1px solid var(--border);
-  font-size: 10px;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 .preview-row {
@@ -420,7 +441,7 @@
   border-radius: 10px;
   display: grid;
   place-items: center;
-  font-size: 18px;
+  font-size: var(--font-size-18);
   flex-shrink: 0;
 }
 .preview-row-info {
@@ -429,19 +450,19 @@
 }
 .preview-row-info strong {
   display: block;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-strong);
 }
 .preview-row-info small {
   display: block;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-size-12);
   margin: 3px 0 6px;
 }
 .preview-row-money {
-  font-size: 11px;
+  font-size: var(--font-size-12);
   white-space: nowrap;
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   font-variant-numeric: tabular-nums;
 }
 .preview-progress {
@@ -467,14 +488,14 @@
 }
 .preview-chart > span {
   display: block;
-  font-size: 8px;
+  font-size: var(--font-size-12);
   color: var(--muted);
-  font-weight: 750;
+  font-weight: var(--weight-strong);
   letter-spacing: 0.6px;
 }
 .preview-chart > small {
   display: block;
-  font-size: 8px;
+  font-size: var(--font-size-12);
   color: var(--muted);
   margin-top: 6px;
 }
@@ -507,7 +528,7 @@
   bottom: -17px;
   width: 100%;
   text-align: center;
-  font-size: 8px;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 .preview-caption {
@@ -516,11 +537,11 @@
   gap: 20px;
   margin-top: 19px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--font-size-12);
 }
 .preview-caption > span {
   letter-spacing: 1px;
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   white-space: nowrap;
 }
 .landing-section {
@@ -529,14 +550,14 @@
 .section-intro h2,
 .story-copy h2,
 .landing-final h2 {
-  font-size: clamp(30px, 3.2vw, 44px);
+  font-size: clamp(1.875rem, 3.2vw, 2.75rem);
   line-height: 1.22;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   letter-spacing: -1.4px;
   margin-top: 17px;
 }
 .section-intro > p:last-child {
-  font-size: 15px;
+  font-size: var(--font-size-16);
   color: var(--muted);
   line-height: 1.85;
   margin-top: 22px;
@@ -559,32 +580,32 @@
   color: var(--primary);
 }
 .feature-number {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   font-variant-numeric: tabular-nums;
   color: var(--muted);
 }
 .feature-label {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--primary);
-  font-weight: 750;
+  font-weight: var(--weight-strong);
   margin-top: 28px;
 }
 .landing-feature h3 {
-  font-size: 23px;
+  font-size: var(--font-size-24);
   letter-spacing: -0.7px;
   margin-top: 8px;
   line-height: 1.35;
 }
 .landing-feature > p:not(.feature-label) {
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--font-size-14);
   margin-top: 16px;
   line-height: 1.9;
 }
 .feature-detail {
   display: block;
   color: var(--primary);
-  font-size: 11px;
+  font-size: var(--font-size-12);
   margin-top: 24px;
 }
 .landing-principles {
@@ -599,7 +620,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 .landing-principles svg {
@@ -627,12 +648,12 @@
   margin: 30px auto 20px;
 }
 .story-art-note {
-  font-size: 13px;
+  font-size: var(--font-size-14);
   color: var(--primary);
 }
 .story-copy > p:not(.landing-kicker) {
   color: var(--muted);
-  font-size: 15px;
+  font-size: var(--font-size-16);
   line-height: 1.9;
   margin-top: 23px;
 }
@@ -640,7 +661,7 @@
   border-left: 2px solid var(--primary);
   padding-left: 20px;
   margin-top: 28px;
-  font-size: 16px;
+  font-size: var(--font-size-16);
   color: var(--primary);
   line-height: 1.8;
 }
@@ -651,11 +672,11 @@
   margin-top: 42px;
 }
 .development-grid h3 {
-  font-size: 18px;
+  font-size: var(--font-size-18);
   margin-bottom: 23px;
 }
 .development-grid p {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--muted);
   line-height: 1.9;
   margin-top: 22px;
@@ -666,7 +687,7 @@
   gap: 10px;
   padding: 12px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 14px;
+  font-size: var(--font-size-14);
 }
 .development-row svg {
   color: var(--primary);
@@ -674,7 +695,7 @@
 .development-row small {
   margin-left: auto;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--font-size-12);
 }
 .development-next {
   padding: 28px;
@@ -689,7 +710,7 @@
 }
 .planned-tags span {
   padding: 7px 12px;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   border: 1px solid var(--border);
   border-radius: 20px;
   color: var(--muted);
@@ -699,7 +720,7 @@
   max-width: 800px;
 }
 .landing-faq h3 {
-  font-size: 21px;
+  font-size: var(--font-size-20);
   margin-bottom: 24px;
 }
 .landing-faq details {
@@ -710,12 +731,12 @@
 }
 .landing-faq summary {
   padding: 20px 25px 20px 0;
-  font-size: 15px;
+  font-size: var(--font-size-16);
   min-height: 54px;
 }
 .landing-faq p {
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--font-size-14);
   line-height: 1.85;
   padding: 0 0 23px;
   max-width: 700px;
@@ -739,7 +760,7 @@
 }
 .landing-final p:last-child {
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--font-size-14);
   margin-top: 20px;
 }
 .final-decoration {
@@ -759,11 +780,11 @@
   padding: 30px 0 35px;
   border-top: 1px solid var(--border);
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-size-12);
 }
 .public-footer-brand {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--font-size-16);
+  font-weight: var(--weight-strong);
   color: var(--text);
 }
 .public-footer p {
@@ -791,14 +812,14 @@
   min-height: 560px;
 }
 .login-story .login-story-title {
-  font-size: 36px;
-  font-weight: 600;
+  font-size: var(--font-size-32);
+  font-weight: var(--weight-medium);
   letter-spacing: -1.4px;
   line-height: 1.25;
   margin: 20px 0;
 }
 .login-story > p:not(.landing-kicker, .login-story-title) {
-  font-size: 15px;
+  font-size: var(--font-size-16);
   line-height: 1.9;
   color: var(--muted);
 }
@@ -818,7 +839,7 @@
   display: none;
 }
 .public-login h1 {
-  font-size: 32px;
+  font-size: var(--font-size-32);
   letter-spacing: -1px;
 }
 .public-login .expense-form {
@@ -848,8 +869,8 @@
   padding: 0;
   border-radius: 8px;
   text-align: center;
-  font-size: clamp(18px, 3.5vw, 24px);
-  font-weight: 650;
+  font-size: clamp(1.125rem, 3.5vw, 1.5rem);
+  font-weight: var(--weight-medium);
   font-variant-numeric: tabular-nums;
   caret-color: var(--text);
 }
@@ -931,7 +952,7 @@
     gap: 24px;
   }
   .public-shell h1 {
-    font-size: clamp(37px, 7.3vw, 58px);
+    font-size: clamp(2.3125rem, 7.3vw, 3.625rem);
     letter-spacing: -1.8px;
   }
   .hero-aside {
@@ -941,12 +962,12 @@
     display: none;
   }
   .hero-aside > p {
-    font-size: 16px;
+    font-size: var(--font-size-16);
   }
   .hero-aside > span {
     max-width: none;
     margin-top: 10px;
-    font-size: 13px;
+    font-size: var(--font-size-14);
   }
   .hero-bottom > p {
     display: none;
@@ -972,32 +993,32 @@
     flex: 1;
     justify-content: center;
     padding-inline: 8px;
-    font-size: 13px;
+    font-size: var(--font-size-14);
     gap: 8px;
   }
   .preview-workspace {
     padding: 16px 24px 26px;
   }
   .preview-heading h2 {
-    font-size: 25px;
+    font-size: var(--font-size-24);
   }
   .preview-heading > div > span {
-    font-size: 12px;
+    font-size: var(--font-size-12);
   }
   .preview-row-info strong,
   .preview-row-money {
-    font-size: 13px;
+    font-size: var(--font-size-14);
   }
   .preview-row-info small {
-    font-size: 11px;
+    font-size: var(--font-size-12);
   }
   .preview-metrics strong {
-    font-size: 25px;
+    font-size: var(--font-size-24);
   }
   .preview-caption {
     flex-direction: column;
     gap: 7px;
-    font-size: 11px;
+    font-size: var(--font-size-12);
   }
   .landing-section {
     padding-block: 75px;
@@ -1006,7 +1027,7 @@
     gap: 22px;
   }
   .landing-feature h3 {
-    font-size: 21px;
+    font-size: var(--font-size-20);
   }
   .landing-principles {
     flex-wrap: wrap;
@@ -1040,7 +1061,7 @@
     gap: 12px;
   }
   .public-brand {
-    font-size: 15px;
+    font-size: var(--font-size-16);
   }
   .public-brand-mark {
     width: 36px;
@@ -1054,7 +1075,7 @@
   }
   .public-account > .user-trigger {
     padding-inline: 6px;
-    font-size: 13px;
+    font-size: var(--font-size-14);
   }
   .public-account .user-loading {
     width: 70px;
@@ -1071,11 +1092,11 @@
     gap: 10px;
   }
   .landing-kicker {
-    font-size: 9px;
+    font-size: var(--font-size-12);
     letter-spacing: 1.25px;
   }
   .hero-topline .landing-stage {
-    font-size: 10px;
+    font-size: var(--font-size-12);
     padding: 3px 9px;
   }
   .hero-copy {
@@ -1083,18 +1104,18 @@
     gap: 22px;
   }
   .public-shell h1 {
-    font-size: clamp(34px, 8.9vw, 51px);
+    font-size: clamp(2.125rem, 8.9vw, 3.1875rem);
     letter-spacing: -1.7px;
   }
   .hero-copy h1 br {
     display: none;
   }
   .hero-aside > p {
-    font-size: 16px;
+    font-size: var(--font-size-16);
     line-height: 1.8;
   }
   .hero-aside > span {
-    font-size: 12px;
+    font-size: var(--font-size-12);
   }
   .hero-bottom {
     margin-top: 25px;
@@ -1103,11 +1124,11 @@
     gap: 7px 18px;
   }
   .landing-button {
-    font-size: 13px;
+    font-size: var(--font-size-14);
     padding: 13px 17px;
   }
   .landing-secondary {
-    font-size: 12px;
+    font-size: var(--font-size-12);
     gap: 7px;
   }
   .product-preview {
@@ -1121,13 +1142,13 @@
     display: none;
   }
   .preview-demo-label {
-    font-size: 10px;
+    font-size: var(--font-size-12);
   }
   .preview-sidebar {
     padding: 9px;
   }
   .preview-tabs button {
-    font-size: 12px;
+    font-size: var(--font-size-12);
     gap: 5px;
     padding-inline: 5px;
   }
@@ -1138,16 +1159,16 @@
     padding: 12px 16px 21px;
   }
   .preview-workspace-top > span {
-    font-size: 8px;
+    font-size: var(--font-size-12);
   }
   .preview-heading {
     margin-top: 14px;
   }
   .preview-heading h2 {
-    font-size: 22px;
+    font-size: var(--font-size-20);
   }
   .preview-heading > div > span {
-    font-size: 12px;
+    font-size: var(--font-size-12);
     line-height: 1.7;
   }
   .preview-privacy span {
@@ -1169,13 +1190,13 @@
     align-items: center;
   }
   .preview-metrics > div:nth-child(2) strong {
-    font-size: 21px;
+    font-size: var(--font-size-20);
   }
   .preview-metrics span {
-    font-size: 12px;
+    font-size: var(--font-size-12);
   }
   .preview-metrics small {
-    font-size: 10px;
+    font-size: var(--font-size-12);
   }
   .preview-row {
     flex-wrap: wrap;
@@ -1185,18 +1206,18 @@
     flex-basis: calc(100% - 44px);
   }
   .preview-row-info strong {
-    font-size: 14px;
+    font-size: var(--font-size-14);
   }
   .preview-row-money {
     margin-left: 44px;
-    font-size: 15px;
+    font-size: var(--font-size-16);
   }
   .preview-progress {
     max-width: none;
   }
   .preview-caption {
     margin-top: 15px;
-    font-size: 10px;
+    font-size: var(--font-size-12);
     line-height: 1.8;
   }
   .preview-caption > span {
@@ -1208,11 +1229,11 @@
   .section-intro h2,
   .story-copy h2,
   .landing-final h2 {
-    font-size: 33px;
+    font-size: var(--font-size-32);
     letter-spacing: -1.1px;
   }
   .section-intro > p:last-child {
-    font-size: 16px;
+    font-size: var(--font-size-16);
   }
   .landing-features {
     grid-template-columns: 1fr;
@@ -1223,14 +1244,14 @@
     margin-top: 18px;
   }
   .landing-feature h3 {
-    font-size: 25px;
+    font-size: var(--font-size-24);
   }
   .landing-feature > p:not(.feature-label) {
-    font-size: 16px;
+    font-size: var(--font-size-16);
     margin-top: 13px;
   }
   .feature-detail {
-    font-size: 12px;
+    font-size: var(--font-size-12);
     margin-top: 18px;
   }
   .landing-principles {
@@ -1238,7 +1259,7 @@
     margin-top: 35px;
   }
   .landing-principles p {
-    font-size: 13px;
+    font-size: var(--font-size-14);
   }
   .landing-story {
     padding-block: 45px;
@@ -1259,7 +1280,7 @@
     display: none;
   }
   .story-copy > p:not(.landing-kicker) {
-    font-size: 16px;
+    font-size: var(--font-size-16);
   }
   .development-grid {
     grid-template-columns: 1fr;
@@ -1270,17 +1291,17 @@
     padding: 22px;
   }
   .development-grid p {
-    font-size: 14px;
+    font-size: var(--font-size-14);
   }
   .development-row small {
-    font-size: 10px;
+    font-size: var(--font-size-12);
   }
   .landing-faq {
     margin-top: 45px;
   }
   .landing-faq summary,
   .landing-faq p {
-    font-size: 16px;
+    font-size: var(--font-size-16);
   }
   .landing-final {
     flex-direction: column;
@@ -1290,7 +1311,7 @@
     gap: 25px;
   }
   .landing-final p:last-child {
-    font-size: 15px;
+    font-size: var(--font-size-16);
   }
   .final-decoration {
     right: 0;
@@ -1324,7 +1345,7 @@
     height: auto;
   }
   .public-login .lead {
-    font-size: 16px;
+    font-size: var(--font-size-16);
   }
 }
 
@@ -1352,7 +1373,7 @@
   margin-inline: auto;
 }
 .preview-chart-funds p {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--muted);
   text-align: center;
   margin: 8px 0;
@@ -1375,11 +1396,11 @@
   min-height: 44px;
   align-content: center;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-strong);
 }
 .preview-help p {
-  font-size: 15px;
+  font-size: var(--font-size-16);
   line-height: 1.7;
 }
 .preview-help small {
@@ -1396,7 +1417,7 @@
   display: flex;
   align-items: center;
   margin-top: 4px;
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--muted);
 }
 
@@ -1423,7 +1444,7 @@
   background: var(--surface);
   color: inherit;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-14);
   cursor: pointer;
 }
 .public-language-chevron {

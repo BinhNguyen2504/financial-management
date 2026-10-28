@@ -103,18 +103,20 @@ src/
   app/                  Next.js routes, layout, manifest và CSS tokens
     (public)/           Landing và đăng nhập, khung công khai
     (app)/              Trang ứng dụng được bảo vệ, sidebar và Privacy Mode
-  components/           Navigation, icon và đăng ký PWA
+  components/           Dialog, form feedback, bảng, navigation, theme và PWA dùng chung
   features/catalog.ts   Danh mục, trạng thái và mô tả dùng chung
   features/landing/     Nội dung, preview dữ liệu mẫu và CSS công khai
-  features/expenses/    Chi tiêu: giao diện, form, báo cáo bảng/biểu đồ
-  domain/expenses/      Công thức BigInt, quy tắc tháng/năm và báo cáo
-  application/          Điều phối preview/lưu, version và idempotency
-  server/               Xác minh Auth, PostgreSQL repository và origin
+  features/<module>/    UI, editor config/action/controller, trường nhập và preview
+  domain/<module>/      Công thức BigInt, schema, lịch sử và báo cáo thuần TypeScript
+  domain/shared/        Primitive ngày/tháng/tiền, Clock và validation tương thích
+  application/          Điều phối preview/lưu, version và fingerprint command dùng chung
+  server/               Auth, HTTP boundary, transaction/RLS và repository từng module
+  i18n/report-exports/  Xuất CSV theo ngôn ngữ, tách khỏi phép tính domain
 public/                 Icon, service worker, trang mất mạng
-supabase/migrations/    Schema Chi tiêu, RLS và trigger lưu trữ
+supabase/migrations/    Schema các module, RLS và trigger lưu trữ có phiên bản
 tests/                  Unit, PostgreSQL integration và browser tests
 docs/                   Phân tích, kiến trúc, roadmap, deploy và đặc tả
-.github/workflows/      Typecheck + build; chưa chạy trên GitHub
+.github/workflows/      Lint, kiến trúc, định dạng, unit, typecheck/build và PostgreSQL
 Notion/                 13 ảnh gốc trên máy, được loại khỏi Git/deploy
 ```
 
@@ -124,14 +126,19 @@ Notion/                 13 ảnh gốc trên máy, được loại khỏi Git/de
 npm test
 npm run test:db
 npm run test:e2e
+npm run lint
+npm run check:architecture
+npm run format:check
 npm run check
 ```
 
-DB/e2e cần PostgreSQL binaries (`initdb`, `pg_ctl`, `pg_config`); nếu không có trong PATH, đặt PG_BIN. Runner tự tạo cluster local riêng, không dùng credentials cloud. E2e cần Google Chrome trên máy và sử dụng Auth double local, không gửi email thật. Kết quả được ghi trong artifacts, đã loại khỏi Git. CI chạy unit/typecheck/build và DB integration; chưa thay thế smoke test cloud.
+`npm run check` kiểm lint, ranh giới kiến trúc, định dạng, unit, TypeScript và production build. CI dùng cùng lệnh và chạy thêm PostgreSQL integration; chưa xác nhận lượt chạy GitHub cho đợt refactor này. Xem [hướng dẫn bảo trì và thêm module](docs/11-source-maintenance.md).
+
+DB/e2e cần PostgreSQL binaries (`initdb`, `pg_ctl`, `pg_config`); nếu không có trong PATH, đặt PG_BIN. Runner tự tạo cluster local riêng, không dùng credentials cloud. E2e cần Google Chrome trên máy và sử dụng Auth double local, không gửi email thật. Bật Firefox/WebKit bằng `TEST_FIREFOX=1 TEST_WEBKIT=1 npm run test:e2e`; các browser tương ứng phải được cài trên máy. Kết quả được ghi trong artifacts, đã loại khỏi Git; chưa thay thế smoke test cloud.
 
 Ảnh gốc và file import/backup được loại khỏi Git. Dùng repository private khi đưa source và tài liệu dự án lên cloud. Bộ khung được chuẩn bị local; hướng Vercel/Supabase trong tài liệu là kế hoạch triển khai.
 
-Kết quả Chi tiêu: **37 unit + 9 PostgreSQL + 12 browser tests**, typecheck/build và production smoke không credentials đã qua local. Xem [bằng chứng và giới hạn nghiệm thu](docs/07-validation.md). Người dùng chọn để cấu hình cloud sau.
+Mốc Chi tiêu ban đầu: **37 unit + 9 PostgreSQL + 12 browser tests**, typecheck/build và production smoke không credentials đã qua local. Các lượt xác minh mới được bổ sung tại [bằng chứng và giới hạn nghiệm thu](docs/07-validation.md). Người dùng chọn để cấu hình cloud sau.
 
 
 ## Quỹ an toàn — 19/10/2026
@@ -173,3 +180,10 @@ Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn dùng bố c
 ## Tinh chỉnh Chi tiêu — 28/10/2026
 
 Phân loại có logo PNG giữ màu/hình gốc, hàng tên căn giữa và khoảng cách biểu tượng rõ hơn. Trường loại cố định khi sửa; tạo mới vẫn chọn Phương thức/Nhóm mục đích. Bỏ “Gồm hũ đã ngừng” sẽ ẩn hũ không hoạt động trong tháng đang chọn, kể cả còn dư; lịch sử vẫn xem được khi bật lại. Xem trước tách Tháng, Hũ, Thông tin, Trước và Sau. Các module tài chính chỉ ghi những dòng thay đổi trong cùng transaction để giảm số lượt đi tới database; tốc độ cloud cần đo riêng. Xem [đợt rà soát](docs/features/expense-feedback-2026-10-28.md).
+
+
+Chi tiêu (28/10): dialog “Phương thức và nhóm” dùng hàng gọn trên mobile; 90 emoji gợi ý và nhập một emoji riêng từ bàn phím, lưu/backup theo cùng hợp đồng. Có 27 thương hiệu chia ngân hàng/ví điện tử với logo cục bộ. Xem [đặc tả](docs/features/expenses.md#phân-loại-mobile-emoji-và-thương-hiệu--28102026); danh sách này phục vụ phân loại thủ công.
+
+## Chuẩn hóa trải nghiệm — 28/10/2026
+
+Nội dung dành cho người dùng phổ thông; cỡ chữ theo vai trò dùng chung; dialog mobile giới hạn chiều cao và cuộn bên trong; menu đóng khi chạm ngoài; tháng/năm dùng hai ô Năm rồi Tháng trên toàn ứng dụng. Xem [phạm vi và kiểm chứng](docs/features/usability-consistency-2026-10-28.md).

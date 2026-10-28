@@ -82,3 +82,7 @@ File không hợp lệ báo lỗi ngay gần vùng chọn file và liên kết l
 ## Ngôn ngữ — 22/10/2026
 
 UI sao lưu/khôi phục hỗ trợ Tiếng Việt/English. JSON V1/V2, tên trường, số tiền, ngày và tên do người dùng nhập giữ dạng chuẩn. Lựa chọn `fm-locale`, cookie cùng tên, theme và tùy chọn cột không vào backup. Tùy chọn hồ sơ không bao gồm ngôn ngữ. Xem [ngôn ngữ](localization.md).
+
+### Nhất quán toàn ứng dụng — 28/10/2026
+
+Đã đối chiếu nội dung, cỡ chữ, dialog/menu và bộ chọn kỳ với [quy tắc dùng chung](usability-consistency-2026-10-28.md). Giữ quy tắc nghiệp vụ, lịch sử và giới hạn chức năng; kết quả kiểm chứng ghi riêng theo môi trường.

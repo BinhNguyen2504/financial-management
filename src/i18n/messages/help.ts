@@ -1,4 +1,6 @@
 export const help = {
+  "Danh sách thương hiệu chia thành ngân hàng và ví điện tử. Biểu tượng hũ có thể chọn từ gợi ý hoặc nhập một emoji từ bàn phím.":
+    "Brands are grouped into banks and e-wallets. Choose a suggested jar icon or enter a single emoji from your keyboard.",
   "Giải thích: {0}": "Explain: {0}",
   "Hướng dẫn": "Guide",
   "Hướng dẫn · {0}": "Guide · {0}",
@@ -265,16 +267,16 @@ export const help = {
     "**Delete a category only if it has never had a recorded receipt**; stop previously used sources to preserve history.",
   "Kết quả: tiền đã ghi không bị xóa dây chuyền. Nhập 0 cũng được coi là đã có số thu.":
     "Result: recorded money is not deleted in a cascade. Entering 0 also counts as a recorded receipt.",
-  "Đọc báo cáo và xuất CSV": "Read reports and export CSV",
+  "Đọc báo cáo và xuất bảng dữ liệu": "Read reports and export CSV",
   "Khi cần tổng hợp theo nguồn hoặc thời gian.":
     "To summarise by source or time.",
   "Chọn năm, cả năm/quý/khoảng tháng, loại cố định/phát sinh và danh mục.":
     "Choose year, whole year/quarter/month range, regular/one-off type and category.",
   "So sánh Bảng và Biểu đồ, kiểm tra Tổng đã ghi nhận cùng cảnh báo chưa nhập.":
     "Compare Table and Chart, checking Recorded total and missing-entry warnings.",
-  "Xuất CSV theo bộ lọc đang chọn khi cần đối chiếu bên ngoài.":
+  "Xuất bảng dữ liệu theo bộ lọc đang chọn khi cần đối chiếu bên ngoài.":
     "Export CSV under the current filters for external reconciliation.",
-  "Kết quả: bảng, biểu đồ và file cùng phạm vi lọc. CSV có số tiền đầy đủ, kể cả khi giao diện đang ẩn tiền.":
+  "Kết quả: bảng, biểu đồ và file cùng phạm vi lọc. File xuất có số tiền đầy đủ, kể cả khi giao diện đang ẩn tiền.":
     "Result: table, chart and file share filters. CSV contains full amounts even when the screen hides them.",
   "Nguồn Lương nhận ==20.000.000 ₫== tháng này và ==22.000.000 ₫== tháng sau vẫn là một danh mục cố định. Thưởng dự án ==3.000.000 ₫== chỉ một lần có thể ghi vào Thu phát sinh.":
     "Salary of ==20,000,000 ₫== this month and ==22,000,000 ₫== next month is still one regular category. A ==3,000,000 ₫== project bonus received once can be One-off income.",
@@ -385,7 +387,7 @@ export const help = {
     "Choose a period and category, asset-type or transaction filters in Reports.",
   "Đọc tài sản, vốn nạp ròng, kết quả kỳ và lãi/lỗ; dùng Bảng hoặc chú thích biểu đồ để kiểm tra số.":
     "Read assets, net capital, period results and profit/loss; use Table or chart tooltips to check figures.",
-  "Xuất CSV theo phạm vi báo cáo; dùng Cài đặt cho sao lưu/khôi phục toàn tài khoản.":
+  "Xuất bảng dữ liệu theo phạm vi báo cáo; dùng Cài đặt cho sao lưu/khôi phục toàn tài khoản.":
     "Export CSV for the report scope; use Settings for whole-account backup/restore.",
   "Kết quả: báo cáo có thể đi qua nhiều năm. Thiếu giá không được coi là giá trị bằng 0; file xuất có dữ liệu đầy đủ.":
     "Result: reports can span years. Missing prices are not treated as zero; exports contain full data.",
@@ -395,7 +397,7 @@ export const help = {
     "A gold lot with ==10,000,000 ₫== cost basis and ==11,000,000 ₫== retained value has ==1,000,000 ₫== unrealised profit; it is not profit already received.",
   "Tài sản trong Tiết kiệm chưa phải tài sản ròng toàn ứng dụng. Không ghi lại cùng lượng vàng ở Đầu tư chỉ để tổng hợp.":
     "Savings assets are not application-wide net worth. Do not duplicate the same gold in Investments just to summarise it.",
-  "Không ghi chuyển nội bộ thêm lần nữa thành thu nhập hoặc chi tiêu. Chọn Bên ngoài không tự tạo bản ghi ở module khác.":
+  "Không ghi chuyển nội bộ thêm lần nữa thành thu nhập hoặc chi tiêu. Chọn Bên ngoài không tự tạo bản ghi ở mục khác.":
     "Do not record internal transfers again as income or spending. Choosing External does not create entries in another module.",
   "Dành cho người muốn theo dõi vốn và giá trị đầu tư theo tổng danh mục, cùng nhiều ví tiền chờ bằng VND. Hiện không quản lý từng mã, khối lượng hoặc lô chứng khoán.":
     "For tracking capital and value at portfolio level, with multiple VND cash wallets. Individual securities, quantities and security lots are not currently managed.",
@@ -482,7 +484,7 @@ export const help = {
     "Choose month/quarter/year or a cross-year date range in Reports.",
   "Lọc danh mục/ví và loại giao dịch, đọc dòng tiền, kết quả kỳ, cơ cấu và bảng thay thế.":
     "Filter portfolios/wallets and transaction types; read flows, period results, allocation and alternative tables.",
-  "Kiểm tra ngày định giá, cảnh báo giá cũ/thiếu; xuất CSV nếu cần, sao lưu toàn tài khoản tại Cài đặt.":
+  "Kiểm tra ngày định giá, cảnh báo giá cũ/thiếu; xuất bảng dữ liệu nếu cần, sao lưu toàn tài khoản tại Cài đặt.":
     "Check valuation dates and old/missing-price warnings; export CSV if needed and back up the whole account in Settings.",
   "Kết quả: lọc loại giao dịch chỉ lọc hoạt động, không loại lịch sử cần để tính số dư. Không cộng tài sản cuối các tháng với nhau.":
     "Result: transaction filters affect activity, not history needed for balances. Do not add month-end assets together.",
@@ -587,7 +589,7 @@ export const help = {
     "For choosing appearance, keeping data copies, restoring and opening the app conveniently on your device.",
   "==Giữ quyền chủ động với dữ liệu của mình==: biết file chứa gì, thời điểm sao lưu và nơi lưu file. Kiểm tra bản xem trước trước khi khôi phục.":
     "==Stay in control of your data==: know what a file contains, when it was made and where it is stored. Review the preview before restoring.",
-  "Sao lưu JSON": "JSON backup",
+  "Sao lưu dữ liệu": "Back up data",
   "Bản sao toàn tài khoản gồm dữ liệu nghiệp vụ và lịch sử, có các trường hồ sơ được hỗ trợ. File không mã hóa và **luôn chứa đầy đủ số tiền dù đang bật ẩn tiền**.":
     "A whole-account copy of business data and history, with supported profile fields. The file is unencrypted and **always contains full amounts even when amounts are hidden**.",
   "Khôi phục vào tài khoản trống": "Restore to an empty account",
@@ -598,17 +600,17 @@ export const help = {
     "Optionally import full name, date of birth and gender. Off by default; email, tokens and sign-in identity do not change.",
   "Giao diện và tùy chọn trên trình duyệt":
     "Appearance and browser preferences",
-  "**Sáng, Tối hoặc Theo hệ thống**. Tùy chọn giao diện, sidebar và cột bảng trên trình duyệt không nằm trong backup tài chính.":
+  "**Sáng, Tối hoặc Theo hệ thống**. Tùy chọn giao diện, thanh điều hướng và cột bảng trên trình duyệt không nằm trong bản sao lưu dữ liệu tài chính.":
     "**Light, Dark or System**. Browser appearance, sidebar and table-column choices are not part of financial backups.",
   "Cài lên màn hình chính": "Install on home screen",
-  "Mở ứng dụng web qua biểu tượng trên thiết bị. Khả năng cài tùy trình duyệt và môi trường HTTPS; không đồng nghĩa với nhập dữ liệu khi mất mạng.":
-    "Open the web app from a device icon. Installation depends on browser and HTTPS availability; it does not enable offline entry.",
+  "Mở ứng dụng bằng biểu tượng trên thiết bị nếu trình duyệt hỗ trợ. Bạn vẫn cần kết nối mạng để nhập dữ liệu.":
+    "Open the app from its icon on your device if your browser supports installation. You still need an internet connection to enter data.",
   "Tạo và lưu bản sao": "Create and save a backup",
   "Khi muốn giữ một bản dữ liệu để phục hồi sau này.":
     "To keep a data copy for later recovery.",
-  "Trong Sao lưu dữ liệu, tạo file JSON và chờ phản hồi thành công.":
+  "Trong Sao lưu dữ liệu, tạo bản sao lưu và chờ phản hồi thành công.":
     "Under Back up data, create a JSON file and wait for a successful response.",
-  "Nếu trình duyệt chưa tải, dùng liên kết Lưu file JSON.":
+  "Nếu trình duyệt chưa tải, dùng liên kết Tải bản sao lưu.":
     "If no download starts, use Save JSON file.",
   "Kiểm tra file trong nơi tải xuống và cất bản sao ở nơi bạn kiểm soát.":
     "Check the download folder and keep a copy somewhere you control.",
@@ -617,7 +619,7 @@ export const help = {
   "Xem trước và khôi phục": "Preview and restore",
   "Khi có bản sao toàn tài khoản và tài khoản đích còn trống.":
     "With a whole-account backup and an empty destination account.",
-  "Trong Khôi phục dữ liệu, chọn file JSON sao lưu toàn tài khoản.":
+  "Trong Khôi phục dữ liệu, chọn bản sao lưu toàn bộ dữ liệu.":
     "Under Restore data, choose the whole-account JSON backup.",
   "Đọc kết quả kiểm tra, phạm vi và các bước xem trước; chọn khôi phục hồ sơ nếu muốn.":
     "Read checks, scope and preview steps; optionally select profile restore.",
@@ -625,7 +627,7 @@ export const help = {
     "Confirm restore and wait for its result; check the financial pages afterwards.",
   "Nếu riêng cập nhật hồ sơ lỗi sau khi dữ liệu tài chính đã được khôi phục, dùng thao tác thử lại hồ sơ được cung cấp.":
     "If only the profile update fails after financial data was restored, use the separate profile retry action.",
-  "Kết quả: khôi phục dữ liệu vào tài khoản hiện tại. File riêng từng module/năm không dùng cho luồng này; tài khoản đã có dữ liệu không được ghi đè.":
+  "Kết quả: khôi phục dữ liệu vào tài khoản hiện tại. File riêng từng mục/năm không dùng cho luồng này; tài khoản đã có dữ liệu không được ghi đè.":
     "Result: data restored into your current account. Individual module/year exports cannot be used here; existing account data cannot be overwritten.",
   "Chọn giao diện": "Choose appearance",
   "Khi muốn app phù hợp ánh sáng hoặc sở thích.":
@@ -636,7 +638,7 @@ export const help = {
     "Choose Light, Dark or System; each theme has separate light/dark palettes sharing your chosen mode.",
   "Với Theo hệ thống, app dùng lựa chọn sáng/tối của thiết bị.":
     "System uses your device's light/dark choice.",
-  "Kết quả: màu sắc, minh họa và lời dẫn đổi ngay, được nhớ trên trình duyệt và cập nhật giữa các tab; dữ liệu và bản nháp đang nhập được giữ. Tùy chọn này không đồng bộ theo tài khoản và không nằm trong backup tài chính.":
+  "Kết quả: màu sắc, minh họa và lời dẫn đổi ngay, được nhớ trên trình duyệt và cập nhật giữa các tab; dữ liệu và bản nháp đang nhập được giữ. Tùy chọn này không đồng bộ theo tài khoản và không nằm trong bản sao lưu dữ liệu tài chính.":
     "Result: colours, illustrations and copy update immediately, saved in this browser and synced across tabs; data and drafts are preserved. This preference is not account-synced or included in financial backups.",
   "Cài lên điện thoại hoặc máy tính": "Install on phone or computer",
   "Khi muốn mở app từ biểu tượng riêng.": "To open the app from its own icon.",
@@ -650,9 +652,9 @@ export const help = {
     "Result: convenient access if supported by your browser; **not a separate native app**.",
   "Bạn chuyển sang tài khoản mới chưa nhập dữ liệu: chọn file sao lưu toàn tài khoản, xem trước, để tắt khôi phục hồ sơ nếu chỉ muốn dữ liệu tài chính, rồi xác nhận.":
     "On a new account with no data, choose the whole-account backup, preview, leave profile restore off if you only want financial data, then confirm.",
-  "Ẩn tiền chỉ che giao diện, không làm file CSV/JSON ẩn số hoặc có mật khẩu.":
+  "Ẩn tiền chỉ che giao diện, không làm file bảng dữ liệu và bản sao lưu ẩn số hoặc có mật khẩu.":
     "Hiding amounts affects the screen only; CSV/JSON files still show figures and have no password.",
-  "Không cần và không nên xóa dữ liệu tài khoản đang dùng chỉ để thử nhập backup. Luồng hiện tại không gộp hai tài khoản.":
+  "Không cần và không nên xóa dữ liệu tài khoản đang dùng chỉ để thử khôi phục bản sao lưu. Luồng hiện tại không gộp hai tài khoản.":
     "You do not need to delete an active account's data to test backup import. This flow does not merge accounts.",
   "Cài biểu tượng không bật nhập ngoại tuyến hoặc kết nối ngân hàng.":
     "Installing an icon does not enable offline entry or bank connections.",
@@ -664,7 +666,7 @@ export const help = {
   "Họ tên tối đa 100 ký tự. Ngày sinh và giới tính tùy chọn; ngày sinh phải hợp lệ từ năm 1900 đến hôm nay theo giờ Việt Nam.":
     "Full name up to 100 characters. Birth date and gender are optional; birth date must be valid from 1900 to today in Vietnam time.",
   "Email đăng nhập và avatar": "Sign-in email and avatar",
-  "**Email trên trang chỉ đọc**; đây không phải form đổi email. Avatar lấy chữ cái đầu từ tên, hiện **không có tải ảnh đại diện**.":
+  "**Email trên trang chỉ để xem**, chưa hỗ trợ đổi email. Ảnh đại diện dùng chữ cái đầu từ tên; hiện **chưa hỗ trợ tải ảnh lên**.":
     "**Email is read-only**; this is not an email-change form. The avatar uses initials; **photo uploads are not available**.",
   "Nội dung đã thay đổi": "Changed contents",
   "Nút Lưu chỉ hoạt động khi thông tin sau chuẩn hóa khác bản đã lưu. Lỗi lưu giữ nội dung để bạn sửa hoặc thử lại.":
@@ -691,7 +693,7 @@ export const help = {
     "Changing your name to Minh An updates the avatar initials. Leave birth date blank if you prefer not to provide it.",
   "Nút Lưu đang tắt có thể vì chưa có thay đổi, không phải hồ sơ bị khóa.":
     "Save may be disabled because nothing changed; it does not mean the profile is locked.",
-  "Khôi phục hồ sơ từ backup là lựa chọn riêng trong Cài đặt và **không đổi email** đăng nhập.":
+  "Khôi phục hồ sơ từ bản sao lưu là lựa chọn riêng trong Cài đặt và **không đổi email** đăng nhập.":
     "Profile restoration is a separate Settings choice and **does not change sign-in email**.",
   "Trang Thu & chi **đang phát triển**. Định hướng là một nơi ghi thu, chi và chuyển tiền; hiện trang chỉ giới thiệu phạm vi dự kiến.":
     "The Income & expenses page is **in development**. It aims to provide one place for income, expenses and transfers; currently it only describes planned scope.",
@@ -708,18 +710,18 @@ export const help = {
     "Open Expenses for jars and monthly actual spending.",
   "Giao dịch của Tiết kiệm, Đầu tư và Quỹ an toàn được ghi trong từng trang tương ứng.":
     "Savings, Investments and Safety fund transactions are recorded on their own pages.",
-  "Kết quả: sử dụng được sổ hiện có; dữ liệu giữa các module không tự liên kết thành ledger chung.":
+  "Kết quả: sử dụng được sổ hiện có; dữ liệu giữa các mục không tự liên kết thành ledger chung.":
     "Result: use existing ledgers; modules do not automatically combine into a shared ledger.",
   "Muốn ghi lương đã nhận: dùng Thu nhập. Muốn đối chiếu còn bao nhiêu tiền trong hũ Sinh hoạt: dùng Chi tiêu.":
     "To record received salary, use Income. To reconcile remaining Living costs jar money, use Expenses.",
-  "Các mục mô tả trên trang là dự kiến; chưa có nhập giao dịch chung, mẫu định kỳ hoặc nhập CSV chung để thao tác.":
+  "Các mục mô tả trên trang là dự kiến; chưa có nhập giao dịch chung, mẫu định kỳ hoặc nhập bảng dữ liệu chung để thao tác.":
     "This page's descriptions are plans; shared transaction entry, recurring templates and shared CSV import are not available.",
   "Trang Tài khoản **đang phát triển**, hướng đến việc biết tiền nằm ở đâu. Hiện chưa có sổ tài khoản chung để đối soát toàn ứng dụng.":
     "Accounts is **in development**, intended to show where money is held. There is no shared account ledger for application-wide reconciliation yet.",
   "Phân biệt ==mục đích sử dụng với nơi giữ tiền==. Tên ngân hàng không tự cho biết tiền được dành cho việc gì.":
     "Separate ==spending purpose from holding location==. A bank name alone does not say what the money is for.",
   "Tài khoản và nơi giữ": "Accounts and holding locations",
-  "Tiền mặt, ví điện tử hoặc ngân hàng là các nơi giữ tiền. Phương thức trong Chi tiêu hiện chỉ là phân loại; ví trong từng module là sổ độc lập.":
+  "Tiền mặt, ví điện tử hoặc ngân hàng là các nơi giữ tiền. Phương thức trong Chi tiêu hiện chỉ là phân loại; ví trong từng mục là sổ độc lập.":
     "Cash, e-wallets and banks hold money. Expenses holding methods are categories; wallets inside each module are independent ledgers.",
   "Theo dõi nơi giữ bằng chức năng hiện có":
     "Track holding locations with available features",
@@ -727,11 +729,11 @@ export const help = {
     "To organise data by where money is held.",
   "Trong Chi tiêu, dùng Phương thức để phân loại hũ theo nơi chi.":
     "In Expenses, use Holding method to categorise jars by spending location.",
-  "Trong Tiết kiệm/Đầu tư, dùng ví của module đó; trong Quỹ an toàn, dùng Nơi giữ tiền.":
+  "Trong Tiết kiệm/Đầu tư, dùng ví của mục đó; trong Quỹ an toàn, dùng Nơi giữ tiền.":
     "In Savings/Investments use that module's wallets; in Safety funds use Holding locations.",
   "Đối chiếu với app ngân hàng và ghi điều chỉnh phù hợp trong từng sổ.":
     "Reconcile with your banking app and record suitable adjustments in each ledger.",
-  "Kết quả: nhìn rõ nơi giữ trong phạm vi từng module, chưa có số dư tài khoản chung tự đồng bộ.":
+  "Kết quả: nhìn rõ nơi giữ trong phạm vi từng mục, chưa có số dư tài khoản chung tự đồng bộ.":
     "Result: clear locations within each module; no automatically synced shared account balance yet.",
   "Tên Ngân hàng A trong Phương thức của hũ giúp biết nơi dùng để chi. Nó chưa phải tài khoản ngân hàng được kết nối hay số dư tự cập nhật.":
     "Bank A as a jar's holding method identifies where you spend. It is not a connected bank account or automatically updated balance.",
@@ -759,11 +761,11 @@ export const help = {
     "For a trip, track accumulated money in an existing ledger; creating a goal and deadline on this page is not available yet.",
   "Mô tả về tiến độ liên kết và ước tính mức góp trên trang là định hướng, không phải tính năng đã chạy.":
     "Descriptions of linked progress and contribution estimates are direction, not working features.",
-  "Trang Báo cáo chung **đang phát triển**. Hiện báo cáo được cung cấp riêng trong các module đã triển khai.":
+  "Trang Báo cáo chung **đang phát triển**. Hiện báo cáo được cung cấp riêng trong các mục đã triển khai.":
     "The shared Reports page is **in development**. Reports currently exist separately in implemented modules.",
   "Đọc con số cùng kỳ, phạm vi và nguồn dữ liệu. ==Tổng số dư khác tổng dòng tiền, tiền góp khác lợi nhuận==; chỉ so sánh khi hiểu đang đo gì.":
     "Read each figure with its period, scope and source. ==Balances differ from cash flow, contributions differ from profit==; compare only when you understand the measure.",
-  "Báo cáo theo module": "Reports by module",
+  "Báo cáo theo từng mục": "Reports by module",
   "Tổng hợp từ sổ của từng trang theo bộ lọc riêng. Không phải báo cáo tài sản ròng hợp nhất của toàn ứng dụng.":
     "Summaries from each page's ledger under its own filters. They are not consolidated application-wide net worth reports.",
   "Số dư và dòng tiền": "Balances and cash flow",
@@ -775,7 +777,7 @@ export const help = {
     "Open Reports inside Income, Expenses, Savings or Investments.",
   "Chọn kỳ và bộ lọc phù hợp; đọc bảng, biểu đồ và nhãn thiếu dữ liệu/tạm tính.":
     "Choose suitable periods and filters; read tables, charts and missing/provisional labels.",
-  "Xuất CSV ở các module có nút xuất; dùng Cài đặt cho backup toàn tài khoản.":
+  "Xuất bảng dữ liệu ở các mục có nút xuất; dùng Cài đặt cho bản sao lưu toàn bộ dữ liệu.":
     "Export CSV in modules with an export button; use Settings for whole-account backup.",
   "Kết quả: có báo cáo trong phạm vi sổ đang xem. Chi tiêu hiện báo cáo tương tác trong năm hiện tại; không suy thành báo cáo chung.":
     "Result: reports within the selected ledger. Expenses interactive reports cover the current year; do not infer a shared report.",
@@ -795,6 +797,6 @@ export const help = {
     "Check the format shown below amount fields: 1.000.000 ₫ in Vietnamese or 1,000,000 ₫ in English.",
   "Nếu bản nháp đang có số chưa hợp lệ khi tab khác đổi ngôn ngữ, sửa theo định dạng được ghi tại ô; nội dung cũ không tự bị diễn giải lại.":
     "If a draft number is invalid when another tab changes language, correct it using the format shown at the field; the old text is not reinterpreted.",
-  "Kết quả: trang chủ, preview, đăng nhập, giao diện ứng dụng và Help theo ngôn ngữ đã chọn, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong backup hoặc đồng bộ tài khoản.":
+  "Kết quả: trang chủ, phần minh họa, đăng nhập, giao diện ứng dụng và Trợ giúp theo ngôn ngữ đã chọn, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong bản sao lưu hoặc đồng bộ tài khoản.":
     "Result: the home page, preview, sign-in, app interface and Help follow your selected language, preserving drafts and filters. The browser saves your choice; it is not backed up or synced to your account.",
 } as const;

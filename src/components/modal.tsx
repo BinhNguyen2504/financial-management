@@ -91,7 +91,27 @@ export function Modal({
     openDialogs.add(element);
     element.showModal();
     updateDialogStack();
+    const viewport = window.visualViewport;
+    const fitViewport = () => {
+      // Pinch zoom must remain browser-controlled; keyboard resizing has scale 1.
+      if (viewport && viewport.scale !== 1) return;
+      element.style.setProperty(
+        "--dialog-visible-height",
+        `${viewport?.height ?? window.innerHeight}px`,
+      );
+      element.style.setProperty(
+        "--dialog-visible-top",
+        `${viewport?.offsetTop ?? 0}px`,
+      );
+    };
+    fitViewport();
+    viewport?.addEventListener("resize", fitViewport);
+    viewport?.addEventListener("scroll", fitViewport);
+    window.addEventListener("resize", fitViewport);
     return () => {
+      viewport?.removeEventListener("resize", fitViewport);
+      viewport?.removeEventListener("scroll", fitViewport);
+      window.removeEventListener("resize", fitViewport);
       if (closeTimer.current) clearTimeout(closeTimer.current);
       element.close();
       openDialogs.delete(element);
