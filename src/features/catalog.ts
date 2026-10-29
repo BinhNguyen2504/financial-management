@@ -147,7 +147,7 @@ export const modules = [
     description:
       "Xây Emergency, Rainy Day và Sinking từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.",
     scope: [
-      "Mức sinh hoạt từ các hũ chi tháng được chọn; mục tiêu theo hệ số tự nhập",
+      "Mức sinh hoạt đã xác nhận từ hũ chi tháng; chọn cập nhật nguồn trước khi xem trước và lưu",
       "Minh họa theo chủ đề phản ánh tiến độ thực tế",
       "Minh họa bảo vệ ở tiêu đề, độc lập với tiến độ từng quỹ",
       "Ghi sổ độc lập; thêm, rút và chuyển giữa quỹ/nơi giữ",
@@ -196,12 +196,12 @@ export const modules = [
     icon: "settings",
     label: "Không gian của bạn",
     description:
-      "Chọn Tiếng Việt/English, năm chủ đề và chế độ sáng/tối/theo hệ thống; sao lưu dữ liệu, khôi phục vào tài khoản trống và cài lên màn hình chính.",
+      "Chọn Tiếng Việt/English và giao diện; sao lưu, xem điều kiện khôi phục, làm trống dữ liệu sau khi lưu bản sao lưu và cài lên màn hình chính.",
     scope: [
       "Đăng nhập bằng mã 8 chữ số qua email; dữ liệu riêng tư, mặc định tiền VND",
       "Tiếng Việt/English với định dạng vi-VN/en-GB; cùng tiền VND và giờ Việt Nam",
       "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt",
-      "Sao lưu toàn bộ dữ liệu và khôi phục vào tài khoản chưa có dữ liệu; hồ sơ tùy chọn",
+      "Sao lưu toàn bộ dữ liệu; giải thích dữ liệu chặn khôi phục, làm trống có xác nhận và khôi phục vào tài khoản trống; hồ sơ tùy chọn",
       "Thêm vào màn hình chính trên thiết bị có hỗ trợ",
     ],
     questions: [],

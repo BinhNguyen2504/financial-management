@@ -25,22 +25,22 @@ function databaseConnection() {
   });
   return sql;
 }
-export function expenseRepository() {
-  return postgresExpenseRepository(databaseConnection());
+export function expenseRepository(expectedGeneration?: number) {
+  return postgresExpenseRepository(databaseConnection(), expectedGeneration);
 }
-export function incomeRepository() {
-  return postgresIncomeRepository(databaseConnection());
+export function incomeRepository(expectedGeneration?: number) {
+  return postgresIncomeRepository(databaseConnection(), expectedGeneration);
 }
-export function savingsRepository() {
-  return postgresSavingsRepository(databaseConnection());
-}
-
-export function investmentRepository() {
-  return postgresInvestmentRepository(databaseConnection());
+export function savingsRepository(expectedGeneration?: number) {
+  return postgresSavingsRepository(databaseConnection(), expectedGeneration);
 }
 
-export function fundRepository() {
-  return postgresFundRepository(databaseConnection());
+export function investmentRepository(expectedGeneration?: number) {
+  return postgresInvestmentRepository(databaseConnection(), expectedGeneration);
+}
+
+export function fundRepository(expectedGeneration?: number) {
+  return postgresFundRepository(databaseConnection(), expectedGeneration);
 }
 
 export function overviewRepository() {

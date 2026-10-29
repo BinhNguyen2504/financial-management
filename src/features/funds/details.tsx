@@ -1,8 +1,6 @@
 "use client";
-import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
 import { ScrollTabs } from "@/components/scroll-tabs";
-import { formatMonth } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import { useMoney } from "@/components/privacy";
@@ -11,14 +9,10 @@ import { positionKey } from "@/domain/funds/engine";
 import { fundIds, type FundId } from "@/domain/funds/schema";
 import type { FundView } from "@/domain/funds/types";
 import { Modal as ExpenseModal } from "@/components/modal";
-import { Pencil as EditCommandGlyph } from "lucide-react";
+import { Plus, Pencil as EditCommandGlyph } from "lucide-react";
 import { useId, useState, type KeyboardEvent } from "react";
-import {
-  displayTime,
-  fundNames,
-  guides as guidesSource,
-  transactionNames as transactionNamesSource,
-} from "./content";
+import { fundNames, guides as guidesSource } from "./content";
+import { FundHistory } from "./history";
 import type { EditorMode } from "./editor-config";
 import { FundLedger } from "./ledger";
 import { ProgressScene } from "./progress-scene";
@@ -77,13 +71,14 @@ export function FundLocations({
 
   const money = useMoney();
   return (
-    <section>
+    <section className="fund-locations">
       <div className="fund-section-heading">
         <h3>{tr("Nơi giữ tiền")}</h3>
         <button
           className="expense-secondary"
           onClick={() => onEdit({ type: "location" })}
         >
+          <Plus size={17} aria-hidden="true" />
           {tr("Thêm nơi giữ tiền")}
         </button>
       </div>
@@ -101,13 +96,26 @@ export function FundLocations({
       )}
       {view.book?.locations.map((l) => (
         <article className="fund-location" key={l.id}>
-          <div className="status-heading">
-            <h4>{l.name}</h4>
-            <StatusBadge size="compact" tone={l.active ? "success" : "neutral"}>
-              {l.active ? tr("Đang sử dụng") : tr("Đã ngừng sử dụng")}
-            </StatusBadge>
+          <div className="fund-location-heading">
+            <div className="fund-location-identity">
+              <h4>{l.name}</h4>
+              <StatusBadge
+                size="compact"
+                tone={l.active ? "success" : "neutral"}
+              >
+                {l.active ? tr("Đang sử dụng") : tr("Đã ngừng sử dụng")}
+              </StatusBadge>
+            </div>
+            <button
+              className="expense-secondary"
+              aria-label={`${tr("Sửa")} ${l.name}`}
+              onClick={() => onEdit({ type: "location", id: l.id })}
+            >
+              <EditCommandGlyph size={17} aria-hidden="true" />
+              {tr("Sửa")}
+            </button>
           </div>
-          <dl>
+          <dl className="fund-amount-rows">
             {(fundId ? [fundId] : fundIds).map((k) => (
               <div key={k}>
                 <dt>{fundNames[k]}</dt>
@@ -117,111 +125,8 @@ export function FundLocations({
               </div>
             ))}
           </dl>
-          <button
-            className="expense-secondary"
-            onClick={() => onEdit({ type: "location", id: l.id })}
-          >
-            <EditCommandGlyph size={17} aria-hidden="true" />
-            {tr("Sửa")} {l.name}
-          </button>
         </article>
       ))}
-    </section>
-  );
-}
-export function FundHistory({ view }: { view: FundView }) {
-  const { t: tr, locale, config: localize } = useI18n("funds");
-
-  const money = useMoney();
-  return (
-    <section className="fund-history">
-      <h3>{tr("Lịch sử thay đổi")}</h3>
-      {[...(view.book?.audit ?? [])].reverse().map((a) => {
-        const c = view.book?.configurations.find(
-            (c) => c.sequence === a.version,
-          ),
-          revision = view.book?.revisions.find((r) => r.sequence === a.version),
-          previous = revision
-            ? view.book?.revisions
-                .filter(
-                  (r) =>
-                    r.rootId === revision.rootId &&
-                    r.sequence < revision.sequence,
-                )
-                .at(-1)
-            : null;
-        return (
-          <AnimatedDetails key={a.version}>
-            <summary>
-              #{a.version} · {displayTime(a.at, locale)} ·{" "}
-              {a.action.type === "configure"
-                ? tr("Thiết lập mục tiêu")
-                : a.action.type === "saveLocation"
-                  ? tr("Cập nhật nơi giữ")
-                  : a.action.type === "postTransaction"
-                    ? tr("Ghi giao dịch")
-                    : tr("Sửa / hủy giao dịch")}
-            </summary>
-            {c && (
-              <>
-                <p>
-                  {tr("Mức sinh hoạt:")} {money(c.living.total)}
-                  {tr("/tháng · Nguồn")} {formatMonth(c.living.month!, locale)}{" "}
-                  {tr("· Chi tiêu #")}
-                  {c.living.expenseVersion}
-                </p>
-                {c.living.items.map((i) => (
-                  <p key={i.jarId}>
-                    {i.name}: {money(i.amount)}
-                  </p>
-                ))}
-                <p>
-                  {tr("Hệ số:")}{" "}
-                  {fundIds
-                    .map((k) =>
-                      tr("{0} × {1}", { 0: fundNames[k], 1: c.multipliers[k] }),
-                    )
-                    .join(" · ")}
-                </p>
-                <p>
-                  {tr("Ưu tiên:")}{" "}
-                  {c.priority.map((k) => fundNames[k]).join(" → ")}
-                </p>
-              </>
-            )}
-            {a.action.type === "saveLocation" && (
-              <p>
-                {a.action.name} ·{" "}
-                {a.action.active ? tr("Đang sử dụng") : tr("Ngừng sử dụng")}
-              </p>
-            )}
-            {previous?.transaction && (
-              <p>
-                {tr("Trước:")}{" "}
-                {localize(transactionNamesSource)[previous.transaction.kind]} ·{" "}
-                {money(previous.transaction.amount)} ·{" "}
-                {displayTime(previous.transaction.occurredAt, locale)} ·{" "}
-                {previous.transaction.note}
-              </p>
-            )}
-            {revision && (
-              <>
-                <p>
-                  Sau:{" "}
-                  {revision.transaction
-                    ? `${localize(transactionNamesSource)[revision.transaction.kind]} · ${money(revision.transaction.amount)} · ${displayTime(revision.transaction.occurredAt, locale)} · ${revision.transaction.note}`
-                    : tr("Đã hủy; giữ nguyên bản gốc trong lịch sử")}
-                </p>
-                {revision.reason && (
-                  <p>
-                    {tr("Lý do:")} {revision.reason}
-                  </p>
-                )}
-              </>
-            )}
-          </AnimatedDetails>
-        );
-      })}
     </section>
   );
 }

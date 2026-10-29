@@ -163,32 +163,37 @@ export function FundsWorkspace() {
             </div>
           </section>
           <section className="fund-living panel">
-            <div>
-              <h2>{tr("Nền tảng sinh hoạt")}</h2>
-              <HelpButton
-                pageId="funds"
-                sectionId="living"
-                label={tr("Mức sinh hoạt và mục tiêu")}
-              />
+            <div className="fund-living-overview">
+              <div className="fund-section-heading">
+                <h2>{tr("Nền tảng sinh hoạt")}</h2>
+                <HelpButton
+                  pageId="funds"
+                  sectionId="living"
+                  label={tr("Mức sinh hoạt và mục tiêu")}
+                />
+              </div>
+              <p className="fund-living-amount">
+                <strong>{money(config.living.total)}</strong>
+                <span>{tr("/tháng")}</span>
+              </p>
               <p>
-                <strong>
-                  {money(config.living.total)}
-                  {tr("/tháng")}
-                </strong>{" "}
-                {tr("· Mức đã xác nhận từ tháng")}{" "}
+                {tr("Mức đã xác nhận từ tháng")}{" "}
                 {config.living.month.split("-").reverse().join("/")}
               </p>
               <p className="fund-note">
                 {tr("Số tháng Emergency dùng mức sinh hoạt này.")}
               </p>
             </div>
-            <AnimatedDetails>
+            <AnimatedDetails className="fund-living-breakdown">
               <summary>{tr("Xem các hũ cấu thành")}</summary>
-              {config.living.items.map((i) => (
-                <p key={i.jarId}>
-                  {i.name} <strong>{money(i.amount)}</strong>
-                </p>
-              ))}
+              <dl className="fund-amount-rows">
+                {config.living.items.map((i) => (
+                  <div key={i.jarId}>
+                    <dt>{i.name}</dt>
+                    <dd>{money(i.amount)}</dd>
+                  </div>
+                ))}
+              </dl>
               <Link href="/budgets">{tr("Mở Chi tiêu →")}</Link>
             </AnimatedDetails>
           </section>

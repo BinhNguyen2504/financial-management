@@ -146,6 +146,8 @@ Tổng quan, Chi tiêu và Thu nhập chỉ hiện thông báo tải ở lần m
 
 Emergency dùng cây lớn, Rainy Day dùng tán ô mở, Sinking dùng cây cầu xây dần. SVG từ tỷ lệ thực tế, số tiền và phần trăm rõ ràng, giữ hình khi ẩn tiền. Hình hoàn thiện ở 100%, phần vượt vẫn ghi số. Không animation liên tục; reduced motion tắt hiệu ứng. Thiết lập ba bước, xem trước Trước/Sau rồi lưu. Chi tiết chia bốn tab, dialog con giữ vị trí parent.
 
+Tinh chỉnh 30/10/2026: tab Giao dịch dùng cột tiền căn phải, nút có icon và chữ thống nhất; tìm kiếm luôn hiện, bộ lọc phụ trong dialog mở theo nhu cầu. Tab Nơi giữ tiền đặt tên/trạng thái và nút Sửa ngắn ở hàng đầu, số dư theo cặp nhãn/giá trị. Lịch sử phân cấp hành động/thời gian/số tiền, mở để đối chiếu snapshot trước/sau và lý do. Card sinh hoạt tách số tiền/tháng, tháng nguồn và danh sách hũ. Tùy chọn cập nhật nguồn ở vùng riêng trước danh sách hũ, có giải thích trạng thái giữ/cập nhật và fieldset hũ khóa khi giữ mức cũ. Cùng bố cục áp dụng ba quỹ, vi/en và chế độ che tiền; tóm tắt dialog thu gọn trên điện thoại để dành chỗ cho nội dung.
+
 ## Quy tắc rà soát — 19/10/2026
 
 Mỗi lỗi ví dụ cần được tìm theo nhóm thành phần trên toàn ứng dụng. Kiểm tra trạng thái, thao tác, bố cục và khả năng hoàn thành công việc; ưu tiên chỉ rõ nơi còn thiếu/sai và cho bổ sung ngay. Dùng icon cùng nhãn/màu, không chỉ text hoặc chỉ màu. Theme, menu/cột tùy chỉnh và hướng dẫn cài đặt theo thiết bị nằm trong [ma trận 33 phản hồi](features/interface-feedback-2026-10-19.md).
@@ -277,3 +279,7 @@ Ghi giao dịch là một form chia ba nhóm, hai cột trên desktop và một 
 ### Tổng quan tải đúng bố cục — 29/10/2026
 
 Mặc định mới gồm năm thẻ Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ, chỉ giữ số chính cùng cảnh báo cần thiết. Giữ nguyên bố cục tài khoản đã lưu. Trước response đầu hiện trạng thái tải chung; không dựng sáu widget mặc định trước khi biết cấu hình. Tùy chỉnh vẫn có 10 loại widget. Cần chú ý chỉ theo module có widget đang hiện, không kiểm tra module đã ẩn. Gợi ý khôi phục không còn trên Tổng quan; khôi phục vẫn tại Cài đặt. Bản nháp, nguồn lỗi và cập nhật nền giữ phản hồi rõ ràng. [Chi tiết](features/overview.md).
+
+### Lý do chặn khôi phục và làm trống — 29/10/2026
+
+Thẻ khôi phục giải thích mục nào còn dữ liệu và loại bản ghi bằng ngôn ngữ người dùng; không gọi số lượng hàng DB là số giao dịch, không hướng dẫn xóa từng giao dịch để đạt điều kiện trống. Thông báo hệ thống chưa sẵn sàng độc lập với dữ liệu đang có. Nút làm trống riêng mở dialog có tài khoản, phạm vi xóa, tải backup, xác nhận đã lưu và nhập cụm xác nhận. Focus đầu ở Hủy, footer cố định/body cuộn theo Modal dùng chung; lỗi tại thao tác. Mất phản hồi giữ mã yêu cầu cho retry, không tự kết luận thành công. Sau reset không tự nhập file; hồ sơ và tùy chọn giữ nguyên.

@@ -752,7 +752,7 @@ export const articles: HelpArticles = {
       term(
         "restore",
         "Khôi phục vào tài khoản trống",
-        "Nhập bản sao hợp lệ vào **tài khoản chưa có dữ liệu tài chính**. Hiện **không gộp, ghi đè hoặc nhập từng phần** vào tài khoản đã sử dụng.",
+        "Nhập bản sao hợp lệ vào **tài khoản trống dữ liệu tài chính**. Xem các phân hệ và loại dữ liệu đang chặn ngay trong Cài đặt. Xóa/hủy từng giao dịch vẫn giữ sổ và lịch sử. Có thể dùng tài khoản trống khác hoặc chọn Làm trống dữ liệu tài chính sau khi lưu bản sao lưu và xác nhận xóa toàn bộ.",
       ),
       term(
         "profile-restore",
@@ -792,7 +792,7 @@ export const articles: HelpArticles = {
           "Xác nhận khôi phục và chờ kết quả; kiểm tra các trang nghiệp vụ sau khi hoàn tất.",
           "Nếu riêng cập nhật hồ sơ lỗi sau khi dữ liệu tài chính đã được khôi phục, dùng thao tác thử lại hồ sơ được cung cấp.",
         ],
-        "Kết quả: khôi phục dữ liệu vào tài khoản hiện tại. File riêng từng mục/năm không dùng cho luồng này; tài khoản đã có dữ liệu không được ghi đè.",
+        "Kết quả: khôi phục dữ liệu vào tài khoản hiện tại khi đã trống. File riêng từng mục/năm không dùng cho luồng này. Làm trống là thao tác riêng, xóa toàn bộ dữ liệu tài chính sau khi bạn lưu bản sao lưu và xác nhận; không tự khôi phục hoặc gộp dữ liệu.",
       ),
       task(
         "theme",

@@ -25,7 +25,10 @@ export async function withOwnerTransaction<T>(
 }
 
 /** Callers specify the existing lock keys and their global acquisition order. */
-export async function lockOwner(tx: Transaction, keys: readonly string[]) {
+export async function lockOwner(
+  tx: Pick<Transaction, "unsafe">,
+  keys: readonly string[],
+) {
   for (const key of keys)
     await tx.unsafe("select pg_advisory_xact_lock(hashtextextended($1,0))", [
       key,

@@ -111,9 +111,50 @@ export async function POST(request: Request, context: Context) {
         "FORBIDDEN_ORIGIN",
       );
     const path = ((await context.params).path ?? []).join("/");
-    if (!["import/preview", "import"].includes(path))
+    if (!["import/preview", "import", "reset/prepare", "reset"].includes(path))
       throw new BackupError("Đường dẫn không tồn tại.", 404);
     const body = await readBody(request);
+    if (path === "reset/prepare") {
+      z.strictObject({}).parse(body);
+      const prepared = await dataRepository().prepareReset(
+        user.id,
+        profileFields(user.user_metadata),
+      );
+      return new NextResponse(checkBackupSize(prepared.backup), {
+        headers: {
+          ...headers,
+          "Content-Type": "application/json; charset=utf-8",
+          "Content-Disposition": `attachment; filename="financial-manager-before-reset-${prepared.operationId}.json"`,
+          "X-Reset-Operation-Id": prepared.operationId,
+          "X-Reset-Expires-At": prepared.expiresAt,
+        },
+      });
+    }
+    if (path === "reset") {
+      const parsed = z
+        .strictObject({
+          operationId: z.uuid(),
+          requestId: z.uuid(),
+          targetOwnerId: z.uuid(),
+          backupSaved: z.literal(true),
+          confirmation: z.literal("XÓA TOÀN BỘ"),
+        })
+        .parse(body);
+      if (parsed.targetOwnerId !== user.id)
+        throw new BackupError(
+          "Phiên đăng nhập đã thay đổi. Hãy tải lại trang.",
+          409,
+          "ACCOUNT_CHANGED",
+        );
+      return jsonResponse(
+        await dataRepository().reset(
+          user.id,
+          parsed.operationId,
+          parsed.requestId,
+        ),
+        { headers },
+      );
+    }
     if (path === "import/preview") {
       const backup = validateBackup(body);
       checkBackupSize(backup);
@@ -122,6 +163,7 @@ export async function POST(request: Request, context: Context) {
         {
           ...summarizeBackup(backup),
           canImport: status.empty && status.importReady,
+          status,
         },
         { headers },
       );
@@ -131,6 +173,7 @@ export async function POST(request: Request, context: Context) {
         requestId: z.uuid(),
         targetOwnerId: z.uuid(),
         backup: z.unknown(),
+        dataGeneration: z.number().int().nonnegative().default(0),
       })
       .parse(body);
     if (parsed.targetOwnerId !== user.id)
@@ -140,7 +183,12 @@ export async function POST(request: Request, context: Context) {
         "ACCOUNT_CHANGED",
       );
     return jsonResponse(
-      await dataRepository().import(user.id, parsed.requestId, parsed.backup),
+      await dataRepository().import(
+        user.id,
+        parsed.requestId,
+        parsed.backup,
+        parsed.dataGeneration,
+      ),
       { headers },
     );
   } catch (error) {

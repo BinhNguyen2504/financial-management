@@ -1,9 +1,11 @@
 import { responseMessage } from "@/i18n/error-messages";
 import { userFacingError } from "@/i18n/user-facing-errors";
+import type { RestoreBlocker } from "@/domain/backup/status";
 export class DataRequestError extends Error {
   constructor(
     message: string,
     readonly status?: number,
+    readonly code?: string,
   ) {
     super(message);
   }
@@ -30,6 +32,7 @@ export async function dataRequest(path: string, init?: RequestInit) {
         body.code,
       ),
       response.status,
+      body.code,
     );
   }
   return response;
@@ -39,4 +42,8 @@ export interface DataStatus {
   ownerId: string;
   maxBytes: number;
   importReady: boolean;
+  resetReady: boolean;
+  dataGeneration: number;
+  blockers: RestoreBlocker[];
+  reasons: string[];
 }

@@ -276,6 +276,68 @@
   min-width: 44px;
   min-height: 44px;
 }
+.restore-blockers {
+  display: grid;
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+.restore-blockers details {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem;
+}
+.restore-blockers summary {
+  cursor: pointer;
+  min-height: 32px;
+  font-weight: var(--weight-strong);
+}
+.restore-blockers dl {
+  display: grid;
+  gap: 0.5rem;
+}
+.restore-blockers dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.restore-blockers dt {
+  overflow-wrap: anywhere;
+}
+.restore-blockers dd {
+  margin: 0;
+  font-weight: var(--weight-strong);
+}
+.restore-blockers > p {
+  margin: 0;
+  color: var(--muted);
+}
+.settings-reset h3 {
+  margin-top: 0;
+}
+.settings-reset-body {
+  display: grid;
+  gap: 1rem;
+  overflow-wrap: anywhere;
+}
+.settings-reset-body p,
+.settings-reset-body h4 {
+  margin: 0;
+}
+.settings-reset-body button,
+.settings-reset-body a {
+  min-height: 44px;
+  justify-self: start;
+}
+.settings-reset-confirm {
+  display: grid;
+  gap: 0.5rem;
+}
+.settings-reset-confirm input {
+  min-height: 44px;
+  max-width: 100%;
+  width: 100%;
+  font-size: 16px;
+}
 @media (max-width: 1000px) {
   .settings-data-grid {
     grid-template-columns: minmax(0, 1fr);

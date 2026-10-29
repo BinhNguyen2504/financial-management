@@ -139,3 +139,19 @@ Thiếu migration `202610180002_data_imports.sql` chỉ khóa khôi phục, khô
 ## Cấu hình Tổng quan — 29/10/2026
 
 Trước khi dùng lưu bố cục widget, áp dụng migration `supabase/migrations/202610290001_overview_layouts.sql` theo quy trình migration của môi trường. Source không tự chạy migration cloud. Khi bảng chưa có, API bố cục trả `OVERVIEW_SCHEMA_REQUIRED`; Tổng quan vẫn đọc số liệu qua bố cục mặc định và hiển thị trạng thái chưa tải được cấu hình. Cấu hình widget dùng owner/RLS của ứng dụng và nằm ngoài backup tài chính; không cần chuyển dữ liệu tài chính hiện có.
+
+### Giới hạn proxy cho khôi phục sau làm trống — 29/10/2026
+
+Next proxy mặc định chỉ buffer 10 MB, thấp hơn giới hạn backup 20 MiB. `next.config.ts` đặt `experimental.proxyClientMaxBodySize` theo `DATA_BACKUP_MAX_BYTES` cộng 1 KiB envelope, cùng kiểm tra cấu hình hợp lệ. Kiểm thử request JSON hoàn chỉnh lớn hơn 10 MiB xác minh không bị cắt trước route local. Hosting/reverse proxy bên ngoài vẫn phải được kiểm tra độc lập trước phát hành; đây không phải bằng chứng upload/download cùng ngưỡng trên cloud.
+
+### Lỗi `42P01: relation public.data_imports does not exist` khi áp dụng reset — 29/10/2026
+
+Database chưa có bảng biên nhận import. Chạy **toàn bộ** `supabase/migrations/202610180002_data_imports.sql` trước, sau đó chạy **toàn bộ** `supabase/migrations/202610290002_financial_data_reset.sql` mới nhất. Không chỉ chạy câu CREATE TABLE riêng: migration biên nhận còn thiết lập RLS, grants và trigger bảo vệ. Hai migration chuẩn bị schema, không gọi hàm xóa và không xóa dữ liệu tài chính.
+
+File reset hiện kiểm tra `data_imports` ngay đầu trước mọi DDL; nếu thiếu, trả `FINANCIAL_RESET_PREREQUISITE_MISSING` kèm tên migration phải chạy trước. Nếu một lần chạy cũ được thực hiện theo từng statement, kiểm tra đọc trước bằng `select to_regclass('public.data_imports'), to_regclass('public.data_generations'), to_regclass('public.data_resets'), to_regprocedure('public.reset_financial_data(uuid,uuid)');`. Nếu xuất hiện lỗi bảng đã tồn tại, cần kiểm tra trạng thái schema/biên nhận migration; không DROP bảng để chạy lại. Chưa thao tác database cloud trong lần sửa này.
+
+### Lỗi `42501: must be able to SET ROLE financial_data_reset` — 29/10/2026
+
+Migration trước thiếu quyền SET ROLE khi chuyển owner hàm. PostgreSQL 16+ tách ADMIN/SET/INHERIT; trên Supabase, `postgres` không phải superuser và membership ADMIN do bootstrap cấp có thể không cho SET ROLE. Xem [Supabase](https://supabase.com/kb/troubleshooting/cant-revoke-a-role-membership-granted-by-supabase_admin) và [ALTER FUNCTION](https://www.postgresql.org/docs/16/sql-alterfunction.html).
+
+Chạy lại toàn bộ bản mới nhất `supabase/migrations/202610290002_financial_data_reset.sql` bằng kết nối migration/admin. File cấu hình ACL trước khi chuyển owner, cấp SET tạm cho đúng `current_user` nếu cần và thu hồi trong cùng DO block. PostgreSQL 16+ chỉ thay đổi grant do chính migration actor tạo; giữ ADMIN/INHERIT và grant bootstrap hiện có. Bản trước 16 dùng membership tạm tương ứng. Không cấp role reset cho runtime; không cấp superuser/BYPASSRLS, không tắt RLS/trigger và không DROP dữ liệu để sửa lỗi. Nếu đã chạy từng phần thay vì toàn file và gặp bảng đã tồn tại, cần kiểm tra schema trước khi tiếp tục.

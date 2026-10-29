@@ -1,3 +1,4 @@
+import { requestDataGeneration } from "@/server/data-generation";
 import {
   financialHeaders as headers,
   type FinancialRouteContext as Context,
@@ -74,7 +75,7 @@ export async function POST(request: Request, context: Context) {
       throw new IncomeError("Đường dẫn không tồn tại.", 404);
     const input = await readCommandJSON(request, IncomeError);
     const result = await runIncomeCommand(
-      incomeRepository(),
+      incomeRepository(requestDataGeneration(request)),
       owner,
       commandSchema.parse(input),
       incomeClock(),

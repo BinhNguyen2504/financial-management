@@ -1,4 +1,5 @@
 "use client";
+import { generationOf } from "@/lib/data-generation";
 import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
@@ -650,6 +651,7 @@ export function IncomeWorkspace(
           month={selectedMonth}
           today={today}
           version={view.book?.version ?? 0}
+          dataGeneration={generationOf(view)}
           onClose={() => setEditor(null)}
           onSaved={saved}
           onReload={reload}

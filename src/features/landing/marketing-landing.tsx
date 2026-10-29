@@ -412,7 +412,7 @@ export function MarketingLanding() {
             <div className="marketing-answer">
               <p>
                 {tr(
-                  "Có. Trong Cài đặt, tải bản sao lưu và khôi phục vào tài khoản chưa có dữ liệu khi cần. File không có mật khẩu; hãy giữ ở nơi an toàn.",
+                  "Có. Trong Cài đặt, tải bản sao lưu và khôi phục vào tài khoản trống. Ứng dụng giải thích dữ liệu đang chặn khôi phục; bạn có thể làm trống tài khoản sau khi tải bản sao lưu và xác nhận xóa. File không có mật khẩu; hãy giữ ở nơi an toàn.",
                 )}
               </p>
             </div>

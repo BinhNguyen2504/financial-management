@@ -72,3 +72,7 @@ Help Việt/Anh bổ sung cách đọc năm module, kỳ hiện tại, giá tr�
 ### Ghi giao dịch Đầu tư — 29/10/2026
 
 Nút Hiểu vốn, giá trị và tiền chờ nằm cùng hàng công cụ gọn phía trên các nhóm nhập. Chọn loại giao dịch để xem các trường tương ứng; xem trước tác động rồi xác nhận lưu. Đóng form có thay đổi mở xác nhận trong ứng dụng và cho tiếp tục nhập; mở/đóng Help vẫn giữ bản nháp và ngữ cảnh form.
+
+### Điều kiện khôi phục và làm trống — 29/10/2026
+
+Help Cài đặt giải thích dữ liệu chặn gồm sổ/cấu hình/lịch sử/dữ liệu đã xóa hoặc hủy ở mọi năm. Xóa từng mục không làm tài khoản trống. Hướng dẫn hai cách: dùng tài khoản trống khác hoặc thao tác làm trống riêng sau khi lưu backup và xác nhận xóa toàn bộ; không tự import/gộp. Chưa có migration thì reset chưa được bật.

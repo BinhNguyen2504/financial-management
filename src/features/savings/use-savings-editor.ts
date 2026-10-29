@@ -1,4 +1,5 @@
 "use client";
+import { generationOf } from "@/lib/data-generation";
 import { buildSavingsAction } from "./editor-action";
 
 import { useI18n } from "@/i18n/provider";
@@ -50,6 +51,7 @@ export function useSavingsEditor({
   onSaved(): Promise<void>;
   onReload(): Promise<unknown>;
 }) {
+  const generation = useRef(generationOf(view)).current;
   const { t: tr, locale, config: localize } = useI18n("savings");
   const localizedTitles = localize(titles);
   const localizedKindNames = localize(kindNames);
@@ -276,11 +278,15 @@ export function useSavingsEditor({
       if (!preview || preview.command.id !== command.id)
         setPreview({
           command,
-          result: await savingsJSON<CommandResult>("/preview", command),
+          result: await savingsJSON<CommandResult>(
+            "/preview",
+            command,
+            generation,
+          ),
         });
       else {
         writing = true;
-        await savingsJSON("/commands", command);
+        await savingsJSON("/commands", command, generation);
         toast("success", tr("Đã lưu thay đổi."));
         await onSaved();
       }

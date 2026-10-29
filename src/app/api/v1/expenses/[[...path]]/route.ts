@@ -1,3 +1,4 @@
+import { requestDataGeneration } from "@/server/data-generation";
 import {
   financialHeaders as headers,
   type FinancialRouteContext as Context,
@@ -117,7 +118,7 @@ export async function POST(request: Request, context: Context) {
     const parsed = await readCommandJSON(request, ExpenseError);
     const command = commandSchema.parse(parsed);
     const result = await runExpenseCommand(
-      expenseRepository(),
+      expenseRepository(requestDataGeneration(request)),
       owner,
       command,
       vietnamClock(),

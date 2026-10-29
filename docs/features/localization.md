@@ -57,3 +57,7 @@ Namespace overview bổ sung nhãn widget, cấu hình, lỗi và Help; định 
 ### Dialog Đầu tư — 29/10/2026
 
 Bổ sung nhãn nhóm nhập, lỗi tiền ngắn và hai hành động Tiếp tục nhập/Bỏ thay đổi bằng vi/en. Thông báo lỗi theo trường và toast tóm tắt dùng chung ngôn ngữ hiện tại; không hiển thị JSON schema. Catalog và Help trong preview minh họa mô tả bước xem trước trước khi lưu; số liệu preview vẫn cố định.
+
+### Chẩn đoán khôi phục/reset — 29/10/2026
+
+Tên loại dữ liệu, số bản ghi, thông báo lỗi snapshot/generation và luồng sao lưu/xác nhận xóa có vi/en. Cụm xác nhận `XÓA TOÀN BỘ` cố định ở cả hai ngôn ngữ và được ghi rõ trong label. Nội dung file và số tiền chuẩn không đổi.

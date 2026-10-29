@@ -208,18 +208,33 @@ export function FundEditorFields({
                 {tr("; bỏ qua điều chỉnh riêng từng tháng và hũ tích lũy.")}
               </p>
               {config && (
-                <label className="fund-check">
-                  <input
-                    type="checkbox"
-                    checked={applyLiving}
-                    onChange={(e) => {
-                      setApplyLiving(e.target.checked);
-                      setJarIds(config.living.items.map((i) => i.jarId));
-                      invalidate();
-                    }}
-                  />
-                  {tr("Cập nhật mức sinh hoạt từ Chi tiêu hiện tại")}
-                </label>
+                <div className="fund-living-source">
+                  <h3>{tr("Nguồn mức sinh hoạt")}</h3>
+                  <label className="fund-check fund-source-toggle">
+                    <input
+                      type="checkbox"
+                      aria-describedby={`${id}-living-source-help`}
+                      checked={applyLiving}
+                      onChange={(e) => {
+                        setApplyLiving(e.target.checked);
+                        setJarIds(config.living.items.map((i) => i.jarId));
+                        invalidate();
+                      }}
+                    />
+                    <span>
+                      {tr("Cập nhật mức sinh hoạt từ Chi tiêu hiện tại")}
+                    </span>
+                  </label>
+                  <p className="fund-note" id={`${id}-living-source-help`}>
+                    {applyLiving
+                      ? tr(
+                          "Chọn các hũ bên dưới để tính mức sinh hoạt mới. Mục tiêu chỉ đổi sau khi bạn xem trước và xác nhận lưu.",
+                        )
+                      : tr(
+                          "Đang giữ mức sinh hoạt đã xác nhận. Bật tùy chọn này nếu bạn muốn chọn lại hũ hoặc lấy mức mới từ Chi tiêu.",
+                        )}
+                  </p>
+                </div>
               )}
               {!view.source.items.length && (
                 <p>
@@ -228,30 +243,35 @@ export function FundEditorFields({
                   {tr(", sau đó tải lại dữ liệu.")}
                 </p>
               )}
-              {options.map((item) => (
-                <label className="fund-check" key={item.jarId}>
-                  <input
-                    type="checkbox"
-                    checked={jarIds.includes(item.jarId)}
-                    disabled={Boolean(config && !applyLiving)}
-                    onChange={(e) => {
-                      setJarIds((s) =>
-                        e.target.checked
-                          ? [...s, item.jarId]
-                          : s.filter((v) => v !== item.jarId),
-                      );
-                      invalidate();
-                    }}
-                  />
-                  <span>
-                    {item.name}
-                    {!view.source.items.some((i) => i.jarId === item.jarId)
-                      ? tr(" · Không còn hoạt động")
-                      : ""}
-                  </span>
-                  <strong>{money(item.amount)}</strong>
-                </label>
-              ))}
+              <fieldset
+                className="fund-jar-selection"
+                disabled={Boolean(config && !applyLiving)}
+              >
+                <legend>{tr("Các hũ tính vào mức sinh hoạt")}</legend>
+                {options.map((item) => (
+                  <label className="fund-check" key={item.jarId}>
+                    <input
+                      type="checkbox"
+                      checked={jarIds.includes(item.jarId)}
+                      onChange={(e) => {
+                        setJarIds((s) =>
+                          e.target.checked
+                            ? [...s, item.jarId]
+                            : s.filter((v) => v !== item.jarId),
+                        );
+                        invalidate();
+                      }}
+                    />
+                    <span>
+                      {item.name}
+                      {!view.source.items.some((i) => i.jarId === item.jarId)
+                        ? tr(" · Không còn hoạt động")
+                        : ""}
+                    </span>
+                    <strong>{money(item.amount)}</strong>
+                  </label>
+                ))}
+              </fieldset>
               <p className="fund-total">
                 {tr("Mức sinh hoạt:")}{" "}
                 <strong>

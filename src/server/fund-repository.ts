@@ -1,3 +1,4 @@
+import { withDataGeneration } from "./data-generation";
 import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
 import type postgres from "postgres";
@@ -148,7 +149,10 @@ function adapter(
     },
   };
 }
-export function postgresFundRepository(sql: postgres.Sql): FundRepository {
+export function postgresFundRepository(
+  sql: postgres.Sql,
+  expectedGeneration?: number,
+): FundRepository {
   return {
     async transaction<T>(
       owner: string,
@@ -167,7 +171,9 @@ export function postgresFundRepository(sql: postgres.Sql): FundRepository {
           );
         // Match restore's global lock order: Expenses first, then Fund.
         await lockOwner(tx, [owner, `funds:${owner}`]);
-        return fn(adapter(tx, owner));
+        return withDataGeneration(tx, owner, expectedGeneration, () =>
+          fn(adapter(tx, owner)),
+        );
       })) as T;
     },
   };

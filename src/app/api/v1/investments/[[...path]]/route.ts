@@ -1,3 +1,4 @@
+import { requestDataGeneration } from "@/server/data-generation";
 import {
   financialHeaders as headers,
   type FinancialRouteContext as Context,
@@ -108,7 +109,7 @@ export async function POST(request: Request, context: Context) {
       throw new InvestmentError("Đường dẫn không tồn tại.", 404);
     const body = await readCommandJSON(request, InvestmentError);
     const result = await runInvestmentCommand(
-      investmentRepository(),
+      investmentRepository(requestDataGeneration(request)),
       owner,
       commandSchema.parse(body),
       investmentClock(),

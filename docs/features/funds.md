@@ -81,3 +81,11 @@ Quỹ tách action/controller/trường nhập/preview và hook workspace. Trans
 ## Responsive và nội dung phổ thông — 29/10/2026
 
 Phần xây quỹ, hũ cấu thành, chi tiết xem trước và lịch sử dùng thành phần mở rộng chung. Số liệu, xác nhận nguồn và giao dịch không đổi; thông báo lưu chưa xác nhận được rút gọn. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).
+
+## Tinh chỉnh bố cục — 30/10/2026
+
+Card Nền tảng sinh hoạt phân cấp số tiền/tháng, tháng đã xác nhận và các hũ cấu thành; Help nằm cạnh tiêu đề. Bước đầu Điều chỉnh có vùng **Nguồn mức sinh hoạt** riêng với checkbox và mô tả trạng thái, tách khỏi fieldset **Các hũ tính vào mức sinh hoạt**. Khi giữ snapshot cũ, danh sách hũ bị vô hiệu; bật cập nhật mới cho chọn nguồn. Xem trước và xác nhận vẫn bắt buộc.
+
+Ba quỹ dùng chung bố cục chi tiết: giao dịch căn phải số tiền cùng cột, nút Sửa/Hủy có icon và chữ; các bộ lọc phụ trong dialog mở theo nhu cầu, ô tìm kiếm luôn hiện. Danh sách ngoài trang mở sẵn bộ lọc. Nơi giữ có tên/trạng thái, nút Sửa ngắn với tên trợ năng đầy đủ và các dòng nhãn/số dư cân cột. Lịch sử vẫn là audit chung của sổ, tách hành động, thời điểm ghi, phiên bản và số tiền; mở từng mục để xem cấu hình, giao dịch trước/sau, nơi nguồn/nhận và lý do sửa/hủy. Tiền dùng privacy formatter, nhãn vi/en. Các thành phần này áp dụng cả danh sách ngoài trang và dialog ba quỹ.
+
+Đã rà soát catalog và nội dung giới thiệu/Help preview: làm rõ mức sinh hoạt đã xác nhận và bước áp dụng nguồn; giữ số liệu preview cố định, không gọi API tài chính của tài khoản. Thay đổi giao diện không cần migration. Bằng chứng kiểm tra local và giới hạn xem [Validation](../07-validation.md).

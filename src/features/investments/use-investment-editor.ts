@@ -1,4 +1,5 @@
 "use client";
+import { generationOf } from "@/lib/data-generation";
 import { buildInvestmentAction } from "./editor-action";
 
 import { useI18n } from "@/i18n/provider";
@@ -44,6 +45,7 @@ export function useInvestmentEditor({
   const { t: tr, config: localize } = useI18n("investments");
   const localizedTransactionNames = localize(transactionNames);
   const toast = useToast();
+  const generation = useRef(generationOf(initial)).current;
   const [view, setView] = useState(initial),
     hidden = useMoneyHidden(),
     money = useMoney();
@@ -181,11 +183,15 @@ export function useInvestmentEditor({
       if (!preview || preview.command.id !== command.id)
         setPreview({
           command,
-          result: await investmentsJSON<CommandResult>("/preview", command),
+          result: await investmentsJSON<CommandResult>(
+            "/preview",
+            command,
+            generation,
+          ),
         });
       else {
         writing = true;
-        await investmentsJSON("/commands", command);
+        await investmentsJSON("/commands", command, generation);
         toast("success", tr("Đã lưu thay đổi."));
         onSaved();
       }

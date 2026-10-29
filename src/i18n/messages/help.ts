@@ -593,8 +593,8 @@ export const help = {
   "Bản sao toàn tài khoản gồm dữ liệu nghiệp vụ và lịch sử, có các trường hồ sơ được hỗ trợ. File không mã hóa và **luôn chứa đầy đủ số tiền dù đang bật ẩn tiền**.":
     "A whole-account copy of business data and history, with supported profile fields. The file is unencrypted and **always contains full amounts even when amounts are hidden**.",
   "Khôi phục vào tài khoản trống": "Restore to an empty account",
-  "Nhập bản sao hợp lệ vào **tài khoản chưa có dữ liệu tài chính**. Hiện **không gộp, ghi đè hoặc nhập từng phần** vào tài khoản đã sử dụng.":
-    "Import a valid copy into **an account without financial data**. **Merging, overwriting and partial imports** into used accounts are not available.",
+  "Nhập bản sao hợp lệ vào **tài khoản trống dữ liệu tài chính**. Xem các phân hệ và loại dữ liệu đang chặn ngay trong Cài đặt. Xóa/hủy từng giao dịch vẫn giữ sổ và lịch sử. Có thể dùng tài khoản trống khác hoặc chọn Làm trống dữ liệu tài chính sau khi lưu bản sao lưu và xác nhận xóa toàn bộ.":
+    "Import a valid backup into an **account with no financial data**. Settings lists the modules and data types preventing restore. Deleting or cancelling individual transactions retains books and history. Use another empty account or choose Clear financial data after saving a backup and confirming deletion of all financial data.",
   "Khôi phục hồ sơ tùy chọn": "Optional profile restore",
   "Có thể nhập lại họ tên, ngày sinh và giới tính nếu chọn. Mặc định tắt; không thay email, token hoặc tài khoản đăng nhập.":
     "Optionally import full name, date of birth and gender. Off by default; email, tokens and sign-in identity do not change.",
@@ -627,8 +627,8 @@ export const help = {
     "Confirm restore and wait for its result; check the financial pages afterwards.",
   "Nếu riêng cập nhật hồ sơ lỗi sau khi dữ liệu tài chính đã được khôi phục, dùng thao tác thử lại hồ sơ được cung cấp.":
     "If only the profile update fails after financial data was restored, use the separate profile retry action.",
-  "Kết quả: khôi phục dữ liệu vào tài khoản hiện tại. File riêng từng mục/năm không dùng cho luồng này; tài khoản đã có dữ liệu không được ghi đè.":
-    "Result: data restored into your current account. Individual module/year exports cannot be used here; existing account data cannot be overwritten.",
+  "Kết quả: khôi phục dữ liệu vào tài khoản hiện tại khi đã trống. File riêng từng mục/năm không dùng cho luồng này. Làm trống là thao tác riêng, xóa toàn bộ dữ liệu tài chính sau khi bạn lưu bản sao lưu và xác nhận; không tự khôi phục hoặc gộp dữ liệu.":
+    "Result: restore data into this account once it is empty. Module/year backups cannot be used here. Clearing is a separate action that deletes all financial data after you save a backup and confirm; it does not automatically restore or merge data.",
   "Chọn giao diện": "Choose appearance",
   "Khi muốn app phù hợp ánh sáng hoặc sở thích.":
     "To suit lighting or your preferences.",

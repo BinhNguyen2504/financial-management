@@ -201,3 +201,11 @@ Tổng quan nay xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Q
 ### Tối ưu Tổng quan — 29/10/2026
 
 Mặc định mới gồm năm thẻ số chính và cảnh báo; vẫn tùy chỉnh 10 loại widget và giữ nguyên bố cục đã lưu. Một request Tổng quan trả cả bố cục lẫn số liệu, trước đó hiện trạng thái tải chung để tránh lóe widget mặc định. Luồng đọc riêng bỏ audit và dữ liệu màn hình chi tiết, chia sẻ dữ liệu Chi tiêu với Quỹ; chỉ tải danh sách phụ khi bật widget. Cần chú ý theo các module đang hiển thị. Khôi phục bản sao lưu ở Cài đặt; Tổng quan không gọi kiểm tra gợi ý khôi phục. Xem [đặc tả cập nhật](docs/features/overview.md).
+
+## Khôi phục và làm trống dữ liệu — 29/10/2026
+
+Cài đặt giải thích từng phân hệ và loại bản ghi đang chặn khôi phục, kể cả cấu hình, sổ, dữ liệu đã xóa/hủy và lịch sử. Xóa giao dịch hoặc số dư bằng 0 không làm tài khoản đủ trống. Có thao tác **Làm trống dữ liệu tài chính** riêng: tải JSON hiện tại, xác nhận đã lưu, nhập `XÓA TOÀN BỘ`, rồi xóa toàn bộ năm phân hệ trong một transaction. Dữ liệu thay đổi từ lúc sao lưu thì phải tạo bản mới. Hồ sơ, tài khoản và bố cục Tổng quan được giữ. Sau đó người dùng tự chọn nhập file hoặc bắt đầu lại. Cần migration `202610290002_financial_data_reset.sql`; chưa áp dụng thì reset bị khóa, backup vẫn dùng được. Xem [đặc tả backup](docs/features/backup.md). Kiểm chứng local không thay thế triển khai cloud.
+
+## Bố cục Quỹ an toàn — 30/10/2026
+
+Chi tiết ba quỹ có cột tiền và nút Sửa/Hủy nhất quán, nơi giữ tiền gọn theo tên/trạng thái/số dư, lịch sử tách các khối trước/sau. Card sinh hoạt làm rõ số tiền và nguồn đã xác nhận; checkbox cập nhật nguồn có vùng riêng phía trên danh sách hũ. Bộ lọc phụ trong dialog có thể mở khi cần. Catalog và Help preview vi/en đã được đối chiếu, dữ liệu minh họa giữ cố định. Xem [đặc tả Quỹ an toàn](docs/features/funds.md).

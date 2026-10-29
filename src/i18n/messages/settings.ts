@@ -1,4 +1,97 @@
 export const settings = {
+  "Tải lại trang": "Reload page",
+  "Tài khoản chưa có dữ liệu tài chính": "This account has no financial data",
+  "Các mục bên dưới đang chặn khôi phục. Số lượng bao gồm sổ, cấu hình, lịch sử và dữ liệu đã xóa hoặc hủy; không đồng nghĩa số giao dịch.":
+    "The items below prevent restore. Counts include books, configuration, history and deleted or cancelled data; they are not transaction counts.",
+  "Mở mục để xem dữ liệu": "Open module to review data",
+  Trống: "Empty",
+  "Xóa/hủy giao dịch, ngừng sử dụng danh mục hoặc đưa số dư về 0 vẫn giữ lại sổ và lịch sử. Những thao tác này không làm tài khoản trống để khôi phục.":
+    "Deleting or cancelling transactions, archiving categories or reducing balances to zero retains books and history. These actions do not make the account empty for restore.",
+  "Bạn có thể dùng tài khoản chưa có dữ liệu, hoặc chọn Làm trống dữ liệu tài chính bên dưới sau khi lưu bản sao lưu.":
+    "Use an account without data, or choose Clear financial data below after saving a backup.",
+  "Xem cách làm trống tài khoản": "See how to clear this account",
+  "Khôi phục chưa được bật trên hệ thống này. Bạn vẫn có thể tải bản sao lưu; hãy thử kiểm tra lại sau.":
+    "Restore is not enabled on this system yet. You can still download a backup; check again later.",
+  "Làm trống dữ liệu tài chính": "Clear financial data",
+  "Xóa toàn bộ dữ liệu tài chính để bắt đầu lại hoặc nhập bản sao lưu vào tài khoản hiện tại. Bạn phải lưu bản sao lưu trước khi xóa.":
+    "Clear all financial data to start again or import a backup into this account. Save a backup before clearing.",
+  "Làm trống dữ liệu chưa được bật trên hệ thống này. Bạn vẫn có thể tải bản sao lưu.":
+    "Clearing data is not enabled on this system yet. You can still download a backup.",
+  "Đã làm trống toàn bộ dữ liệu tài chính. Bạn có thể bắt đầu lại hoặc chọn bản sao lưu để khôi phục.":
+    "All financial data has been cleared. You can start again or choose a backup to restore.",
+  "Chọn bản sao lưu để khôi phục": "Choose a backup to restore",
+  "Xóa toàn bộ dữ liệu tài chính": "Delete all financial data",
+  "Kiểm tra kết quả làm trống": "Check clearing result",
+  "Tài khoản sẽ được làm trống": "Account to clear",
+  "Thao tác này xóa toàn bộ năm, sổ, danh mục, cấu hình, giao dịch, lịch sử và kỳ đã chốt của cả 5 phân hệ. Không thể hoàn tác trực tiếp; muốn lấy lại dữ liệu cần nhập bản sao lưu.":
+    "This deletes all years, books, categories, configuration, transactions, history and closed periods across all five modules. There is no direct undo; recovering data requires importing a backup.",
+  "Tài khoản đăng nhập, hồ sơ cá nhân, bố cục Tổng quan và tùy chọn giao diện được giữ lại.":
+    "Your sign-in account, personal profile, Overview layout and appearance preferences are retained.",
+  "1. Tạo và lưu bản sao lưu hiện tại":
+    "1. Create and save a backup of current data",
+  "Tạo bản sao lưu mới": "Create a new backup",
+  "Tải bản sao lưu trước khi xóa": "Download a backup before deleting",
+  "Bản sao lưu đã sẵn sàng. Kiểm tra thư mục tải xuống trước khi xác nhận.":
+    "Your backup is ready. Check your downloads folder before confirming.",
+  "Lưu file JSON": "Save JSON file",
+  "Xác nhận có hiệu lực đến": "Confirmation expires at",
+  "Tôi đã lưu bản sao lưu và kiểm tra file.":
+    "I have saved the backup and checked the file.",
+  "2. Xác nhận xóa toàn bộ dữ liệu tài chính":
+    "2. Confirm deletion of all financial data",
+  "Nhập XÓA TOÀN BỘ để xác nhận": "Type XÓA TOÀN BỘ to confirm",
+  "Chưa xác nhận được kết quả làm trống. Bấm lại để kiểm tra cùng yêu cầu; không tạo yêu cầu xóa mới.":
+    "The clearing result is unconfirmed. Retry to check the same request; do not create a new deletion request.",
+  "Dữ liệu tài chính đã được làm trống ở tab khác. Hãy tải lại trang trước khi tiếp tục; bản nháp chưa được gửi lại.":
+    "Financial data was cleared in another tab. Reload before continuing; your drafts have not been resubmitted.",
+  "Dữ liệu tài chính đã được làm trống ở phiên khác. Hãy tải lại trang trước khi tiếp tục; bản nháp chưa được gửi lại.":
+    "Financial data was cleared in another session. Reload before continuing; your drafts have not been resubmitted.",
+  "Không tìm thấy bước sao lưu của tài khoản này. Hãy tạo bản sao lưu mới.":
+    "No backup preparation was found for this account. Create a new backup.",
+  "Bước xác nhận đã hết hạn. Hãy tạo bản sao lưu mới trước khi làm trống.":
+    "This confirmation has expired. Create a new backup before clearing.",
+  "Dữ liệu đã thay đổi từ lúc sao lưu. Hãy tạo bản sao lưu mới trước khi làm trống.":
+    "Data has changed since the backup. Create a new backup before clearing.",
+  "Mã xác nhận đã được dùng. Hãy kiểm tra lại trạng thái dữ liệu.":
+    "This confirmation has already been used. Check the data status again.",
+  "Chưa làm trống được dữ liệu. Toàn bộ thao tác đã được hủy.":
+    "Data could not be cleared. The entire operation has been rolled back.",
+  "Lần khôi phục này thuộc dữ liệu trước khi làm trống. Hãy chọn lại bản sao lưu.":
+    "This restore request belongs to the data before clearing. Choose the backup again.",
+  "Tài khoản đang có dữ liệu. Xem chi tiết các mục đang chặn khôi phục.":
+    "This account already has data. Review the items preventing restore.",
+  "Sổ chi tiêu": "Expense book",
+  "Khoản chi": "Expense items",
+  "Thiết lập và số tiền theo tháng": "Monthly settings and amounts",
+  "Giao dịch chi tiêu (kể cả đã xóa)":
+    "Expense transactions (including deleted)",
+  "Năm và kỳ đã chốt": "Years and closed periods",
+  "Phương thức và nhóm chi tiêu": "Payment methods and expense groups",
+  "Lịch sử thay đổi": "Change history",
+  "Thông tin xử lý đã lưu": "Saved processing records",
+  "Sổ thu nhập": "Income book",
+  "Khoản thu (kể cả đã xóa)": "Income categories (including deleted)",
+  "Thu nhập theo tháng (kể cả số tiền 0)":
+    "Monthly income (including zero amounts)",
+  "Thu nhập phát sinh (kể cả đã xóa)": "One-off income (including deleted)",
+  "Sổ tiết kiệm": "Savings book",
+  "Danh mục tiết kiệm (kể cả ngừng sử dụng)":
+    "Savings categories (including archived)",
+  "Phiên bản giao dịch (kể cả đã hủy)":
+    "Transaction revisions (including cancelled)",
+  "Liên kết lô vàng": "Gold lot allocations",
+  "Lịch sử giá vàng": "Gold price history",
+  "Lịch sử chốt và mở kỳ": "Period closing and reopening history",
+  "Sổ đầu tư": "Investment book",
+  "Danh mục đầu tư (kể cả ngừng sử dụng)":
+    "Investment categories (including archived)",
+  "Phiên bản định giá": "Valuation revisions",
+  "Sổ quỹ": "Fund book",
+  "Quỹ đã thiết lập": "Configured funds",
+  "Nơi giữ tiền (kể cả ngừng sử dụng)":
+    "Holding locations (including archived)",
+  "Lịch sử cấu hình quỹ": "Fund configuration history",
+
   "Mở bằng Safari": "Open in Safari",
   "Mở địa chỉ ứng dụng trong Safari. Nếu đang xem từ ứng dụng khác, sao chép liên kết và mở trong Safari.":
     "Open the app address in Safari. If viewing it in another app, copy the link and open it in Safari.",

@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedDetails } from "@/components/animated-details";
 import { useI18n } from "@/i18n/provider";
 
 import { useMoney } from "@/components/privacy";
@@ -6,6 +7,7 @@ import { activeTransactions } from "@/domain/funds/engine";
 import type { FundId, FundTransaction } from "@/domain/funds/schema";
 import type { FundView } from "@/domain/funds/types";
 import {
+  Plus,
   Trash2 as CancelEntryIcon,
   Pencil as EditActionIcon,
 } from "lucide-react";
@@ -71,11 +73,12 @@ export function FundLedger({
           className="expense-secondary"
           onClick={() => onEdit({ type: "transaction", fundId })}
         >
+          <Plus size={17} aria-hidden="true" />
           {tr("Ghi giao dịch")}
         </button>
       </div>
       <div className="fund-filters" onChange={() => setPage(1)}>
-        <label>
+        <label className="fund-search">
           {tr("Tìm giao dịch")}
           <input
             value={query}
@@ -83,67 +86,88 @@ export function FundLedger({
             placeholder={tr("Lý do, quỹ hoặc nơi giữ")}
           />
         </label>
-        <label>
-          {tr("Quỹ lọc")}
-          <select
-            aria-label={tr("Quỹ lọc")}
-            value={fund}
-            onChange={(e) => setFund(e.target.value)}
-          >
-            <option value="">{tr("Tất cả quỹ")}</option>
-            {Object.entries(fundNames).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {tr("Loại giao dịch lọc")}
-          <select
-            aria-label={tr("Loại giao dịch lọc")}
-            value={kind}
-            onChange={(e) => setKind(e.target.value)}
-          >
-            <option value="">{tr("Tất cả loại")}</option>
-            {Object.entries(localize(transactionNamesSource)).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {tr("Nơi giữ lọc")}
-          <select
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          >
-            <option value="">{tr("Tất cả nơi giữ")}</option>
-            {view.book?.locations.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {tr("Từ ngày")}
-          <input
-            type="date"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-          />
-        </label>
-        <label>
-          {tr("Đến ngày")}
-          <input
-            type="date"
-            value={to}
-            min={from || undefined}
-            onChange={(e) => setTo(e.target.value)}
-          />
-        </label>
+        <AnimatedDetails
+          className="fund-filter-options"
+          open={fundId ? undefined : true}
+        >
+          <summary>
+            {tr("Bộ lọc giao dịch")} ·{" "}
+            {
+              [
+                fund !== (fundId ?? "") ? fund || "all" : "",
+                kind,
+                location,
+                from,
+                to,
+              ].filter(Boolean).length
+            }
+          </summary>
+          <div className="fund-filters-grid">
+            <label>
+              {tr("Quỹ lọc")}
+              <select
+                aria-label={tr("Quỹ lọc")}
+                value={fund}
+                onChange={(e) => setFund(e.target.value)}
+              >
+                <option value="">{tr("Tất cả quỹ")}</option>
+                {Object.entries(fundNames).map(([k, v]) => (
+                  <option key={k} value={k}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              {tr("Loại giao dịch lọc")}
+              <select
+                aria-label={tr("Loại giao dịch lọc")}
+                value={kind}
+                onChange={(e) => setKind(e.target.value)}
+              >
+                <option value="">{tr("Tất cả loại")}</option>
+                {Object.entries(localize(transactionNamesSource)).map(
+                  ([k, v]) => (
+                    <option key={k} value={k}>
+                      {v}
+                    </option>
+                  ),
+                )}
+              </select>
+            </label>
+            <label>
+              {tr("Nơi giữ lọc")}
+              <select
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              >
+                <option value="">{tr("Tất cả nơi giữ")}</option>
+                {view.book?.locations.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              {tr("Từ ngày")}
+              <input
+                type="date"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+              />
+            </label>
+            <label>
+              {tr("Đến ngày")}
+              <input
+                type="date"
+                value={to}
+                min={from || undefined}
+                onChange={(e) => setTo(e.target.value)}
+              />
+            </label>
+          </div>
+        </AnimatedDetails>
       </div>
       {from && to && from > to ? (
         <p role="alert">{tr("Ngày kết thúc phải từ ngày bắt đầu trở đi.")}</p>
@@ -163,7 +187,7 @@ export function FundLedger({
                   className="fund-transaction"
                   data-transaction-id={t.id}
                 >
-                  <div>
+                  <div className="fund-transaction-info">
                     <strong>{localize(transactionNamesSource)[t.kind]}</strong>
                     <small>
                       {displayTime(t.occurredAt, locale)} {tr("· Giờ Việt Nam")}
@@ -178,15 +202,18 @@ export function FundLedger({
                     )}
                     <p>{t.note || tr("Không có ghi chú")}</p>
                   </div>
-                  <strong>{money(t.amount)}</strong>
+                  <strong className="fund-transaction-amount">
+                    {money(t.amount)}
+                  </strong>
                   <div className="fund-actions">
                     <button
-                      className="expense-secondary icon-action action-edit"
+                      className="expense-secondary"
                       onClick={() => onEdit({ type: "revise", transaction: t })}
                       aria-label={tr("Sửa")}
                       title={tr("Sửa")}
                     >
                       <EditActionIcon size={18} aria-hidden="true" />
+                      {tr("Sửa")}
                     </button>
                     <button
                       className="expense-secondary"
@@ -219,7 +246,7 @@ export function FundLedger({
               disabled={current === pages}
               onClick={() => setPage(current + 1)}
             >
-              Trang sau
+              {tr("Trang sau")}
             </button>
           </nav>
         </>

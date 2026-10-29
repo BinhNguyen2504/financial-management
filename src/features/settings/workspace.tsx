@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { ResetData } from "./reset-data";
+import { RestoreStatus } from "./restore-status";
 import { InstallGuide } from "./install-guide";
 import "./settings.css";
 import { useSettingsWorkspace } from "./use-settings-workspace";
@@ -220,79 +222,57 @@ export function SettingsWorkspace() {
               disabled={!canSelect}
               onChange={(e) => void selectFile(e.target.files?.[0])}
             />
-            {importUnavailable ? (
-              <div className="settings-feedback">
-                <p>{tr("Khôi phục chưa được bật trên hệ thống này.")}</p>
-                <p>
-                  {tr(
-                    "Bạn vẫn có thể tải bản sao lưu và giữ file để dùng sau.",
-                  )}
-                </p>
-                <button
-                  className="expense-secondary"
-                  disabled={checking || !!busy}
-                  onClick={() => void reloadStatus()}
+            {status && !complete && (
+              <RestoreStatus
+                status={status}
+                checking={checking}
+                busy={!!busy}
+                reload={() => void reloadStatus()}
+              />
+            )}
+            {!importUnavailable && status?.empty && !complete && (
+              <>
+                <ol
+                  className="settings-import-steps"
+                  aria-label={tr("Các bước khôi phục")}
                 >
-                  {tr("Kiểm tra lại")}
-                </button>
-              </div>
-            ) : !status?.empty && status && !complete ? (
-              <div className="settings-feedback">
-                <p className="settings-state-label">
-                  <ShieldCheck size={17} aria-hidden="true" />
-                  {tr("Tài khoản đang có dữ liệu")}
-                </p>
-                <p>
-                  {tr(
-                    "Để tránh ghi đè, hãy đăng nhập một tài khoản mới chưa có dữ liệu trước khi khôi phục.",
+                  {[tr("Chọn file"), tr("Kiểm tra"), tr("Khôi phục")].map(
+                    (label, i) => (
+                      <li
+                        key={label}
+                        aria-current={
+                          (summary ? 1 : 0) === i ? "step" : undefined
+                        }
+                      >
+                        <span>{i + 1}</span>
+                        {label}
+                      </li>
+                    ),
                   )}
-                </p>
-              </div>
-            ) : (
-              !complete && (
-                <>
-                  <ol
-                    className="settings-import-steps"
-                    aria-label={tr("Các bước khôi phục")}
+                </ol>
+                <div className="settings-actions">
+                  <button
+                    className="expense-secondary"
+                    aria-describedby={
+                      importError && !summary ? "import-error" : undefined
+                    }
+                    disabled={!canSelect}
+                    onClick={chooseFile}
                   >
-                    {[tr("Chọn file"), tr("Kiểm tra"), tr("Khôi phục")].map(
-                      (label, i) => (
-                        <li
-                          key={label}
-                          aria-current={
-                            (summary ? 1 : 0) === i ? "step" : undefined
-                          }
-                        >
-                          <span>{i + 1}</span>
-                          {label}
-                        </li>
-                      ),
-                    )}
-                  </ol>
-                  <div className="settings-actions">
-                    <button
-                      className="expense-secondary"
-                      aria-describedby={
-                        importError && !summary ? "import-error" : undefined
-                      }
-                      disabled={!canSelect}
-                      onClick={chooseFile}
-                    >
-                      <Upload size={17} aria-hidden="true" />
-                      {fileName ? tr("Chọn file khác") : tr("Nhập bản sao lưu")}
-                    </button>
-                  </div>
-                  {status && (
-                    <p className="settings-hint">
-                      {tr("Bản sao lưu (.json) · Tối đa")}{" "}
-                      {(status.maxBytes / 1024 / 1024).toLocaleString(
-                        numberLocale,
-                      )}{" "}
-                      MiB
-                    </p>
-                  )}
-                </>
-              )
+                    <Upload size={17} aria-hidden="true" />
+                    {fileName ? tr("Chọn file khác") : tr("Nhập bản sao lưu")}
+                  </button>
+                </div>
+                {status && (
+                  <p className="settings-hint">
+                    {tr("Bản sao lưu (.json) · Tối đa")}{" "}
+                    {(status.maxBytes / 1024 / 1024).toLocaleString(
+                      numberLocale,
+                    )}{" "}
+                    MiB
+                  </p>
+                )}
+              </>
             )}
             {fileName && !complete && (
               <div className="settings-selected-file">
@@ -373,7 +353,13 @@ export function SettingsWorkspace() {
                 <button
                   aria-busy={busy === "import"}
                   className="expense-primary"
-                  disabled={!!busy || !summary.canImport}
+                  disabled={
+                    !!busy ||
+                    checking ||
+                    (!status?.empty && !controller.importUncertain) ||
+                    !status?.importReady ||
+                    !summary.canImport
+                  }
                   onClick={() => void restore()}
                 >
                   {busy === "import" ? (
@@ -430,6 +416,17 @@ export function SettingsWorkspace() {
           </section>
         </div>
       </section>
+      {user && (
+        <ResetData
+          key={user.id}
+          status={status}
+          account={user.email ?? user.id}
+          disabled={!!busy || checking || userLoading}
+          onBusy={controller.setBusy}
+          onReset={controller.afterReset}
+          onChoose={chooseFile}
+        />
+      )}
       <section className="panel settings-appearance">
         <LanguagePicker />
         <ThemePicker />

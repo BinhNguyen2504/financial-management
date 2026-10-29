@@ -243,7 +243,12 @@ it("admin enable rejects partial schema and rolls back migration if source chang
       "create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select (current_setting('request.jwt.claims',true)::jsonb->>'sub')::uuid$$;",
     );
     for (const file of (await readdir("supabase/migrations"))
-      .filter((f) => f.endsWith(".sql") && f !== "202610190001_funds.sql")
+      .filter(
+        (f) =>
+          f.endsWith(".sql") &&
+          f !== "202610190001_funds.sql" &&
+          f !== "202610290002_financial_data_reset.sql",
+      )
       .sort())
       await isolated.unsafe(
         await readFile(`supabase/migrations/${file}`, "utf8"),

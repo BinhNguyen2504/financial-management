@@ -1,3 +1,4 @@
+import { requestDataGeneration } from "@/server/data-generation";
 import {
   financialHeaders as headers,
   type FinancialRouteContext as Context,
@@ -100,7 +101,7 @@ export async function POST(request: Request, context: Context) {
       throw new SavingsError("Đường dẫn không tồn tại.", 404);
     const body = await readCommandJSON(request, SavingsError);
     const result = await runSavingsCommand(
-      savingsRepository(),
+      savingsRepository(requestDataGeneration(request)),
       owner,
       commandSchema.parse(body),
       savingsClock(),

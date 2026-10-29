@@ -19,7 +19,10 @@ import { useEffect, useRef, useState } from "react";
 import { dataRequest, DataRequestError, type DataStatus } from "./api";
 
 import "./settings.css";
-type Summary = ReturnType<typeof summarizeBackup> & { canImport: boolean };
+type Summary = ReturnType<typeof summarizeBackup> & {
+  canImport: boolean;
+  status: DataStatus;
+};
 type PreparedFile = { url: string; name: string; size: number };
 function message(e: unknown) {
   if (e instanceof BackupError)
@@ -53,6 +56,7 @@ export function useSettingsWorkspace() {
   const [exportError, setExportError] = useState("");
   const [importError, setImportError] = useState("");
   const [importNotice, setImportNotice] = useState("");
+  const [importUncertain, setImportUncertain] = useState(false);
   const [prepared, setPrepared] = useState<PreparedFile | null>(null);
   const requestId = useRef("");
   const owner = useRef(user?.id);
@@ -101,6 +105,7 @@ export function useSettingsWorkspace() {
     setExportError("");
     setImportError("");
     setImportNotice("");
+    setImportUncertain(false);
     setPrepared(null);
     setBusy("");
     inFlight.current = false;
@@ -120,6 +125,22 @@ export function useSettingsWorkspace() {
     },
     [prepared],
   );
+  useEffect(() => {
+    function foreground() {
+      if (
+        document.visibilityState === "visible" &&
+        owner.current &&
+        !inFlight.current
+      )
+        void reloadStatus();
+    }
+    window.addEventListener("focus", foreground);
+    document.addEventListener("visibilitychange", foreground);
+    return () => {
+      window.removeEventListener("focus", foreground);
+      document.removeEventListener("visibilitychange", foreground);
+    };
+  }, []);
   useEffect(() => {
     if (complete && importNotice) result.current?.focus();
   }, [complete, importNotice]);
@@ -177,6 +198,7 @@ export function useSettingsWorkspace() {
     setRestoreProfile(false);
     setImportError("");
     setImportNotice("");
+    setImportUncertain(false);
     setFileName(file.name);
     requestId.current = "";
     const selectedOwner = user?.id;
@@ -195,11 +217,16 @@ export function useSettingsWorkspace() {
       if (owner.current !== selectedOwner) return;
       setBackup(parsed);
       setSummary(preview);
+      statusRequest.current++;
+      setChecking(false);
+      setStatus(preview.status);
       requestId.current = crypto.randomUUID();
       if (!preview.canImport)
         setImportError(
           tr(
-            "Chưa thể khôi phục vào tài khoản này. Kiểm tra trạng thái tài khoản rồi thử lại.",
+            preview.status.empty
+              ? "Khôi phục chưa được bật trên hệ thống này."
+              : "Tài khoản đang có dữ liệu. Xem chi tiết các mục đang chặn khôi phục.",
           ),
         );
     } catch (e) {
@@ -240,7 +267,14 @@ export function useSettingsWorkspace() {
     setProfilePending(false);
   }
   async function restore() {
-    if (inFlight.current || !backup || !summary?.canImport) return;
+    if (
+      inFlight.current ||
+      !backup ||
+      !summary?.canImport ||
+      checking ||
+      (status && ((!status.empty && !importUncertain) || !status.importReady))
+    )
+      return;
     inFlight.current = true;
     setBusy("import");
     setImportError("");
@@ -258,13 +292,15 @@ export function useSettingsWorkspace() {
           requestId: requestId.current,
           targetOwnerId: destination,
           backup,
+          dataGeneration: summary.status.dataGeneration,
         }),
       });
       if (owner.current !== destination) return;
       imported = true;
+      setImportUncertain(false);
       toast("success", tr("Đã khôi phục dữ liệu tài chính."));
       setComplete(true);
-      setStatus((s) => (s ? { ...s, empty: false } : s));
+      void reloadStatus();
       setImportNotice(
         tr(
           "Đã khôi phục toàn bộ dữ liệu tài chính. Bạn có thể mở các mục để kiểm tra.",
@@ -286,6 +322,7 @@ export function useSettingsWorkspace() {
           (!(e instanceof DataRequestError) ||
             e.status === undefined ||
             e.status >= 500);
+        setImportUncertain(uncertain);
         setImportError(
           uncertain
             ? tr(
@@ -303,6 +340,17 @@ export function useSettingsWorkspace() {
                 )
               : message(e),
         );
+        if (
+          e instanceof DataRequestError &&
+          [
+            "ACCOUNT_NOT_EMPTY",
+            "DATA_GENERATION_CHANGED",
+            "IMPORT_NOT_READY",
+          ].includes(e.code ?? "")
+        ) {
+          setSummary((s) => (s ? { ...s, canImport: false } : s));
+          void reloadStatus();
+        }
       }
     } finally {
       if (owner.current === destination) {
@@ -335,6 +383,7 @@ export function useSettingsWorkspace() {
     }
   }
   function clearFile() {
+    setImportUncertain(false);
     setBackup(null);
     setSummary(null);
     setFileName("");
@@ -344,7 +393,19 @@ export function useSettingsWorkspace() {
     if (fileInput.current) fileInput.current.value = "";
   }
   const canSelect =
-    !!status?.empty && status.importReady !== false && !complete && !busy;
+    !!status?.empty &&
+    status.importReady !== false &&
+    !complete &&
+    !busy &&
+    !checking;
+  async function afterReset() {
+    clearFile();
+    setComplete(false);
+    setProfilePending(false);
+    setImportNotice("");
+    setPrepared(null);
+    await reloadStatus();
+  }
   const importUnavailable = status?.importReady === false;
   return {
     tr,
@@ -378,5 +439,8 @@ export function useSettingsWorkspace() {
     result,
     profilePending,
     retryProfile,
+    setBusy,
+    afterReset,
+    importUncertain,
   };
 }

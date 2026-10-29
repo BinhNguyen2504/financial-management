@@ -914,3 +914,46 @@ Môi trường: Node 22.12.0, production build Next.js 16.4.1, PostgreSQL 14.2 c
 Mức giảm tương ứng khoảng 55% số câu lệnh, 51% byte DB và 82% byte response. Đây là benchmark mẫu local, không phải cam kết độ trễ cloud. Danh sách hũ/phân bổ/đáo hạn chỉ tính và trả khi bật widget; các revision cần tính đúng số dư vẫn được đọc.
 
 Bằng chứng: `artifacts/overview-performance/database.json`, `db-final.log`, `final-check.log`, `acceptance-check.log`, `browser-final.log`, `backup-final.log`, `overview-accepted.log` và screenshots/traces trong output browser tương ứng. Không thêm migration hoặc thực hiện deploy cloud.
+
+## Khôi phục có chẩn đoán và làm trống có sao lưu — 29/10/2026
+
+Đã hoàn thành source cho trạng thái chặn theo 5 phân hệ/35 bảng, thao tác làm trống riêng có backup và xác nhận bắt buộc, snapshot chống xóa dữ liệu chưa sao lưu, transaction/RLS/trigger chuyên biệt, receipt retry và generation chặn tab/lệnh/import cũ. Đã rà soát/cập nhật README, catalog vi/en, landing copy vi/en, Help, kiến trúc, UX, triển khai và troubleshooting. Preview tài chính không có màn Cài đặt; dữ liệu minh họa giữ cố định và các kiểm thử xác nhận không gọi API tài chính.
+
+Bằng chứng cuối trên Node **22.12.0**, PostgreSQL cô lập và Auth double local; browser chạy production Next.js **16.4.1**:
+
+- `npm run check`: lint, format, architecture **275 source files / 0 violations**, **274/274 unit**, typecheck và production build đều qua. Kiểm tra kiểu cuối cũng qua sau khi mở rộng fixture Fund trong test.
+- `npm run test:db`: **87/87** qua. Fixture reset có dữ liệu cả 5 phân hệ, kỳ Chi tiêu đã chốt và giao dịch Fund đã hủy. Kiểm chứng backup/restore khớp, xóa sạch 35 bảng, giữ bố cục/tài khoản khác; stale/expired/cross-owner, rollback khi lỗi ở bảng giữa luồng; concurrent retry không xóa dữ liệu mới; receipt/generation cũ bị chặn ở cả 5 repository; xóa lịch sử trực tiếp, nâng role và gọi RPC từ session ngoài runtime bị từ chối. Migration Fund chưa tồn tại trong một bài kiểm thử được dựng có chủ đích; bài này bỏ migration reset phụ thuộc Fund.
+- `reset.spec.ts`, `backup.spec.ts`, `landing.spec.ts`, `help.spec.ts`: **120/120** qua trên Chromium desktop/mobile, Firefox và WebKit. Gồm **24 ca reset**, **28 backup**, **40 landing**, **28 Help**. Kiểm tra giữ bản nháp/tab khác nhưng command trả 409 sau reset, command mới từ UI gửi generation mới, restore lại file đã tải, backup/xác nhận/phrase bắt buộc, snapshot thay đổi, mất phản hồi và retry cùng request, vi/en, focus Hủy và dialog không tràn tại 320px. Landing/Help kiểm tra thêm theme, zoom, reduced motion và biên Auth/public preview.
+- Request JSON backup hợp lệ với whitespace padding **11 MiB** đi qua Next proxy đến preview đầy đủ, trả 200; request vượt ngưỡng vẫn 413. Đây là bằng chứng đường truyền local vượt mặc định proxy 10 MB, không phải benchmark restore dữ liệu tài chính 20 MiB hoặc xác minh giới hạn hosting.
+- `git diff --check` qua.
+
+Bằng chứng ở `artifacts/financial-reset-validation/{check-final,database-final,types-final,browser-final}.log`, ảnh `reset-confirm-320-{desktop,mobile,firefox,webkit}.png` và `source-manifest.json`. Lượt browser trước có lỗi locator dùng tên region tiếng Việt sau khi đổi English; đã đối chiếu screenshot/error context, sửa locator theo tên đã dịch, rồi chạy lại đủ ma trận với các assertion nghiệp vụ giữ nguyên.
+
+**Giới hạn:** không migrate/reset dữ liệu cloud, không deploy, không xác minh Auth cloud/hosting hay thiết bị vật lý. Cloud cần migration `202610290002_financial_data_reset.sql` sau schema đủ 5 phân hệ/data_imports; kết nối migration phải có quyền tạo role và chuyển owner hàm. Chưa xác minh quyền migration trên tài khoản quản trị Supabase đích. Khi thiếu migration, reset bị khóa và backup vẫn hoạt động.
+
+### Kiểm tra migration biên nhận trước reset — 29/10/2026
+
+Sau lỗi `42P01: public.data_imports does not exist` do chạy migration reset trước migration biên nhận, đã thêm preflight đầu file reset, trước mọi DDL. Thiếu biên nhận trả `FINANCIAL_RESET_PREREQUISITE_MISSING` kèm hướng dẫn chạy toàn bộ `202610180002_data_imports.sql` trước. Regression dựng database local không có biên nhận: xác nhận migration dừng mà chưa tạo bảng/hàm reset; áp dụng migration biên nhận rồi reset thành công, giữ nguyên bản ghi tài chính đã có.
+
+`npm run test:db`: **88/88** qua; lint cho test mới, typecheck và `git diff --check` qua. Log: `artifacts/financial-reset-validation/prerequisites-database.log`, `prerequisites-types.log`. Không đổi UI/API, catalog, landing hoặc preview; đã cập nhật hướng dẫn triển khai và troubleshooting. Không áp dụng migration hoặc thay đổi dữ liệu cloud.
+
+### Ownership migration với tài khoản không phải superuser — 29/10/2026
+
+Đã sửa lỗi `42501` khi ALTER FUNCTION OWNER cần SET ROLE trên Supabase. ACL được cấu hình trước ownership transfer. Một DO block cấp quyền SET tạm cho migration actor nếu thiếu, chuyển owner và chỉ thu hồi phần quyền đã thêm; grant bootstrap/admin có sẵn được giữ nguyên. Không cấp quyền role reset cho runtime ứng dụng.
+
+Regression dùng kết nối LOGIN NOSUPERUSER CREATEROLE NOINHERIT NOBYPASSRLS, sở hữu schema tài chính trong database cô lập và có quyền grant cần thiết trên Auth. Trên PostgreSQL 16 dựng membership bootstrap ADMIN=true/SET=false/INHERIT=false giống trường hợp Supabase: bản migration cũ tái hiện đúng lỗi `must be able to SET ROLE`, transaction không để lại bảng reset. Bản mới áp dụng thành công; xác minh owner SECURITY DEFINER đúng role, ACL authenticated/anon đúng, quyền SET sau chạy vẫn false, membership trước/sau khớp và bản ghi tài chính được giữ.
+
+**89/89 kiểm thử PostgreSQL qua trên PostgreSQL 14.2 và 16.4**. PostgreSQL 16.4 được dựng từ source release chính thức, kiểm SHA-256, cài riêng dưới `artifacts/postgresql-16-ownership-check/` để kiểm thử; không thay PostgreSQL đang dùng hoặc cấu hình hệ thống. Lint test, typecheck và diff check qua. Log: `artifacts/financial-reset-validation/ownership-database.log`, `ownership-postgres16.log`, `ownership-types.log`; build PG16 ở `artifacts/postgresql-16-ownership-check/build.log`. Không đổi giao diện/API/catalog/landing/preview; tài liệu deployment/troubleshooting đã cập nhật. Không thao tác migration/schema/dữ liệu cloud; kiểm chứng local không thay bằng chứng áp dụng trên Supabase đích.
+
+## Bố cục Quỹ an toàn — 30/10/2026
+
+Đã tinh chỉnh giao dịch, nơi giữ tiền, lịch sử, card Nền tảng sinh hoạt và bước chọn nguồn khi Điều chỉnh. Thành phần chung áp dụng cả ba quỹ và danh sách ngoài trang. Đã rà soát/cập nhật README, đặc tả Quỹ, UX, kiến trúc, catalog và phần giải thích preview vi/en. Số liệu public preview vẫn cố định và API-free.
+
+Kiểm tra trên Node **22.12.0**, PostgreSQL cô lập và Auth double local:
+
+- **274/274 unit test** qua, gồm kiểm tra đủ bản dịch literal và nội dung catalog/preview; lint, format, typecheck và architecture **276 source files / 0 violations** qua.
+- **44/44 browser test** qua trên production build Next.js **16.4.1**: Chromium desktop/mobile, Firefox và WebKit, với `funds.spec.ts` và `fund-review.spec.ts`. Kiểm chứng chọn/giữ nguồn sinh hoạt, mô tả trợ năng, khóa/mở danh sách hũ, bộ lọc đóng vẫn giữ tác dụng, căn cột số tiền, Sửa có chữ, dialog con giữ tab, lịch sử trước/sau và hủy, nơi đã ngừng, privacy, vi/en; thêm cả ba tab ở **320px, dark mode và font 125%**, không tràn ngang. Các ca chuyển tiền, phân trang, conflict/retry và nguồn đổi chờ xác nhận tiếp tục qua. Log cuối: `artifacts/fund-layout-after/browser-final.log`, `production-build.log`, `unit-final.log`; ảnh 320px ở `artifacts/browser/fund-layout-*-320-dark-*.png`.
+- Chụp và xem trực tiếp ba tab ở **1440/768/375px** trước/sau. Chiều rộng client/scroll lần lượt **910/910**, **702/702**, **309/309px** ở cả hai bản: không tràn ngang. Ảnh mobile sau tinh chỉnh cho thấy tìm kiếm và dòng giao dịch đầu xuất hiện trong vùng đọc ban đầu.
+- App-style source scanner không có FAIL; WARN ở eyebrow và shadow có sẵn trong hệ thống theme được giữ. Chạy `probe`/`app` của skill trong phiên Playwright đã đăng nhập; standalone inspector không hỗ trợ luồng đăng nhập. Ảnh, phép đo, đối chiếu và manifest source ở `artifacts/fund-layout-before/` và `artifacts/fund-layout-after/`.
+
+Không thay schema/công thức tài chính hoặc thao tác dữ liệu cloud. Production build trong runner là build local riêng; kết quả không xác minh deployment, Auth/RLS cloud hoặc thiết bị vật lý.

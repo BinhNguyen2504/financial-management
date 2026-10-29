@@ -1,4 +1,5 @@
 "use client";
+import { generationOf } from "@/lib/data-generation";
 import { buildFundAction } from "./editor-action";
 import { focusInvalidNumber } from "@/components/localized-input";
 
@@ -37,6 +38,7 @@ export function useFundEditor({
 }: Props) {
   const { t: tr, locale, config: localize } = useI18n("funds");
   const toast = useToast();
+  const generation = useRef(generationOf(initial)).current;
   const [view, setView] = useState(initial),
     config = initial.book?.configurations.at(-1),
     old = "transaction" in mode ? mode.transaction : null;
@@ -186,11 +188,15 @@ export function useFundEditor({
       if (!preview)
         setPreview({
           command,
-          result: await fundsJSON<FundCommandResult>("/preview", command),
+          result: await fundsJSON<FundCommandResult>(
+            "/preview",
+            command,
+            generation,
+          ),
         });
       else {
         writing = true;
-        await fundsJSON("/commands", command);
+        await fundsJSON("/commands", command, generation);
         toast("success", tr("Đã lưu thay đổi."));
         onSaved();
       }

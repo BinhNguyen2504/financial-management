@@ -124,8 +124,8 @@ export const catalog = {
   "Nền tảng an toàn tài chính": "Your financial safety foundation",
   "Xây Emergency, Rainy Day và Sinking từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.":
     "Build Emergency, Rainy Day and Sinking funds from living costs, with illustrations reflecting reserve progress.",
-  "Mức sinh hoạt từ các hũ chi tháng được chọn; mục tiêu theo hệ số tự nhập":
-    "Living costs from selected monthly jars; targets use your own multipliers",
+  "Mức sinh hoạt đã xác nhận từ hũ chi tháng; chọn cập nhật nguồn trước khi xem trước và lưu":
+    "Confirmed living costs from monthly jars; choose source updates before previewing and saving",
   "Minh họa theo chủ đề phản ánh tiến độ thực tế":
     "Theme illustrations reflect actual progress",
   "Ghi sổ độc lập; thêm, rút và chuyển giữa quỹ/nơi giữ":
@@ -168,16 +168,16 @@ export const catalog = {
     "Asia/Ho_Chi_Minh time zone and Vietnamese formats",
   "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt":
     "Five illustrated themes; appearance preferences saved in this browser",
-  "Sao lưu toàn bộ dữ liệu và khôi phục vào tài khoản chưa có dữ liệu; hồ sơ tùy chọn":
-    "Whole-account backup and restore to an empty account; optional profile",
+  "Sao lưu toàn bộ dữ liệu; giải thích dữ liệu chặn khôi phục, làm trống có xác nhận và khôi phục vào tài khoản trống; hồ sơ tùy chọn":
+    "Back up all data; inspect restore blockers, explicitly clear financial data and restore into an empty account; optional profile restoration",
   "Thêm vào màn hình chính trên thiết bị có hỗ trợ":
     "Add to the home screen on supported devices",
   "Nút Hướng dẫn cạnh tiêu đề giúp bạn hiểu các khái niệm và thao tác, ngay cả khi đang nhập liệu.":
     "Help beside each page title explains concepts and actions, even while you are entering data.",
   "Sau khi đăng nhập, bạn có một không gian riêng với chủ đề yêu thích.":
     "Once signed in, you have your own workspace with your favourite theme.",
-  "Chọn Tiếng Việt/English, năm chủ đề và chế độ sáng/tối/theo hệ thống; sao lưu dữ liệu, khôi phục vào tài khoản trống và cài lên màn hình chính.":
-    "Choose Vietnamese/English, five themes and light/dark/system mode; back up JSON, restore to an empty account and install on your home screen.",
+  "Chọn Tiếng Việt/English và giao diện; sao lưu, xem điều kiện khôi phục, làm trống dữ liệu sau khi lưu bản sao lưu và cài lên màn hình chính.":
+    "Choose Vietnamese/English and appearance; back up, review restore requirements, clear financial data after saving a backup and install on your home screen.",
   "Tiếng Việt/English với định dạng vi-VN/en-GB; cùng tiền VND và giờ Việt Nam":
     "Vietnamese/English with vi-VN/en-GB formats; VND and Vietnam time",
 } as const;

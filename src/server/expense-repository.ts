@@ -1,3 +1,4 @@
+import { withDataGeneration } from "./data-generation";
 import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
 import type postgres from "postgres";
@@ -210,6 +211,7 @@ export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
 
 export function postgresExpenseRepository(
   sql: postgres.Sql,
+  expectedGeneration?: number,
 ): ExpenseRepository {
   return {
     async transaction<T>(
@@ -221,7 +223,9 @@ export function postgresExpenseRepository(
       const result = await withOwnerTransaction(sql, owner, async (tx) => {
         // Serialize all commands for one owner, including first initialization and retries.
         await lockOwner(tx, [owner]);
-        return fn(transactionAdapter(tx, owner));
+        return withDataGeneration(tx, owner, expectedGeneration, () =>
+          fn(transactionAdapter(tx, owner)),
+        );
       });
       return result as T;
     },

@@ -60,12 +60,17 @@ export async function requestJSON<T>(
   return value as T;
 }
 
-export function jsonBody(body: unknown): RequestInit {
+export function jsonBody(body: unknown, dataGeneration = 0): RequestInit {
   return body === undefined
     ? {}
     : {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(dataGeneration
+            ? { "X-Data-Generation": String(dataGeneration) }
+            : {}),
+        },
         body: JSON.stringify(body),
       };
 }

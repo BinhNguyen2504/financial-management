@@ -27,6 +27,7 @@ export function useIncomeEditor({
   month,
   today,
   version,
+  dataGeneration = 0,
   onClose,
   onSaved,
   onReload,
@@ -35,10 +36,12 @@ export function useIncomeEditor({
   month: string;
   today: string;
   version: number;
+  dataGeneration?: number;
   onClose(): void;
   onSaved(): Promise<void>;
   onReload(): Promise<unknown>;
 }) {
+  const generation = useRef(dataGeneration).current;
   const { t: tr, locale, config: localize } = useI18n("income");
   const localizedTitles = localize(titles);
   const toast = useToast();
@@ -129,12 +132,16 @@ export function useIncomeEditor({
       pending.current = command;
       if (needsPreview && (!preview || preview.command.id !== command.id)) {
         setPreview({
-          result: await incomeJSON<CommandResult>("/preview", command),
+          result: await incomeJSON<CommandResult>(
+            "/preview",
+            command,
+            generation,
+          ),
           command,
         });
       } else {
         writing = true;
-        await incomeJSON("/commands", command);
+        await incomeJSON("/commands", command, generation);
         toast("success", tr("Đã lưu thay đổi."));
         await onSaved();
       }

@@ -1,3 +1,4 @@
+import { withDataGeneration } from "./data-generation";
 import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
 import type postgres from "postgres";
@@ -123,7 +124,10 @@ function adapter(
     },
   };
 }
-export function postgresIncomeRepository(sql: postgres.Sql): IncomeRepository {
+export function postgresIncomeRepository(
+  sql: postgres.Sql,
+  expectedGeneration?: number,
+): IncomeRepository {
   return {
     async transaction<T>(
       owner: string,
@@ -133,7 +137,9 @@ export function postgresIncomeRepository(sql: postgres.Sql): IncomeRepository {
         throw new Error("Invalid authenticated owner");
       return (await withOwnerTransaction(sql, owner, async (tx) => {
         await lockOwner(tx, [`income:${owner}`]);
-        return fn(adapter(tx, owner));
+        return withDataGeneration(tx, owner, expectedGeneration, () =>
+          fn(adapter(tx, owner)),
+        );
       })) as T;
     },
   };

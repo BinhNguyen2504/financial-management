@@ -1,4 +1,5 @@
 "use client";
+import { generationOf, generationHeaders } from "@/lib/data-generation";
 import { buildExpenseAction } from "./editor-action";
 
 import { useI18n } from "@/i18n/provider";
@@ -57,6 +58,7 @@ export function useExpenseEditor({
   const [selectionView, setSelectionView] = useState(view);
   const [classifying, setClassifying] = useState(false);
   const [version, setVersion] = useState(view.book?.version ?? 0);
+  const [generation] = useState(generationOf(view));
   const [name, setName] = useState(label?.name ?? row?.name ?? "");
   const [emoji, setEmoji] = useState<JarEmoji | null>(row?.emoji ?? null);
   const [description, setDescription] = useState(row?.description ?? "");
@@ -164,6 +166,7 @@ export function useExpenseEditor({
       };
       const result = await apiJSON<CommandResult>("/preview", {
         method: "POST",
+        headers: generationHeaders(generation),
         body: JSON.stringify(next),
       });
       command.current = next;
@@ -202,6 +205,7 @@ export function useExpenseEditor({
     try {
       await apiJSON<CommandResult>("/commands", {
         method: "POST",
+        headers: generationHeaders(generation),
         body: JSON.stringify(command.current),
       });
       toast("success", tr("Đã lưu thay đổi."));

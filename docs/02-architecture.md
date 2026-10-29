@@ -139,6 +139,8 @@ Tách readiness của dữ liệu tài chính khỏi readiness của biên nhậ
 
 Fund dùng domain/application/repository/API riêng tại `/api/v1/funds`; page chờ `pageAccess`. Command version/idempotency, RLS owner, lịch sử append-only. Đọc nguồn Chi tiêu trong cùng transaction và khóa Expenses → Fund. GET không khởi tạo dữ liệu. Client refetch khi foreground bằng helper hiện tại; không lưu tài chính trên thiết bị.
 
+Tinh chỉnh 30/10/2026: `features/funds/history.tsx` trình bày audit chung, snapshot cấu hình và giao dịch trước/sau; `details.tsx` tái sử dụng cùng lịch sử/nơi giữ cho cả ba quỹ. Ledger dùng container query theo chiều rộng thực để căn cột trong trang và dialog. Cấu hình nguồn có fieldset hũ riêng, giữ logic áp dụng snapshot/xem trước hiện có; không đổi API, schema hay biên truy cập. Catalog và Help preview vi/en làm rõ nguồn đã xác nhận, dữ liệu preview tiếp tục cố định.
+
 ## Thành phần trải nghiệm dùng chung — 19/10/2026
 
 Theme được áp dụng bằng script cố định trước first paint và đồng bộ qua storage/media events; HTML suppressHydrationWarning chỉ giới hạn ở thuộc tính root được script quản lý. Sidebar và cột bảng dùng storage chỉ cho UI preferences, không lưu bản nháp hay số tiền. Tooltip dùng chung giữ key điểm được chọn, format từ dữ liệu hiện hành để tránh lộ tiền sau toggle. Metadata logo dùng cột nullable riêng với RLS/command/version hiện có; xem [quy chuẩn](features/interface-feedback-2026-10-19.md).
@@ -225,3 +227,7 @@ Feature Tổng quan riêng thay route sử dụng ExpenseOverview. GET `/api/v1/
 ### Đọc Tổng quan gọn — 29/10/2026
 
 GET `/api/v1/overview` trả bố cục tài khoản cùng DTO số liệu. Không có tham số widget thì dùng bố cục đã lưu; tham số widget chỉ thay phạm vi dữ liệu khi xem thử. Adapter projection riêng dùng SELECT JSON theo nguồn, owner transaction/RLS, không đọc audit/command hoặc lấy bản sao cho ghi. Chi tiêu chỉ dựng tháng cần xem, Quỹ chia sẻ projection cấu hình hũ; Tiết kiệm tránh replay hai lần cho cùng ngày. API và UI dùng chung resolver nguồn đang hiển thị. Giữ các reader dùng cho lệnh, backup và màn hình module. Không thêm migration, cache dùng chung hoặc snapshot liên module. [Đặc tả](features/overview.md).
+
+### Financial reset — 29/10/2026
+
+Luồng reset là thao tác riêng có snapshot backup và xác nhận; SQL function thuộc role NOLOGIN giới hạn DELETE/RLS theo owner, giữ nguyên trigger bảo vệ ngoài reset. Transaction khóa đủ 5 module, fingerprint snapshot chống xóa dữ liệu chưa backup, đối soát trống và receipt idempotency. `data_generations` ngăn request trước reset ghi lại dữ liệu: metadata view và header HTTP ngoài schema/domain command, kiểm tra trong repository sau khóa và trước lookup command. Import receipts thêm generation; JSON backup V1/V2 không đổi. Xem [backup](features/backup.md) cho API, migration và giới hạn.

@@ -35,7 +35,7 @@ const helpPreview = {
   investments:
     "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví. Xem trước tác động trước khi lưu giao dịch.",
   funds:
-    "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt và hệ số bạn chọn; đổi mục tiêu không tự thêm tiền vào quỹ.",
+    "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt đã xác nhận và hệ số bạn chọn. Cập nhật nguồn từ Chi tiêu cần xem trước và xác nhận; đổi mục tiêu không tự thêm tiền vào quỹ.",
 };
 // Fixed illustrative data, including in server-rendered public SEO content.
 // Never substitute account data or fetch financial APIs for this preview.
