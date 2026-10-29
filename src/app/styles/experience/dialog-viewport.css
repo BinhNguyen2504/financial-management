@@ -28,6 +28,7 @@
     overflow: hidden;
   }
   .expense-dialog.dialog-shell.dialog-confirm {
+    height: fit-content;
     max-width: 480px;
   }
   .expense-dialog.dialog-shell.dialog-help {

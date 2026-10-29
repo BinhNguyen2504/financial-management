@@ -112,8 +112,8 @@ export const landing = {
     "A fixed category is a recurring income source, not necessarily a fixed amount. Additional income is a one-off entry. Not entered is different from a recorded zero. Delete a category when no receipts remain in any month; otherwise use Stop.",
   "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.":
     "Separate opening assets, new contributions and gains/losses. Moving savings between holdings changes where they are held, without increasing total assets.",
-  "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví.":
-    "Separate capital, available cash and investment results. Dated valuations help you read asset values correctly; updating a valuation does not change wallet cash.",
+  "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví. Xem trước tác động trước khi lưu giao dịch.":
+    "Separate capital, available cash and investment results. Dated valuations help you read asset values correctly; updating a valuation does not change wallet cash. Preview the impact before saving a transaction.",
   "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt và hệ số bạn chọn; đổi mục tiêu không tự thêm tiền vào quỹ.":
     "Each of the three funds has its own purpose. Targets come from your living costs and chosen multipliers; changing a target does not add money to a fund.",
   "Chuẩn bị từng quỹ dự phòng theo nhu cầu sinh hoạt của bạn.":

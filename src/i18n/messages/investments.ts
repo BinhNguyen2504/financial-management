@@ -1,4 +1,14 @@
 export const investments = {
+  "Thông tin giao dịch": "Transaction details",
+  "Số tiền và định giá": "Amounts and valuation",
+  "Thông tin bổ sung": "Additional details",
+  "Tiếp tục nhập": "Continue editing",
+  "Bỏ thay đổi": "Discard changes",
+  "Nội dung chưa lưu sẽ bị bỏ. Bạn có thể tiếp tục nhập để giữ lại bản nháp.":
+    "Unsaved changes will be discarded. Continue editing to keep your draft.",
+  "Nhập số tiền bằng VND.": "Enter an amount in VND.",
+  "Nhập số nguyên VND không âm, tối đa 24 chữ số.":
+    "Enter a non-negative whole VND amount, up to 24 digits.",
   "Lọc loại giao dịch chỉ áp dụng hoạt động; số dư và kết quả kỳ luôn dùng đầy đủ giao dịch.":
     "Transaction type filters apply to activity only; balances and period results always use all transactions.",
 
@@ -152,6 +162,7 @@ export const investments = {
   "Nạp tiền": "Deposit cash",
   "Rút tiền": "Withdraw cash",
   "Chuyển ví": "Transfer between wallets",
+  Mua: "Buy",
   Bán: "Sell",
   "Sửa danh mục": "Edit category",
   "Xóa / lưu trữ danh mục": "Delete / archive category",

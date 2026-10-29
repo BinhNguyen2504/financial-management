@@ -132,6 +132,7 @@ export const modules = [
       "Mua/bán cập nhật tài sản và tiền chờ trong một lần lưu",
       "Giá vốn bán nhập tay; phí, thuế, lãi/lỗ đã chốt và chưa chốt",
       "Định giá theo ngày; báo cáo nhiều năm, xuất bảng dữ liệu và sao lưu",
+      "Ghi giao dịch theo nhóm, xem trước tác động rồi xác nhận lưu",
       "Chi tiết giao dịch trước/sau, phiên bản sửa và giữ vị trí khi quay lại",
       "Minh họa danh mục riêng cho từng chủ đề giao diện",
     ],

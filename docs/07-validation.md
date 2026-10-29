@@ -1,5 +1,13 @@
 # Xác minh
 
+## Sao lưu tương thích schema phân loại cũ — 29/10/2026
+
+- Kiểm tra chỉ đọc trên database được `.env.local` cấu hình: runtime `expense_api` không có quyền CREATE; thiếu `expense_labels.brand_key`/`icon_key`, projection cũ tái hiện PostgreSQL `42703`. Sau sửa, `postgresDataRepository.backup` đọc đủ **35 bảng, schemaVersion 2** trong snapshot read-only bằng owner UUID giả không có dữ liệu. Không xuất dữ liệu tài khoản thật, không ghi/migrate database đang cấu hình và chưa xác minh phiên Auth/trình duyệt của người dùng.
+- `npm run test:db`: **76/76** qua trên PostgreSQL local cô lập, log `artifacts/backup-legacy-schema-db.log`. Bốn regression mới kiểm tra thiếu cả hai/từng cột logo/icon: xuất đủ bảng, khôi phục và đối soát toàn bộ dữ liệu, chặn metadata không thể lưu trước mọi ghi, giữ đích trống/không tạo biên nhận; schema đủ cột giữ nguyên logo/icon. Các ca sẵn có tiếp tục kiểm tra RLS, đích đã có dữ liệu, mất response, rollback và thiếu bảng nghiệp vụ.
+- `npm test`: **267/267** qua, log `artifacts/backup-legacy-schema-unit.log`. Typecheck chưa qua do key trùng trong thay đổi Đầu tư đang có ở `src/i18n/messages/investments.ts:263` (`TS1117`); log `artifacts/backup-legacy-schema-typecheck.log`. Giữ nguyên phần công việc song song này. Không chạy production build hoặc browser suite trong lượt sửa repository.
+- ESLint và Prettier cho hai file repository/test đã sửa qua; architecture **268 source files, 0 violations** và `git diff --check` qua tại thời điểm kiểm tra.
+- Đã cập nhật README, kiến trúc, xử lý lỗi và đặc tả backup; rà soát catalog, copy hai landing, preview cố định và UX. Phạm vi module, thao tác UI và dữ liệu minh họa không đổi. Không deploy, đổi quyền runtime hoặc kiểm chứng thiết bị vật lý.
+
 ## Cuộn đến nội dung trong trang và dialog — 27/10/2026
 
 - `html` và `.dialog-body` dùng cuộn mượt mặc định. Help, xem trước, phân trang, khôi phục vị trí tab và liên kết tới ô lỗi dùng cùng hành vi; đưa focus với `preventScroll` tránh nhảy trước khi cuộn. Reduced motion giữ cuộn tức thời. Attribute `data-scroll-behavior="smooth"` cho Next.js giữ quy tắc cuộn khi chuyển route.
@@ -854,9 +862,29 @@ Môi trường: Node 22.12, PostgreSQL local do runner sở hữu, Supabase Auth
 - Bao phủ thêm/ẩn/đổi thứ tự bằng bàn phím, chọn tối đa 5 hũ, xem thử/Hủy/khôi phục mặc định/Lưu, tài khoản trên trình duyệt thứ hai, lỗi lưu và xung đột, lỗi từng nguồn, giữ số lần tải trước, hết phiên, short/stale foreground, retry có spinner/aria-busy và không đổi vị trí nội dung khi refresh.
 - UI: 320/390/768/1440px, năm theme, sáng/tối, Việt/Anh, Privacy Mode và reduced motion. Dialog cấu hình tại 320px được đo toàn viewport, hỗ trợ Escape và trả focus về nút tùy chỉnh. Screenshots gồm `customize-320.png`, `overview-mobile.png`, `overview-desktop.png` trong từng project của thư mục chấp nhận.
 - Kiểm tra hồi quy landing public/preview độc lập, đăng nhập, Help preview, loading và cuộn preview điện thoại cũng đã qua trên bốn project trong vòng kiểm tra trước; nguồn preview luôn cố định, không gọi API tài chính.
-- Lint, architecture (**267 source files, 0 violations**), format check và typecheck qua. Production Webpack build trong runner qua; build mặc định được ghi bổ sung khi hoàn tất.
+- Lint, architecture (**267 source files, 0 violations**), format check và typecheck qua. Production Webpack build trong runner qua; `npm run build` mặc định với Turbopack cũng qua (compile, TypeScript, static generation và tối ưu hóa).
 - Inspector trên bản production với fixture local: **0 FAIL, 1 WARN** tại 1440/768/390. Giữ palette ứng dụng có sẵn bằng exception `palette-claude`; cảnh báo còn lại là nhãn sidebar hiện hữu. Đã mở cả sáu ảnh để review. Critique hai vòng: **7.6/10**, tại `artifacts/overview-review/critique.md`; số đo/ảnh tại `artifacts/overview-review/final-inspect/`.
 
 Các lỗi phát hiện trong quá trình kiểm chứng đã được sửa: serialization JSON của cấu hình, CSS dialog mobile bị luật dùng chung ghi đè, khoảng cách danh sách cũ và tiến độ quỹ mặc định của trình duyệt, trả focus WebKit, refresh đẩy nội dung và trạng thái chờ của nút thử lại. Kết quả chấp nhận nêu trên được lấy sau các sửa liên quan.
 
 Đã rà soát/cập nhật catalog, Help Việt/Anh, README, landing khách/thành viên và preview mẫu, tài liệu Tổng quan, kiến trúc, UX, khám phá tính năng và triển khai. Migration `202610290001_overview_layouts.sql` mới chỉ áp dụng vào database kiểm thử local; cloud/deployment và thiết bị thật chưa được xác nhận cho thay đổi này.
+
+## Dialog Đầu tư và tùy chọn cột — 29/10/2026
+
+Môi trường: Node 22.12, production Next.js, PostgreSQL và Supabase Auth double local do runner sở hữu. Không seed/migrate/reset cloud, không deploy và không kiểm chứng thiết bị thật.
+
+- Tái hiện baseline: hàng tùy chọn cột ~89px/công tắc 44px, select form 57–142px so với input 46px; submit trống hiện JSON Zod/UUID. Ảnh `artifacts/investment-feedback-before-*.png`.
+- Form chia nhóm, input/select mặc định 46px, tăng chiều cao theo cỡ chữ. Tách kiểu checkbox/radio và hàng chọn cột khỏi CSS form Đầu tư/Tiết kiệm/Quỹ. Lỗi schema dùng thông báo tại trường và toast tóm tắt; số tiền không bị bọc trong khối cảnh báo lớn.
+- Bỏ browser confirm, dùng Modal ứng dụng có Tiếp tục nhập/Bỏ thay đổi; bảo vệ cả raw numeric draft không hợp lệ. Thêm initialFocusRef, giữ focus khi cha/xác nhận đóng cùng lúc, sửa chiều cao dialog-confirm mobile theo nội dung.
+- `npm test`: **271/271**; PostgreSQL local: **76/76**. Typecheck, ESLint, format check, architecture (**268 source files, 0 violations**) và `git diff --check` qua. `npm run build` mặc định Turbopack qua; runner browser dùng production Webpack.
+- Probe của design-taste chạy trong phiên Playwright đã đăng nhập: 1440/768/390, **0 FAIL / 4 WARN** sau các exception đã nêu tại `artifacts/investment-feedback-review/critique.md`: palette sẵn có, emoji là metadata danh mục, phản hồi/focus của nút và bóng của modal/toast thực sự nổi. Cảnh báo còn lại ở shell nền. Static app lint vẫn nhận diện năm emoji preset có sẵn; giữ vì đây là dữ liệu có thể sửa, không thêm biểu tượng trang trí.
+- Đã rà/cập nhật catalog và bản dịch, Help của preview cố định, README, UX, đặc tả Đầu tư, dialog, Help và bản địa hóa. Các copy landing còn lại tiếp tục phù hợp. Kiểm tra **115 liên kết / 6 file**, không có đường dẫn hỏng. Giữ lịch sử và chỉnh sửa tài liệu không liên quan có sẵn.
+
+Hai test cũ được đối chiếu lại với source hiện tại: no-JavaScript landing vẫn mong tiêu đề preview trước lần bổ sung Tổng quan; test cảnh báo kết quả ghi chưa rõ vẫn mong bản dịch Anh cũ. Cập nhật assertion theo nội dung hiện hành, không đổi hành vi sản phẩm để khớp test. Các giả định sai ban đầu của test mới (thời điểm áp dụng giới hạn 24 chữ số, chờ cuộn kết thúc, mở tab báo cáo trước khi tìm picker) cũng được sửa trước lượt chấp nhận.
+
+Kết quả chấp nhận:
+
+- Hồi quy rộng **196/196** trong một lượt sạch (**11,2 phút**) trên Chromium desktop/mobile, Firefox và WebKit: Đầu tư, dialog, Help, feedback, layout/scroll, landing và localization. Log `artifacts/investment-feedback-accepted.log`.
+- Sau bổ sung duy nhất bản dịch `Mua → Buy`, chạy lại nhóm dialog **20/20** (**1,3 phút**) trên production build mới. Lượt này xác nhận đầy đủ tám nhãn loại giao dịch ở vi/en và focus trở về nút mở sau khi Bỏ thay đổi. Log `artifacts/investment-feedback-final-label.log`.
+- Đo đủ tám loại × năm kích thước (320/390/768/1440 và 812×375) trên bốn project; chụp 160 trạng thái vi/en × năm theme × sáng/tối × desktop/mobile. Kiểm tra chữ 200%, lỗi thiếu trường/24–25 chữ số, không có JSON kỹ thuật, đóng bằng X/nút/Escape/backdrop, tiếp tục nhập, bỏ thay đổi, raw draft lỗi, chọn cột giữa các module và đổi route. Các luồng sửa/hủy, bán hết, Privacy Mode, conflict/retry và mất phản hồi sau ghi tiếp tục qua.
+- Đối chiếu **354 file source/public/config** với snapshot của lượt chốt: **0 khác biệt**; manifest `artifacts/investment-feedback-review/source-manifest.json`. Ảnh sau sửa, probe và critique nằm trong cùng thư mục; ma trận ảnh từng trình duyệt có sheet riêng. Bằng chứng browser là local/emulation, không thay cho Supabase Auth cloud, deployment hoặc thiết bị vật lý.

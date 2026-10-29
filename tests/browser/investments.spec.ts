@@ -222,7 +222,6 @@ test("archive guard, sell all, restore and valuation correction history", async 
   await expect(
     page.getByRole("dialog").locator(".expense-error"),
   ).toContainText("hết giá vốn");
-  page.once("dialog", (d) => d.accept());
   await page.getByRole("button", { name: "Đóng cửa sổ", exact: true }).click();
   await begin(page, "sell", asset);
   await page

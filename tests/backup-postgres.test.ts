@@ -95,6 +95,59 @@ async function fixture() {
   return { id, backup: await repo.backup(id, profile) };
 }
 describe("full-account transfer via runtime RLS", () => {
+  it.each([["brand_key", "icon_key"], ["brand_key"], ["icon_key"]])(
+    "exports and restores complete financial data without optional visual columns %j",
+    async (...columns) => {
+      const { id, backup } = await fixture(),
+        target = await owner(),
+        blockedTarget = await owner();
+      for (const column of columns)
+        await admin.unsafe(
+          `alter table public.expense_labels rename column ${column} to test_missing_${column}`,
+        );
+      try {
+        expect((await repo.status(id)).empty).toBe(false);
+        const exported = await repo.backup(id, profile);
+        expect(Object.keys(exported.tables)).toHaveLength(35);
+        expect(exported.tables).toEqual(backup.tables);
+        await repo.import(target, randomUUID(), exported);
+        expect((await repo.backup(target, profile)).tables).toEqual(
+          backup.tables,
+        );
+        for (const column of columns) {
+          const withVisual = structuredClone(backup);
+          withVisual.tables.expense_labels[0][
+            column as "brand_key" | "icon_key"
+          ] = column === "brand_key" ? "vietcombank" : "wallet";
+          await expect(
+            repo.import(blockedTarget, randomUUID(), withVisual),
+          ).rejects.toMatchObject({ code: "SCHEMA_NOT_READY" });
+          expect((await repo.status(blockedTarget)).empty).toBe(true);
+          expect(
+            await admin`select id from data_imports where owner_id=${blockedTarget}`,
+          ).toHaveLength(0);
+        }
+      } finally {
+        for (const column of columns)
+          await admin.unsafe(
+            `alter table public.expense_labels rename column test_missing_${column} to ${column}`,
+          );
+      }
+    },
+  );
+  it("preserves label logos and icons when both schema columns exist", async () => {
+    const { id } = await fixture(),
+      target = await owner();
+    await admin`update expense_labels set brand_key='vietcombank',icon_key='wallet' where owner_id=${id}`;
+    const backup = await repo.backup(id, profile);
+    expect(backup.tables.expense_labels.length).toBeGreaterThan(0);
+    expect(backup.tables.expense_labels[0]).toMatchObject({
+      brand_key: "vietcombank",
+      icon_key: "wallet",
+    });
+    await repo.import(target, randomUUID(), backup);
+    expect((await repo.backup(target, profile)).tables).toEqual(backup.tables);
+  });
   it("exports all financial data when only the import receipt migration is missing", async () => {
     const { id, backup } = await fixture(),
       target = await owner();

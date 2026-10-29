@@ -179,3 +179,9 @@ Native Modal, HTTP transport và HTTP error mapping được tái sử dụng qu
 ## Responsive và nội dung phổ thông — 29/10/2026
 
 Khối nội dung mở rộng dùng cùng AnimatedDetails: chuyển chiều cao thật, đảo chiều khi bấm nhanh, không giữ chiều cao sau animation, giảm chuyển động tức thời. Menu popup giữ hành vi riêng. Phân cấp section và nội dung Việt/Anh đã đối chiếu trên toàn ứng dụng. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).
+
+## Form và xác nhận bỏ nội dung Đầu tư — 29/10/2026
+
+Đầu tư dùng form chia nhóm, control căn đầu và đồng đều; lỗi inline không dùng padding/nền của cảnh báo cả form. Toast lỗi kiểm tra chỉ tóm tắt, chi tiết nằm tại trường và phần tổng hợp có liên kết focus. Không đưa ZodError.message/JSON schema lên giao diện. Thông báo dài xuống dòng theo từ và giữ đủ nội dung.
+
+Modal nhận initialFocusRef tùy chọn để dialog bỏ nội dung focus hành động Tiếp tục nhập. X/Escape/backdrop của xác nhận chỉ quay về form; xác nhận Bỏ thay đổi mới đóng form. Dữ liệu số sai định dạng vẫn được tính là nội dung chưa lưu. Xếp lớp, khóa cuộn, focus và ngữ cảnh dialog cha tiếp tục dùng Modal chung; khi cha và xác nhận đóng cùng lúc, không ghi đè focus mà cha đã trả về nút mở.

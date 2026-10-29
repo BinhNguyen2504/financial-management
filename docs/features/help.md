@@ -68,3 +68,7 @@ Phần xem thử giải thích ngắn công dụng của Hướng dẫn; tài li
 ## Hướng dẫn Tổng quan — 29/10/2026
 
 Help Việt/Anh bổ sung cách đọc năm module, kỳ hiện tại, giá trị đã biết, cá nhân hóa widget, chọn hũ, xem thử, Lưu/Hủy, xung đột bố cục và phạm vi backup. Giữ các anchor terms/read-overview/start-overview/privacy đang được dùng.
+
+### Ghi giao dịch Đầu tư — 29/10/2026
+
+Nút Hiểu vốn, giá trị và tiền chờ nằm cùng hàng công cụ gọn phía trên các nhóm nhập. Chọn loại giao dịch để xem các trường tương ứng; xem trước tác động rồi xác nhận lưu. Đóng form có thay đổi mở xác nhận trong ứng dụng và cho tiếp tục nhập; mở/đóng Help vẫn giữ bản nháp và ngữ cảnh form.

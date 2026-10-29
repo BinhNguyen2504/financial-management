@@ -33,17 +33,17 @@
 .investment-toolbar > .expense-actions {
   margin-left: auto;
 }
-.investment-workspace label,
-.investment-form label {
+.investment-workspace label:not(.column-picker-row),
+.investment-form label:not(.column-picker-row) {
   display: grid;
   gap: 7px;
   font-size: var(--font-size-14);
   color: var(--muted);
   min-width: 0;
 }
-.investment-workspace input,
+.investment-workspace input:not([type="checkbox"]):not([type="radio"]),
 .investment-workspace select,
-.investment-form input,
+.investment-form input:not([type="checkbox"]):not([type="radio"]),
 .investment-form select {
   min-height: 44px;
   max-width: 100%;
@@ -407,4 +407,93 @@
   .investment-card .expense-actions {
     margin-top: 16px;
   }
+}
+
+/* A field owns its label, control and feedback; grid tracks never stretch controls. */
+.investment-editor-fields {
+  display: grid;
+  gap: 28px;
+}
+.investment-form .investment-fields {
+  align-items: start;
+  gap: 16px 18px;
+  margin: 0;
+}
+.investment-form .investment-fields > legend {
+  color: var(--text);
+  font-size: var(--font-size-16);
+  line-height: 1.5;
+}
+.investment-form .investment-field {
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  gap: 6px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.investment-field-label {
+  display: block;
+  font-weight: var(--weight-medium);
+}
+.investment-form .investment-field :is(input, select),
+.investment-form .form-readonly-value {
+  box-sizing: border-box;
+  width: 100%;
+  height: max(46px, calc(1.5em + 20px));
+  min-height: max(46px, calc(1.5em + 20px));
+  padding: 10px 12px;
+  font-size: var(--font-size-16);
+  line-height: 1.5;
+  flex: none;
+}
+.investment-form .investment-field select {
+  padding-right: 38px;
+  text-overflow: ellipsis;
+}
+.investment-field-wide,
+.investment-fees,
+.investment-sell-all {
+  grid-column: 1 / -1;
+}
+.investment-form .investment-fees {
+  gap: 12px 18px;
+}
+.investment-form .investment-fees > legend {
+  font-size: var(--font-size-14);
+  color: var(--muted);
+  padding-bottom: 8px;
+}
+.investment-sell-all {
+  justify-self: start;
+  text-align: left;
+  white-space: normal;
+}
+.investment-form .investment-field > small {
+  margin: 0;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.investment-form .investment-field > .field-error {
+  font-size: var(--font-size-14);
+}
+.investment-form-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.investment-form-tools .help-context {
+  width: auto;
+  max-width: 100%;
+}
+.investment-form-tools .required-fields-note {
+  margin-left: auto;
+}
+.investment-fields > p {
+  margin: 0;
+  line-height: 1.6;
 }

@@ -33,7 +33,7 @@ const helpPreview = {
   savings:
     "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.",
   investments:
-    "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví.",
+    "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví. Xem trước tác động trước khi lưu giao dịch.",
   funds:
     "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt và hệ số bạn chọn; đổi mục tiêu không tự thêm tiền vào quỹ.",
 };

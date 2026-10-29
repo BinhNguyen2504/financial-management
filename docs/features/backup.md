@@ -67,6 +67,14 @@ Cần migration Fund trước khi dùng source mới; thiếu schema không âm 
 
 Phân loại Chi tiêu có `brand_key`/`icon_key` nullable sau migration `202610190002_label_visuals.sql`. Backup cũ không có hai field vẫn được chấp nhận với null; backup mới lưu và phục hồi chúng. Tùy chọn theme/sidebar/cột trên trình duyệt không nằm trong backup tài chính.
 
+### Tương thích schema thiếu logo/icon — 29/10/2026
+
+Export đọc hai field tùy chọn qua JSON của hàng để schema cũ thiếu cả hai hoặc từng cột vẫn tạo đủ bản sao lưu V2 gồm 35 bảng; field không tồn tại được ghi null. Cột đã có vẫn xuất nguyên giá trị. Không bỏ qua bảng, trường nghiệp vụ bắt buộc hoặc các lỗi SQL khác.
+
+Restore kiểm tra các cột logo/icon có thật trong transaction runtime/RLS. Chỉ bỏ cột chưa tồn tại khỏi INSERT khi toàn bộ nhãn trong file có giá trị null ở cột đó. Nếu có giá trị khác null, trả `SCHEMA_NOT_READY` trước mọi INSERT, giữ đích trống và không tạo biên nhận. Cột tồn tại và metadata được đối soát như các trường khác; vẫn yêu cầu tài khoản đích trống và migration biên nhận import.
+
+Đã rà soát catalog, README, landing copy, preview cố định và hướng UX: phạm vi chức năng, thao tác và dữ liệu minh họa hiện tại vẫn phù hợp. Thay đổi này sửa tương thích repository, không đổi UI hoặc JSON V1/V2. Kiểm chứng và giới hạn môi trường ghi tại [validation](../07-validation.md).
+
 ## Help theo ngữ cảnh — 20/10/2026
 
 Help tại Cài đặt hướng dẫn file JSON toàn tài khoản, khôi phục vào tài khoản trống, hồ sơ tùy chọn và file luôn chứa đầy đủ số tiền. Không thêm gộp/ghi đè hoặc nhập từng phần. Xem [Help theo từng trang](help.md).

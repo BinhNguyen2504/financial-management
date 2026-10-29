@@ -147,6 +147,8 @@ Theme được áp dụng bằng script cố định trước first paint và đ
 
 Repository Chi tiêu đọc `brand_key`/`icon_key` bằng `to_jsonb` của hàng để cột metadata còn thiếu trở thành null. Khi lưu có phân loại, kiểm tra đủ hai cột qua `information_schema.columns` trong cùng transaction: schema cũ lưu các trường cũ; yêu cầu metadata khác null trả `LABEL_VISUALS_MIGRATION_REQUIRED` trước mọi ghi. Không nuốt lỗi SQL khác, không tự migrate, không đổi RLS/version/idempotency. Adapter dùng chung cho nguồn Fund hưởng cùng khả năng đọc tương thích; backup/import vẫn có yêu cầu schema riêng.
 
+Bổ sung 29/10/2026: repository backup cũng đọc hai cột tùy chọn qua `to_jsonb`, giữ snapshot repeatable-read/read-only và đầy đủ 35 bảng của V2. Import kiểm tra từng cột trong transaction sau khóa/kiểm tra đích trống; bỏ cột còn thiếu chỉ khi giá trị của tất cả nhãn là null. Metadata khác null trên cột chưa tồn tại bị từ chối bằng `SCHEMA_NOT_READY` trước mọi INSERT; đối soát read-back và biên nhận vẫn giữ nguyên. Không tự chạy DDL hoặc mở rộng fallback sang trường nghiệp vụ.
+
 ## Help theo trang — 20/10/2026
 
 `src/features/help/` quản lý nội dung TypeScript, registry và controller `openHelp(pageId, sectionId?)`. Registry lấy tên/trạng thái từ catalog, thêm Hồ sơ; controller nằm bên trong SessionBoundary. Nội dung tải bằng dynamic import khi mở, có trạng thái tải/lỗi/thử lại, không gọi API tài chính. Route đổi hoặc session boundary gỡ nội dung sẽ đóng Help. Không thêm API, schema, migration hoặc lưu trạng thái Help vào storage.

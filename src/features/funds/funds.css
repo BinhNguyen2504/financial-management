@@ -249,9 +249,9 @@
   font-weight: var(--weight-strong);
   min-width: 0;
 }
-.fund-workspace input,
+.fund-workspace input:not([type="checkbox"]):not([type="radio"]),
 .fund-workspace select,
-.fund-fields input,
+.fund-fields input:not([type="checkbox"]):not([type="radio"]),
 .fund-fields select {
   width: 100%;
   min-width: 0;

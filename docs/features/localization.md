@@ -53,3 +53,7 @@ Bộ chọn public mobile hiển thị VI/EN bằng nhãn trang trí; native sel
 ## Tổng quan — 29/10/2026
 
 Namespace overview bổ sung nhãn widget, cấu hình, lỗi và Help; định dạng VND chính xác qua BigInt, ngày/giờ Việt Nam và định dạng số vi-VN/en-GB. Tên hũ và danh mục do người dùng đặt giữ nguyên.
+
+### Dialog Đầu tư — 29/10/2026
+
+Bổ sung nhãn nhóm nhập, lỗi tiền ngắn và hai hành động Tiếp tục nhập/Bỏ thay đổi bằng vi/en. Thông báo lỗi theo trường và toast tóm tắt dùng chung ngôn ngữ hiện tại; không hiển thị JSON schema. Catalog và Help trong preview minh họa mô tả bước xem trước trước khi lưu; số liệu preview vẫn cố định.

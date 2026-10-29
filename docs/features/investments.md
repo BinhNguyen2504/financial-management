@@ -140,3 +140,13 @@ Giữ bộ năm cảnh Đầu tư riêng, dùng bố cục tiêu đề chung tha
 ## Responsive và nội dung phổ thông — 29/10/2026
 
 Thông tin danh mục và ghi chú dài dùng thành phần mở rộng chung. Lời nhắc lưu chưa xác nhận được rút gọn, vẫn nói rõ nội dung tạm giữ nguyên; logic khóa/retry không đổi. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).
+
+## Chỉnh form giao dịch và tùy chọn cột — 29/10/2026
+
+Form một màn chia Thông tin giao dịch, Số tiền và định giá, Thông tin bổ sung; desktop hai cột, mobile một cột. Phí/thuế cùng nhóm riêng, giá trị sau giao dịch có hướng dẫn ngay dưới ô. Control một dòng cao 46px ở chữ mặc định và tăng theo cỡ chữ; nhãn, dấu bắt buộc, hướng dẫn và lỗi không kéo giãn control bên cạnh. Header/footer giữ vị trí, phần nội dung cuộn. Vẫn xem trước tác động rồi xác nhận lưu; mọi chỉnh sửa, kể cả bản nháp số sai định dạng, làm mất hiệu lực preview cũ.
+
+Lỗi schema được chuyển thành hướng dẫn theo trường và toast tóm tắt; không hiển thị JSON UUID/regex. Lỗi dưới trường dùng văn bản ngắn, xuống dòng theo từ; tổng hợp lỗi liên kết tới ô sai và đưa focus về trường đầu tiên. Giới hạn tiền nguyên tối đa 24 chữ số, quy tắc cho phép 0 và điều kiện số dương vẫn do schema hiện có quyết định.
+
+Đóng bằng X, nút đóng, Escape hoặc backdrop dùng cùng kiểm tra thay đổi. Nếu có nội dung chưa lưu, dialog ứng dụng cho Tiếp tục nhập hoặc Bỏ thay đổi; focus mặc định vào Tiếp tục nhập. Đóng xác nhận quay lại bản nháp và vị trí đọc, kể cả số sai định dạng đang giữ riêng trong LocalizedInput. Form chưa đổi hoặc đã trở về ban đầu đóng ngay. Đang lưu/chưa rõ kết quả tiếp tục khóa đóng và sửa, giữ command ID cho retry.
+
+CSS workspace loại checkbox/radio và hàng tùy chọn cột khỏi kiểu form. Rà cùng nguyên nhân ở Tiết kiệm và Quỹ, giữ công tắc 34×20px trong hàng tối thiểu 44px. Không thay API, schema, backup hoặc migration. Bằng chứng local được ghi riêng trong [validation](../07-validation.md).

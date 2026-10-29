@@ -15,16 +15,16 @@
 .savings-toolbar > .expense-actions {
   margin-left: auto;
 }
-.savings-workspace label {
+.savings-workspace label:not(.column-picker-row) {
   display: grid;
   gap: 7px;
   font-size: var(--font-size-14);
   color: var(--muted);
   min-width: 0;
 }
-.savings-workspace input,
+.savings-workspace input:not([type="checkbox"]):not([type="radio"]),
 .savings-workspace select,
-.savings-form input,
+.savings-form input:not([type="checkbox"]):not([type="radio"]),
 .savings-form select {
   min-height: 44px;
   border: 1px solid var(--border);

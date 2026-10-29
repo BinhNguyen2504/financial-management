@@ -405,7 +405,9 @@ test("English validation, network errors and uncertain writes retain drafts and 
     } else await route.continue();
   });
   await dialog.getByRole("button", { name: "Save", exact: true }).click();
-  await expect(dialog).toContainText("Save result unconfirmed.");
+  await expect(dialog.locator(".expense-notice")).toContainText(
+    "We could not confirm whether your changes were saved.",
+  );
   await expect(dialog.getByLabel("Name", { exact: true })).toHaveValue(
     "Khoản thu riêng",
   );

@@ -1,5 +1,13 @@
 # Xử lý lỗi phát triển local
 
+## Tải bản sao lưu báo tính năng chưa sẵn sàng — 29/10/2026
+
+Đã kiểm tra chỉ đọc database mà source local đang cấu hình: runtime là `expense_api`, không có quyền CREATE; truy vấn xuất trực tiếp `expense_labels.brand_key` trả PostgreSQL `42703`, hai cột `brand_key`/`icon_key` chưa tồn tại. Thông báo chung ở Cài đặt không đủ để tự kết luận nguyên nhân; kết quả này đến từ truy vấn schema và projection thực tế.
+
+Repository sao lưu hiện đọc riêng hai trường tùy chọn qua `to_jsonb` của hàng, trả null khi cột chưa có và giữ nguyên metadata khi cột tồn tại. Sau sửa, xuất V2 đọc đủ 35 bảng trên cùng database bằng owner giả không có dữ liệu, chỉ trong transaction read-only. Đây chưa phải kiểm chứng file của tài khoản thật hoặc phiên trình duyệt người dùng.
+
+Tải lại source hiện tại rồi vào **Cài đặt → Tải bản sao lưu**. Nếu dùng `npm start`, cần build và khởi động lại. Không cần chạy migration để xuất khi chỉ thiếu hai cột này. Nếu khôi phục file có logo/icon khác null vào schema cũ, import trả `SCHEMA_NOT_READY` trước mọi ghi; cần migration `202610190002_label_visuals.sql` qua công cụ admin để giữ đủ metadata. Không bỏ qua bảng tài chính hoặc lỗi SQL khác, không tự migrate và không đổi quyền runtime.
+
 ## Chi tiêu báo STORAGE_UNAVAILABLE khi thiếu migration logo — 20/10/2026
 
 Trên cấu hình local được kiểm tra ngày 20/10, kết nối PostgreSQL thành công nhưng bảng `expense_labels` thiếu `brand_key` và `icon_key`. Truy vấn dùng trực tiếp cột mới trả PostgreSQL `42703` (undefined column), được API chuyển thành `STORAGE_UNAVAILABLE`. Đây là kết quả kiểm tra schema và truy vấn chỉ đọc, không phải suy đoán từ ảnh lỗi mạng.

@@ -3,6 +3,7 @@ import { useI18n } from "@/i18n/provider";
 
 import "@/components/dialog-content.css";
 import { focusInvalidNumber } from "@/components/localized-input";
+import { focusPointerControl } from "@/components/pointer-focus";
 import { ToastViewport } from "@/components/toast";
 import { X } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
@@ -30,6 +31,7 @@ export function Modal({
   description,
   footer,
   stableTabs = false,
+  initialFocusRef,
 }: {
   title: string;
   children: ReactNode;
@@ -39,6 +41,7 @@ export function Modal({
   description?: ReactNode;
   footer?: ReactNode;
   stableTabs?: boolean;
+  initialFocusRef?: { readonly current: HTMLElement | null };
 }) {
   const { t: tr } = useI18n("expenses");
 
@@ -91,6 +94,7 @@ export function Modal({
     openDialogs.add(element);
     element.showModal();
     updateDialogStack();
+    initialFocusRef?.current?.focus({ preventScroll: true });
     const viewport = window.visualViewport;
     const fitViewport = () => {
       // Pinch zoom must remain browser-controlled; keyboard resizing has scale 1.
@@ -131,10 +135,16 @@ export function Modal({
           parent
             .querySelector<HTMLElement>("button:not([disabled])")
             ?.focus({ preventScroll: true });
-        else document.querySelector<HTMLElement>("main")?.focus();
+        // A parent and its confirmation may unmount together. Keep the opener
+        // already restored by the parent rather than overriding it with main.
+        else if (
+          !document.activeElement ||
+          document.activeElement === document.body
+        )
+          document.querySelector<HTMLElement>("main")?.focus();
       }
     };
-  }, []);
+  }, [initialFocusRef]);
   return (
     <dialog
       ref={dialog}
@@ -235,6 +245,7 @@ export function Modal({
           className="expense-icon-button"
           aria-label={tr("Đóng")}
           disabled={busy}
+          onMouseDown={focusPointerControl}
           onClick={requestClose}
         >
           <X size={20} />

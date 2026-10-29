@@ -437,7 +437,7 @@ test("landing remains readable without JavaScript; private routes still redirect
       "Làm chủ tiền bạc.",
     );
     await expect(page.locator(".preview-heading")).toContainText(
-      "Chăm chút cho tháng",
+      "Một góc nhìn chung, từng khoản rõ ràng.",
     );
     await expect(
       page.getByRole("link", { name: "Đăng nhập", exact: true }),

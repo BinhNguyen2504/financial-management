@@ -15,6 +15,7 @@ import {
 import { canonical, validateBackup } from "../domain/backup/validate";
 
 type DB = Pick<postgres.Sql, "unsafe">;
+const labelVisualColumns = ["brand_key", "icon_key"] as const;
 const numericColumns = new Set([
   "opening",
   "target",
@@ -82,6 +83,12 @@ async function readTables(db: DB, owner: string): Promise<BackupTables> {
     const columns = Object.keys(tableSchemas[table].shape);
     const projection = columns
       .map((c) => {
+        // These nullable presentation fields are absent on pre-visual schemas.
+        if (
+          table === "expense_labels" &&
+          labelVisualColumns.some((v) => v === c)
+        )
+          return `to_jsonb(expense_labels)->>'${c}' as ${c}`;
         if (numericColumns.has(c)) return `${c}::text as ${c}`;
         if (c === "date") return "to_char(date,'YYYY-MM-DD') as date";
         if (c === "at" || c === "closed_at")
@@ -212,9 +219,31 @@ export function postgresDataRepository(sql: postgres.Sql) {
             409,
             "ACCOUNT_NOT_EMPTY",
           );
+        const labelColumns = await db.unsafe<{ column_name: string }[]>(
+          `select column_name from information_schema.columns
+          where table_schema='public' and table_name='expense_labels'
+          and column_name in ('brand_key','icon_key')`,
+        );
+        const missingVisuals = labelVisualColumns.filter(
+          (column) => !labelColumns.some((row) => row.column_name === column),
+        );
+        if (
+          backup.tables.expense_labels.some((label) =>
+            missingVisuals.some((column) => label[column] != null),
+          )
+        )
+          throw new BackupError(
+            "Một phần dữ liệu chưa sẵn sàng. Chưa thể khôi phục đầy đủ logo hoặc biểu tượng phân loại; hãy kiểm tra lại thiết lập hệ thống.",
+            503,
+            "SCHEMA_NOT_READY",
+          );
         for (const table of backupTables) {
           if (!backup.tables[table].length) continue;
-          const columns = Object.keys(tableSchemas[table].shape);
+          const columns = Object.keys(tableSchemas[table].shape).filter(
+            (column) =>
+              table !== "expense_labels" ||
+              !missingVisuals.some((missing) => missing === column),
+          );
           // PostgreSQL checks self-referencing FKs after the entire INSERT statement.
           // Only allowlisted columns are read; owner is exclusively server supplied.
           await db.unsafe(

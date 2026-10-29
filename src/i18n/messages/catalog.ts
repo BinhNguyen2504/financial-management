@@ -1,4 +1,6 @@
 export const catalog = {
+  "Ghi giao dịch theo nhóm, xem trước tác động rồi xác nhận lưu":
+    "Grouped transaction forms with an impact preview before confirming save",
   "Xóa danh mục khi không còn số thu; ngừng nguồn thu đang có dữ liệu":
     "Delete categories with no remaining receipts; stop sources that still have entries",
   "90 biểu tượng gợi ý, emoji từ bàn phím và 27 thương hiệu ngân hàng/ví":

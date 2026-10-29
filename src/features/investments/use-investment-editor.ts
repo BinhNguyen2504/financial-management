@@ -20,10 +20,12 @@ import {
 } from "@/domain/investments/schema";
 import type { InvestmentView } from "@/domain/investments/types";
 
-import { fieldErrorsFromIssues } from "@/lib/field-errors";
 import { comparable, normalizedMoneyFields } from "@/lib/form-values";
 
 import { useId, useRef, useState } from "react";
+import { ZodError } from "zod";
+import { userFacingError } from "@/i18n/user-facing-errors";
+import { investmentFieldErrors } from "./editor-errors";
 import { InvestmentAPIError, investmentsJSON } from "./api";
 import { transactionNames, type EditorMode } from "./editor-config";
 export function useInvestmentEditor({
@@ -126,12 +128,16 @@ export function useInvestmentEditor({
             : mode.type === "cancel"
               ? tr("Hủy giao dịch")
               : tr("Ghi giao dịch");
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const formId = useId();
   function close() {
-    if (
-      (draft === originalDraft && !f.reason) ||
-      window.confirm(tr("Đóng cửa sổ và bỏ nội dung chưa lưu?"))
-    )
-      onClose();
+    if (busy || uncertain) return;
+    // Invalid numeric text stays inside LocalizedInput rather than canonical f.
+    const invalidDraft = document
+      .getElementById(formId)
+      ?.querySelector('input[data-number-invalid="true"]');
+    if (draft === originalDraft && !f.reason.trim() && !invalidDraft) onClose();
+    else setConfirmDiscard(true);
   }
   const isCash = ["openingCash", "deposit", "withdraw", "transfer"].includes(
     kind,
@@ -188,23 +194,24 @@ export function useInvestmentEditor({
         writing &&
         (!(e instanceof InvestmentAPIError) ||
           ![400, 401, 403, 409, 415, 422].includes(e.status));
-      if (e && typeof e === "object" && "issues" in e) {
-        setFieldErrors(
-          fieldErrorsFromIssues(
-            (e as { issues: { path: (string | number)[]; message: string }[] })
-              .issues,
-          ),
-        );
-        setError(tr("Kiểm tra các trường được đánh dấu."));
-      } else {
-        if (e instanceof InvestmentAPIError && e.fieldErrors)
-          setFieldErrors(e.fieldErrors);
-        setError(e instanceof Error ? e.message : tr("Không thể lưu."));
-        setConflict(
-          e instanceof InvestmentAPIError && e.code === "VERSION_CONFLICT",
-        );
-        if (unknownWrite) setUncertain(true);
-      }
+      const fields =
+        e instanceof ZodError
+          ? investmentFieldErrors(e.issues, f)
+          : e instanceof InvestmentAPIError
+            ? e.fieldErrors
+            : undefined;
+      const message =
+        fields && Object.keys(fields).length
+          ? tr("Kiểm tra các trường được đánh dấu.")
+          : userFacingError(
+              e instanceof Error ? e.message : tr("Không thể lưu."),
+            );
+      setFieldErrors(fields ?? {});
+      setError(message);
+      setConflict(
+        e instanceof InvestmentAPIError && e.code === "VERSION_CONFLICT",
+      );
+      if (unknownWrite) setUncertain(true);
       focusFirstInvalid(
         document.querySelector(
           ".expense-dialog[open]:not([inert]) .dialog-body",
@@ -215,9 +222,7 @@ export function useInvestmentEditor({
         unknownWrite ? "warning" : "error",
         unknownWrite
           ? tr("Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra.")
-          : e instanceof Error
-            ? e.message
-            : tr("Chưa hoàn tất. Hãy thử lại."),
+          : tr(message),
       );
     } finally {
       setBusy(false);
@@ -253,7 +258,6 @@ export function useInvestmentEditor({
       );
     }
   }
-  const formId = useId();
   const reloadAfterConflict = async () => {
     setBusy(true);
     try {
@@ -278,6 +282,10 @@ export function useInvestmentEditor({
     eligible,
     title,
     close,
+    confirmDiscard,
+    continueEditing: () => setConfirmDiscard(false),
+    discard: onClose,
+    invalidatePreview: () => setPreview(null),
     busy,
     uncertain,
     mode,

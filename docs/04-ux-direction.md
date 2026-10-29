@@ -269,3 +269,7 @@ Giữ nhận diện hiện tại. Header mobile ưu tiên cùng hàng với đi�
 ## Tổng quan theo nhu cầu — 29/10/2026
 
 Thay phần chào lớn bằng tiêu đề gọn; mặc định 6 widget bao phủ 5 module và việc cần chú ý. Bốn widget tùy chọn cho phân bổ, hũ, đáo hạn và lời nhắn theo theme. Tùy chỉnh có nút di chuyển thay vì phụ thuộc kéo thả; Xem thử/Lưu/Hủy, khôi phục mặc định phải Lưu. Hai cột khi vùng nội dung từ 760px, mobile một cột và dialog toàn màn hình. Dùng nhãn kỳ, thiếu định giá, tạm tính và lỗi từng nguồn. [Chi tiết](features/overview.md).
+
+### Form Đầu tư — 29/10/2026
+
+Ghi giao dịch là một form chia ba nhóm, hai cột trên desktop và một cột trên điện thoại. Ô nhập/select căn đầu, nhãn bắt buộc cùng dòng và lỗi ngắn ngay dưới trường. Giữ bước xem trước tác động trước khi lưu. Xác nhận bỏ nội dung dùng dialog ứng dụng, mặc định tiếp tục nhập; bản nháp số sai định dạng cũng được bảo vệ. Xem [quy chuẩn phản hồi](features/ui-feedback.md).
