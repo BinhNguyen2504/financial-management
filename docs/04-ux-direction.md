@@ -273,3 +273,7 @@ Thay phần chào lớn bằng tiêu đề gọn; mặc định 6 widget bao ph�
 ### Form Đầu tư — 29/10/2026
 
 Ghi giao dịch là một form chia ba nhóm, hai cột trên desktop và một cột trên điện thoại. Ô nhập/select căn đầu, nhãn bắt buộc cùng dòng và lỗi ngắn ngay dưới trường. Giữ bước xem trước tác động trước khi lưu. Xác nhận bỏ nội dung dùng dialog ứng dụng, mặc định tiếp tục nhập; bản nháp số sai định dạng cũng được bảo vệ. Xem [quy chuẩn phản hồi](features/ui-feedback.md).
+
+### Tổng quan tải đúng bố cục — 29/10/2026
+
+Mặc định mới gồm năm thẻ Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ, chỉ giữ số chính cùng cảnh báo cần thiết. Giữ nguyên bố cục tài khoản đã lưu. Trước response đầu hiện trạng thái tải chung; không dựng sáu widget mặc định trước khi biết cấu hình. Tùy chỉnh vẫn có 10 loại widget. Cần chú ý chỉ theo module có widget đang hiện, không kiểm tra module đã ẩn. Gợi ý khôi phục không còn trên Tổng quan; khôi phục vẫn tại Cài đặt. Bản nháp, nguồn lỗi và cập nhật nền giữ phản hồi rõ ràng. [Chi tiết](features/overview.md).

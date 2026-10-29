@@ -248,7 +248,8 @@ export function toView(
   const date = asOf > clock.today ? clock.today : asOf;
   const state = replay(book ?? emptyBook(), date);
   const until = new Date(`${clock.today}T00:00:00Z`).valueOf() + 7 * 86400000;
-  const current = replay(book ?? emptyBook(), clock.today);
+  const current =
+    date === clock.today ? state : replay(book ?? emptyBook(), clock.today);
   return {
     book,
     state,

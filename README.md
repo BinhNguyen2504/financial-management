@@ -197,3 +197,7 @@ Nội dung dành cho người dùng phổ thông; cỡ chữ theo vai trò dùng
 ## Tổng quan cá nhân hóa — 29/10/2026
 
 Tổng quan nay xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn: 6 widget mặc định, 4 widget tùy chọn. Thêm/ẩn/đổi thứ tự, chọn tối đa 5 hũ, xem thử rồi Lưu/Hủy; bố cục đồng bộ theo tài khoản. Số liệu giữ kỳ và trạng thái tạm tính/thiếu định giá, không cộng các sổ thành tài sản ròng. Cần áp dụng migration `202610290001_overview_layouts.sql` để lưu bố cục. Cấu hình này nằm ngoài backup và kiểm tra tài khoản trống; các tùy chọn theme/privacy/cột vẫn theo trình duyệt. Xem [đặc tả Tổng quan](docs/features/overview.md).
+
+### Tối ưu Tổng quan — 29/10/2026
+
+Mặc định mới gồm năm thẻ số chính và cảnh báo; vẫn tùy chỉnh 10 loại widget và giữ nguyên bố cục đã lưu. Một request Tổng quan trả cả bố cục lẫn số liệu, trước đó hiện trạng thái tải chung để tránh lóe widget mặc định. Luồng đọc riêng bỏ audit và dữ liệu màn hình chi tiết, chia sẻ dữ liệu Chi tiêu với Quỹ; chỉ tải danh sách phụ khi bật widget. Cần chú ý theo các module đang hiển thị. Khôi phục bản sao lưu ở Cài đặt; Tổng quan không gọi kiểm tra gợi ý khôi phục. Xem [đặc tả cập nhật](docs/features/overview.md).

@@ -47,7 +47,7 @@ function article(
 export const articles: HelpArticles = {
   overview: article(
     [
-      "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Sáu widget mặc định và bốn widget tùy chọn giúp bạn chọn điều cần nhìn trước.",
+      "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Năm thẻ mặc định giữ số liệu chính và cảnh báo; bạn có thể tùy chỉnh 10 loại widget.",
     ],
     [
       "Đọc kỳ và tình trạng dữ liệu trước khi đọc số tiền. Thu nhập và Chi tiêu thuộc tháng hiện tại; tài sản và quỹ tính đến hôm nay theo giờ Việt Nam.",
@@ -80,7 +80,7 @@ export const articles: HelpArticles = {
         "Đọc bức tranh tháng",
         "Khi cần nhìn nhanh toàn bộ ứng dụng.",
         [
-          "Đọc Cần chú ý rồi xem từng widget theo kỳ ghi bên dưới tiêu đề.",
+          "Đọc số chính và cảnh báo trong từng thẻ theo kỳ bên dưới tiêu đề. Cần chú ý là widget tùy chọn, chỉ kiểm tra các module đang hiển thị.",
           "Mở module tương ứng để đối chiếu, nhập liệu hoặc cập nhật định giá.",
         ],
         "Kết quả: Các widget dùng dữ liệu thực đã ghi, không tự tạo giao dịch.",
@@ -119,7 +119,7 @@ export const articles: HelpArticles = {
       ),
     ],
     [
-      "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn và Cần chú ý.",
+      "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn. Cần chú ý chỉ nhắc khi có widget Tiết kiệm hoặc Sổ sắp đáo hạn đang bật.",
     ],
     [
       "Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.",

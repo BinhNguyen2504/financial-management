@@ -231,4 +231,34 @@ export const overview = {
     "Overview offers ten customizable widgets across five modules; there is no system-wide net worth yet. The modules",
   "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.":
     "Overview offers ten customizable widgets for Income, Spending, Savings, Investments and Safety funds. Reports remain within each module; there is no system-wide net worth yet.",
+  "Những khoản cần kiểm tra trong các module đang hiển thị.":
+    "Things to check in the modules currently shown.",
+  "Tổng thực nhận tháng này và khoản chưa nhập.":
+    "Total received this month and missing entries.",
+  "Thực chi tháng này và mức tháng.": "This month’s spending and monthly plan.",
+  "Tổng giá trị tiết kiệm và trạng thái định giá.":
+    "Total savings value and valuation status.",
+  "Tổng giá trị và lãi/lỗ chưa chốt.":
+    "Total value and unrealized gain or loss.",
+  "Tổng dự phòng và số tháng Emergency.":
+    "Total reserves and months of emergency coverage.",
+  "Đang tải Tổng quan…": "Loading overview…",
+  "Bật widget của một module để xem các khoản cần chú ý.":
+    "Enable a module widget to see items needing attention.",
+  "{0} hũ vượt mức tháng": "{0} jars over the monthly plan",
+  "Năm thẻ số liệu chính, tải cùng bố cục tài khoản; tùy chỉnh 10 loại widget.":
+    "Five key metric cards loaded with your account layout; customize ten widget types.",
+  "Cần chú ý theo module đang hiện; tùy chọn phân bổ, hũ, đáo hạn và lời nhắn":
+    "Attention follows visible modules; optional breakdowns, jars, maturities and daily notes",
+  "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Năm thẻ mặc định giữ số liệu chính và cảnh báo; bạn có thể tùy chỉnh 10 loại widget.":
+    "See Income, Spending, Savings, Investments and Safety funds on one page. Five default cards show key figures and warnings; customize ten widget types.",
+  "Đọc số chính và cảnh báo trong từng thẻ theo kỳ bên dưới tiêu đề. Cần chú ý là widget tùy chọn, chỉ kiểm tra các module đang hiển thị.":
+    "Read each card’s key figures, warnings and period. Needs attention is optional and checks only the modules currently shown.",
+  "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn. Cần chú ý chỉ nhắc khi có widget Tiết kiệm hoặc Sổ sắp đáo hạn đang bật.":
+    "Deposits with remaining principal, already due or maturing within seven days, appear in Maturing deposits. Needs attention includes them only when Savings or Maturing deposits is enabled.",
+  "5 thẻ số liệu chính · tùy chỉnh 10 loại widget theo tài khoản.":
+    "5 key metric cards · customize 10 widget types per account.",
+  "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại widget theo tài khoản; các sổ không cộng thành tài sản ròng.":
+    "Five default cards show key figures and warnings. Add, hide and arrange ten widget types per account; independent ledgers are not combined into net worth.",
+  "Thực chi · Tạm tính": "Spending · Provisional",
 } as const;

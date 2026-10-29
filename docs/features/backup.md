@@ -8,7 +8,7 @@ Người dùng chủ động thao tác tại **Cài đặt → Sao lưu và khô
 - Kèm họ tên, ngày sinh, giới tính. Không kèm mật khẩu, token, email đăng nhập hoặc tùy chọn riêng tư trên thiết bị. File có thể được nhập khi không còn truy cập tài khoản cũ.
 - **Nhập bản sao lưu**: chọn file → kiểm tra và xem trước ngày xuất, khoảng thời gian, số bản ghi → tùy chọn hồ sơ (mặc định tắt) → xác nhận. Nhận định dạng `financial-manager-full-backup`, `schemaVersion: 1` hoặc `2`; xuất mới luôn là V2, V1 được chuẩn hóa với Fund trống. CSV, SQL và file backup từng module không được tự chuyển đổi.
 - Chỉ tài khoản không có bản ghi trong bất kỳ bảng tài chính nào mới được nhập. Xem trang/status không khởi tạo sổ. Không gộp hoặc ghi đè. Số bản ghi xem trước bao gồm cả sổ, lịch sử và dữ liệu kỹ thuật, không đồng nghĩa số giao dịch.
-- Tổng quan có một gợi ý dẫn đến `/settings#import` sau khi server xác nhận tài khoản trống. Đóng gợi ý có hiệu lực trong phiên theo tài khoản; lỗi mạng/Auth/schema không được coi là tài khoản trống.
+- Tổng quan không còn gọi API kiểm tra tài khoản trống hoặc hiện gợi ý khôi phục. Người dùng mở `/settings#import`; Cài đặt vẫn kiểm tra trạng thái server trước khi cho phép khôi phục. Lỗi mạng/Auth/schema không được coi là tài khoản trống.
 - File được giữ tạm trong bộ nhớ trình duyệt trong luồng nhập, không lưu vào localStorage/IndexedDB. Server không lưu file hoặc ghi nội dung tài chính vào log. Người dùng tự lưu file đã tải ở nơi an toàn.
 
 ## Tính toàn vẹn và API

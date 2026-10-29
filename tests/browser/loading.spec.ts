@@ -77,13 +77,13 @@ test("slow data requests show readable progress across workspaces and themes", a
       hydration.push(message.text());
   });
   const screens = [
-    ["/overview", "**/api/v1/overview?*", "Đang tải widget…"],
+    ["/overview", /\/api\/v1\/overview(?:\?.*)?$/, "Đang tải Tổng quan…"],
     ["/budgets", "**/api/v1/expenses", "Đang tải dữ liệu chi tiêu…"],
     ["/income", "**/api/v1/income?*", "Đang tải thu nhập…"],
     ["/savings", "**/api/v1/savings?*", "Đang mở sổ tiết kiệm…"],
     ["/investments", "**/api/v1/investments?*", "Đang tải danh mục…"],
     ["/settings", "**/api/v1/data/status", "Đang kiểm tra trạng thái dữ liệu…"],
-  ];
+  ] as const;
   for (const [path, pattern, message] of screens) {
     let release!: () => void;
     const gate = new Promise<void>((resolve) => {
@@ -163,10 +163,10 @@ test("failed loads stop progress and retries show it again until recovery", asyn
 }) => {
   await login(page);
   for (const [path, pattern] of [
-    ["/overview", "**/api/v1/expenses"],
+    ["/overview", /\/api\/v1\/overview(?:\?.*)?$/],
     ["/budgets", "**/api/v1/expenses"],
     ["/income", "**/api/v1/income?*"],
-  ]) {
+  ] as const) {
     let release!: () => void;
     const gate = new Promise<void>((resolve) => {
       release = resolve;

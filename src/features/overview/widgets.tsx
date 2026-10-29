@@ -13,7 +13,7 @@ import {
   type OverviewSummary,
   type SourceId,
 } from "@/domain/overview/summary";
-import { widgetSources } from "@/domain/overview/summary";
+import { sourcesForWidget } from "@/domain/overview/summary";
 
 export function OverviewWidget({
   id,
@@ -22,6 +22,7 @@ export function OverviewWidget({
   loading,
   today,
   jarIds,
+  widgets,
   onRetry,
 }: {
   id: WidgetId;
@@ -30,18 +31,28 @@ export function OverviewWidget({
   loading: boolean;
   today: string;
   jarIds: string[];
+  widgets: readonly WidgetId[];
   onRetry: () => void;
 }) {
   const { t, locale, numberLocale } = useI18n("overview"),
     money = useMoney();
   const [expanded, setExpanded] = useState(false);
   const catalog = widgetCatalog[id],
-    needed = widgetSources[id];
+    needed = sourcesForWidget(id, widgets);
   const failed = needed.some(
     (k) => sources[k]?.status === "error" || staleSources.has(k),
   );
-  const pending = needed.some((k) => !sources[k]);
+  const expenses = sources.expenses;
+  const savings = sources.savings;
+  const missingDetail =
+    (id === "jars" && expenses?.status === "ready" && !expenses.data.jars) ||
+    (id === "allocation" &&
+      expenses?.status === "ready" &&
+      !expenses.data.groups) ||
+    (id === "maturities" && savings?.status === "ready" && !savings.data.due);
+  const pending = needed.some((k) => !sources[k]) || missingDetail;
   const data = <K extends SourceId>(key: K): OverviewData[K] | undefined => {
+    if (!needed.includes(key) || missingDetail) return undefined;
     const result = sources[key];
     return result?.status === "ready" ? result.data : undefined;
   };
@@ -68,14 +79,12 @@ export function OverviewWidget({
         empty
       ) : (
         <>
-          <dl>
-            {metric("Tổng thực nhận", v.total, true)}
-            {metric("Thu cố định", v.fixed)}
-            {metric("Thu phát sinh", v.oneoff)}
-          </dl>
-          <p className={v.missing ? "overview-warning" : "expense-muted"}>
-            {t("{0} khoản thu cố định chưa nhập", { 0: number(v.missing) })}
-          </p>
+          <dl>{metric("Tổng thực nhận", v.total, true)}</dl>
+          {v.missing > 0 && (
+            <p className="overview-warning">
+              {t("{0} khoản thu cố định chưa nhập", { 0: number(v.missing) })}
+            </p>
+          )}
         </>
       );
   }
@@ -90,8 +99,12 @@ export function OverviewWidget({
             <dl>
               {metric("Thực chi", v.total.spent, true)}
               {metric("Mức tháng", v.total.target)}
-              {metric("Còn trong hũ", v.total.closing)}
             </dl>
+            {v.over > 0 && (
+              <p className="overview-warning">
+                {t("{0} hũ vượt mức tháng", { 0: number(v.over) })}
+              </p>
+            )}
             {v.total.provisional && (
               <p className="expense-muted">
                 {t("Tạm tính · đối chiếu số dư hũ để chính xác hơn.")}
@@ -113,18 +126,6 @@ export function OverviewWidget({
               v.missing ? v.knownValue : v.total,
               true,
             )}
-            {v.kinds.map((k) => (
-              <div key={k.kind}>
-                {metric(
-                  k.kind === "cash"
-                    ? "Tiền"
-                    : k.kind === "deposit"
-                      ? "Sổ tiết kiệm"
-                      : "Vàng",
-                  k.value,
-                )}
-              </div>
-            ))}
           </dl>
           {v.missing > 0 && (
             <p className="overview-warning">
@@ -156,10 +157,7 @@ export function OverviewWidget({
               v.missing ? v.knownValue : v.total,
               true,
             )}
-            {metric("Khoản đầu tư", v.value)}
-            {metric("Vốn còn giữ", v.cost)}
             {metric("Lãi/lỗ chưa chốt", v.unrealized)}
-            {metric("Tiền chờ", v.cash)}
           </dl>
           {(v.missing > 0 || v.stale > 0) && (
             <p className="overview-warning">
@@ -179,35 +177,6 @@ export function OverviewWidget({
       ) : (
         <>
           <dl>{metric("Tổng dự phòng", v.total, true)}</dl>
-          <div className="overview-fund-rows">
-            {v.funds.map((f) => (
-              <div key={f.id}>
-                <div>
-                  <span>
-                    {f.id === "emergency"
-                      ? "Emergency"
-                      : f.id === "rainy_day"
-                        ? "Rainy Day"
-                        : "Sinking"}
-                  </span>
-                  <span>
-                    {money(f.balance)} / {money(f.target)}
-                  </span>
-                </div>
-                <progress
-                  max={100}
-                  value={Math.min(100, Number(f.percent))}
-                  aria-label={
-                    f.id === "emergency"
-                      ? "Emergency"
-                      : f.id === "rainy_day"
-                        ? "Rainy Day"
-                        : "Sinking"
-                  }
-                />
-              </div>
-            ))}
-          </div>
           <p className="expense-muted">
             {t("Emergency đủ trang trải {0} tháng", {
               0: new Intl.NumberFormat(numberLocale, {
@@ -228,7 +197,7 @@ export function OverviewWidget({
   if (id === "allocation") {
     const v = data("expenses");
     if (v) {
-      const groups = v.groups.filter((g) => BigInt(g.value) > 0n),
+      const groups = (v.groups ?? []).filter((g) => BigInt(g.value) > 0n),
         total = BigInt(sum(groups.map((g) => g.value))),
         items =
           groups.length > 4
@@ -300,7 +269,7 @@ export function OverviewWidget({
       ) : (
         <ul className="overview-list">
           {jarIds.map((jarId) => {
-            const j = v.jars.find((j) => j.jarId === jarId);
+            const j = v.jars?.find((j) => j.jarId === jarId);
             return (
               <li key={jarId}>
                 <span>
@@ -331,12 +300,12 @@ export function OverviewWidget({
   if (id === "maturities") {
     const v = data("savings");
     if (v)
-      content = !v.due.length ? (
+      content = !v.dueCount ? (
         <p>{t("Không có sổ đến hạn trong 7 ngày tới.")}</p>
       ) : (
         <>
           <ul className="overview-list">
-            {v.due.slice(0, 5).map((s) => (
+            {(v.due ?? []).slice(0, 5).map((s) => (
               <li key={s.id}>
                 <span>
                   <strong>{s.name}</strong>
@@ -349,10 +318,10 @@ export function OverviewWidget({
               </li>
             ))}
           </ul>
-          {v.due.length > 5 && (
+          {v.dueCount > 5 && (
             <p>
               {t("Còn {0} sổ. Mở Tiết kiệm để xem tất cả.", {
-                0: number(v.due.length - 5),
+                0: number(v.dueCount - 5),
               })}
             </p>
           )}
@@ -367,7 +336,7 @@ export function OverviewWidget({
       f = data("funds");
     const items = [
       {
-        count: s?.due.length ?? 0,
+        count: s?.dueCount ?? 0,
         label: "Sổ đã hoặc sắp đến hạn",
         href: "/savings",
         hint: "Trong 7 ngày tới, gồm sổ đã đến hạn chưa xử lý.",
@@ -407,7 +376,10 @@ export function OverviewWidget({
     ].filter((v) => v.count > 0);
     content = (
       <>
-        {!items.length && !pending && (
+        {!needed.length && (
+          <p>{t("Bật widget của một module để xem các khoản cần chú ý.")}</p>
+        )}
+        {!!needed.length && !items.length && !pending && (
           <p>
             {t(
               failed

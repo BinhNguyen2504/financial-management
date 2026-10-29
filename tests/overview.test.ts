@@ -29,9 +29,8 @@ function empty(): OverviewData {
   };
 }
 describe("overview contracts and financial summaries", () => {
-  it("has six defaults and rejects duplicate, unknown and excessive selections", () => {
+  it("has five defaults and rejects duplicate, unknown and excessive selections", () => {
     expect(defaultLayout().widgets).toEqual([
-      "attention",
       "income",
       "expenses",
       "savings",
@@ -101,8 +100,6 @@ describe("overview contracts and financial summaries", () => {
     };
     expect(incomeSummary(view)).toMatchObject({
       total: "0",
-      fixed: "0",
-      oneoff: null,
       missing: 1,
     });
     expect(incomeSummary({ ...view, rows: [view.rows[0]] }).total).toBeNull();
@@ -137,7 +134,6 @@ describe("overview contracts and financial summaries", () => {
     expect(result.total).toMatchObject({
       spent: "9007199254740994",
       provisional: true,
-      closing: "5",
     });
     expect(result.groups).toEqual([
       { name: "Living", value: "9007199254740994", unlabeled: false },
@@ -178,7 +174,7 @@ describe("overview contracts and financial summaries", () => {
       missing: 1,
       stale: 1,
     });
-    expect(result.kinds.find((k) => k.kind === "gold")?.value).toBeNull();
+    expect(result).not.toHaveProperty("kinds");
     const investment = investmentView(null, clock.today, clock);
     investment.state = {
       ...investment.state,
@@ -205,10 +201,7 @@ describe("overview contracts and financial summaries", () => {
     };
     expect(investmentSummary(investment)).toMatchObject({
       total: null,
-      value: null,
       unrealized: null,
-      cost: "100",
-      cash: "0",
     });
   });
   it("loads each necessary source once, omits hidden sources and isolates errors", async () => {
@@ -232,7 +225,9 @@ describe("overview contracts and financial summaries", () => {
     expect(JSON.stringify(result)).not.toContain("private diagnostic");
     expect(result.sources.expenses?.status).toBe("ready");
     const all = await readOverview(["attention"], loaders, clock);
-    expect(Object.keys(all.sources)).toHaveLength(5);
+    expect(all.sources).toEqual({});
+    const scoped = await readOverview(["attention", "funds"], loaders, clock);
+    expect(Object.keys(scoped.sources)).toEqual(["funds"]);
     const none = await readOverview(["peace"], loaders, clock);
     expect(none.sources).toEqual({});
   });

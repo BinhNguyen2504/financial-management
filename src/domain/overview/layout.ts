@@ -32,14 +32,7 @@ export const saveLayoutSchema = layoutSchema.extend({
 export function defaultLayout(): SavedLayout {
   return {
     schemaVersion: 1,
-    widgets: [
-      "attention",
-      "income",
-      "expenses",
-      "savings",
-      "investments",
-      "funds",
-    ],
+    widgets: ["income", "expenses", "savings", "investments", "funds"],
     jarIds: [],
     revision: 0,
   };
@@ -50,31 +43,31 @@ export const widgetCatalog: Record<
 > = {
   attention: {
     title: "Cần chú ý",
-    description: "Những khoản cần kiểm tra trong năm module.",
+    description: "Những khoản cần kiểm tra trong các module đang hiển thị.",
   },
   income: {
     title: "Thu nhập tháng này",
-    description: "Thực nhận, cố định, phát sinh và khoản chưa nhập.",
+    description: "Tổng thực nhận tháng này và khoản chưa nhập.",
     href: "/income",
   },
   expenses: {
     title: "Chi tiêu tháng này",
-    description: "Mức tháng, thực chi và số còn trong hũ.",
+    description: "Thực chi tháng này và mức tháng.",
     href: "/budgets",
   },
   savings: {
     title: "Tiết kiệm hiện tại",
-    description: "Tiền, sổ tiết kiệm và vàng theo định giá đã nhập.",
+    description: "Tổng giá trị tiết kiệm và trạng thái định giá.",
     href: "/savings",
   },
   investments: {
     title: "Đầu tư hiện tại",
-    description: "Giá trị, vốn, lãi/lỗ chưa chốt và tiền chờ.",
+    description: "Tổng giá trị và lãi/lỗ chưa chốt.",
     href: "/investments",
   },
   funds: {
     title: "Quỹ an toàn",
-    description: "Tiến độ ba quỹ và số tháng dự phòng.",
+    description: "Tổng dự phòng và số tháng Emergency.",
     href: "/funds",
   },
   allocation: {

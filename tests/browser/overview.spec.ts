@@ -89,13 +89,13 @@ async function fits(page: Page) {
   ).toBe(true);
 }
 
-test("six defaults match all five source modules; reads do not create preferences or expose books", async ({
+test("five defaults match all five source modules; reads do not create preferences or expose books", async ({
   page,
 }) => {
   const anon = await page.request.get("/api/v1/overview");
   expect(anon.status()).toBe(401);
   await login(page, true);
-  await expect(page.locator("[data-widget]")).toHaveCount(6);
+  await expect(page.locator("[data-widget]")).toHaveCount(5);
   expect((await layout(page)).revision).toBe(0);
   const r = await page.request.get("/api/v1/overview"),
     summary = await r.json();
@@ -113,7 +113,12 @@ test("six defaults match all five source modules; reads do not create preference
     const view = await (await page.request.get(`/api/v1/${key}`)).json();
     expect(summary.sources[key]).toEqual({
       status: "ready",
-      data: reader(view),
+      data:
+        key === "expenses"
+          ? expenseSummary(view, defaultLayout().widgets)
+          : key === "savings"
+            ? savingsSummary(view, defaultLayout().widgets)
+            : reader(view),
     });
   }
   const empty = await (
@@ -141,12 +146,12 @@ test("preview, cancel, keyboard reorder, watched jars, empty layout and defaults
   await expect(choices.nth(5)).toBeDisabled();
   await dialog.locator('[data-widget-option="peace"] > label input').check();
   await dialog
-    .getByRole("button", { name: "Chuyển Thu nhập tháng này lên", exact: true })
+    .getByRole("button", { name: "Chuyển Chi tiêu tháng này lên", exact: true })
     .focus();
   await page.keyboard.press("Enter");
   await expect(dialog.locator("[data-widget-option]").first()).toHaveAttribute(
     "data-widget-option",
-    "income",
+    "expenses",
   );
   await dialog
     .getByRole("button", { name: "Xem thử bố cục", exact: true })
@@ -161,14 +166,14 @@ test("preview, cancel, keyboard reorder, watched jars, empty layout and defaults
     .click();
   await dialog.locator('[data-widget-option="peace"] > label input').check();
   await dialog
-    .getByRole("button", { name: "Chuyển Thu nhập tháng này lên", exact: true })
+    .getByRole("button", { name: "Chuyển Chi tiêu tháng này lên", exact: true })
     .click();
   await dialog.getByRole("button", { name: "Lưu", exact: true }).click();
   await expect(dialog).toHaveCount(0);
   await page.reload();
   await expect(page.locator("[data-widget]").first()).toHaveAttribute(
     "data-widget",
-    "income",
+    "expenses",
   );
   await expect(page.locator('[data-widget="peace"]')).toBeVisible();
   const context = await browser.newContext();
@@ -179,7 +184,7 @@ test("preview, cancel, keyboard reorder, watched jars, empty layout and defaults
     await expect(other.locator('[data-widget="peace"]')).toBeVisible();
     await expect(other.locator("[data-widget]").first()).toHaveAttribute(
       "data-widget",
-      "income",
+      "expenses",
     );
   } finally {
     await context.close();
@@ -195,7 +200,7 @@ test("preview, cancel, keyboard reorder, watched jars, empty layout and defaults
     .click();
   expect((await layout(page)).widgets).toEqual([]);
   await dialog.getByRole("button", { name: "Lưu", exact: true }).click();
-  await expect(page.locator("[data-widget]")).toHaveCount(6);
+  await expect(page.locator("[data-widget]")).toHaveCount(5);
   expect((await layout(page)).widgets).toEqual(defaultLayout().widgets);
 });
 
@@ -248,14 +253,15 @@ test("partial source failure preserves successful widgets and labels retained fi
 }) => {
   await login(page, true);
   const baseline = await (await page.request.get("/api/v1/overview")).json();
-  await page.route("**/api/v1/overview?*", async (route) => {
+  await page.route(/\/api\/v1\/overview(?:\?.*)?$/, async (route) => {
     const data = structuredClone(baseline);
     data.sources.income = { status: "error" };
     await route.fulfill({ json: data });
   });
-  await page
-    .getByRole("button", { name: "Tùy chỉnh Tổng quan", exact: true })
-    .click();
+  await page.clock.setFixedTime(
+    (await page.evaluate(() => Date.now())) + 61000,
+  );
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await expect(page.locator('[data-widget="income"]')).toContainText(
     "số liệu lần tải trước",
   );
@@ -266,25 +272,22 @@ test("partial source failure preserves successful widgets and labels retained fi
     "Chưa tải được nguồn",
   );
   await expect(page.locator('[data-widget="savings"] dl')).toBeVisible();
-  await page.unroute("**/api/v1/overview?*");
+  await page.unroute(/\/api\/v1\/overview(?:\?.*)?$/);
   await page
     .locator('[data-widget="income"]')
     .getByRole("button", { name: "Thử tải lại" })
     .click();
   await expect(page.locator('[data-widget="income"] dl')).toBeVisible();
-  await page.route("**/api/v1/overview?*", (r) =>
+  await page.route(/\/api\/v1\/overview(?:\?.*)?$/, (r) =>
     r.fulfill({
       status: 401,
       json: { code: "UNAUTHENTICATED", error: "Phiên hết hạn" },
     }),
   );
-  await page
-    .getByRole("button", { name: "Tùy chỉnh Tổng quan", exact: true })
-    .click();
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Xem thử bố cục", exact: true })
-    .click();
+  await page.clock.setFixedTime(
+    (await page.evaluate(() => Date.now())) + 61000,
+  );
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await expect(page.locator(".overview-widget dl")).toHaveCount(0);
   await expect(
     page.locator("main").getByRole("link", { name: "Đăng nhập", exact: true }),
@@ -297,7 +300,9 @@ test("all ten widgets fit small screens, themes, privacy and English without pag
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await login(page, true);
-  const data = await (await page.request.get("/api/v1/overview")).json();
+  const data = await (
+    await page.request.get(`/api/v1/overview?widgets=${widgetIds.join(",")}`)
+  ).json();
   const ids = data.sources.expenses.data.jars
     .slice(0, 5)
     .map((j: { jarId: string }) => j.jarId);
@@ -365,4 +370,315 @@ test("all ten widgets fit small screens, themes, privacy and English without pag
     fullPage: true,
   });
   expect(errors).toEqual([]);
+});
+
+for (const widgets of [
+  [],
+  ["income", "peace"],
+  [
+    "attention",
+    "income",
+    "expenses",
+    "savings",
+    "investments",
+    "funds",
+    "allocation",
+    "peace",
+  ],
+] as const) {
+  test(`initial load renders saved ${widgets.length}-widget layout without defaults and uses one overview read`, async ({
+    page,
+  }) => {
+    await login(page);
+    await save(page, widgets);
+    const requests: string[] = [];
+    page.on("request", (request) => {
+      if (
+        request.method() === "GET" &&
+        new URL(request.url()).pathname.startsWith("/api/v1/")
+      )
+        requests.push(new URL(request.url()).pathname);
+    });
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route(/\/api\/v1\/overview(?:\?.*)?$/, async (route) => {
+      await gate;
+      await route.continue();
+    });
+    await page.addInitScript(() => {
+      const history: string[][] = [];
+      Object.assign(window, { overviewWidgetHistory: history });
+      new MutationObserver(() => {
+        const ids = [...document.querySelectorAll("[data-widget]")].map((e) =>
+          e.getAttribute("data-widget")!,
+        );
+        if (ids.length && ids.join(",") !== history.at(-1)?.join(","))
+          history.push(ids);
+      }).observe(document, { childList: true, subtree: true });
+    });
+    try {
+      await page.reload();
+      await expect(
+        page.getByText("Đang tải Tổng quan…", { exact: true }),
+      ).toBeVisible();
+      await expect(page.locator("[data-widget]")).toHaveCount(0);
+      await expect(page.locator(".overview-empty-layout")).toHaveCount(0);
+    } finally {
+      release();
+    }
+    await expect(
+      page.locator('.overview-widget-grid[data-ready="true"]'),
+    ).toBeAttached();
+    await expect(page.locator("[data-widget]")).toHaveCount(widgets.length);
+    expect(
+      await page
+        .locator("[data-widget]")
+        .evaluateAll((nodes) =>
+          nodes.map((n) => n.getAttribute("data-widget")),
+        ),
+    ).toEqual(widgets);
+    await page.waitForLoadState("networkidle");
+    expect(
+      requests.filter((path) =>
+        /\/(overview(?:\/layout)?|income|expenses|savings|investments|funds|data\/status)$/.test(
+          path,
+        ),
+      ),
+    ).toEqual(["/api/v1/overview"]);
+    const history = await page.evaluate(
+      () =>
+        (window as unknown as { overviewWidgetHistory: string[][] })
+          .overviewWidgetHistory,
+    );
+    for (const ids of history) expect(ids).toEqual(widgets);
+  });
+}
+
+test("layout failure does not invent defaults, and retry restores the saved layout", async ({
+  page,
+}) => {
+  await login(page);
+  await save(page, ["peace"]);
+  await page.route(/\/api\/v1\/overview(?:\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 503,
+      json: {
+        code: "OVERVIEW_SCHEMA_REQUIRED",
+        error: "Chưa tải được bố cục. Hãy thử lại.",
+      },
+    }),
+  );
+  await page.reload();
+  await expect(page.locator("main").getByRole("alert")).toContainText(
+    "Chưa tải được bố cục",
+  );
+  await expect(page.locator("[data-widget]")).toHaveCount(0);
+  await expect(page.locator(".overview-empty-layout")).toHaveCount(0);
+  await page.unroute(/\/api\/v1\/overview(?:\?.*)?$/);
+  await page.getByRole("button", { name: "Thử tải lại", exact: true }).click();
+  await expect(page.locator("[data-widget]")).toHaveCount(1);
+  await expect(page.locator('[data-widget="peace"]')).toBeVisible();
+});
+
+test("customizer fetches only new capabilities and cancel preserves previously loaded cards", async ({
+  page,
+}) => {
+  await login(page, true);
+  await save(page, ["income", "expenses"]);
+  await page.reload();
+  await expect(page.locator('[data-widget="expenses"] dl')).toBeVisible();
+  const reads: string[] = [];
+  page.on("request", (r) => {
+    if (/\/api\/v1\/overview(?:\?.*)?$/.test(r.url()) && r.method() === "GET")
+      reads.push(r.url());
+  });
+  await page
+    .getByRole("button", { name: "Tùy chỉnh Tổng quan", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await dialog
+    .getByRole("button", { name: "Chuyển Chi tiêu tháng này lên", exact: true })
+    .click();
+  await page.waitForLoadState("networkidle");
+  expect(reads).toHaveLength(0);
+  await dialog.locator('[data-widget-option="jars"] > label input').check();
+  await expect(dialog.locator(".overview-jar-options input")).toHaveCount(18);
+  expect(reads).toHaveLength(1);
+  await dialog.locator(".overview-jar-options input").first().check();
+  await dialog.getByRole("button", { name: "Hủy", exact: true }).click();
+  await expect(page.locator("[data-widget]").first()).toHaveAttribute(
+    "data-widget",
+    "income",
+  );
+  await expect(page.locator('[data-widget="expenses"] dl')).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  expect(reads).toHaveLength(1);
+});
+
+test("attention follows visible modules and does not display retained alerts for hidden modules", async ({
+  page,
+}) => {
+  await login(page);
+  const month = (
+    await (await page.request.get("/api/v1/income")).json()
+  ).today.slice(0, 7);
+  const r = await page.request.post("/api/v1/income/commands", {
+    headers: { origin: process.env.TEST_BASE_URL! },
+    data: {
+      id: randomUUID(),
+      expectedVersion: 0,
+      action: {
+        type: "createCategory",
+        id: randomUUID(),
+        start: month,
+        name: "Salary",
+        description: "",
+      },
+    },
+  });
+  expect(r.ok(), await r.text()).toBe(true);
+  await save(page, ["attention", "income"]);
+  await page.reload();
+  await expect(page.locator('[data-widget="attention"]')).toContainText(
+    "Thu cố định chưa nhập",
+  );
+  await page
+    .getByRole("button", { name: "Tùy chỉnh Tổng quan", exact: true })
+    .click();
+  const d = page.getByRole("dialog");
+  await d.locator('[data-widget-option="income"] > label input').uncheck();
+  await d.getByRole("button", { name: "Xem thử bố cục", exact: true }).click();
+  await expect(page.locator('[data-widget="attention"]')).toContainText(
+    "Bật widget của một module",
+  );
+  await expect(page.locator('[data-widget="attention"]')).not.toContainText(
+    "Thu cố định chưa nhập",
+  );
+  const funds = await (
+    await page.request.get("/api/v1/overview?widgets=attention,funds")
+  ).json();
+  expect(Object.keys(funds.sources)).toEqual(["funds"]);
+});
+
+test("background refresh keeps a layout draft and invalidates details omitted from fresh totals", async ({
+  page,
+}) => {
+  await login(page, true);
+  await save(page, ["income", "expenses"]);
+  await page.reload();
+  await expect(page.locator('[data-widget="expenses"] dl')).toBeVisible();
+  await page
+    .getByRole("button", { name: "Tùy chỉnh Tổng quan", exact: true })
+    .click();
+  let d = page.getByRole("dialog");
+  await d.locator('[data-widget-option="jars"] > label input').check();
+  await expect(d.locator(".overview-jar-options input")).toHaveCount(18);
+  await d.getByRole("button", { name: "Hủy", exact: true }).click();
+  const view = await (await page.request.get("/api/v1/expenses")).json();
+  const jar = view.rows.find(
+    (r: { month: string }) => r.month === view.today.slice(0, 7),
+  );
+  const renamed = await page.request.post("/api/v1/expenses/commands", {
+    headers: { origin: process.env.TEST_BASE_URL! },
+    data: {
+      id: randomUUID(),
+      expectedVersion: view.book.version,
+      action: {
+        type: "configureJar",
+        jarId: jar.jarId,
+        month: jar.month,
+        name: "Hũ vừa cập nhật",
+        description: jar.description,
+        method: jar.method,
+        group: jar.group,
+        amount: jar.target,
+      },
+    },
+  });
+  expect(renamed.ok(), await renamed.text()).toBe(true);
+  const refreshed = page.waitForResponse(
+    (r) =>
+      /\/api\/v1\/overview$/.test(r.url()) && r.request().method() === "GET",
+  );
+  await page.clock.setFixedTime(
+    (await page.evaluate(() => Date.now())) + 61000,
+  );
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await refreshed;
+  await expect(page.locator(".overview-refresh")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Tùy chỉnh Tổng quan", exact: true })
+    .click();
+  d = page.getByRole("dialog");
+  await d.locator('[data-widget-option="jars"] > label input').check();
+  await expect(
+    d
+      .locator(".overview-jar-options")
+      .getByText("Hũ vừa cập nhật", { exact: true }),
+  ).toBeVisible();
+  await d.getByRole("button", { name: "Hủy", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Tùy chỉnh Tổng quan", exact: true })
+    .click();
+  d = page.getByRole("dialog");
+  await d.locator('[data-widget-option="peace"] > label input').check();
+  await save(page, ["funds"]);
+  const draftRefresh = page.waitForResponse(
+    (r) =>
+      /\/api\/v1\/overview\?/.test(r.url()) && r.request().method() === "GET",
+  );
+  await page.clock.setFixedTime(
+    (await page.evaluate(() => Date.now())) + 61000,
+  );
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await draftRefresh;
+  await expect(
+    d.locator('[data-widget-option="income"] > label input'),
+  ).toBeChecked();
+  await expect(
+    d.locator('[data-widget-option="peace"] > label input'),
+  ).toBeChecked();
+  await expect(
+    d.locator('[data-widget-option="funds"] > label input'),
+  ).not.toBeChecked();
+  await d.getByRole("button", { name: "Lưu", exact: true }).click();
+  await expect(d.getByRole("alert")).toContainText("thiết bị khác");
+});
+
+test("expired authentication during layout save clears figures and keeps a visible login recovery", async ({
+  page,
+}) => {
+  await login(page, true);
+  await page
+    .getByRole("button", { name: "Tùy chỉnh Tổng quan", exact: true })
+    .click();
+  await page
+    .getByRole("dialog")
+    .locator('[data-widget-option="peace"] > label input')
+    .check();
+  await page.route("**/api/v1/overview/layout", (route) =>
+    route.request().method() === "PUT"
+      ? route.fulfill({
+          status: 401,
+          json: {
+            code: "UNAUTHENTICATED",
+            error: "Phiên đăng nhập đã hết hạn",
+          },
+        })
+      : route.continue(),
+  );
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Lưu", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.locator("[data-widget]")).toHaveCount(0);
+  await expect(page.locator("main").getByRole("alert")).toContainText(
+    "Phiên đăng nhập đã hết hạn",
+  );
+  await expect(
+    page.locator("main").getByRole("link", { name: "Đăng nhập", exact: true }),
+  ).toBeVisible();
 });

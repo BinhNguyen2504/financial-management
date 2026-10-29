@@ -14,10 +14,10 @@ export const modules = [
     icon: "overview",
     label: "Bức tranh tài chính",
     description:
-      "Xem nhanh năm module với 10 widget; thêm, ẩn và sắp xếp theo tài khoản.",
+      "Năm thẻ số liệu chính, tải cùng bố cục tài khoản; tùy chỉnh 10 loại widget.",
     scope: [
       "Thu nhập, Chi tiêu tháng này; Tiết kiệm, Đầu tư và Quỹ an toàn hiện tại",
-      "Cần chú ý, phân bổ chi tiêu, hũ theo dõi và sổ sắp đáo hạn",
+      "Cần chú ý theo module đang hiện; tùy chọn phân bổ, hũ, đáo hạn và lời nhắn",
       "Bố cục widget đồng bộ theo tài khoản; không cộng các sổ thành tài sản ròng",
     ],
     questions: [],

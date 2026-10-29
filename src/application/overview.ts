@@ -5,13 +5,13 @@ import type {
   SourceId,
 } from "../domain/overview/summary";
 import type { Clock } from "../domain/shared/types";
-import { widgetSources } from "../domain/overview/summary";
+import { overviewSources } from "../domain/overview/summary";
 export async function readOverview(
   widgets: WidgetId[],
   loaders: { [K in SourceId]: () => Promise<OverviewData[K]> },
   clock: Clock,
 ): Promise<OverviewSummary> {
-  const needed = [...new Set(widgets.flatMap((w) => widgetSources[w]))];
+  const needed = overviewSources(widgets);
   const entries = await Promise.all(
     needed.map(async (key) => {
       try {

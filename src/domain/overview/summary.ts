@@ -1,3 +1,4 @@
+import type { WidgetId, SavedLayout } from "./layout";
 import type { ExpenseView } from "../expenses/types";
 import { summarize } from "../expenses/reports";
 import type { IncomeView, IncomeRow } from "../income/types";
@@ -13,35 +14,55 @@ function incomeTotal(rows: IncomeRow[]) {
     ? sum(rows.map((r) => r.amount))
     : null;
 }
-export function expenseSummary(view: ExpenseView) {
+export function expenseSummary(
+  view: ExpenseView,
+  widgets: readonly WidgetId[] = ["expenses", "allocation", "jars"],
+) {
   const rows = view.rows.filter((r) => r.month === view.today.slice(0, 7));
+  const total = summarize(rows, () => "month")[0];
   return {
     empty: !rows.length,
-    total: summarize(rows, () => "month")[0] ?? null,
-    jars: rows.map(({ jarId, name, active, kind, closing, over, status }) => ({
-      jarId,
-      name,
-      active,
-      kind,
-      closing,
-      over,
-      status,
-    })),
-    groups: summarize(rows, (r) => r.group || "Chưa phân nhóm")
-      .map((r) => ({
-        name: r.key,
-        value: r.spent,
-        unlabeled:
-          r.key === "Chưa phân nhóm" &&
-          !rows.some((row) => row.group === r.key),
-      }))
-      .sort((a, b) =>
-        BigInt(a.value) > BigInt(b.value)
-          ? -1
-          : BigInt(a.value) < BigInt(b.value)
-            ? 1
-            : a.name.localeCompare(b.name),
-      ),
+    total: total
+      ? {
+          spent: total.spent,
+          target: total.target,
+          provisional: total.provisional,
+        }
+      : null,
+    ...(widgets.includes("jars")
+      ? {
+          jars: rows.map(
+            ({ jarId, name, active, kind, closing, over, status }) => ({
+              jarId,
+              name,
+              active,
+              kind,
+              closing,
+              over,
+              status,
+            }),
+          ),
+        }
+      : {}),
+    ...(widgets.includes("allocation")
+      ? {
+          groups: summarize(rows, (r) => r.group || "Chưa phân nhóm")
+            .map((r) => ({
+              name: r.key,
+              value: r.spent,
+              unlabeled:
+                r.key === "Chưa phân nhóm" &&
+                !rows.some((row) => row.group === r.key),
+            }))
+            .sort((a, b) =>
+              BigInt(a.value) > BigInt(b.value)
+                ? -1
+                : BigInt(a.value) < BigInt(b.value)
+                  ? 1
+                  : a.name.localeCompare(b.name),
+            ),
+        }
+      : {}),
     over: rows.filter((r) => BigInt(r.over) > 0n).length,
   };
 }
@@ -50,14 +71,15 @@ export function incomeSummary(view: IncomeView) {
   return {
     empty: !rows.length,
     total: incomeTotal(rows),
-    fixed: incomeTotal(rows.filter((r) => r.kind === "fixed")),
-    oneoff: incomeTotal(rows.filter((r) => r.kind === "oneoff")),
     missing: rows.filter(
       (r) => r.kind === "fixed" && r.active && r.amount === null,
     ).length,
   };
 }
-export function savingsSummary(view: SavingsView) {
+export function savingsSummary(
+  view: SavingsView,
+  widgets: readonly WidgetId[] = ["savings", "maturities"],
+) {
   const s = view.state;
   return {
     empty: !s.positions.length,
@@ -65,26 +87,24 @@ export function savingsSummary(view: SavingsView) {
     knownValue: s.knownValue,
     missing: s.missing.length,
     stale: s.positions.filter((p) => p.stale).length,
-    kinds: (["cash", "deposit", "gold"] as const).map((kind) => {
-      const p = s.positions.filter((p) => p.kind === kind);
-      return {
-        kind,
-        value: p.some((p) => p.value === null)
-          ? null
-          : sum(p.map((p) => p.value)),
-      };
-    }),
-    due: view.due
-      .map(({ id, name, principal, maturity }) => ({
-        id,
-        name,
-        principal,
-        maturity,
-      }))
-      .sort(
-        (a, b) =>
-          a.maturity.localeCompare(b.maturity) || a.id.localeCompare(b.id),
-      ),
+    dueCount: view.due.length,
+    ...(widgets.includes("maturities")
+      ? {
+          due: view.due
+            .map(({ id, name, principal, maturity }) => ({
+              id,
+              name,
+              principal,
+              maturity,
+            }))
+            .sort(
+              (a, b) =>
+                a.maturity.localeCompare(b.maturity) ||
+                a.id.localeCompare(b.id),
+            )
+            .slice(0, 5),
+        }
+      : {}),
   };
 }
 export function investmentSummary(view: InvestmentView) {
@@ -96,18 +116,14 @@ export function investmentSummary(view: InvestmentView) {
     knownValue: s.knownValue,
     missing: s.missing.length,
     stale: p.filter((p) => p.stale).length,
-    value: p.some((p) => p.value === null) ? null : sum(p.map((p) => p.value)),
-    cost: sum(p.map((p) => p.cost)),
     unrealized: p.some((p) => p.unrealized === null)
       ? null
       : sum(p.map((p) => p.unrealized)),
-    cash: sum(s.positions.filter((p) => p.kind === "cash").map((p) => p.cash)),
   };
 }
 export function fundSummary(view: FundView) {
   return {
     empty: !view.book?.configurations.length,
-    funds: view.state.funds,
     total: view.state.total,
     emergencyMonths: view.state.emergencyMonths,
     sourceChanged: view.sourceChanged,
@@ -130,10 +146,10 @@ export type OverviewSummary = {
   sources: { [K in SourceId]?: SourceResult<OverviewData[K]> };
 };
 
-import type { WidgetId } from "./layout";
+export type OverviewResponse = OverviewSummary & { layout: SavedLayout };
 
 export const widgetSources: Record<WidgetId, readonly SourceId[]> = {
-  attention: ["income", "expenses", "savings", "investments", "funds"],
+  attention: [],
   income: ["income"],
   expenses: ["expenses"],
   savings: ["savings"],
@@ -144,3 +160,24 @@ export const widgetSources: Record<WidgetId, readonly SourceId[]> = {
   maturities: ["savings"],
   peace: [],
 };
+
+/** Attention follows visible modules; internal dependencies never expand its scope. */
+export function overviewSources(widgets: readonly WidgetId[]): SourceId[] {
+  return [...new Set(widgets.flatMap((id) => widgetSources[id]))];
+}
+export function sourcesForWidget(
+  id: WidgetId,
+  widgets: readonly WidgetId[],
+): readonly SourceId[] {
+  return id === "attention" ? overviewSources(widgets) : widgetSources[id];
+}
+
+/** Optional detail lists are separate capabilities from their module's totals. */
+export function overviewRequirements(widgets: readonly WidgetId[]): string[] {
+  return [
+    ...overviewSources(widgets),
+    ...widgets.filter(
+      (id) => id === "jars" || id === "allocation" || id === "maturities",
+    ),
+  ];
+}

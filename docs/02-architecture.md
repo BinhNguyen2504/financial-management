@@ -221,3 +221,7 @@ MonthYearSelect sở hữu trình bày kỳ YYYY-MM, MobileNavigation sở hữu
 ## Tổng quan đa module — 29/10/2026
 
 Feature Tổng quan riêng thay route sử dụng ExpenseOverview. GET `/api/v1/overview` dùng application readers/domain summaries, chỉ trả DTO các nguồn cần dùng, lỗi nguồn độc lập, private/no-store. GET/PUT `/api/v1/overview/layout` dùng `overview_layouts`, FORCE RLS, khóa owner và revision để tránh ghi đè. Config display nằm ngoài backup tài chính và account emptiness. Giữ pageAccess và Auth/origin hiện có. Đọc nguồn độc lập, không cam kết snapshot toàn ứng dụng. Xem [đặc tả](features/overview.md).
+
+### Đọc Tổng quan gọn — 29/10/2026
+
+GET `/api/v1/overview` trả bố cục tài khoản cùng DTO số liệu. Không có tham số widget thì dùng bố cục đã lưu; tham số widget chỉ thay phạm vi dữ liệu khi xem thử. Adapter projection riêng dùng SELECT JSON theo nguồn, owner transaction/RLS, không đọc audit/command hoặc lấy bản sao cho ghi. Chi tiêu chỉ dựng tháng cần xem, Quỹ chia sẻ projection cấu hình hũ; Tiết kiệm tránh replay hai lần cho cùng ngày. API và UI dùng chung resolver nguồn đang hiển thị. Giữ các reader dùng cho lệnh, backup và màn hình module. Không thêm migration, cache dùng chung hoặc snapshot liên module. [Đặc tả](features/overview.md).

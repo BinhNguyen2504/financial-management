@@ -41,21 +41,25 @@ function bounded(n: bigint, label: string): string {
     throw new ExpenseError(`${label}: số tiền ngoài giới hạn.`);
   return n.toString();
 }
-export function materialize(book: ExpenseBook, clock: Clock): ExpenseRow[] {
+export function materialize(
+  book: ExpenseBook,
+  clock: Clock,
+  onlyMonth?: Month,
+): ExpenseRow[] {
   const current = clock.today.slice(0, 7);
   const year = Number(current.slice(0, 4));
   const rows: ExpenseRow[] = [];
   const inputs = new Map(book.inputs.map((i) => [`${i.jarId}/${i.month}`, i]));
   for (const jar of book.jars) {
     let balance = BigInt(jar.opening);
-    for (const month of monthRange(jar.start, `${year}-12`)) {
+    for (const month of monthRange(jar.start, onlyMonth ?? `${year}-12`)) {
       const sealed = book.years.find(
         (y) => y.year === Number(month.slice(0, 4)),
       )?.snapshot;
       if (sealed) {
         const row = sealed.find((r) => r.jarId === jar.id && r.month === month);
         if (row) {
-          rows.push(row);
+          if (!onlyMonth || month === onlyMonth) rows.push(row);
           balance = BigInt(row.closing);
         }
         continue;
@@ -104,34 +108,35 @@ export function materialize(book: ExpenseBook, clock: Clock): ExpenseRow[] {
           spent += value;
         }
       }
-      rows.push({
-        jarId: jar.id,
-        month,
-        kind: jar.kind,
-        name: rule.name,
-        emoji: rule.emoji ?? null,
-        description: rule.description,
-        method: rule.method,
-        group: rule.group,
-        active: rule.active,
-        target: bounded(target, rule.name),
-        opening: bounded(balance, rule.name),
-        required: bounded(required, rule.name),
-        funding: bounded(funding, rule.name),
-        extra: bounded(extra, rule.name),
-        available: bounded(available, rule.name),
-        spent: bounded(spent, rule.name),
-        closing: bounded(closing, rule.name),
-        over: bounded(
-          jar.kind === "monthly" ? positive(spent - target) : 0n,
-          rule.name,
-        ),
-        status: future
-          ? "planned"
-          : month === current
-            ? "provisional"
-            : "actual",
-      });
+      if (!onlyMonth || month === onlyMonth)
+        rows.push({
+          jarId: jar.id,
+          month,
+          kind: jar.kind,
+          name: rule.name,
+          emoji: rule.emoji ?? null,
+          description: rule.description,
+          method: rule.method,
+          group: rule.group,
+          active: rule.active,
+          target: bounded(target, rule.name),
+          opening: bounded(balance, rule.name),
+          required: bounded(required, rule.name),
+          funding: bounded(funding, rule.name),
+          extra: bounded(extra, rule.name),
+          available: bounded(available, rule.name),
+          spent: bounded(spent, rule.name),
+          closing: bounded(closing, rule.name),
+          over: bounded(
+            jar.kind === "monthly" ? positive(spent - target) : 0n,
+            rule.name,
+          ),
+          status: future
+            ? "planned"
+            : month === current
+              ? "provisional"
+              : "actual",
+        });
       balance = closing;
     }
   }

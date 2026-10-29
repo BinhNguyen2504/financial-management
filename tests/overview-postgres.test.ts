@@ -74,3 +74,19 @@ it("serializes concurrent first saves so only one wins", async () => {
   expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
   expect((await repo.read(owner)).revision).toBe(1);
 });
+
+it("keeps an existing six-widget layout unchanged after the default becomes five", async () => {
+  const owner = randomUUID(),
+    repo = postgresOverviewRepository(runtime);
+  await admin`insert into auth.users(id) values(${owner})`;
+  const widgets = ["attention" as const, ...defaultLayout().widgets];
+  const saved = await repo.save(owner, {
+    schemaVersion: 1,
+    widgets,
+    jarIds: [],
+    expectedRevision: 0,
+  });
+  expect((await repo.read(owner)).widgets).toEqual(widgets);
+  expect(await repo.read(owner)).toEqual(saved);
+  expect(defaultLayout().widgets).toHaveLength(5);
+});

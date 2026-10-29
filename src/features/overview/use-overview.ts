@@ -1,24 +1,24 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { SavedLayout, OverviewLayout } from "@/domain/overview/layout";
 import {
-  defaultLayout,
-  type SavedLayout,
-  type OverviewLayout,
-} from "@/domain/overview/layout";
-import type { OverviewSummary, SourceId } from "@/domain/overview/summary";
+  overviewSources,
+  overviewRequirements,
+  type OverviewResponse,
+  type OverviewSummary,
+  type SourceId,
+} from "@/domain/overview/summary";
 import { useForegroundRefresh } from "@/components/use-foreground-refresh";
 import { overviewRequest, OverviewRequestError } from "./api";
 
 export function useOverview(configured: boolean) {
-  const [saved, setSaved] = useState<SavedLayout>(defaultLayout);
+  const [saved, setSaved] = useState<SavedLayout | null>(null);
   const [customizing, setCustomizing] = useState(false);
   const [draft, setDraft] = useState<OverviewLayout | null>(null);
   const [summary, setSummary] = useState<OverviewSummary | null>(null);
   const [loading, setLoading] = useState(configured);
   const [error, setError] = useState("");
   const [needsLogin, setNeedsLogin] = useState(false);
-  const [layoutError, setLayoutError] = useState("");
-  const [layoutReady, setLayoutReady] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [conflict, setConflict] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -27,6 +27,26 @@ export function useOverview(configured: boolean) {
     sequence = useRef(0);
   const revisionRef = useRef(0);
   const abort = useRef<AbortController | null>(null);
+  const coverage = useRef(new Map<string, number>());
+  const [retained, setRetained] = useState<OverviewSummary["sources"]>({});
+  const day = useRef("");
+  const sessionGeneration = useRef(0);
+  const expire = useCallback((message: string) => {
+    sessionGeneration.current++;
+    sequence.current++;
+    abort.current?.abort();
+    savedRef.current = null;
+    draftRef.current = null;
+    setRetained({});
+    coverage.current.clear();
+    setSummary(null);
+    setSaved(null);
+    setDraft(null);
+    setCustomizing(false);
+    setNeedsLogin(true);
+    setError(message);
+    setLoading(false);
+  }, []);
   function edit(next: OverviewLayout | null) {
     draftRef.current = next;
     setDraft(next);
@@ -37,53 +57,63 @@ export function useOverview(configured: boolean) {
       abort.current?.abort();
       const controller = new AbortController();
       abort.current = controller;
+      const requested = draftRef.current;
       setLoading(true);
       try {
-        let layout: OverviewLayout = draftRef.current ?? savedRef.current;
-        if (!draftRef.current) {
-          try {
-            const next = await overviewRequest<SavedLayout>("/layout", {
-              signal: controller.signal,
-            });
-            if (id !== sequence.current) return;
-            // Editing can start while the account layout is refreshing.
-            if (!draftRef.current) {
-              savedRef.current = next;
-              setSaved(next);
-              layout = next;
-            } else layout = draftRef.current;
-            setLayoutReady(true);
-            setLayoutError("");
-          } catch (e) {
-            if (id !== sequence.current) return;
-            if (e instanceof OverviewRequestError && e.status === 401) throw e;
-            setLayoutError(
-              e instanceof Error
-                ? e.message
-                : "Chưa tải được bố cục. Hãy thử lại.",
-            );
-            setLayoutReady(false);
-          }
-        }
-        const widgets = [
-          ...new Set([
-            ...layout.widgets,
-            ...(draftRef.current ? ["jars"] : []),
-          ]),
-        ];
-        const next = await overviewRequest<OverviewSummary>(
-          `?widgets=${widgets.join(",")}`,
+        const next = await overviewRequest<OverviewResponse>(
+          requested ? `?widgets=${requested.widgets.join(",")}` : "",
           { signal: controller.signal },
         );
         if (id !== sequence.current) return;
-        setSummary(next);
+        if (day.current !== next.today) {
+          coverage.current.clear();
+          day.current = next.today;
+        }
+        for (const key of overviewRequirements(
+          (requested ?? next.layout).widgets,
+        ))
+          coverage.current.set(key, Date.now());
+        const expenseData = next.sources.expenses;
+        if (expenseData?.status === "ready") {
+          if (!expenseData.data.jars) coverage.current.delete("jars");
+          if (!expenseData.data.groups) coverage.current.delete("allocation");
+        }
+        const savingsData = next.sources.savings;
+        if (savingsData?.status === "ready" && !savingsData.data.due)
+          coverage.current.delete("maturities");
+        setRetained((previous) => {
+          const result = { ...previous };
+          for (const key of Object.keys(next.sources) as SourceId[]) {
+            const source = next.sources[key];
+            if (source?.status === "ready") {
+              Object.assign(result, {
+                [key]: {
+                  status: "ready",
+                  data: source.data,
+                },
+              });
+            }
+          }
+          return result;
+        });
+        if (
+          !draftRef.current &&
+          !requested &&
+          next.layout.revision >= (savedRef.current?.revision ?? 0)
+        ) {
+          savedRef.current = next.layout;
+          setSaved(next.layout);
+        }
+        setSummary((previous) => ({
+          ...next,
+          sources: { ...previous?.sources, ...next.sources },
+        }));
         setError("");
         setNeedsLogin(false);
       } catch (e) {
         if (id !== sequence.current) return;
-        const expired = e instanceof OverviewRequestError && e.status === 401;
-        setNeedsLogin(expired);
-        if (expired) setSummary(null);
+        if (e instanceof OverviewRequestError && e.status === 401)
+          expire(e.message);
         setError(
           e instanceof Error
             ? e.message
@@ -93,24 +123,35 @@ export function useOverview(configured: boolean) {
       } finally {
         if (id === sequence.current) setLoading(false);
       }
-    }, []),
+    }, [expire]),
     configured,
   );
   const layout = draft ?? saved;
-  // Order/selected jars only change presentation; new widget sources trigger loading.
-  const requestKey = [
-    ...new Set([...layout.widgets, ...(draft ? ["jars"] : [])]),
-  ]
+  const requestKey = overviewRequirements(layout?.widgets ?? [])
     .sort()
     .join(",");
   useEffect(() => {
     if (configured) void reload().catch(() => {});
     return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- Invalidate requests started after effect setup as well.
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- Invalidate all in-flight loads on workspace cleanup.
       sequence.current++;
       abort.current?.abort();
     };
-  }, [configured, reload, requestKey]);
+  }, [configured, reload]);
+  useEffect(() => {
+    if (!configured || needsLogin || !layout) return;
+    if (
+      overviewRequirements(layout.widgets).some(
+        (key) =>
+          !coverage.current.has(key) ||
+          Date.now() - coverage.current.get(key)! >= 60000,
+      )
+    ) {
+      void reload().catch(() => {});
+    }
+    // Layout order/jar selection are presentation changes; only missing capabilities fetch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configured, needsLogin, requestKey, reload, summary]);
   useEffect(() => {
     if (!summary) return;
     const timeout = Math.max(
@@ -127,6 +168,7 @@ export function useOverview(configured: boolean) {
     return () => clearTimeout(timer);
   }, [summary, reload]);
   function open() {
+    if (!savedRef.current) return;
     setCustomizing(true);
     if (draftRef.current) return;
     revisionRef.current = savedRef.current.revision;
@@ -140,6 +182,7 @@ export function useOverview(configured: boolean) {
   }
   async function save() {
     if (!draftRef.current) return;
+    const generation = sessionGeneration.current;
     setSaving(true);
     setSaveError("");
     try {
@@ -154,12 +197,15 @@ export function useOverview(configured: boolean) {
           expectedRevision: revisionRef.current,
         }),
       });
+      if (generation !== sessionGeneration.current) return;
       savedRef.current = next;
       setSaved(next);
       edit(null);
       setCustomizing(false);
       setConflict(false);
     } catch (e) {
+      if (e instanceof OverviewRequestError && e.status === 401)
+        expire(e.message);
       setConflict(
         e instanceof OverviewRequestError && e.code === "LAYOUT_CONFLICT",
       );
@@ -171,9 +217,11 @@ export function useOverview(configured: boolean) {
     }
   }
   async function loadLatest() {
+    const generation = sessionGeneration.current;
     setSaving(true);
     try {
       const next = await overviewRequest<SavedLayout>("/layout");
+      if (generation !== sessionGeneration.current) return;
       savedRef.current = next;
       setSaved(next);
       revisionRef.current = next.revision;
@@ -181,6 +229,8 @@ export function useOverview(configured: boolean) {
       setSaveError("");
       setConflict(false);
     } catch (e) {
+      if (e instanceof OverviewRequestError && e.status === 401)
+        expire(e.message);
       setSaveError(
         e instanceof Error ? e.message : "Chưa tải được bố cục. Hãy thử lại.",
       );
@@ -188,27 +238,16 @@ export function useOverview(configured: boolean) {
       setSaving(false);
     }
   }
-  const [retained, setRetained] = useState<OverviewSummary["sources"]>({});
-  // Preserve values only within this account-mounted workspace; failed sources stay labelled.
-  useEffect(() => {
-    if (!summary) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Retain successful source snapshots for a failed background refresh.
-    setRetained((previous) => ({
-      ...previous,
-      ...Object.fromEntries(
-        Object.entries(summary.sources).filter(
-          ([, v]) => v?.status === "ready",
-        ),
-      ),
-    }));
-  }, [summary]);
   const staleSources = new Set<SourceId>();
-  const sources = { ...summary?.sources };
-  for (const key of Object.keys(sources) as SourceId[]) {
-    if (sources[key]?.status === "error" && retained[key]?.status === "ready") {
+  const sources: OverviewSummary["sources"] = {};
+  for (const key of overviewSources(layout?.widgets ?? [])) {
+    const result = summary?.sources[key];
+    const previous = retained[key];
+    if (result?.status === "error" && previous?.status === "ready")
       staleSources.add(key);
-      Object.assign(sources, { [key]: retained[key] });
-    }
+    Object.assign(sources, {
+      [key]: previous?.status === "ready" ? previous : result,
+    });
   }
   return {
     customizing,
@@ -225,8 +264,7 @@ export function useOverview(configured: boolean) {
     loading,
     error,
     needsLogin,
-    layoutError,
-    layoutReady,
+    layoutReady: !!saved,
     saveError,
     conflict,
     saving,

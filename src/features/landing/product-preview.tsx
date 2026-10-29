@@ -25,7 +25,7 @@ const tabs = modules.filter((item) =>
 );
 const helpPreview = {
   overview:
-    "Thêm, ẩn và sắp xếp 10 widget theo tài khoản. Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng.",
+    "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại widget theo tài khoản; các sổ không cộng thành tài sản ròng.",
   budgets:
     "Chia trước, chi sau. Hũ là phần tiền dành cho một mục đích; ngân hàng, ví hay tiền mặt là nơi bạn quy ước để chi. Đối chiếu số còn lại để biết tháng này thừa thiếu ra sao.",
   income:
@@ -42,11 +42,11 @@ const helpPreview = {
 const data = {
   overview: {
     title: "Một góc nhìn chung, từng khoản rõ ràng.",
-    subtitle: "6 widget mặc định · thêm, ẩn và sắp xếp theo tài khoản.",
+    subtitle: "5 thẻ số liệu chính · tùy chỉnh 10 loại widget theo tài khoản.",
     label: "Tổng thực nhận",
     value: "28500000",
     secondary: "Widget mặc định",
-    secondaryValue: "6",
+    secondaryValue: "5",
     columns: ["Module", "Giá trị minh họa"],
     rows: [],
     chartLabel: "",
@@ -385,22 +385,16 @@ export function ProductPreview({
                   {active === "overview" ? (
                     <div className="preview-overview-grid">
                       <section>
-                        <h3>{tr("Cần chú ý")}</h3>
-                        <p>{tr("Kiểm tra số dư hũ tháng này.")}</p>
-                        <small>{tr("Tạm tính · Dữ liệu mẫu")}</small>
-                      </section>
-                      <section>
                         <h3>{tr("Thu nhập tháng này")}</h3>
                         <strong>{money(data.income.value)}</strong>
                         <small>{tr("Tổng thực nhận")}</small>
                       </section>
                       <section>
                         <h3>{tr("Chi tiêu tháng này")}</h3>
-                        <strong>{money(data.budgets.value)}</strong>
-                        <small>{tr("Mức tháng")}</small>
+                        <strong>{money("7350000")}</strong>
+                        <small>{tr("Thực chi · Tạm tính")}</small>
                         <span>
-                          {tr("Còn trong hũ")} ·{" "}
-                          {money(data.budgets.secondaryValue)}
+                          {tr("Mức tháng")} · {money(data.budgets.value)}
                         </span>
                       </section>
                       <section>
@@ -412,11 +406,17 @@ export function ProductPreview({
                         <h3>{tr("Đầu tư hiện tại")}</h3>
                         <strong>{money(data.investments.value)}</strong>
                         <small>{tr("Gồm khoản đầu tư và tiền chờ")}</small>
+                        <span>
+                          {tr("Lãi/lỗ chưa chốt")} · {money("5000000")}
+                        </span>
                       </section>
                       <section>
                         <h3>{tr("Quỹ an toàn")}</h3>
                         <strong>{money(data.funds.value)}</strong>
-                        <small>{tr("Sổ quỹ độc lập")}</small>
+                        <small>
+                          {tr("Emergency đủ trang trải")} ·{" "}
+                          {tr(data.funds.secondaryValue)}
+                        </small>
                       </section>
                       <p>
                         {tr(

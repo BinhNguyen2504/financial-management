@@ -329,7 +329,7 @@ test("overview distinguishes auth, missing data and retry; privacy works with bl
   page,
 }) => {
   await setup(page);
-  await page.route("**/api/v1/overview?*", (route) =>
+  await page.route(/\/api\/v1\/overview(?:\?.*)?$/, (route) =>
     route.fulfill({
       status: 401,
       json: { code: "UNAUTHENTICATED", error: "Phiên hết hạn" },
@@ -340,16 +340,24 @@ test("overview distinguishes auth, missing data and retry; privacy works with bl
     page.locator("main").getByRole("link", { name: "Đăng nhập", exact: true }),
   ).toBeVisible();
   await expect(page.locator('[data-widget="expenses"] dl')).toHaveCount(0);
-  await page.unroute("**/api/v1/overview?*");
-  await page.route("**/api/v1/overview?*", (route) => route.abort("failed"));
+  await page.unroute(/\/api\/v1\/overview(?:\?.*)?$/);
+  await page.route(/\/api\/v1\/overview(?:\?.*)?$/, (route) =>
+    route.abort("failed"),
+  );
   await page.reload();
   await expect(page.getByRole("button", { name: "Thử tải lại" })).toBeVisible();
-  await page.unroute("**/api/v1/overview?*");
+  await page.unroute(/\/api\/v1\/overview(?:\?.*)?$/);
   await page.getByRole("button", { name: "Thử tải lại" }).click();
   await expect(page.locator('[data-widget="expenses"] dl')).toBeVisible();
-  await page.route("**/api/v1/overview?*", (route) =>
+  await page.route(/\/api\/v1\/overview(?:\?.*)?$/, (route) =>
     route.fulfill({
       json: {
+        layout: {
+          schemaVersion: 1,
+          widgets: ["expenses"],
+          jarIds: [],
+          revision: 0,
+        },
         today: `${current}-15`,
         fetchedAt: new Date().toISOString(),
         sources: {
@@ -367,7 +375,7 @@ test("overview distinguishes auth, missing data and retry; privacy works with bl
       .locator('[data-widget="expenses"]')
       .getByText("Chưa có dữ liệu. Mở module để bắt đầu ghi nhận."),
   ).toBeVisible();
-  await page.unroute("**/api/v1/overview?*");
+  await page.unroute(/\/api\/v1\/overview(?:\?.*)?$/);
   await page.addInitScript(() => {
     const get = Storage.prototype.getItem,
       set = Storage.prototype.setItem;

@@ -383,29 +383,32 @@ test("retry after commit keeps one copy and leaves profile untouched by default"
     await context.close();
   }
 });
-test("empty suggestion, session dismissal, errors and single-feature data detection", async ({
+test("overview skips import status while empty-account restoration remains in Settings", async ({
   page,
 }) => {
-  await login(page, "/overview");
-  const suggestion = page.getByRole("complementary", {
-    name: "Khôi phục dữ liệu cũ",
+  let statusReads = 0;
+  page.on("request", (r) => {
+    if (
+      new URL(r.url()).pathname === "/api/v1/data/status" &&
+      r.method() === "GET"
+    )
+      statusReads++;
   });
-  await expect(suggestion).toBeVisible();
-  await page
-    .getByRole("button", { name: "Đóng gợi ý khôi phục", exact: true })
-    .click();
-  await page.reload();
-  await expect(suggestion).toBeHidden();
+  await login(page, "/overview");
+  await expect(
+    page.locator('.overview-widget-grid[data-ready="true"]'),
+  ).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(
+    page.getByRole("complementary", { name: "Khôi phục dữ liệu cũ" }),
+  ).toHaveCount(0);
+  expect(statusReads).toBe(0);
   expect(
     (await (await page.request.get("/api/v1/data/status")).json()).empty,
   ).toBe(true);
-  await page.evaluate(() => sessionStorage.clear());
-  await page.route("**/api/v1/data/status", (r) =>
-    r.fulfill({ status: 503, json: { error: "Thử lại" } }),
-  );
-  await page.reload();
-  await expect(suggestion).toBeHidden();
-  await page.unroute("**/api/v1/data/status");
+  await page.goto("/settings");
+  await expect(page.locator("#backup-file")).toBeEnabled();
+  expect(statusReads).toBeGreaterThan(0);
   await command(page, "income", {
     type: "upsertOneOff",
     id: randomUUID(),
@@ -415,8 +418,6 @@ test("empty suggestion, session dismissal, errors and single-feature data detect
     amount: "1",
   });
   await page.reload();
-  await expect(suggestion).toBeHidden();
-  await page.goto("/settings");
   await expect(page.locator("#backup-file")).toBeDisabled();
 });
 test("data API rejects anonymous access, wrong origins, malformed files and account changes", async ({

@@ -3,9 +3,8 @@ import Link from "next/link";
 import { useRef } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { Garden } from "@/components/garden";
-import { LoadingSpinner } from "@/components/loading";
+import { LoadingSpinner, LoadingStatus } from "@/components/loading";
 import { HelpPageTitle } from "@/features/help/provider";
-import { ImportSuggestion } from "@/features/settings/import-suggestion";
 import { useUser } from "@/features/profile/user-provider";
 import { useI18n } from "@/i18n/provider";
 import { vietnamClock } from "@/domain/shared/clock";
@@ -59,15 +58,14 @@ function AccountOverview({ configured }: { configured: boolean }) {
           </p>
         )}
       </header>
-      {configured && <ImportSuggestion />}
       {!configured && (
         <div className="expense-notice">
           {t("Kết nối dịch vụ đăng nhập và lưu trữ để bắt đầu.")}
         </div>
       )}
-      {(vm.error || vm.layoutError) && (
+      {vm.error && (
         <div className="expense-notice" role="alert">
-          <p>{t(vm.error || vm.layoutError)}</p>
+          <p>{t(vm.error)}</p>
           <button
             className="expense-secondary"
             aria-busy={vm.loading}
@@ -132,7 +130,7 @@ function AccountOverview({ configured }: { configured: boolean }) {
           )}
         </div>
       )}
-      {!vm.layout.widgets.length && (
+      {vm.layout && !vm.layout.widgets.length && (
         <div className="panel overview-empty-layout">
           <h2>{t("Tổng quan theo cách của bạn")}</h2>
           <p>{t("Thêm widget để xem nhanh những điều bạn quan tâm.")}</p>
@@ -145,9 +143,14 @@ function AccountOverview({ configured }: { configured: boolean }) {
           </button>
         </div>
       )}
+      {configured && !vm.layout && vm.loading && (
+        <div className="panel overview-initial-loading">
+          <LoadingStatus>{t("Đang tải Tổng quan…")}</LoadingStatus>
+        </div>
+      )}
       <div className="overview-widget-grid" data-ready={!!vm.summary}>
         {configured &&
-          vm.layout.widgets.map((id) => (
+          vm.layout?.widgets.map((id) => (
             <OverviewWidget
               key={id}
               id={id}
@@ -155,7 +158,8 @@ function AccountOverview({ configured }: { configured: boolean }) {
               staleSources={vm.staleSources}
               loading={vm.loading}
               today={vm.summary?.today ?? vietnamClock().today}
-              jarIds={vm.layout.jarIds}
+              jarIds={vm.layout!.jarIds}
+              widgets={vm.layout!.widgets}
               onRetry={() => void vm.reload().catch(() => {})}
             />
           ))}

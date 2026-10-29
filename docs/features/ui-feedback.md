@@ -185,3 +185,7 @@ Khối nội dung mở rộng dùng cùng AnimatedDetails: chuyển chiều cao 
 Đầu tư dùng form chia nhóm, control căn đầu và đồng đều; lỗi inline không dùng padding/nền của cảnh báo cả form. Toast lỗi kiểm tra chỉ tóm tắt, chi tiết nằm tại trường và phần tổng hợp có liên kết focus. Không đưa ZodError.message/JSON schema lên giao diện. Thông báo dài xuống dòng theo từ và giữ đủ nội dung.
 
 Modal nhận initialFocusRef tùy chọn để dialog bỏ nội dung focus hành động Tiếp tục nhập. X/Escape/backdrop của xác nhận chỉ quay về form; xác nhận Bỏ thay đổi mới đóng form. Dữ liệu số sai định dạng vẫn được tính là nội dung chưa lưu. Xếp lớp, khóa cuộn, focus và ngữ cảnh dialog cha tiếp tục dùng Modal chung; khi cha và xác nhận đóng cùng lúc, không ghi đè focus mà cha đã trả về nút mở.
+
+### Tải bố cục Tổng quan — 29/10/2026
+
+Lần đầu Tổng quan hiện một trạng thái tải chung có thông báo và vùng chờ; widget chỉ xuất hiện sau khi có bố cục tài khoản, không dùng sáu widget giả định. Lỗi đọc bố cục có nút thử lại, không hiển thị trạng thái tài khoản chưa cấu hình. Khi thêm widget cần dữ liệu mới, chỉ widget còn thiếu có trạng thái tải; những thẻ đã đọc tiếp tục hiển thị. Tải danh sách hũ chỉ bắt đầu khi bật Hũ theo dõi. Khi hết phiên, kể cả trong lúc lưu bố cục, xóa số liệu/bản nháp và hiện đường dẫn đăng nhập lại.

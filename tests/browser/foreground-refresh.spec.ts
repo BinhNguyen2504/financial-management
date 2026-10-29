@@ -110,7 +110,7 @@ for (const path of ["/overview", "/budgets", "/income"]) {
     if (isMobile) await page.setViewportSize({ width: 375, height: 812 });
     const pattern =
       path === "/overview"
-        ? "**/api/v1/overview?*"
+        ? /\/api\/v1\/overview(?:\?.*)?$/
         : domain === "income"
           ? "**/api/v1/income?*"
           : "**/api/v1/expenses";
@@ -190,7 +190,7 @@ test("background failures keep content, explicit retry recovers, and expired ses
     const { domain, now } = await setup(page, path);
     const pattern =
       path === "/overview"
-        ? "**/api/v1/overview?*"
+        ? /\/api\/v1\/overview(?:\?.*)?$/
         : domain === "income"
           ? "**/api/v1/income?*"
           : "**/api/v1/expenses";
@@ -220,7 +220,7 @@ test("background failures keep content, explicit retry recovers, and expired ses
       (response) =>
         response
           .url()
-          .includes(`/api/v1/${path === "/overview" ? "overview?" : domain}`) &&
+          .includes(`/api/v1/${path === "/overview" ? "overview" : domain}`) &&
         response.request().method() === "GET",
     );
     const retry = page.getByRole("button", {

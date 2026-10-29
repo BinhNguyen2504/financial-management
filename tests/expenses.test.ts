@@ -540,3 +540,23 @@ describe("Reports reconcile without double counting", () => {
     ).toThrow(/Khoảng tháng/);
   });
 });
+
+it("projects only the overview month while preserving cross-year carry and sealed snapshots", () => {
+  const december = { today: "2026-12-29", now: "2026-12-29T00:00:00Z" };
+  const january = { today: "2027-01-15", now: "2027-01-15T00:00:00Z" };
+  for (const kind of ["monthly", "accumulation"] as const) {
+    const original = book(kind, "350000", "2026-12", december);
+    const sealed = applyAction(
+      original,
+      { type: "closeYear", year: 2026 },
+      january,
+    );
+    for (const ledger of [original, sealed]) {
+      const snapshot = JSON.stringify(ledger);
+      expect(materialize(ledger, january, "2027-01")).toEqual(
+        toView(ledger, january).rows.filter((r) => r.month === "2027-01"),
+      );
+      expect(JSON.stringify(ledger)).toBe(snapshot);
+    }
+  }
+});

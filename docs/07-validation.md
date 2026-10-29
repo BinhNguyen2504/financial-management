@@ -888,3 +888,29 @@ Kết quả chấp nhận:
 - Sau bổ sung duy nhất bản dịch `Mua → Buy`, chạy lại nhóm dialog **20/20** (**1,3 phút**) trên production build mới. Lượt này xác nhận đầy đủ tám nhãn loại giao dịch ở vi/en và focus trở về nút mở sau khi Bỏ thay đổi. Log `artifacts/investment-feedback-final-label.log`.
 - Đo đủ tám loại × năm kích thước (320/390/768/1440 và 812×375) trên bốn project; chụp 160 trạng thái vi/en × năm theme × sáng/tối × desktop/mobile. Kiểm tra chữ 200%, lỗi thiếu trường/24–25 chữ số, không có JSON kỹ thuật, đóng bằng X/nút/Escape/backdrop, tiếp tục nhập, bỏ thay đổi, raw draft lỗi, chọn cột giữa các module và đổi route. Các luồng sửa/hủy, bán hết, Privacy Mode, conflict/retry và mất phản hồi sau ghi tiếp tục qua.
 - Đối chiếu **354 file source/public/config** với snapshot của lượt chốt: **0 khác biệt**; manifest `artifacts/investment-feedback-review/source-manifest.json`. Ảnh sau sửa, probe và critique nằm trong cùng thư mục; ma trận ảnh từng trình duyệt có sheet riêng. Bằng chứng browser là local/emulation, không thay cho Supabase Auth cloud, deployment hoặc thiết bị vật lý.
+
+## Tối ưu tải Tổng quan — 29/10/2026
+
+Môi trường: Node 22.12.0, production build Next.js 16.4.1, PostgreSQL 14.2 cô lập do runner sở hữu và Auth contract double local. Không dùng dữ liệu tài khoản/cloud. Không suy ra Supabase Auth/RLS trên cloud, tốc độ Vercel, email thật hoặc thiết bị vật lý từ kết quả này.
+
+- Unit: **272/272**, gồm projection tháng Chi tiêu đối chiếu reader đầy đủ với chuyển số dư qua năm đã chốt/chưa chốt.
+- PostgreSQL: **80/80**, gồm đối chiếu năm nguồn với reader module, revision sửa/hủy, dữ liệu khác owner, đọc Chi tiêu dùng chung với Quỹ, Quỹ khi Chi tiêu bị ẩn và giữ nguyên bố cục sáu widget đã lưu. `scripts/test-postgres.mjs` chỉ tạo cluster local; runtime vẫn dùng `expense_api`/RLS.
+- Browser: **208 ca hiện hành được chọn đã qua**, trên Chromium desktop, Chromium mobile, Firefox và WebKit. Gồm Tổng quan, foreground refresh, loading, Zen/privacy, backup, Help và landing. Bản cuối riêng Tổng quan đạt **52/52**: 0/2/8 widget đúng ngay lần hiển thị đầu, một request dữ liệu, không tải mặc định khi lỗi cấu hình, tùy chỉnh không tải thừa, bỏ cảnh báo module ẩn, làm mới danh sách phụ, giữ bản nháp và hết phiên khi lưu.
+- Cách tính browser: vòng mở rộng ghi nhận 200 ca qua; bốn ca còn đòi gợi ý khôi phục cũ được thay bằng luồng đã chốt và chạy riêng đạt 4/4. Vòng Tổng quan cuối đạt 52/52, gồm 48 ca chạy lại và bốn ca mới về hết phiên khi lưu. Tổng là 208 ca hiện hành khác nhau; không cộng 48 lần chạy lại thành ca mới, không coi vòng mở rộng ban đầu là một lần chạy xanh toàn bộ. Hai worker của vòng đang chạy báo không tìm thấy tên ca cũ vì test đã được đổi tên; ca thay thế được kiểm chứng riêng trên cả bốn cấu hình.
+- Kiểm tra source: lint, format, architecture (**269 files, 0 violations**), typecheck, unit, production build và `git diff --check`. Catalog, landing/preview cố định, README, Help, đặc tả Tổng quan/backup, kiến trúc và UX đã được rà soát/cập nhật.
+
+### Đo đọc dữ liệu trước/sau
+
+Đối chiếu reader/DTO trước tối ưu với projection mới trên cùng dữ liệu mẫu năm module và cùng bố cục. Warm cả hai đường đọc rồi chạy xen kẽ **12 mẫu mỗi đường**. Số câu lệnh gồm transaction và thiết lập owner; byte DB là kích thước JSON tuần tự hóa các hàng trả về cho ứng dụng, không phải số hàng DB đã quét. JSON response gồm bố cục và số liệu. Thời gian chỉ đo service đọc DB và tính số liệu, **không gồm HTTP/Auth**.
+
+| Chỉ số local | Trước | Sau |
+| --- | ---: | ---: |
+| Câu lệnh DB | 69 | 31 |
+| Byte dữ liệu trả từ DB | 240.751 | 117.333 |
+| Byte JSON bố cục + số liệu | 4.672 | 823 |
+| Thời gian trung vị | 12,98 ms | 4,93 ms |
+| p95 trong mẫu local | 15,32 ms | 6,12 ms |
+
+Mức giảm tương ứng khoảng 55% số câu lệnh, 51% byte DB và 82% byte response. Đây là benchmark mẫu local, không phải cam kết độ trễ cloud. Danh sách hũ/phân bổ/đáo hạn chỉ tính và trả khi bật widget; các revision cần tính đúng số dư vẫn được đọc.
+
+Bằng chứng: `artifacts/overview-performance/database.json`, `db-final.log`, `final-check.log`, `acceptance-check.log`, `browser-final.log`, `backup-final.log`, `overview-accepted.log` và screenshots/traces trong output browser tương ứng. Không thêm migration hoặc thực hiện deploy cloud.

@@ -181,12 +181,14 @@ export function toView(
   book: IncomeBook | null,
   year: number,
   clock: Clock,
+  onlyMonth?: string,
 ): IncomeView {
   yearSchema.parse(year);
   const rows: IncomeView["rows"] = [];
   if (book) {
     for (let m = 1; m <= 12; m++) {
       const month = `${year}-${String(m).padStart(2, "0")}`;
+      if (onlyMonth && month !== onlyMonth) continue;
       for (const category of book.categories.filter((c) => !c.deleted)) {
         const rule = ruleAt(category, month);
         const value = book.monthly.find(
@@ -207,7 +209,10 @@ export function toView(
       }
     }
     for (const row of book.oneOffs.filter(
-      (r) => !r.deleted && r.month.startsWith(`${year}-`),
+      (r) =>
+        !r.deleted &&
+        r.month.startsWith(`${year}-`) &&
+        (!onlyMonth || r.month === onlyMonth),
     ))
       rows.push({
         key: row.id,
