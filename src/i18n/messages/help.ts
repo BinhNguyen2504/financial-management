@@ -1,4 +1,6 @@
+import { goals } from "./goals";
 export const help = {
+  ...goals,
   "Danh sách thương hiệu chia thành ngân hàng và ví điện tử. Biểu tượng hũ có thể chọn từ gợi ý hoặc nhập một emoji từ bàn phím.":
     "Brands are grouped into banks and e-wallets. Choose a suggested jar icon or enter a single emoji from your keyboard.",
   "Giải thích: {0}": "Explain: {0}",

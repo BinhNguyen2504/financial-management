@@ -16,6 +16,7 @@ export function generateStaticParams() {
           "savings",
           "investments",
           "funds",
+          "goals",
           "settings",
         ].includes(m.slug),
     )

@@ -4,11 +4,11 @@
 
 ## Trạng thái hiện tại
 
-**Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn đã được triển khai trong source**. Có Auth email, HTTP API v1 và migration PostgreSQL/RLS. Cài đặt có sao lưu/khôi phục toàn tài khoản; các khu vực dự kiến còn lại vẫn là bộ khung P0.
+**Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu đã được triển khai trong source**. Có Auth email, HTTP API v1 và migration PostgreSQL/RLS. Cài đặt có sao lưu/khôi phục toàn tài khoản; các khu vực dự kiến còn lại vẫn là bộ khung P0.
 
 **Chi tiêu:** hũ chi tháng/tích lũy, tự tính tiền bỏ hũ, nhập số dư, sử dụng tích lũy, cấu hình có hiệu lực, báo cáo bảng/biểu đồ và chốt từng năm. Sao lưu toàn tài khoản trong Cài đặt.
 
-**Sao lưu và khôi phục:** Cài đặt cho phép xuất JSON V2 đầy đủ năm module cùng lịch sử và hồ sơ, nhập sang tài khoản trống với tùy chọn khôi phục hồ sơ. File không mật khẩu, không chứa thông tin đăng nhập. Xuất file không phụ thuộc migration biên nhận import; khôi phục cần migration này. Schema cũ thiếu cột logo/icon phân loại vẫn xuất được; khôi phục chỉ được bỏ qua cột còn thiếu khi giá trị trong file là null, tránh mất metadata. Cấu hình giới hạn truyền file phù hợp hosting; xem [đặc tả backup](docs/features/backup.md). Chưa áp dụng migration mới lên cloud.
+**Sao lưu và khôi phục:** Cài đặt cho phép xuất JSON V3 đầy đủ sáu module (nhận cả bản V1/V2) cùng lịch sử và hồ sơ, nhập sang tài khoản trống với tùy chọn khôi phục hồ sơ. File không mật khẩu, không chứa thông tin đăng nhập. Xuất file không phụ thuộc migration biên nhận import; khôi phục cần migration này. Schema cũ thiếu cột logo/icon phân loại vẫn xuất được; khôi phục chỉ được bỏ qua cột còn thiếu khi giá trị trong file là null, tránh mất metadata. Cấu hình giới hạn truyền file phù hợp hosting; xem [đặc tả backup](docs/features/backup.md). Chưa áp dụng migration mới lên cloud.
 
 **Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, báo cáo bảng/biểu đồ và xuất CSV. Cho xóa danh mục khi không còn số thu ở bất kỳ tháng/năm nào; bản ghi 0 đồng vẫn chặn xóa. Xem [đặc tả Thu nhập](docs/features/income.md).
 
@@ -209,3 +209,11 @@ Cài đặt giải thích từng phân hệ và loại bản ghi đang chặn kh
 ## Bố cục Quỹ an toàn — 30/10/2026
 
 Chi tiết ba quỹ có cột tiền và nút Sửa/Hủy nhất quán, nơi giữ tiền gọn theo tên/trạng thái/số dư, lịch sử tách các khối trước/sau. Card sinh hoạt làm rõ số tiền và nguồn đã xác nhận; checkbox cập nhật nguồn có vùng riêng phía trên danh sách hũ. Bộ lọc phụ trong dialog có thể mở khi cần. Catalog và Help preview vi/en đã được đối chiếu, dữ liệu minh họa giữ cố định. Xem [đặc tả Quỹ an toàn](docs/features/funds.md).
+
+### Sửa lỗi quyền khi làm trống — 30/10/2026
+
+Database đã bật reset cần migration bổ sung `202610300001_reset_owner_claims.sql`: role reset đọc owner từ JWT context của server, không phụ thuộc quyền truy cập schema Auth của Supabase. Giao diện phân biệt lỗi quyền đã rollback với mất xác nhận mạng. Xem [hướng xử lý](docs/features/backup.md#sửa-quyền-auth-khi-làm-trống--30102026). Catalog, landing, preview cố định và Help đã rà soát; phạm vi khôi phục/làm trống và dữ liệu minh họa không đổi nên giữ nội dung hiện tại.
+
+## Mục tiêu — 30/10/2026
+
+/goals có mục tiêu chi dùng và cột mốc tài chính; liên kết nguồn hoặc sổ góp riêng, ưu tiên và kế hoạch góp. Có góp/rút/chuyển, sửa/hủy giữ lịch sử, hoàn thành/tạm dừng/lưu trữ. Backup V3 chứa Goals, nhận V1/V2. Chưa thêm Tổng quan. Xem [đặc tả](docs/features/goals.md), [migration](supabase/migrations/202610300002_goals.sql) và [kiểm chứng](docs/07-validation.md).

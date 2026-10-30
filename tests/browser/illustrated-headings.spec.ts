@@ -69,7 +69,7 @@ test("financial headings balance illustrations, copy and controls across themes 
     "savings",
     "investments",
     "funds",
-    "goals",
+    // Goals uses a compact working header; covered in goals.spec.ts.
     "transactions",
     "accounts",
     "reports",

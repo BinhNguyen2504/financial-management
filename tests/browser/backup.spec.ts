@@ -31,7 +31,7 @@ test("backup remains available without import readiness and errors stay beside e
     .click();
   const file = await download;
   const backup = JSON.parse(await readFile((await file.path())!, "utf8"));
-  expect(Object.keys(backup.tables)).toHaveLength(35);
+  expect(Object.keys(backup.tables)).toHaveLength(41);
   await expect(
     exportCard.getByRole("link", { name: "Tải bản sao lưu", exact: true }),
   ).toBeVisible();
@@ -247,7 +247,7 @@ test("full transfer, optional profile failure/retry, download and responsive set
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   const backup = await source(page);
-  expect(Object.keys(backup.tables)).toHaveLength(35);
+  expect(Object.keys(backup.tables)).toHaveLength(41);
   const context = await browser.newContext({
     baseURL: origin(),
     viewport: page.viewportSize()!,

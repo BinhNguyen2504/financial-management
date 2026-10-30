@@ -127,6 +127,33 @@ async function checkBadges(page: Page) {
   ).toBe(true);
 }
 
+async function createGoalSample(page: Page) {
+  const v = await (await page.request.get("/api/v1/goals")).json();
+  const r = await page.request.post("/api/v1/goals/commands", {
+    headers: { origin: process.env.TEST_BASE_URL! },
+    data: {
+      id: randomUUID(),
+      expectedVersion: v.book?.version ?? 0,
+      expectedSources: v.sources.versions,
+      action: {
+        type: "saveGoal",
+        goal: {
+          id: randomUUID(),
+          name: "Du lịch gia đình",
+          note: "",
+          purpose: "spending",
+          mode: "ledger",
+          basis: "value",
+          target: "100000000",
+          deadline: null,
+          monthly: "0",
+          links: [],
+        },
+      },
+    },
+  });
+  expect(r.ok(), await r.text()).toBe(true);
+}
 test("status badges keep contrast and geometry across themes, modes, languages and widths", async ({
   page,
 }, info) => {
@@ -209,6 +236,7 @@ test("status labels stay readable in module reports, planned pages and the publi
 }, info) => {
   test.setTimeout(180000);
   await loginWithSamples(page);
+  await createGoalSample(page);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   for (const [route, tab] of [
@@ -217,7 +245,8 @@ test("status labels stay readable in module reports, planned pages and the publi
     ["budgets", "Báo cáo năm"],
     ["savings", "Báo cáo"],
     ["investments", "Báo cáo"],
-    ["overview", ""],
+    // Goals is implemented; Accounts exercises the planned-page status.
+    ["accounts", ""],
     ["funds", ""],
     ["goals", ""],
     ["settings", ""],
@@ -306,6 +335,7 @@ test("status placement follows the category, selected period and report date wit
     },
   });
   expect(created.ok(), await created.text()).toBe(true);
+  await createGoalSample(page);
   const measurements: unknown[] = [];
   for (const route of ["savings", "income", "investments", "goals"]) {
     await page.evaluate(() => {
@@ -429,8 +459,8 @@ test("status placement follows the category, selected period and report date wit
                 note: rect(note),
               };
             }
-            const header = document.querySelector(".planned-title")!;
-            const title = header.querySelector(".help-page-title")!;
+            const header = document.querySelector(".goal-card-top")!;
+            const title = header.firstElementChild!;
             const badge = header.querySelector(".status-badge")!;
             return {
               valid:
@@ -457,7 +487,7 @@ test("status placement follows the category, selected period and report date wit
                   ? page.locator(".income-list")
                   : route === "investments"
                     ? page.locator(".report-period-meta")
-                    : page.locator(".heading-copy");
+                    : page.locator(".goal-grid");
             await scope.screenshot({
               path: info.outputPath(`placement-${route}-${mode}-${width}.png`),
             });

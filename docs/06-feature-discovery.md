@@ -73,3 +73,7 @@ Viết đặc tả ngắn trong `docs/features/<feature>.md`, ghi trạng thái 
 ## Tổng quan cá nhân hóa — 29/10/2026
 
 Đã chốt 10 widget, mặc định 6 widget bao phủ năm module và Cần chú ý. Người dùng thêm/ẩn/đổi thứ tự, chọn tối đa 5 hũ, xem thử rồi Lưu/Hủy; bố cục theo tài khoản. Kỳ tháng này/hiện tại, phần chào thu gọn, chưa có tài sản ròng liên module. [Đặc tả và ranh giới dữ liệu](features/overview.md).
+
+## Quyết định Mục tiêu — 30/10/2026
+
+Đã chốt hai loại, hai cách ghi nhận, tỷ lệ cố định tối đa 100% cho chi dùng và cột mốc được trùng nguồn; cơ sở vốn/giá trị chọn từng mục tiêu. Quỹ chỉ liên kết cột mốc. Có góp/rút/chuyển, ưu tiên thứ tự, góp dự định, xác nhận hoàn thành; tạm dừng giữ phần chia. Chỉ trang Goals. Các câu hỏi Goals cũ được thay bằng [đặc tả](features/goals.md).

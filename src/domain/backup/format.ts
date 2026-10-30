@@ -1,4 +1,11 @@
 import {
+  aggregateMoneySchema,
+  definitionSchema as goalDefinition,
+  linkSchema as goalLink,
+  revisionSchema as goalRevision,
+  auditSchema as goalAudit,
+} from "../goals/schema";
+import {
   fundIdSchema,
   configurationSchema as fundConfiguration,
   locationSchema as fundLocation,
@@ -324,6 +331,22 @@ const fundState = z.strictObject({
   withdrawn: signed,
 });
 // Fixed allowlist. These shapes also define every selected/inserted column.
+const goalState = z.strictObject({
+  id: uuid,
+  current: aggregateMoneySchema.nullable(),
+  balance: money.nullable(),
+  remaining: money.nullable(),
+  percent: z.string().nullable(),
+  requiredMonthly: money.nullable(),
+  estimatedMonth: month.nullable(),
+  overdue: z.boolean(),
+  stale: z.boolean(),
+  ready: z.boolean(),
+});
+const goalView = z.strictObject({
+  goals: z.array(goalDefinition),
+  states: z.array(goalState),
+});
 export const tableSchemas = {
   expense_books: z.strictObject({ start_month: month, version: integer }),
   expense_jars: z.strictObject({
@@ -481,6 +504,32 @@ export const tableSchemas = {
       afterConfig: fundConfiguration,
     }),
   }),
+  goals_books: z.strictObject({ version: integer }),
+  goals_definitions: z.strictObject({ id: uuid, data: goalDefinition }),
+  goals_links: z.strictObject({
+    id: z.string(),
+    goal_id: uuid,
+    source_kind: goalLink.shape.kind,
+    source_id: z.string(),
+    data: z.strictObject({ kind: goalLink.shape.kind, sourceId: z.string() }),
+  }),
+  goals_transactions: z.strictObject({
+    id: z.string(),
+    root_id: z.string(),
+    sequence: integer,
+    goal_id: uuid,
+    to_goal_id: uuid.nullable(),
+    data: goalRevision,
+  }),
+  goals_audit: z.strictObject({ version: integer, data: goalAudit }),
+  goals_commands: z.strictObject({
+    ...commandFields,
+    result: z.strictObject({
+      version: integer,
+      before: goalView,
+      after: goalView,
+    }),
+  }),
 } as const;
 export type BackupTable = keyof typeof tableSchemas;
 export const backupTables = Object.keys(tableSchemas) as BackupTable[];
@@ -489,7 +538,7 @@ const tablesShape = Object.fromEntries(
 );
 const wireSchema = z.strictObject({
   format: z.literal("financial-manager-full-backup"),
-  schemaVersion: z.literal(2),
+  schemaVersion: z.literal(3),
   exportedAt: timestamp,
   profile: profileSchema.extend({ full_name: z.string().max(100) }).strict(),
   tables: z.strictObject(tablesShape),
@@ -499,7 +548,7 @@ export type BackupTables = {
 };
 export interface FullBackup {
   format: "financial-manager-full-backup";
-  schemaVersion: 2;
+  schemaVersion: 3;
   exportedAt: string;
   profile: z.infer<typeof wireSchema>["profile"];
   tables: BackupTables;
@@ -513,39 +562,38 @@ export class BackupError extends Error {
     super(message);
   }
 }
-// V1 is accepted only with its original 28 tables. Normalize once into V2.
-const legacyTables = backupTables.filter((t) => !t.startsWith("funds_"));
-const legacySchema = wireSchema.extend({
-  schemaVersion: z.literal(1),
-  tables: z.strictObject(
-    Object.fromEntries(legacyTables.map((t) => [t, z.array(tableSchemas[t])])),
-  ),
-});
+// Historical wire shapes stay fixed when new modules are added.
+const v2Tables = backupTables.filter((t) => !t.startsWith("goals_"));
+const v1Tables = v2Tables.filter((t) => !t.startsWith("funds_"));
+const legacySchema = (v: 1 | 2) =>
+  wireSchema.extend({
+    schemaVersion: z.literal(v),
+    tables: z.strictObject(
+      Object.fromEntries(
+        (v === 1 ? v1Tables : v2Tables).map((t) => [
+          t,
+          z.array(tableSchemas[t]),
+        ]),
+      ),
+    ),
+  });
 export function parseBackup(value: unknown): FullBackup {
-  const legacy =
-    typeof value === "object" &&
-    value !== null &&
-    "schemaVersion" in value &&
-    value.schemaVersion === 1;
-  const parsed = (legacy ? legacySchema : wireSchema).safeParse(value);
+  const v = (value as { schemaVersion?: unknown } | null)?.schemaVersion;
+  const parsed = (v === 1 || v === 2 ? legacySchema(v) : wireSchema).safeParse(
+    value,
+  );
   if (!parsed.success)
     throw new BackupError(
-      "File không phải bản sao lưu toàn tài khoản phiên bản 1 hoặc 2 hợp lệ. Hãy chọn file JSON được xuất từ Cài đặt.",
+      "Cần tải bản sao lưu toàn tài khoản phiên bản 1, 2 hoặc 3 hợp lệ. Hãy chọn file JSON được xuất từ Cài đặt.",
     );
-  if (legacy)
-    return {
-      ...parsed.data,
-      schemaVersion: 2,
-      tables: {
-        ...parsed.data.tables,
-        ...Object.fromEntries(
-          backupTables
-            .filter((t) => t.startsWith("funds_"))
-            .map((t) => [t, []]),
-        ),
-      },
-    } as unknown as FullBackup;
-  return parsed.data as unknown as FullBackup;
+  return {
+    ...parsed.data,
+    schemaVersion: 3,
+    tables: {
+      ...Object.fromEntries(backupTables.map((t) => [t, []])),
+      ...parsed.data.tables,
+    },
+  } as FullBackup;
 }
 export function primaryColumns(table: BackupTable): string[] {
   if (table.endsWith("_books")) return [];
@@ -562,6 +610,7 @@ export const moduleLabels = {
   savings: "Tiết kiệm",
   investments: "Đầu tư",
   funds: "Quỹ an toàn",
+  goals: "Mục tiêu",
 };
 export function summarizeBackup(backup: FullBackup) {
   const counts = Object.fromEntries(

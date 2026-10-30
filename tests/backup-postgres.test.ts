@@ -108,7 +108,7 @@ describe("full-account transfer via runtime RLS", () => {
       try {
         expect((await repo.status(id)).empty).toBe(false);
         const exported = await repo.backup(id, profile);
-        expect(Object.keys(exported.tables)).toHaveLength(35);
+        expect(Object.keys(exported.tables)).toHaveLength(41);
         expect(exported.tables).toEqual(backup.tables);
         await repo.import(target, randomUUID(), exported);
         expect((await repo.backup(target, profile)).tables).toEqual(

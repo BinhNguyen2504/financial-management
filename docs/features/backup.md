@@ -4,9 +4,9 @@ Người dùng chủ động thao tác tại **Cài đặt → Sao lưu và khô
 
 ## Xuất và nhập
 
-- **Tải bản sao lưu** xuất JSON không mật khẩu: toàn bộ 35 bảng Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn, kể cả lịch sử sửa/hủy, lô vàng, định giá, snapshot và kỳ đã chốt. Tiền/lượng giữ dạng chuỗi; Privacy Mode không che số trong file.
+- **Tải bản sao lưu** xuất JSON không mật khẩu: toàn bộ 41 bảng Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn/Mục tiêu, kể cả lịch sử sửa/hủy, lô vàng, định giá, snapshot và kỳ đã chốt. Tiền/lượng giữ dạng chuỗi; Privacy Mode không che số trong file.
 - Kèm họ tên, ngày sinh, giới tính. Không kèm mật khẩu, token, email đăng nhập hoặc tùy chọn riêng tư trên thiết bị. File có thể được nhập khi không còn truy cập tài khoản cũ.
-- **Nhập bản sao lưu**: chọn file → kiểm tra và xem trước ngày xuất, khoảng thời gian, số bản ghi → tùy chọn hồ sơ (mặc định tắt) → xác nhận. Nhận định dạng `financial-manager-full-backup`, `schemaVersion: 1` hoặc `2`; xuất mới luôn là V2, V1 được chuẩn hóa với Fund trống. CSV, SQL và file backup từng module không được tự chuyển đổi.
+- **Nhập bản sao lưu**: chọn file → kiểm tra và xem trước ngày xuất, khoảng thời gian, số bản ghi → tùy chọn hồ sơ (mặc định tắt) → xác nhận. Nhận định dạng `financial-manager-full-backup`, `schemaVersion: 1`, `2` hoặc `3`; xuất mới luôn là V3, V1/V2 được chuẩn hóa với các module chưa có trong phiên bản đó là trống. CSV, SQL và file backup từng module không được tự chuyển đổi.
 - Chỉ tài khoản không có bản ghi trong bất kỳ bảng tài chính nào mới được nhập. Xem trang/status không khởi tạo sổ. Không gộp hoặc ghi đè. Số bản ghi xem trước bao gồm cả sổ, lịch sử và dữ liệu kỹ thuật, không đồng nghĩa số giao dịch.
 - Tổng quan không còn gọi API kiểm tra tài khoản trống hoặc hiện gợi ý khôi phục. Người dùng mở `/settings#import`; Cài đặt vẫn kiểm tra trạng thái server trước khi cho phép khôi phục. Lỗi mạng/Auth/schema không được coi là tài khoản trống.
 - File được giữ tạm trong bộ nhớ trình duyệt trong luồng nhập, không lưu vào localStorage/IndexedDB. Server không lưu file hoặc ghi nội dung tài chính vào log. Người dùng tự lưu file đã tải ở nơi an toàn.
@@ -22,9 +22,9 @@ Người dùng chủ động thao tác tại **Cài đặt → Sao lưu và khô
 
 Mọi API xác minh Auth và trả `private, no-store`. POST yêu cầu cùng origin. Table/column allowlist và schema nghiêm ngặt chặn cột owner hoặc bảng lạ. Kiểm tra khóa trùng, quan hệ, dữ liệu JSON lồng, thứ tự revision và replay domain trước ghi. Không thực thi SQL từ file.
 
-Export và status yêu cầu đủ schema tài chính của năm module. Chỉ import yêu cầu thêm migration `202610180002_data_imports.sql`; thiếu bảng biên nhận không được chặn tải backup. Status trả `importReady: false` và giao diện giải thích ngay trong thẻ khôi phục; preview trả `canImport: false` và import trả `IMPORT_NOT_READY`. Không âm thầm bỏ module chưa có migration. Kết nối runtime vẫn là `expense_api`, `SET LOCAL ROLE authenticated` và JWT claims theo tài khoản đã xác minh; không cần service role.
+Export và status yêu cầu đủ schema tài chính của sáu module. Chỉ import yêu cầu thêm migration `202610180002_data_imports.sql`; thiếu bảng biên nhận không được chặn tải backup. Status trả `importReady: false` và giao diện giải thích ngay trong thẻ khôi phục; preview trả `canImport: false` và import trả `IMPORT_NOT_READY`. Không âm thầm bỏ module chưa có migration. Kết nối runtime vẫn là `expense_api`, `SET LOCAL ROLE authenticated` và JWT claims theo tài khoản đã xác minh; không cần service role.
 
-Import lấy advisory locks theo thứ tự Chi tiêu → Thu nhập → Tiết kiệm → Đầu tư, dùng cùng khóa với thao tác ghi thường. Kiểm tra lại tài khoản trống sau khi lấy khóa, INSERT theo quan hệ, đọc đối soát toàn bộ bảng trước commit. Không tắt trigger hoặc sửa chính sách RLS. Bất kỳ lỗi nào rollback cả dữ liệu và biên nhận.
+Import lấy advisory locks theo thứ tự Chi tiêu → Thu nhập → Tiết kiệm → Đầu tư → Quỹ an toàn → Mục tiêu, dùng cùng khóa với thao tác ghi thường. Kiểm tra lại tài khoản trống sau khi lấy khóa, INSERT theo quan hệ, đọc đối soát toàn bộ bảng trước commit. Không tắt trigger hoặc sửa chính sách RLS. Bất kỳ lỗi nào rollback cả dữ liệu và biên nhận.
 
 `data_imports` lưu biên nhận kỹ thuật theo owner/requestId, dấu vân tay SHA-256 của nội dung và kết quả trong cùng transaction. Retry đúng yêu cầu trả kết quả cũ kể cả tài khoản đã có dữ liệu sau import; cùng requestId với nội dung khác trả 409. Biên nhận không đưa vào backup tài chính. SHA-256 phục vụ idempotency, không chứng minh tính xác thực của file.
 
@@ -117,3 +117,19 @@ Reset không đổi tài khoản, hồ sơ Auth, bố cục Tổng quan hay tùy
 ### Giới hạn proxy cho khôi phục sau làm trống — 29/10/2026
 
 Next proxy mặc định chỉ buffer 10 MB, thấp hơn giới hạn backup 20 MiB. `next.config.ts` đặt `experimental.proxyClientMaxBodySize` theo `DATA_BACKUP_MAX_BYTES` cộng 1 KiB envelope, cùng kiểm tra cấu hình hợp lệ. Kiểm thử request JSON hoàn chỉnh lớn hơn 10 MiB xác minh không bị cắt trước route local. Hosting/reverse proxy bên ngoài vẫn phải được kiểm tra độc lập trước phát hành; đây không phải bằng chứng upload/download cùng ngưỡng trên cloud.
+
+## Sửa quyền Auth khi làm trống — 30/10/2026
+
+Database Supabase đang cấu hình đã được kiểm tra **chỉ đọc metadata**: PostgreSQL `170011`, hàm reset thuộc role `financial_data_reset` và SECURITY DEFINER; role có quyền thực thi `auth.uid()` nhưng **không có USAGE trên schema auth**. Hàm cũ gọi `auth.uid()` ngay khi khai báo owner, gây lỗi 42501 trước DELETE. Cấp USAGE Auth bằng role postgres trên Supabase không có grant option nên có thể chỉ trả warning và không thay quyền. Xem [hướng dẫn Supabase](https://supabase.com/kb/troubleshooting/permission-errors-when-granting-custom-roles-access-to-the-auth-schema). Không chạy reset hoặc thay schema/data trên database đích trong lượt chẩn đoán này.
+
+Áp dụng **toàn bộ** migration mới `supabase/migrations/202610300001_reset_owner_claims.sql` bằng SQL Editor/admin, sau migration reset ngày 29/10 đã có. Đây là forward repair cho database đang có bảng/hàm reset; không chạy lại CREATE TABLE của migration cũ. File không gọi thao tác xóa. Sau đó tải lại Cài đặt, tạo bản sao lưu mới nếu bước xác nhận đã hết hạn rồi thực hiện thao tác có xác nhận.
+
+Helper `financial_request_owner()` là SECURITY INVOKER/STABLE, search_path rỗng, đọc sub từ `request.jwt.claims` mà server đã xác minh và đặt trong transaction; ngoài session `expense_api` trả null. Helper không đọc schema Auth. Reset/fingerprint/nhánh trigger bảo vệ lịch sử và các policy `reset_owner_access` dùng helper này; policy cho authenticated vẫn giữ Auth hiện có. Giữ nguyên FORCE RLS, owner đích và kiểm tra session runtime. Helper không cấp EXECUTE cho public/anon/service_role, không cấp role authenticated cho role reset và không dùng BYPASSRLS.
+
+Migration sửa hàm definer dưới đúng role chủ sở hữu bằng quyền SET/CREATE tạm và khôi phục membership/schema privilege trước đó. Hỗ trợ chạy lại, giữ nguyên dữ liệu, receipt, fingerprint và request đang chờ. Không đổi JSON backup hoặc command/API payload.
+
+SQLSTATE 42501 trong transaction reset trả `RESET_PERMISSION_REQUIRED` và thông báo: hệ thống chưa đủ quyền xử lý, dữ liệu chưa bị xóa. Transaction đã rollback nên UI cho đóng hộp thoại; không coi lỗi quyền đã xác định là mất xác nhận. Lỗi mạng/phản hồi mất hoặc không xác định vẫn giữ request/operation cho retry đúng yêu cầu.
+
+## V3 và Mục tiêu — 30/10/2026
+
+Xuất V3 gồm 41 bảng. Nhận V1/V2 bằng allowlist riêng, chuẩn hóa Goals thành trống. Không cho thêm bảng V3 vào file tự nhận V1/V2. Restore kiểm nguồn, mirrors/ID/sequence và replay Goals; nhập nguồn trước links. Goals có dữ liệu chặn restore như module khác. Reset sao lưu/fingerprint/xóa cả Goals và tăng generation; command cũ bị chặn. Thiếu migration không xuất backup thiếu dữ liệu. Xem [Goals](goals.md).

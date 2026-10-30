@@ -12,15 +12,15 @@ import { backupMaxBytes, checkBackupSize } from "../src/server/data-repository";
 function empty(): FullBackup {
   return parseBackup({
     format: "financial-manager-full-backup",
-    schemaVersion: 2,
+    schemaVersion: 3,
     exportedAt: "2026-10-18T00:00:00.000Z",
     profile: { full_name: "", birth_date: "", gender: "" },
     tables: Object.fromEntries(backupTables.map((t) => [t, []])),
   });
 }
 describe("portable full backup validation", () => {
-  it("requires all 35 allowlisted tables and accepts an empty account without initializing it", () => {
-    expect(backupTables).toHaveLength(35);
+  it("requires all 41 allowlisted tables and accepts an empty account without initializing it", () => {
+    expect(backupTables).toHaveLength(41);
     expect(validateBackup(empty())).toEqual(empty());
     expect(summarizeBackup(empty()).from).toBeNull();
     const wrong = structuredClone(empty()) as unknown as {
@@ -35,7 +35,7 @@ describe("portable full backup validation", () => {
     expect(() =>
       validateBackup({ format: "financial-manager-savings", schemaVersion: 1 }),
     ).toThrow();
-    expect(() => validateBackup({ ...empty(), schemaVersion: 3 })).toThrow();
+    expect(() => validateBackup({ ...empty(), schemaVersion: 4 })).toThrow();
     const b = empty();
     b.tables.income_books.push({ version: 1 });
     b.tables.income_audit.push({

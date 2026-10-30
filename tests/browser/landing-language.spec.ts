@@ -2,7 +2,14 @@ import { expect, test, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 
 const picker = (page: Page) => page.getByRole("combobox", { name: /Language/ });
-const tabs = ["Income", "Expenses", "Savings", "Investments", "Safety funds"];
+const tabs = [
+  "Income",
+  "Expenses",
+  "Savings",
+  "Investments",
+  "Safety funds",
+  "Goals",
+];
 
 function watchErrors(page: Page) {
   const errors: string[] = [];

@@ -957,3 +957,32 @@ Kiểm tra trên Node **22.12.0**, PostgreSQL cô lập và Auth double local:
 - App-style source scanner không có FAIL; WARN ở eyebrow và shadow có sẵn trong hệ thống theme được giữ. Chạy `probe`/`app` của skill trong phiên Playwright đã đăng nhập; standalone inspector không hỗ trợ luồng đăng nhập. Ảnh, phép đo, đối chiếu và manifest source ở `artifacts/fund-layout-before/` và `artifacts/fund-layout-after/`.
 
 Không thay schema/công thức tài chính hoặc thao tác dữ liệu cloud. Production build trong runner là build local riêng; kết quả không xác minh deployment, Auth/RLS cloud hoặc thiết bị vật lý.
+
+## Reset trên hosted Auth schema — 30/10/2026
+
+Đã xác định bằng query catalog read-only trên database cấu hình (PostgreSQL 17.11): role financial_data_reset có EXECUTE auth.uid nhưng thiếu USAGE auth; reset SECURITY DEFINER gọi auth.uid ngay ở khai báo owner. Không đọc số liệu tài chính/owner của tài khoản, không gọi reset hoặc ghi schema/data cloud. Bằng chứng đã lược bỏ thông tin kết nối tại `artifacts/financial-reset-validation/cloud-auth-access-readonly.json`.
+
+Đã thêm forward migration `202610300001_reset_owner_claims.sql`: helper SECURITY INVOKER đọc owner từ JWT context server, không cần Auth schema; sửa các policy/trigger/hàm của reset theo cùng identity. DDL chỉ cập nhật định nghĩa/quyền, không gọi xóa. Runtime/owner/RLS không được nới. File hỗ trợ chạy lại và bảo toàn quyền SET/CREATE/membership trước đó. API phân loại SQLSTATE 42501 thành RESET_PERMISSION_REQUIRED sau rollback; UI hiển thị dữ liệu chưa bị xóa và cho đóng, còn lỗi mất phản hồi tiếp tục giữ cùng request.
+
+Kiểm chứng cuối:
+
+- **91/91 PostgreSQL** qua trên 14.2 và 16.4. Test mới dựng Auth không cho custom role USAGE, admin NOSUPERUSER/NOINHERIT có USAGE nhưng không có GRANT OPTION Auth, schema public không cấp CREATE cho PUBLIC. Tái hiện lỗi trước sửa, apply repair hai lần, xác minh quyền/membership khôi phục, reset/retry bằng request cũ rồi import lại backup khớp. Test riêng thu hồi DELETE ở một bảng giữa luồng, xác nhận rollback cả các bảng đã xóa trước đó và thông báo lỗi quyền chắc chắn.
+- **56/56 browser** qua trên Chromium desktop/mobile, Firefox, WebKit, chạy production Next.js và PostgreSQL 16.4/Auth double. Gồm luồng giữ nguyên dữ liệu khi lỗi quyền và đóng dialog; mất xác nhận vẫn retry đúng request; restore cùng tài khoản, tab cũ, vi/en, backup/layout/API guards.
+- `npm run check` qua: **274/274 unit**, lint, format, architecture **276 files / 0 violations**, typecheck và build. `git diff --check` qua. Bản test cuối chỉ thêm mô phỏng hạn chế CREATE mặc định của PG14 để khớp hosted schema; không đổi code sản phẩm sau lượt browser/gates đã qua.
+
+Log: `artifacts/financial-reset-validation/auth-access-{check,browser,postgres14,postgres16}.log`. Đã cập nhật README, backup, architecture, UX, deployment và troubleshooting. Catalog/landing/preview cố định/Help đã rà soát; phạm vi nghiệp vụ và dữ liệu minh họa không đổi nên giữ copy hiện tại. Việc áp dụng repair trên database đích vẫn cần SQL Editor/admin; chưa kiểm chứng reset dữ liệu thật hoặc thiết bị vật lý.
+
+## Mục tiêu — 31/10/2026
+
+Hoàn tất triển khai bắt đầu 30/10. Node 22.12.0; PostgreSQL cô lập do runner tạo, Auth double local; không dùng tài khoản thật, không ghi cloud. Các thay đổi chưa commit đã có của luồng reset/owner-claims được giữ và tích hợp.
+
+- npm run check: PASS; lint, architecture (292 source files, 0 violations), format, 287/287 unit, typecheck và production build. Log: artifacts/goals-check-release.log.
+- npm run test:db: 100/100 PASS trên trạng thái source cuối. Gồm phân bổ/khóa, nguồn cùng owner và FK chống xóa nguồn, Tiết kiệm/Đầu tư/Quỹ, V3 round-trip, reset và generation, replay sửa/hủy, retry và kiểm tra 26 biên nhận không nhân bản toàn bộ lịch sử. Log: artifacts/goals-db-release.log.
+- Lượt trình duyệt cuối: 84/84 PASS, gồm goals.spec.ts, backup.spec.ts, reset.spec.ts; Chromium desktop/mobile, Firefox desktop và WebKit mobile. Riêng Goals 28/28; số 84 đã gồm 28, không cộng lại. Log: artifacts/goals-browser-release.log; traces/failures nếu có ở artifacts/goals-browser-release.
+- Lượt tích hợp trước khi làm gọn payload biên nhận: 114/116 PASS với năm spec Goals/backup/reset/landing-language/status-badges. Hai ca status cũ còn đòi badge tại Tổng quan; thay bằng trang planned Tài khoản theo contract hiện tại, giữ Goals bằng mục tiêu thật trong fixture. Rerun toàn bộ bốn cấu hình của ca đó: 4/4 PASS (artifacts/goals-status-rerun.log). Các số này là lượt trước/focused, không phải một lượt 116/116 sạch trên source cuối. Landing và trình bày badge không đổi trong bước làm gọn biên nhận.
+- Ảnh Goals: 320/768/1440px, năm theme, sáng/tối, cả bốn project. Ví dụ artifacts/goals-firefox-forest-light-1440.png và artifacts/goals-webkit-earth-dark-320.png. Dữ liệu giả do test tạo: Mua xe 40/100 triệu; thứ tự ưu tiên, tiến độ, số tiền, ngày và điều khiển được kiểm tra. Luồng còn bao gồm bỏ nháp, lỗi nguồn sau preview, mất phản hồi lưu, che tiền và vi/en.
+- Design skill lint: 0 FAIL, 1 WARN về dấu gạch ngang. Các dấu này biểu diễn dữ liệu chưa có/không áp dụng, phù hợp quy tắc app; không dùng thay văn xuôi. Hướng Achromatic ledger, seed 1650097295, giữ palette/type/shell hiện tại; không thay thương hiệu.
+
+Đã rà và cập nhật catalog, public summary và preview minh họa, Help Goals/Funds, README cùng tài liệu sản phẩm, dữ liệu, kiến trúc, UX, backup và deployment. Preview không gọi API tài chính tài khoản; không thêm Goals vào Tổng quan.
+
+Giới hạn: chưa áp migration 202610300002_goals.sql hoặc triển khai cloud, chưa xác minh Supabase Auth/RLS thực qua triển khai này, không phải bằng chứng iPhone/Android vật lý. Kiểm thử RLS dùng PostgreSQL local và danh tính Auth double.

@@ -49,7 +49,7 @@ export const guides: Record<
       "Tách khoản chi dự kiến khỏi tình huống khẩn cấp. Hệ số tháng ở đây là cách bạn chọn quy mô dự phòng.",
     build:
       "Liệt kê các khoản cần chuẩn bị và dành tiền từng bước. Mục tiêu ở đây vẫn được tính bằng mức sinh hoạt nhân hệ số bạn nhập.",
-    use: "Dùng cho bảo dưỡng theo lịch hoặc thay thiết bị cần thiết đã dự trù. Các mục tiêu mua sắm và cuộc sống thuộc định hướng trang Mục tiêu riêng, hiện đang phát triển.",
+    use: "Dùng cho bảo dưỡng theo lịch hoặc thay thiết bị cần thiết đã dự trù. Các mục tiêu mua sắm và cuộc sống được quản lý ở trang Mục tiêu riêng.",
     replenish:
       "Sau khi thanh toán khoản đã dự trù, xem lại nhu cầu tiếp theo rồi tiếp tục góp hoặc điều chỉnh quy mô quỹ.",
   },

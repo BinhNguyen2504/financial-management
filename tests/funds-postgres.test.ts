@@ -287,7 +287,7 @@ describe("Fund PostgreSQL", () => {
     validateFundBook((await readFundView(repo, s.user, clock)).book!);
     const backup = await data.backup(s.user, profile),
       target = await owner();
-    expect(backup.schemaVersion).toBe(2);
+    expect(backup.schemaVersion).toBe(3);
     expect(backup.tables.funds_transactions).toHaveLength(2);
     await data.import(target, randomUUID(), backup);
     expect((await data.backup(target, profile)).tables).toEqual(backup.tables);
@@ -300,7 +300,7 @@ describe("Fund PostgreSQL", () => {
         schemaVersion: 1,
         tables: Object.fromEntries(
           Object.entries(backup.tables).filter(
-            ([t]) => !t.startsWith("funds_"),
+            ([t]) => !t.startsWith("funds_") && !t.startsWith("goals_"),
           ),
         ),
       },

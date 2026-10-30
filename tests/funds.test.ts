@@ -360,18 +360,20 @@ describe("Fund ledger", () => {
   });
 });
 describe("Fund backup compatibility", () => {
-  it("normalizes original V1 files to V2 with empty Fund tables, rejects Fund smuggled into V1", () => {
+  it("normalizes original V1 files to V3 with empty Fund tables, rejects Fund smuggled into V1", () => {
     const legacy = {
       format: "financial-manager-full-backup",
       schemaVersion: 1,
       exportedAt: clock.now,
       profile: { full_name: "", birth_date: "", gender: "" },
       tables: Object.fromEntries(
-        backupTables.filter((t) => !t.startsWith("funds_")).map((t) => [t, []]),
+        backupTables
+          .filter((t) => !t.startsWith("funds_") && !t.startsWith("goals_"))
+          .map((t) => [t, []]),
       ),
     };
     const parsed = parseBackup(legacy);
-    expect(parsed.schemaVersion).toBe(2);
+    expect(parsed.schemaVersion).toBe(3);
     expect(parsed.tables.funds_books).toEqual([]);
     expect(() =>
       parseBackup({ ...legacy, tables: { ...legacy.tables, funds_books: [] } }),

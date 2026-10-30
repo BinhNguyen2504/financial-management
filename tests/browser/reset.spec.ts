@@ -65,7 +65,7 @@ async function backupBeforeReset(page: Page) {
   const file = await download;
   await expect(dialog.getByRole("checkbox")).toBeVisible();
   const backup = JSON.parse(await readFile((await file.path())!, "utf8"));
-  expect(Object.keys(backup.tables)).toHaveLength(35);
+  expect(Object.keys(backup.tables)).toHaveLength(41);
   return backup;
 }
 async function confirm(page: Page) {
@@ -224,7 +224,7 @@ test("accepts a complete backup request above the Next proxy default buffer", as
   const { backupTables } = await import("../../src/domain/backup/format");
   const empty = {
     format: "financial-manager-full-backup",
-    schemaVersion: 2,
+    schemaVersion: 3,
     exportedAt: new Date().toISOString(),
     profile: { full_name: "", birth_date: "", gender: "" },
     tables: Object.fromEntries(backupTables.map((table) => [table, []])),
@@ -342,6 +342,45 @@ test("changed data requires a new backup and a lost reset response retries the s
   const status = await (await page.request.get("/api/v1/data/status")).json();
   expect(status).toMatchObject({ empty: false, dataGeneration: 1 });
   await expect(page.locator("#backup-file")).toBeDisabled();
+});
+
+test("a confirmed permission failure explains that data was retained and allows closing the dialog", async ({
+  page,
+}) => {
+  await login(page);
+  await income(page);
+  await page.reload();
+  const dialog = await openReset(page);
+  const backup = await backupBeforeReset(page);
+  await confirm(page);
+  await page.route("**/api/v1/data/reset", (route) =>
+    route.fulfill({
+      status: 503,
+      json: {
+        code: "RESET_PERMISSION_REQUIRED",
+        error:
+          "Chưa thể làm trống vì hệ thống chưa cấp đủ quyền xử lý. Dữ liệu chưa bị xóa; hãy tải lại trang sau khi hệ thống được cập nhật.",
+      },
+    }),
+  );
+  await dialog
+    .getByRole("button", { name: "Xóa toàn bộ dữ liệu tài chính", exact: true })
+    .click();
+  await expect(dialog.getByRole("alert")).toContainText(
+    "hệ thống chưa cấp đủ quyền xử lý",
+  );
+  await expect(dialog.getByRole("alert")).toContainText("Dữ liệu chưa bị xóa");
+  await expect(dialog).not.toContainText(
+    "Chưa xác nhận được kết quả làm trống",
+  );
+  await expect(
+    dialog.getByRole("button", { name: "Hủy", exact: true }),
+  ).toBeEnabled();
+  await dialog.getByRole("button", { name: "Hủy", exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+  expect(
+    (await (await page.request.get("/api/v1/data/backup")).json()).tables,
+  ).toEqual(backup.tables);
 });
 
 test("shows system and account blockers together, localizes diagnosis, and keeps backup available", async ({

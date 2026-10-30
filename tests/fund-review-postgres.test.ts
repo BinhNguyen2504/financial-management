@@ -247,7 +247,9 @@ it("admin enable rejects partial schema and rolls back migration if source chang
         (f) =>
           f.endsWith(".sql") &&
           f !== "202610190001_funds.sql" &&
-          f !== "202610290002_financial_data_reset.sql",
+          f !== "202610290002_financial_data_reset.sql" &&
+          f !== "202610300001_reset_owner_claims.sql" &&
+          f !== "202610300002_goals.sql",
       )
       .sort())
       await isolated.unsafe(

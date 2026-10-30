@@ -163,6 +163,187 @@ async function runtime<T>(
 }
 
 describe("explicit financial reset through runtime RLS", () => {
+  it("repairs hosted Auth access as a non-superuser without granting the reset role access to Auth", async () => {
+    const suffix = randomUUID().replaceAll("-", ""),
+      name = `reset_auth_${suffix}`,
+      actor = `reset_auth_admin_${suffix}`;
+    await admin.unsafe(
+      `create role ${actor} login nosuperuser nocreatedb createrole noinherit nobypassrls`,
+    );
+    await admin.unsafe(`create database ${name}`);
+    const isolated = postgres(process.env.TEST_DATABASE_ADMIN_URL!, {
+      database: name,
+      max: 1,
+      onnotice: () => {},
+    });
+    const runtimeSql = postgres(process.env.TEST_DATABASE_URL!, {
+      database: name,
+      max: 2,
+      prepare: false,
+    });
+    const migrator = postgres(process.env.TEST_DATABASE_ADMIN_URL!, {
+      database: name,
+      username: actor,
+      max: 1,
+      onnotice: () => {},
+    });
+    try {
+      await isolated.unsafe(
+        "create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql stable as $$select (current_setting('request.jwt.claims',true)::jsonb->>'sub')::uuid$$;",
+      );
+      // Hosted public schemas do not grant CREATE to PUBLIC (PG14's default does).
+      await isolated.unsafe("revoke create on schema public from public");
+      const repairFile = "202610300001_reset_owner_claims.sql";
+      for (const file of (await readdir("supabase/migrations"))
+        .filter(
+          (file) =>
+            file.endsWith(".sql") &&
+            file !== repairFile &&
+            file !== "202610300002_goals.sql",
+        )
+        .sort())
+        await isolated.unsafe(
+          await readFile(`supabase/migrations/${file}`, "utf8"),
+        );
+      // Keep Goals tables available while deliberately testing the pre-repair reset.
+      await isolated.unsafe(
+        (await readFile("supabase/migrations/202610300002_goals.sql", "utf8"))
+          .split("do $$ declare definition")[0]
+          .replaceAll("public.financial_request_owner()", "auth.uid()"),
+      );
+      await isolated.unsafe(
+        "revoke usage on schema auth from financial_data_reset",
+      );
+      const id = randomUUID();
+      await isolated`insert into auth.users(id) values(${id})`;
+      await runExpenseCommand(
+        postgresExpenseRepository(runtimeSql),
+        id,
+        {
+          id: randomUUID(),
+          expectedVersion: 0,
+          action: { type: "initialize", start: "2025-01" },
+        },
+        clock,
+      );
+      const data = postgresDataRepository(runtimeSql),
+        prepared = await data.prepareReset(id, profile),
+        request = randomUUID();
+      await expect(
+        data.reset(id, prepared.operationId, request),
+      ).rejects.toMatchObject({
+        code: "RESET_PERMISSION_REQUIRED",
+        status: 503,
+      });
+      expect((await data.backup(id, profile)).tables).toEqual(
+        prepared.backup.tables,
+      );
+      expect(
+        (
+          await isolated`select result from data_resets where owner_id=${id} and id=${prepared.operationId}`
+        )[0].result,
+      ).toBeNull();
+      // The migration role can use Auth but cannot delegate that usage, as on Supabase.
+      await isolated.unsafe(
+        `grant usage,create on schema public to ${actor} with grant option; grant usage on schema auth to ${actor}`,
+      );
+      for (const table of [
+        ...backupTables,
+        "data_imports",
+        "data_generations",
+        "data_resets",
+      ])
+        await isolated.unsafe(`alter table public.${table} owner to ${actor}`);
+      for (const fn of [
+        "expense_protect_history()",
+        "expense_immutable_year()",
+        "financial_data_fingerprint()",
+      ])
+        await isolated.unsafe(`alter function public.${fn} owner to ${actor}`);
+      const [server] =
+        await isolated`select current_setting('server_version_num')::int as version`;
+      if (server.version >= 160000) {
+        await isolated.unsafe(
+          `grant financial_data_reset to ${actor} with admin true`,
+        );
+        await isolated.unsafe(
+          `grant financial_data_reset to ${actor} with set false`,
+        );
+        await isolated.unsafe(
+          `grant financial_data_reset to ${actor} with inherit false`,
+        );
+      }
+      const [auth] =
+        await migrator`select has_schema_privilege(current_user,'auth','USAGE WITH GRANT OPTION') as can_grant`;
+      expect(auth.can_grant).toBe(false);
+      const memberships =
+        await isolated`select to_jsonb(m) as membership from pg_auth_members m where roleid='financial_data_reset'::regrole and member=${actor}::regrole order by grantor`;
+      const repair = await readFile(
+        `supabase/migrations/${repairFile}`,
+        "utf8",
+      );
+      await migrator.unsafe(repair);
+      await migrator.unsafe(repair);
+      expect(
+        await isolated`select to_jsonb(m) as membership from pg_auth_members m where roleid='financial_data_reset'::regrole and member=${actor}::regrole order by grantor`,
+      ).toEqual(memberships);
+      const [permissions] =
+        await isolated`select has_schema_privilege('financial_data_reset','auth','USAGE') as auth_usage,has_schema_privilege('financial_data_reset','public','CREATE') as can_create,has_function_privilege('anon','public.financial_request_owner()','EXECUTE') as anonymous`;
+      expect(permissions).toEqual({
+        auth_usage: false,
+        can_create: false,
+        anonymous: false,
+      });
+      const [helper] =
+        await migrator`select public.financial_request_owner() as owner`;
+      expect(helper.owner).toBeNull();
+      expect(await data.reset(id, prepared.operationId, request)).toMatchObject(
+        { empty: true, dataGeneration: 1 },
+      );
+      expect((await data.status(id)).empty).toBe(true);
+      expect(await data.reset(id, prepared.operationId, request)).toMatchObject(
+        { empty: true, dataGeneration: 1 },
+      );
+      await data.import(id, randomUUID(), prepared.backup, 1);
+      expect((await data.backup(id, profile)).tables).toEqual(
+        prepared.backup.tables,
+      );
+    } finally {
+      await runtimeSql.end();
+      await migrator.end();
+      await isolated.end();
+      await admin.unsafe(`drop database ${name}`);
+      await admin.unsafe(`drop role ${actor}`);
+    }
+  });
+  it("reports confirmed rollback on a permission error after earlier deletes", async () => {
+    const id = await fixture(),
+      prepared = await repo.prepareReset(id, profile),
+      request = randomUUID();
+    await admin.unsafe(
+      "revoke delete on public.income_books from financial_data_reset",
+    );
+    try {
+      await expect(
+        repo.reset(id, prepared.operationId, request),
+      ).rejects.toMatchObject({
+        code: "RESET_PERMISSION_REQUIRED",
+        status: 503,
+      });
+    } finally {
+      await admin.unsafe(
+        "grant delete on public.income_books to financial_data_reset",
+      );
+    }
+    expect((await repo.backup(id, profile)).tables).toEqual(
+      prepared.backup.tables,
+    );
+    expect((await repo.status(id)).dataGeneration).toBe(0);
+    expect(await repo.reset(id, prepared.operationId, request)).toMatchObject({
+      empty: true,
+      dataGeneration: 1,
+    });
+  });
   it("transfers function ownership as a non-superuser administrator and removes only its temporary SET access", async () => {
     const suffix = randomUUID().replaceAll("-", ""),
       name = `reset_admin_${suffix}`,
@@ -188,7 +369,15 @@ describe("explicit financial reset through runtime RLS", () => {
       );
       const fileName = "202610290002_financial_data_reset.sql";
       for (const file of (await readdir("supabase/migrations"))
-        .filter((file) => file.endsWith(".sql") && file !== fileName)
+        .filter(
+          (file) =>
+            file.endsWith(".sql") &&
+            ![
+              fileName,
+              "202610300001_reset_owner_claims.sql",
+              "202610300002_goals.sql",
+            ].includes(file),
+        )
         .sort())
         await isolated.unsafe(
           await readFile(`supabase/migrations/${file}`, "utf8"),
@@ -196,7 +385,10 @@ describe("explicit financial reset through runtime RLS", () => {
       await isolated.unsafe(
         `grant usage,create on schema public to ${actor} with grant option; grant usage on schema auth to ${actor} with grant option; grant references on auth.users to ${actor}; grant execute on function auth.uid() to ${actor} with grant option`,
       );
-      for (const table of [...backupTables, "data_imports"])
+      for (const table of [
+        ...backupTables.filter((t) => !t.startsWith("goals_")),
+        "data_imports",
+      ])
         await isolated.unsafe(`alter table public.${table} owner to ${actor}`);
       for (const fn of ["expense_protect_history", "expense_immutable_year"])
         await isolated.unsafe(
@@ -315,7 +507,13 @@ describe("explicit financial reset through runtime RLS", () => {
       for (const file of (await readdir("supabase/migrations"))
         .filter(
           (file) =>
-            file.endsWith(".sql") && ![resetFile, receiptsFile].includes(file),
+            file.endsWith(".sql") &&
+            ![
+              resetFile,
+              receiptsFile,
+              "202610300002_goals.sql",
+              "202610300001_reset_owner_claims.sql",
+            ].includes(file),
         )
         .sort())
         await isolated.unsafe(
@@ -367,7 +565,11 @@ describe("explicit financial reset through runtime RLS", () => {
     const untouched = await repo.backup(other, profile),
       prepared = await repo.prepareReset(id, profile);
     const before = await repo.status(id);
-    expect(before.blockers.every((m) => m.count > 0)).toBe(true);
+    expect(
+      before.blockers
+        .filter((m) => m.key !== "goals")
+        .every((m) => m.count > 0),
+    ).toBe(true);
     expect(before.blockers.reduce((n, m) => n + m.count, 0)).toBe(
       Object.values(before.counts).reduce((a, b) => a + b, 0),
     );
@@ -539,7 +741,7 @@ describe("explicit financial reset through runtime RLS", () => {
     try {
       expect((await repo.status(id)).resetReady).toBe(false);
       expect(Object.keys((await repo.backup(id, profile)).tables)).toHaveLength(
-        35,
+        41,
       );
       await expect(repo.prepareReset(id, profile)).rejects.toMatchObject({
         code: "RESET_NOT_READY",

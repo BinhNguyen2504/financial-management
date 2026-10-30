@@ -1,4 +1,6 @@
 import { validateFundBook } from "../funds/validate";
+import { validateGoalBook, sourceKey } from "../goals/engine";
+import type { GoalBook } from "../goals/schema";
 import type { FundBook } from "../funds/types";
 import {
   backupTables,
@@ -109,7 +111,19 @@ export function backupBooks(b: FullBackup) {
         audit: [...t.funds_audit].sort((a, b) => a.version - b.version),
       }
     : null;
-  return { expenses, income, savings, investments, funds };
+  const goals: GoalBook | null = t.goals_books[0]
+    ? {
+        version: t.goals_books[0].version,
+        goals: t.goals_definitions.map((r) => r.data),
+        revisions: t.goals_transactions
+          .map((r) => r.data)
+          .sort((a, b) => a.sequence - b.sequence),
+        audit: t.goals_audit
+          .map((r) => r.data)
+          .sort((a, b) => a.version - b.version),
+      }
+    : null;
+  return { expenses, income, savings, investments, funds, goals };
 }
 export function validateBackup(input: unknown): FullBackup {
   const b = parseBackup(input),
@@ -163,6 +177,7 @@ export function validateBackup(input: unknown): FullBackup {
     ["savings", books.savings],
     ["investments", books.investments],
     ["funds", books.funds],
+    ["goals", books.goals],
   ] as const) {
     if (!book) continue;
     const versions = new Set(book.audit.map((r) => r.version));
@@ -388,6 +403,65 @@ export function validateBackup(input: unknown): FullBackup {
         jars.has(row.jarId) && row.month.startsWith(`${y.year}-`),
         "snapshot năm tham chiếu hũ hoặc tháng không hợp lệ.",
       );
+  if (books.goals) {
+    const goalIds = new Set(books.goals.goals.map((g) => g.id));
+    const existingSources = new Set([
+      ...t.savings_categories.map((c) => `savings:${c.id}`),
+      ...t.investments_categories.map((c) => `investments:${c.id}`),
+      ...t.funds_definitions.map((c) => `funds:${c.id}`),
+    ]);
+    const historicLinks = new Set(
+      books.goals.audit.flatMap((a) =>
+        a.action.type === "saveGoal"
+          ? a.action.goal.links.map(
+              (l) =>
+                `${a.action.type === "saveGoal" ? a.action.goal.id : ""}:${sourceKey(l)}`,
+            )
+          : [],
+      ),
+    );
+    requireValid(
+      t.goals_links.length === historicLinks.size,
+      "lịch sử nguồn mục tiêu không khớp.",
+    );
+    for (const r of t.goals_definitions)
+      requireValid(r.id === r.data.id, "mã mục tiêu không khớp.");
+    for (const r of t.goals_audit)
+      requireValid(
+        r.version === r.data.version,
+        "phiên bản lịch sử mục tiêu không khớp.",
+      );
+    for (const r of t.goals_links)
+      requireValid(
+        goalIds.has(r.goal_id) &&
+          r.id === `${r.goal_id}:${r.source_kind}:${r.source_id}` &&
+          r.source_kind === r.data.kind &&
+          r.source_id === r.data.sourceId &&
+          historicLinks.has(r.id) &&
+          existingSources.has(sourceKey(r.data)),
+        "nguồn mục tiêu không hợp lệ.",
+      );
+    for (const r of t.goals_transactions) {
+      const first = books.goals.revisions.find(
+          (x) => x.rootId === r.data.rootId,
+        ),
+        transaction = r.data.transaction ?? first?.transaction;
+      requireValid(
+        transaction &&
+          r.id === r.data.id &&
+          r.sequence === r.data.sequence &&
+          r.root_id === first?.id &&
+          r.goal_id === transaction.goalId &&
+          r.to_goal_id === transaction.toGoalId,
+        "giao dịch mục tiêu không khớp.",
+      );
+    }
+    try {
+      validateGoalBook(books.goals);
+    } catch {
+      throw new BackupError("Lịch sử hoặc số dư Mục tiêu không hợp lệ.");
+    }
+  }
   if (books.funds) {
     for (const r of t.funds_locations)
       requireValid(r.id === r.data.id, "mã nơi giữ không khớp.");

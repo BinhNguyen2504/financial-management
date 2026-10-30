@@ -155,3 +155,11 @@ File reset hiện kiểm tra `data_imports` ngay đầu trước mọi DDL; nế
 Migration trước thiếu quyền SET ROLE khi chuyển owner hàm. PostgreSQL 16+ tách ADMIN/SET/INHERIT; trên Supabase, `postgres` không phải superuser và membership ADMIN do bootstrap cấp có thể không cho SET ROLE. Xem [Supabase](https://supabase.com/kb/troubleshooting/cant-revoke-a-role-membership-granted-by-supabase_admin) và [ALTER FUNCTION](https://www.postgresql.org/docs/16/sql-alterfunction.html).
 
 Chạy lại toàn bộ bản mới nhất `supabase/migrations/202610290002_financial_data_reset.sql` bằng kết nối migration/admin. File cấu hình ACL trước khi chuyển owner, cấp SET tạm cho đúng `current_user` nếu cần và thu hồi trong cùng DO block. PostgreSQL 16+ chỉ thay đổi grant do chính migration actor tạo; giữ ADMIN/INHERIT và grant bootstrap hiện có. Bản trước 16 dùng membership tạm tương ứng. Không cấp role reset cho runtime; không cấp superuser/BYPASSRLS, không tắt RLS/trigger và không DROP dữ liệu để sửa lỗi. Nếu đã chạy từng phần thay vì toàn file và gặp bảng đã tồn tại, cần kiểm tra schema trước khi tiếp tục.
+
+### Forward repair cho Auth của role reset — 30/10/2026
+
+Database đã có reset ngày 29/10 cần áp dụng `202610300001_reset_owner_claims.sql` bằng migration/admin. Role reset trên hosted Supabase có thể không truy cập schema Auth dù GRANT chạy không lỗi. Repair thay UID của luồng reset bằng helper đọc JWT context đã được backend xác minh, sửa policy/trigger/hàm theo đúng owner và giữ quyền giới hạn. Không cấp thêm Auth/schema/admin cho runtime; không tự thực hiện reset. Chi tiết và hướng kiểm tra ở [backup](features/backup.md#sửa-quyền-auth-khi-làm-trống--30102026). Source mới phân biệt lỗi quyền đã rollback với mất phản hồi không rõ kết quả. Sau migration đọc kiểm tra quyền/định nghĩa; thử reset chỉ trên tài khoản test hoặc qua thao tác xác nhận của chính người dùng.
+
+## Migration Goals — 30/10/2026
+
+Sau đầy đủ migration hiện có và 202610300001_reset_owner_claims.sql, áp 202610300002_goals.sql bằng kết nối migration/admin. File chỉ thêm cấu trúc và mở rộng reset, không seed hoặc làm trống. Sau áp kiểm RLS, đọc/preview/lưu và backup V3. Thiếu schema báo chưa sẵn sàng; áp cùng phiên bản source V3. Phiên làm việc này không áp cloud/deploy. Xem [Goals](features/goals.md).

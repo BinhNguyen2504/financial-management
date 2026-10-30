@@ -283,3 +283,11 @@ Mặc định mới gồm năm thẻ Thu nhập, Chi tiêu, Tiết kiệm, Đầ
 ### Lý do chặn khôi phục và làm trống — 29/10/2026
 
 Thẻ khôi phục giải thích mục nào còn dữ liệu và loại bản ghi bằng ngôn ngữ người dùng; không gọi số lượng hàng DB là số giao dịch, không hướng dẫn xóa từng giao dịch để đạt điều kiện trống. Thông báo hệ thống chưa sẵn sàng độc lập với dữ liệu đang có. Nút làm trống riêng mở dialog có tài khoản, phạm vi xóa, tải backup, xác nhận đã lưu và nhập cụm xác nhận. Focus đầu ở Hủy, footer cố định/body cuộn theo Modal dùng chung; lỗi tại thao tác. Mất phản hồi giữ mã yêu cầu cho retry, không tự kết luận thành công. Sau reset không tự nhập file; hồ sơ và tùy chọn giữ nguyên.
+
+### Phân biệt lỗi quyền và mất phản hồi reset — 30/10/2026
+
+Lỗi quyền xử lý đã rollback báo rõ hệ thống chưa đủ quyền, dữ liệu chưa bị xóa và cho phép đóng hộp thoại. Mất phản hồi mạng giữ mã yêu cầu để kiểm tra lại, không tự khởi tạo thao tác xóa khác. Giữ bản sao lưu/bản nháp và hiển thị lỗi tại thao tác bằng vi/en.
+
+## Mục tiêu — 30/10/2026
+
+Trang trả lời “đã chuẩn bị bao nhiêu, còn thiếu gì và bước tiếp theo là gì”. Thẻ hai cột desktop/một cột mobile, tiến độ cùng cơ sở tính và hạn; nguồn có tỷ lệ còn khả dụng. Dữ liệu thiếu khác 0. Form nhóm rõ, preview trước/sau và xác nhận; hoàn thành không tự rút tiền. Không cộng tiến độ thành tổng tài sản. Giữ token/font/shell, năm theme, che tiền và vi/en. Xem [Goals](features/goals.md).

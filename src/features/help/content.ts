@@ -733,7 +733,7 @@ export const articles: HelpArticles = {
     [
       "Đổi hũ Chi tiêu chưa tự đổi mục tiêu Quỹ an toàn; cần xác nhận nguồn mới.",
       "Nạp/rút ở Quỹ an toàn không tự ghi ở Tiết kiệm, Đầu tư hoặc Chi tiêu. App không chuyển tiền ngân hàng.",
-      "Mục tiêu mua sắm/cuộc sống thuộc định hướng trang Mục tiêu riêng, hiện **đang phát triển**. Sao lưu toàn tài khoản ở Cài đặt bao gồm Quỹ an toàn.",
+      "Mục tiêu mua sắm/cuộc sống và cột mốc tài chính có ở trang Mục tiêu. Sao lưu toàn tài khoản bao gồm cả Mục tiêu.",
     ],
   ),
   settings: article(
@@ -951,36 +951,38 @@ export const articles: HelpArticles = {
   ),
   goals: article(
     [
-      "Trang Mục tiêu **đang phát triển**, hướng đến theo dõi khoản tiền cần chuẩn bị và thời hạn cho mục tiêu mua sắm hoặc cuộc sống.",
+      "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử.",
     ],
     [
-      "Bắt đầu từ điều muốn đạt và phần còn thiếu để chuẩn bị từng bước. Phân biệt mong muốn này với dự phòng cho chi phí thiết yếu.",
+      "Phân biệt khoản tiền cần chuẩn bị cho cuộc sống với cột mốc theo dõi tài chính.",
     ],
     [
       term(
         "goal",
         "Mục tiêu và quỹ an toàn",
-        "Mục tiêu là đích tích lũy cho một nhu cầu cụ thể. Quỹ an toàn hiện tập trung biến cố lớn, phát sinh nhỏ và chi thiết yếu biết trước; không thay thế toàn bộ mục tiêu cuộc sống.",
+        "Mục tiêu chi dùng chia tỷ lệ nguồn, tổng tối đa 100%; cột mốc được tham chiếu chung nguồn.",
       ),
     ],
     [
       task(
-        "available",
-        "Chuẩn bị bằng tính năng hiện có",
-        "Khi trang Mục tiêu chưa có thao tác tạo mục tiêu.",
+        "create",
+        "Tạo và theo dõi mục tiêu",
+        "Khi bạn muốn chuẩn bị một khoản tiền hoặc theo dõi cột mốc.",
         [
-          "Dùng Tiết kiệm để ghi nhận tài sản đã dành dụm.",
-          "Với khoản chi cần tích lũy theo tháng, có thể dùng hũ Tích lũy trong Chi tiêu.",
-          "Dùng Quỹ an toàn khi cần quản lý dự phòng đúng phạm vi ba quỹ.",
+          "Chọn Tạo mục tiêu, nhập tên và số tiền đích.",
+          "Chọn loại mục tiêu, dùng sổ riêng hoặc liên kết nguồn; Quỹ an toàn chỉ liên kết với cột mốc.",
+          "Đặt hạn tùy chọn và mức góp dự định; xem trước rồi xác nhận lưu.",
         ],
-        "Kết quả: theo dõi được khoản dành dụm; chưa có tự liên kết tài sản và tính kế hoạch góp theo hạn ở trang Mục tiêu.",
+        "Kết quả: đủ tiền chưa tự hoàn thành. Xác nhận hoàn thành để lưu mốc và giải phóng tỷ lệ liên kết.",
       ),
     ],
     [
-      "Bạn muốn dành tiền cho một chuyến đi: có thể theo dõi khoản tích lũy trong sổ hiện có, còn việc tạo mục tiêu và hạn hoàn thành tại trang này chưa khả dụng.",
+      "Nguồn 100 triệu chia 40% cho mua xe và 60% cho mua nhà. Cột mốc tích lũy vẫn có thể theo dõi toàn bộ nguồn 100 triệu.",
     ],
     [
-      "Mô tả về tiến độ liên kết và ước tính mức góp trên trang là định hướng, không phải tính năng đã chạy.",
+      "Sổ riêng giữ số dư sau hoàn thành; rút hoặc chuyển hết trước khi lưu trữ.",
+      "Ước tính tính cả tháng này, không giả định lợi nhuận và không tự ghi tiền góp.",
+      "Các cột mốc có thể trùng nguồn; không cộng tiến độ thành tổng tài sản. Sổ riêng độc lập với các module khác.",
     ],
   ),
   reports: article(

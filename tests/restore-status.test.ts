@@ -6,7 +6,7 @@ describe("restore diagnosis", () => {
   it("accounts for every financial table exactly once, including zero-value records and history", () => {
     for (const table of backupTables) {
       const modules = restoreBlockers({ [table]: 1 });
-      expect(modules).toHaveLength(5);
+      expect(modules).toHaveLength(6);
       const blocked = modules.filter((module) => module.count > 0);
       expect(blocked, table).toHaveLength(1);
       expect(blocked[0].details).toEqual([

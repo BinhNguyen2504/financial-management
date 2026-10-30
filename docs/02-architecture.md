@@ -231,3 +231,11 @@ GET `/api/v1/overview` trả bố cục tài khoản cùng DTO số liệu. Khô
 ### Financial reset — 29/10/2026
 
 Luồng reset là thao tác riêng có snapshot backup và xác nhận; SQL function thuộc role NOLOGIN giới hạn DELETE/RLS theo owner, giữ nguyên trigger bảo vệ ngoài reset. Transaction khóa đủ 5 module, fingerprint snapshot chống xóa dữ liệu chưa backup, đối soát trống và receipt idempotency. `data_generations` ngăn request trước reset ghi lại dữ liệu: metadata view và header HTTP ngoài schema/domain command, kiểm tra trong repository sau khóa và trước lookup command. Import receipts thêm generation; JSON backup V1/V2 không đổi. Xem [backup](features/backup.md) cho API, migration và giới hạn.
+
+### Owner context của reset — 30/10/2026
+
+Role definer của reset không cần quyền Auth schema. `financial_request_owner()` lấy UUID từ JWT context đã được server xác minh trong session expense_api; policy và trigger của riêng reset dùng cùng helper. Đây là thay thế cho `auth.uid()` dưới custom role trên hosted Supabase, không nới quyền hoặc bỏ RLS. Migration forward `202610300001_reset_owner_claims.sql` cập nhật hàm theo owner và bảo toàn grant bootstrap/actor. SQLSTATE 42501 trong transaction reset được xác định đã rollback; lỗi transport vẫn có kết quả chưa rõ và retry theo receipt.
+
+## Goals — 30/10/2026
+
+Bổ sung domain → application → repository → workspace. Đọc nguồn server trong transaction, khóa Expenses → Savings → Investments → Funds → Goals. Kiểm phiên bản Goals, nguồn liên quan và data generation; GET không ghi. API theo Auth/Origin/no-store chung. V3 backup/restore/reset bao gồm sáu bảng Goals; V1/V2 giữ wire shape gốc. Xem [Goals](features/goals.md).

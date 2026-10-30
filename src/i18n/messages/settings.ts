@@ -1,4 +1,6 @@
 export const settings = {
+  "Chưa thể làm trống vì hệ thống chưa cấp đủ quyền xử lý. Dữ liệu chưa bị xóa; hãy tải lại trang sau khi hệ thống được cập nhật.":
+    "Data could not be cleared because the system lacks the required access. Your data was not deleted; reload after the system has been updated.",
   "Tải lại trang": "Reload page",
   "Tài khoản chưa có dữ liệu tài chính": "This account has no financial data",
   "Các mục bên dưới đang chặn khôi phục. Số lượng bao gồm sổ, cấu hình, lịch sử và dữ liệu đã xóa hoặc hủy; không đồng nghĩa số giao dịch.":

@@ -79,11 +79,12 @@ const ownerLocks = (owner: string) => [
   `savings:${owner}`,
   `investments:${owner}`,
   `funds:${owner}`,
+  `goals:${owner}`,
 ];
 function makeBackup(tables: BackupTables, profile: FullBackup["profile"]) {
   const backup = validateBackup({
     format: "financial-manager-full-backup",
-    schemaVersion: 2,
+    schemaVersion: 3,
     exportedAt: new Date().toISOString(),
     profile,
     tables,
@@ -193,7 +194,7 @@ export function postgresDataRepository(sql: postgres.Sql) {
         async (db) => {
           const backup = validateBackup({
             format: "financial-manager-full-backup",
-            schemaVersion: 2,
+            schemaVersion: 3,
             exportedAt: new Date().toISOString(),
             profile,
             tables: await readTables(db, owner),
@@ -253,6 +254,16 @@ export function postgresDataRepository(sql: postgres.Sql) {
           ]);
           return row.result;
         } catch (error) {
+          if (
+            error instanceof Error &&
+            "code" in error &&
+            error.code === "42501"
+          )
+            throw new BackupError(
+              "Chưa thể làm trống vì hệ thống chưa cấp đủ quyền xử lý. Dữ liệu chưa bị xóa; hãy tải lại trang sau khi hệ thống được cập nhật.",
+              503,
+              "RESET_PERMISSION_REQUIRED",
+            );
           const code = error instanceof Error ? error.message : "";
           const messages: Record<string, string> = {
             RESET_NOT_FOUND:

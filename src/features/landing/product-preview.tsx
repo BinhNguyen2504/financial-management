@@ -19,11 +19,19 @@ import { ArrowDownLeft, ArrowUpRight, Eye, EyeOff } from "lucide-react";
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 
 const tabs = modules.filter((item) =>
-  ["overview", "income", "budgets", "savings", "investments", "funds"].includes(
-    item.slug,
-  ),
+  [
+    "overview",
+    "income",
+    "budgets",
+    "savings",
+    "investments",
+    "funds",
+    "goals",
+  ].includes(item.slug),
 );
 const helpPreview = {
+  goals:
+    "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử.",
   overview:
     "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại widget theo tài khoản; các sổ không cộng thành tài sản ròng.",
   budgets:
@@ -39,7 +47,37 @@ const helpPreview = {
 };
 // Fixed illustrative data, including in server-rendered public SEO content.
 // Never substitute account data or fetch financial APIs for this preview.
+const illustrativeGoal = {
+  target: "100000000",
+  current: "40000000",
+  monthly: "5000000",
+};
 const data = {
+  goals: {
+    title: "Mua xe, từng bước chuẩn bị.",
+    subtitle: "Sổ riêng và kế hoạch góp; số liệu minh họa cố định.",
+    label: "Đã chuẩn bị cho Mua xe",
+    value: illustrativeGoal.current,
+    secondary: "Còn thiếu",
+    secondaryValue: (
+      BigInt(illustrativeGoal.target) - BigInt(illustrativeGoal.current)
+    ).toString(),
+    columns: ["Mục tiêu", "Đã đạt"],
+    rows: [
+      {
+        name: "Mua xe",
+        note: "Sổ riêng · 40 / 100 triệu",
+        emoji: "",
+        amount: illustrativeGoal.current,
+        percent: Number(
+          (BigInt(illustrativeGoal.current) * 100n) /
+            BigInt(illustrativeGoal.target),
+        ),
+      },
+    ],
+    chartLabel: "Kế hoạch góp minh họa",
+    bars: [],
+  },
   overview: {
     title: "Một góc nhìn chung, từng khoản rõ ràng.",
     subtitle: "5 thẻ số liệu chính · tùy chỉnh 10 loại widget theo tài khoản.",
@@ -438,7 +476,7 @@ export function ProductPreview({
                         <div>
                           <span>{tr(selected.secondary)}</span>
                           <strong>
-                            {active === "budgets"
+                            {active === "budgets" || active === "goals"
                               ? money(selected.secondaryValue)
                               : tr(selected.secondaryValue)}
                           </strong>
@@ -460,7 +498,7 @@ export function ProductPreview({
                                 className="preview-row-emoji"
                                 aria-hidden="true"
                               >
-                                {neutral ? (
+                                {neutral || active === "goals" ? (
                                   <ModuleIcon name={item.icon} size={21} />
                                 ) : active === "funds" ? (
                                   <ThemeIcon size={21} />
@@ -507,7 +545,19 @@ export function ProductPreview({
                               ? tr("EMERGENCY · TIẾN ĐỘ DỰ PHÒNG")
                               : tr(selected.chartLabel)}
                           </span>
-                          {active === "funds" ? (
+                          {active === "goals" ? (
+                            <div className="goal-preview-plan">
+                              <strong>
+                                {money(illustrativeGoal.monthly)}
+                                {tr("/tháng")}
+                              </strong>
+                              <p>
+                                {tr(
+                                  "Cần thêm 60 triệu, dự định góp 5 triệu mỗi tháng trong 12 tháng.",
+                                )}
+                              </p>
+                            </div>
+                          ) : active === "funds" ? (
                             <>
                               {neutral ? (
                                 <div

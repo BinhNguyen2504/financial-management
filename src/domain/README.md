@@ -21,3 +21,7 @@ Module `funds/` tính living expense, mục tiêu, số dư theo quỹ/nơi gi�
 `shared/` chứa Clock, ngày/tháng, phép cộng tiền nguyên và các schema primitive. Chi tiêu giữ biến thể schema/thông báo riêng để không đổi validation cũ. Tiết kiệm và Đầu tư tách `model.ts` (kiểu hành vi/selector và lỗi), `replay.ts` (dựng lại trạng thái từ lịch sử) và `engine.ts` (áp command và entrypoint tương thích). Không nhập framework, browser, UI hoặc i18n vào domain. Các liên hệ Quỹ–Chi tiêu và backup–các module là nghiệp vụ có chủ đích.
 
 Fingerprint backup vẫn giữ comparator riêng; fingerprint command thuộc application và không được thay thế lẫn nhau. Xem [hướng dẫn bảo trì source](../../docs/11-source-maintenance.md).
+
+## Goals — 30/10/2026
+
+goals/ quản lý loại mục tiêu, tỷ lệ nguồn, sổ riêng, kế hoạch và snapshot hoàn thành. BigInt/replay/audit thuần TypeScript; selectors đọc Savings/Investments/Funds, không nhập server/UI. FullBackup xuất V3 với 41 bảng, nhận V1/V2 theo cấu trúc gốc. Xem docs/features/goals.md.

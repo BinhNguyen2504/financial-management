@@ -157,21 +157,20 @@ export const modules = [
   },
   {
     slug: "goals",
-    status: "planned",
+    status: "implemented",
     title: "Mục tiêu",
     icon: "goals",
     label: "Từ mục tiêu đến kế hoạch",
     description:
-      "Theo dõi mục tiêu tiền, hạn hoàn thành và mức tích lũy cần thiết.",
+      "Theo dõi mục tiêu cuộc sống và cột mốc tài chính; liên kết nguồn hoặc dùng sổ góp riêng.",
     scope: [
-      "Mục tiêu theo số tiền và thời hạn tùy chọn",
-      "Tiến độ lấy từ tiền/tài sản đã liên kết",
-      "Ước tính phần còn thiếu và kế hoạch góp định kỳ",
+      "Mục tiêu tiền, hạn tùy chọn và thứ tự ưu tiên",
+      "Liên kết Tiết kiệm/Đầu tư; Quỹ an toàn chỉ theo dõi cột mốc",
+      "Chia tỷ lệ nguồn cho mục tiêu chi dùng, tối đa 100% mỗi nguồn",
+      "Sổ góp, rút, chuyển riêng; sửa/hủy giữ lịch sử",
+      "Gợi ý mức góp, xác nhận hoàn thành, tạm dừng và lưu trữ",
     ],
-    questions: [
-      "Mục tiêu đầu tư đo theo vốn đã góp hay giá trị thị trường?",
-      "Có cần mức ưu tiên giữa các mục tiêu?",
-    ],
+    questions: [],
   },
   {
     slug: "reports",
@@ -236,7 +235,7 @@ export const pageHelpSummary =
 
 // Public home presentation is independent of module implementation status.
 export const publicProductSummary =
-  "Quản lý tài chính cá nhân với Financial Manager: theo dõi thu nhập, hũ chi tiêu, tiết kiệm, đầu tư và quỹ an toàn. Xem thử giao diện không cần tài khoản.";
+  "Quản lý tài chính cá nhân với Financial Manager: theo dõi thu nhập, hũ chi tiêu, tiết kiệm, đầu tư, quỹ an toàn và mục tiêu. Xem thử giao diện không cần tài khoản.";
 
 export const publicHomeSummary =
   "Sau khi đăng nhập, bạn có một không gian riêng với chủ đề yêu thích.";

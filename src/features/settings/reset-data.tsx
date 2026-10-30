@@ -170,7 +170,10 @@ export function ResetData({
       const unknown =
         !(e instanceof DataRequestError) ||
         e.status === undefined ||
-        (e.status >= 500 && e.code !== "RESET_NOT_READY");
+        (e.status >= 500 &&
+          !["RESET_NOT_READY", "RESET_PERMISSION_REQUIRED"].includes(
+            e.code ?? "",
+          ));
       setUncertain(unknown);
       setError(
         unknown

@@ -29,6 +29,12 @@ const tableLabels: Record<BackupTable, string> = {
   investments_valuations: "Phiên bản định giá",
   investments_audit: "Lịch sử thay đổi",
   investments_commands: "Thông tin xử lý đã lưu",
+  goals_books: "Sổ mục tiêu",
+  goals_definitions: "Mục tiêu (kể cả lưu trữ)",
+  goals_links: "Lịch sử nguồn liên kết",
+  goals_transactions: "Phiên bản giao dịch mục tiêu",
+  goals_audit: "Lịch sử mục tiêu",
+  goals_commands: "Thông tin xử lý đã lưu",
   funds_books: "Sổ quỹ",
   funds_definitions: "Quỹ đã thiết lập",
   funds_locations: "Nơi giữ tiền (kể cả ngừng sử dụng)",
@@ -43,6 +49,7 @@ const modulePaths = {
   savings: "/savings",
   investments: "/investments",
   funds: "/funds",
+  goals: "/goals",
 };
 
 export function restoreBlockers(counts: Partial<Record<BackupTable, number>>) {

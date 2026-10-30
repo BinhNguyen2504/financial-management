@@ -1,4 +1,6 @@
 export const funds = {
+  "Dùng cho bảo dưỡng theo lịch hoặc thay thiết bị cần thiết đã dự trù. Các mục tiêu mua sắm và cuộc sống được quản lý ở trang Mục tiêu riêng.":
+    "Use for scheduled maintenance or planned essential replacements. Shopping and life goals are managed on the separate Goals page.",
   "Giao dịch": "Transactions",
   "Ghi giao dịch": "Record transaction",
   "Tìm giao dịch": "Search transactions",

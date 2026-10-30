@@ -1,3 +1,4 @@
+import { goals } from "./goals";
 import { overview } from "./overview";
 import { landing } from "./landing";
 import { auth } from "./auth";
@@ -19,6 +20,7 @@ export const english = {
   ...savings,
   ...investments,
   ...funds,
+  ...goals,
   ...settings,
   ...profile,
   ...catalog,
@@ -36,6 +38,7 @@ export const namespaces = {
   savings,
   investments,
   funds,
+  goals,
   settings,
   profile,
   catalog,

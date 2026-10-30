@@ -115,3 +115,7 @@ Vàng là holding duy nhất có số lượng/đơn vị và valuation; hiển 
 ## Fund độc lập — 19/10/2026
 
 Bổ sung `funds_books`, `funds_definitions`, `funds_locations`, `funds_configurations`, `funds_transactions`, `funds_audit`, `funds_commands`. Ba loại quỹ cố định, số dư theo (fund_id,location_id). Configuration giữ bản chụp living expense, x và thứ tự ưu tiên. Giao dịch có thời điểm UTC hiển thị giờ Việt Nam; sửa/hủy append revision, replay theo thời điểm và thứ tự gốc. Composite FK owner và trigger bất biến giữ lịch sử. Backup V2 có đủ 35 bảng.
+
+## Goals đã triển khai source — 30/10/2026
+
+Sáu bảng goals_books, goals_definitions, goals_links, goals_transactions, goals_audit, goals_commands có owner/RLS. Definitions giữ trạng thái hiện tại, links giữ nguồn từng tham chiếu, transactions/audit/commands append-only. Không đổi schema nguồn. Hoàn thành giữ snapshot; tiến độ liên kết đang hoạt động tính khi đọc. Backup V3 có 41 bảng. Xem [Goals](features/goals.md).

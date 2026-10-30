@@ -61,3 +61,7 @@ Quỹ an toàn có thiết lập nguồn từ Chi tiêu, mục tiêu theo x, hư
 ## Hướng dẫn sản phẩm — 20/10/2026
 
 Help có trên toàn bộ 12 trang trong app, gồm các trang đang phát triển và Hồ sơ. Nội dung tiếng Việt hướng đến người quản lý tài chính cá nhân, kể cả người mới: mục đích/đối tượng, tư duy, thuật ngữ, tác vụ, ví dụ và điểm dễ nhầm. Nền tảng Chi tiêu là “chia trước, chi sau”, tách mục đích của hũ với nơi giữ/chi tiền. Không thay đổi nghiệp vụ hoặc nâng trạng thái các module planned. Xem [Help](features/help.md).
+
+## Mục tiêu — 30/10/2026
+
+Goals đã có source: mục tiêu cuộc sống/cột mốc, liên kết/sổ riêng, ưu tiên, kế hoạch tháng và vòng đời có lịch sử. Catalog implemented chỉ phản ánh source. Tổng quan giữ phạm vi hiện có. Xem [Goals](features/goals.md).
