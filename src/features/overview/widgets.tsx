@@ -157,7 +157,7 @@ export function OverviewWidget({
               v.missing ? v.knownValue : v.total,
               true,
             )}
-            {metric("Lãi/lỗ chưa chốt", v.unrealized)}
+            {metric("Lãi/lỗ phần đang giữ", v.unrealized)}
           </dl>
           {(v.missing > 0 || v.stale > 0) && (
             <p className="overview-warning">

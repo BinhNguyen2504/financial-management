@@ -46,3 +46,8 @@ export function activeTransactions(book: InvestmentBook) {
         a.sequence - b.sequence,
     );
 }
+
+/** Stable identity makes preview/retries create the same default wallet. */
+export function defaultWalletId(id: string): string {
+  return id.slice(0, -1) + (parseInt(id.slice(-1), 16) ^ 8).toString(16);
+}

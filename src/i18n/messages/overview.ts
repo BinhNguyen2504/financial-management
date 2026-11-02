@@ -1,4 +1,6 @@
 export const overview = {
+  "Tổng giá trị gồm tiền chờ và lãi/lỗ phần đang giữ.":
+    "Total value including cash, and gain/loss on current holdings.",
   "Tổng quan": "Overview",
   "Cần chú ý": "Needs attention",
   "Thu nhập tháng này": "Income this month",

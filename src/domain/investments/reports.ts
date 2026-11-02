@@ -1,3 +1,4 @@
+import { portfolioPositions } from "./portfolios";
 import { sumMoney as sum } from "../shared/money";
 import { z } from "zod";
 import {
@@ -47,7 +48,9 @@ export function buildReport(
     book.categories
       .filter(
         (c) =>
-          (!filter.categoryId || c.id === filter.categoryId) &&
+          (!filter.categoryId ||
+            c.id === filter.categoryId ||
+            c.parentCategoryId === filter.categoryId) &&
           (!filter.kind || c.kind === filter.kind),
       )
       .map((c) => c.id),
@@ -165,6 +168,10 @@ export function buildReport(
         inflow: null,
         outflow: null,
         result: null,
+        cost: null,
+        cash: null,
+        assetValue: null,
+        profit: null,
         provisional: false,
         missing: [] as string[],
         valuationDates: [] as {
@@ -194,6 +201,26 @@ export function buildReport(
       month: m,
       value: b.total,
       knownValue: b.knownValue,
+      cost: sum(
+        b.positions.filter((p) => p.kind === "investment").map((p) => p.cost),
+      ),
+      cash: sum(
+        b.positions.filter((p) => p.kind === "cash").map((p) => p.cash),
+      ),
+      assetValue: b.missing.length
+        ? null
+        : sum(
+            b.positions
+              .filter((p) => p.kind === "investment")
+              .map((p) => p.value ?? "0"),
+          ),
+      profit: b.missing.length
+        ? null
+        : sum(
+            b.positions
+              .filter((p) => p.kind === "investment")
+              .map((p) => p.unrealized ?? "0"),
+          ),
       inflow: visible.inflow,
       outflow: visible.outflow,
       result:
@@ -219,6 +246,7 @@ export function buildReport(
     before,
     after,
     categories,
+    portfolios: portfolioPositions(book, after),
     effects,
     activity,
     reconciliation,

@@ -45,12 +45,37 @@ async function setup(page: Page) {
         id: randomUUID(),
         expectedVersion: v.book?.version ?? 0,
         action: {
-          type: "createCategory",
-          id,
-          start: today,
+          type: key === "cash" ? "configureCategory" : "createCategory",
+          ...(key === "cash"
+            ? { categoryId: id, date: today }
+            : { id, start: today }),
+          ...(key === "asset"
+            ? { walletId: ids.cash }
+            : { parentCategoryId: ids.asset }),
           kind: key === "asset" ? "investment" : "cash",
           name: `Kiểm tra ${key}`,
           emoji: "🌱",
+        },
+      },
+    });
+    expect(response.ok()).toBe(true);
+  }
+  {
+    const v = await (await page.request.get("/api/v1/investments")).json();
+    const response = await page.request.post("/api/v1/investments/commands", {
+      headers: { origin: process.env.TEST_BASE_URL! },
+      data: {
+        id: randomUUID(),
+        expectedVersion: v.book.version,
+        action: {
+          type: "postTransaction",
+          transaction: {
+            id: randomUUID(),
+            kind: "deposit",
+            categoryId: ids.cash,
+            date: today,
+            amount: "9".repeat(24),
+          },
         },
       },
     });

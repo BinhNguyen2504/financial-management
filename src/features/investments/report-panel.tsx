@@ -62,7 +62,17 @@ export function InvestmentReports({
   }
   const months = report?.months ?? [],
     values = months.map((m) =>
-      chart === "value" ? m.value : chart === "result" ? m.result : m.inflow,
+      chart === "value"
+        ? m.value
+        : chart === "profit"
+          ? m.profit
+          : chart === "cost"
+            ? m.cost
+            : chart === "cash"
+              ? m.cash
+              : chart === "assetValue"
+                ? m.assetValue
+                : m.inflow,
     ),
     others = months.map((m) => m.outflow);
   const abs = (n: bigint) => (n < 0n ? -n : n);
@@ -73,7 +83,7 @@ export function InvestmentReports({
   const scale = (v: string) => Number((BigInt(v) * 10000n) / max) / 10000;
   const x = (i: number) => 44 + (i * 590) / Math.max(1, months.length - 1),
     y = (v: string) =>
-      chart === "result" ? 120 - scale(v) * 80 : 190 - scale(v) * 150;
+      chart === "profit" ? 120 - scale(v) * 80 : 190 - scale(v) * 150;
   const total = report?.after.total;
   return (
     <>
@@ -132,12 +142,14 @@ export function InvestmentReports({
               onFilter({ ...filter, categoryId: e.target.value || undefined })
             }
           >
-            <option value="">{tr("Tất cả danh mục và ví")}</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {ruleAt(c, today)?.name ?? c.rules[0].name}
-              </option>
-            ))}
+            <option value="">{tr("Tất cả danh mục")}</option>
+            {categories
+              .filter((c) => c.kind === "investment")
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {ruleAt(c, today)?.name ?? c.rules[0].name}
+                </option>
+              ))}
           </select>
         </label>
         <label>
@@ -189,7 +201,7 @@ export function InvestmentReports({
             </div>
             <p className="expense-muted">
               {tr(
-                "Lọc loại giao dịch chỉ áp dụng hoạt động; số dư và kết quả kỳ luôn dùng đầy đủ giao dịch.",
+                "Lọc loại giao dịch chỉ áp dụng dòng tiền và giao dịch; số dư và lãi/lỗ phần đang giữ luôn dùng đầy đủ lịch sử.",
               )}
             </p>
           </div>
@@ -203,13 +215,26 @@ export function InvestmentReports({
               <strong>{display(report.after.total)}</strong>
             </article>
             <article className="panel metric">
-              <span>{tr("Kết quả trong kỳ")}</span>
-              <strong>{display(report.result)}</strong>
-              <p>{tr("Đã loại vốn mở đầu, nạp/rút và dòng chuyển ròng.")}</p>
+              <span>{tr("Vốn đang đầu tư")}</span>
+              <strong>
+                {money(
+                  report.portfolios
+                    .reduce((n, p) => n + BigInt(p.cost), 0n)
+                    .toString(),
+                )}
+              </strong>
             </article>
             <article className="panel metric">
-              <span>{tr("Lãi/lỗ bán trong hoạt động lọc")}</span>
-              <strong>{money(report.activity.realized)}</strong>
+              <span>{tr("Lãi/lỗ phần đang giữ")}</span>
+              <strong>
+                {display(
+                  report.portfolios.some((p) => p.unrealized === null)
+                    ? null
+                    : report.portfolios
+                        .reduce((n, p) => n + BigInt(p.unrealized ?? "0"), 0n)
+                        .toString(),
+                )}
+              </strong>
               <p>
                 {tr("Phí/thuế:")} {money(report.activity.fees)}
               </p>
@@ -226,7 +251,12 @@ export function InvestmentReports({
                 >
                   <option value="value">{tr("Tài sản cuối tháng")}</option>
                   <option value="flow">{tr("Nạp và rút bên ngoài")}</option>
-                  <option value="result">{tr("Kết quả trong tháng")}</option>
+                  <option value="profit">{tr("Lãi/lỗ phần đang giữ")}</option>
+                  <option value="cost">{tr("Vốn đang đầu tư")}</option>
+                  <option value="cash">{tr("Tiền chờ")}</option>
+                  <option value="assetValue">
+                    {tr("Giá trị tài sản đã mua")}
+                  </option>
                 </select>
               </label>
               {months.length && values.some((v) => v !== null) ? (
@@ -238,16 +268,18 @@ export function InvestmentReports({
                       ? tr(
                           "Biểu đồ nạp và rút bên ngoài theo tháng, đơn vị VND",
                         )
-                      : chart === "result"
-                        ? tr("Biểu đồ kết quả theo tháng, đơn vị VND")
+                      : chart === "profit"
+                        ? tr(
+                            "Biểu đồ lãi/lỗ phần đang giữ theo tháng, đơn vị VND",
+                          )
                         : tr("Biểu đồ tài sản cuối tháng, đơn vị VND")
                   }
                 >
                   <line
                     x1="30"
                     x2="650"
-                    y1={chart === "result" ? 120 : 190}
-                    y2={chart === "result" ? 120 : 190}
+                    y1={chart === "profit" ? 120 : 190}
+                    y2={chart === "profit" ? 120 : 190}
                     stroke="var(--border)"
                   />
                   {months.map((m, i) => {
@@ -280,12 +312,12 @@ export function InvestmentReports({
                           <>
                             <rect
                               x={x(i) - 10}
-                              y={Math.min(y(v), chart === "result" ? 120 : 190)}
+                              y={Math.min(y(v), chart === "profit" ? 120 : 190)}
                               width="9"
                               height={Math.max(
                                 1,
                                 Math.abs(
-                                  y(v) - (chart === "result" ? 120 : 190),
+                                  y(v) - (chart === "profit" ? 120 : 190),
                                 ),
                               )}
                               rx="3"
@@ -352,11 +384,11 @@ export function InvestmentReports({
               ) : !total || BigInt(total) === 0n ? (
                 <p>{tr("Chưa có tài sản để tính tỷ trọng.")}</p>
               ) : (
-                report.categories
-                  .filter((c) => BigInt(c.value ?? "0") > 0n)
+                report.portfolios
+                  .filter((c) => BigInt(c.total ?? "0") > 0n)
                   .map((c, i) => {
                     const pct =
-                      Number((BigInt(c.value!) * 10000n) / BigInt(total)) / 100;
+                      Number((BigInt(c.total!) * 10000n) / BigInt(total)) / 100;
                     return (
                       <div className="investment-allocation" key={c.id}>
                         <div>
@@ -373,7 +405,7 @@ export function InvestmentReports({
                             }}
                           />
                         </div>
-                        <small>{money(c.value!)}</small>
+                        <small>{money(c.total!)}</small>
                       </div>
                     );
                   })
@@ -390,25 +422,23 @@ export function InvestmentReports({
                 <thead>
                   <tr>
                     <th>{tr("Danh mục")}</th>
-                    <th>{tr("Đầu kỳ")}</th>
-                    <th>{tr("Cuối kỳ")}</th>
-                    <th>{tr("Vốn còn lại")}</th>
-                    <th>{tr("Đã chốt trong kỳ")}</th>
-                    <th>{tr("Chưa chốt")}</th>
-                    <th>{tr("Kết quả kỳ")}</th>
+                    <th>{tr("Vốn đang đầu tư")}</th>
+                    <th>{tr("Giá trị tài sản đã mua")}</th>
+                    <th>{tr("Tiền chờ")}</th>
+                    <th>{tr("Tổng giá trị hiện tại")}</th>
+                    <th>{tr("Lãi/lỗ phần đang giữ")}</th>
                     <th>{tr("Định giá")}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {report.categories.map((c) => (
+                  {report.portfolios.map((c) => (
                     <tr key={c.id}>
                       <th scope="row">{c.name}</th>
-                      <td>{display(c.startValue)}</td>
-                      <td>{display(c.value)}</td>
                       <td>{money(c.cost)}</td>
-                      <td>{money(c.realized)}</td>
+                      <td>{display(c.value)}</td>
+                      <td>{money(c.cash)}</td>
+                      <td>{display(c.total)}</td>
                       <td>{display(c.unrealized)}</td>
-                      <td>{display(c.result)}</td>
                       <td>
                         {c.kind === "cash"
                           ? tr("Theo giao dịch")
@@ -433,7 +463,10 @@ export function InvestmentReports({
                     <th>{tr("Tài sản cuối tháng")}</th>
                     <th>{tr("Nạp ngoài")}</th>
                     <th>{tr("Rút ngoài")}</th>
-                    <th>{tr("Kết quả tháng")}</th>
+                    <th>{tr("Vốn đang đầu tư")}</th>
+                    <th>{tr("Tiền chờ")}</th>
+                    <th>{tr("Giá trị tài sản đã mua")}</th>
+                    <th>{tr("Lãi/lỗ phần đang giữ")}</th>
                     <th>{tr("Mốc định giá tài sản")}</th>
                   </tr>
                 </thead>
@@ -455,7 +488,12 @@ export function InvestmentReports({
                       <td>{m.value === null ? "—" : money(m.value)}</td>
                       <td>{m.inflow === null ? "—" : money(m.inflow)}</td>
                       <td>{m.outflow === null ? "—" : money(m.outflow)}</td>
-                      <td>{m.result === null ? "—" : money(m.result)}</td>
+                      <td>{m.cost === null ? "—" : money(m.cost)}</td>
+                      <td>{m.cash === null ? "—" : money(m.cash)}</td>
+                      <td>
+                        {m.assetValue === null ? "—" : money(m.assetValue)}
+                      </td>
+                      <td>{m.profit === null ? "—" : money(m.profit)}</td>
                       <td>
                         {m.valuationDates.map((p) => (
                           <small key={p.name}>

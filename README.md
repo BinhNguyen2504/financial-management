@@ -12,7 +12,7 @@
 
 **Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, báo cáo bảng/biểu đồ và xuất CSV. Cho xóa danh mục khi không còn số thu ở bất kỳ tháng/năm nào; bản ghi 0 đồng vẫn chặn xóa. Xem [đặc tả Thu nhập](docs/features/income.md).
 
-**Đầu tư:** tổng tiền từng danh mục và nhiều ví tiền chờ; mở đầu, nạp/rút/chuyển, mua/bán với giá vốn bán nhập tay, phí/thuế, định giá, lãi/lỗ, sửa/hủy có lịch sử, báo cáo xuyên năm và CSV/JSON. Form giao dịch chia nhóm, xem trước rồi xác nhận lưu; xác nhận bỏ nội dung bằng dialog trong ứng dụng. Xóa/lưu trữ chỉ khi hết vốn và giá trị. Xem [đặc tả và migration Đầu tư](docs/features/investments.md). Độc lập với các module khác; chưa áp dụng migration Đầu tư lên cloud.
+**Đầu tư:** theo dõi vốn, giá trị tài sản đang giữ và tiền chờ riêng từng danh mục. Tổng giá trị gồm tài sản + tiền chờ; lãi/lỗ chỉ tính phần còn giữ. Nạp → mua → định giá → bán về ví → rút; xem trước rồi xác nhận, sửa/hủy có lịch sử, báo cáo nhiều năm và CSV. Bán hết không tự lưu trữ; chỉ lưu trữ khi hết vốn, giá trị và tiền chờ. Xem [đặc tả Đầu tư](docs/features/investments.md). Source/local và thay dữ liệu cloud được xác minh riêng.
 
 **Tiết kiệm:** bảng danh mục và giao dịch căn cột trên desktop, xếp dọc có nhãn trên mobile, tùy chọn cột; tiền/ví, từng sổ tiền gửi và đợt mua vàng; rút/bán, lãi thực nhận, tái tục, giá lịch sử, báo cáo xuyên năm, chốt/mở lại tháng và CSV/JSON. Xem [đặc tả và migration Tiết kiệm](docs/features/savings.md). Chưa tự đồng bộ số dư với Thu nhập/Chi tiêu. Đọc lại cloud ngày 18/10 xác nhận đã có schema và bộ mẫu Tiết kiệm; chưa dùng bằng chứng này để khẳng định đăng nhập/thiết bị thật.
 
@@ -217,3 +217,7 @@ Database đã bật reset cần migration bổ sung `202610300001_reset_owner_cl
 ## Mục tiêu — 30/10/2026
 
 /goals có mục tiêu chi dùng và cột mốc tài chính; liên kết nguồn hoặc sổ góp riêng, ưu tiên và kế hoạch góp. Có góp/rút/chuyển, sửa/hủy giữ lịch sử, hoàn thành/tạm dừng/lưu trữ. Backup V3 chứa Goals, nhận V1/V2. Chưa thêm Tổng quan. Xem [đặc tả](docs/features/goals.md), [migration](supabase/migrations/202610300002_goals.sql) và [kiểm chứng](docs/07-validation.md).
+
+## Cột giao dịch Quỹ an toàn — 02/11/2026
+
+Danh sách giao dịch và chi tiết ba quỹ dùng nút bút/thùng rác 44×44px để sửa/hủy, có tooltip và tên trợ năng vi/en. Tiền căn phải, giữa dọc hàng trên desktop; màn hình hẹp đưa thao tác xuống hàng riêng, hai nút vẫn cạnh nhau. Giữ xem trước/xác nhận và lịch sử. Catalog, landing copy và preview minh họa đã được đối chiếu; dữ liệu preview cố định. Xem [đặc tả](docs/features/funds.md) và [kiểm chứng local](docs/07-validation.md).

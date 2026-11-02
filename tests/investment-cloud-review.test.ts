@@ -30,15 +30,17 @@ it.each(["2026-01-01", "2026-02-01", "2026-10-18", "2026-12-31", "2027-01-01"])(
     expect(data.expenses).toEqual(base.expenses);
     expect(data.savings).toEqual(base.savings);
     const state = replay(book, today);
-    expect(state.positions).toHaveLength(8);
+    expect(state.positions).toHaveLength(11);
     expect(state.missing).toEqual([]);
-    expect(state.positions.filter((p) => !p.active)).toHaveLength(2);
+    expect(state.positions.filter((p) => !p.active)).toHaveLength(0);
     expect(
       state.positions
         .filter((p) => p.kind === "cash")
         .every((p) => p.roi === null),
     ).toBe(true);
-    expect(state.effects.some((e) => BigInt(e.realized) < 0n)).toBe(true);
+    expect(
+      state.positions.some((p) => p.kind === "cash" && BigInt(p.cash) > 0n),
+    ).toBe(true);
     expect(state.effects.some((e) => BigInt(e.realized) > 0n)).toBe(true);
     expect(book.revisions.filter((r) => r.reason)).toHaveLength(2);
     expect(

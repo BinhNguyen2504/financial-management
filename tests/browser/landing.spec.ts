@@ -60,10 +60,12 @@ test("public landing and preview stay independent of financial APIs and account 
     preview.getByRole("tab", { name: "Thu nhập", exact: true }),
   ).toBeFocused();
   await page.keyboard.press("End");
-  await expect(
-    preview.getByRole("tab", { name: "Quỹ an toàn", exact: true }),
-  ).toBeFocused();
-  await expect(preview.getByRole("tabpanel")).toContainText("42.750.000 ₫");
+  await expect(preview.getByRole("tab").last()).toBeFocused();
+  await preview.getByRole("tab", { name: "Đầu tư", exact: true }).click();
+  await expect(preview.getByRole("tabpanel")).toContainText("11.000.000 ₫");
+  await expect(preview.getByRole("tabpanel")).toContainText(
+    "Tài sản 8 triệu + tiền chờ 3 triệu",
+  );
   await expect(page.locator("#dang-phat-trien")).toContainText(
     "chưa có tổng tài sản ròng",
   );

@@ -10,7 +10,7 @@ import { focusPointerControl } from "@/components/pointer-focus";
 
 import { ruleAt } from "@/domain/investments/engine";
 
-import type { Position } from "@/domain/investments/types";
+import type { Position, PortfolioPosition } from "@/domain/investments/types";
 import { HelpButton, HelpPageTitle } from "@/features/help/provider";
 import { Pencil as EditCommandGlyph } from "lucide-react";
 import Link from "next/link";
@@ -51,7 +51,6 @@ export function InvestmentWorkspace(
     sum,
     investments,
     wallets,
-    realized,
     unrealized,
     categories,
     from,
@@ -96,7 +95,7 @@ export function InvestmentWorkspace(
               })
             }
           >
-            {p.kind === "cash" ? tr("Nạp") : "Mua"}
+            {p.kind === "cash" ? tr("Nạp") : tr("Mua")}
             <span className="sr-only"> {p.name}</span>
           </button>
         )}
@@ -114,28 +113,32 @@ export function InvestmentWorkspace(
       </div>
     );
   }
-  function positionCard(p: Position) {
+  function positionCard(p: PortfolioPosition) {
     return (
       <article className="panel investment-card" key={p.id}>
         <h3>
           <span aria-hidden="true">{p.emoji}</span> {p.name}
         </h3>
-        <strong className="investment-card-value">{display(p.value)}</strong>
+        <strong className="investment-card-value">{display(p.total)}</strong>
         <dl>
           <div>
-            <dt>{tr("Vốn còn lại")}</dt>
+            <dt>{tr("Giá trị tài sản đã mua")}</dt>
+            <dd>{display(p.value)}</dd>
+          </div>
+          <div>
+            <dt>{tr("Vốn đang đầu tư")}</dt>
             <dd>{money(p.cost)}</dd>
           </div>
           <div>
-            <dt>{tr("Chưa chốt")}</dt>
+            <dt>{tr("Lãi/lỗ phần đang giữ")}</dt>
             <dd>{display(p.unrealized)}</dd>
           </div>
           <div>
-            <dt>{tr("Đã chốt")}</dt>
-            <dd>{money(p.realized)}</dd>
+            <dt>{tr("Tiền chờ")}</dt>
+            <dd>{money(p.cash)}</dd>
           </div>
           <div>
-            <dt>{tr("ROI chưa chốt")}</dt>
+            <dt>{tr("Tỷ lệ lãi/lỗ")}</dt>
             <dd>{formatROI(p.roi, locale)}</dd>
           </div>
         </dl>
@@ -287,20 +290,17 @@ export function InvestmentWorkspace(
                       {[
                         [tr("Tài sản trong Đầu tư"), state!.total],
                         [
-                          tr("Vốn còn giữ"),
+                          tr("Vốn đang đầu tư"),
                           sum(investments.map((p) => p.cost)),
                         ],
                         [tr("Tiền chờ"), sum(wallets.map((p) => p.cash))],
-                        [tr("Lãi/lỗ đã chốt"), realized],
-                        [tr("Lãi/lỗ chưa chốt"), unrealized],
                         [
-                          tr("Tổng lãi/lỗ"),
-                          unrealized === null
+                          tr("Giá trị tài sản đã mua"),
+                          investments.some((p) => p.value === null)
                             ? null
-                            : (
-                                BigInt(realized) + BigInt(unrealized)
-                              ).toString(),
+                            : sum(investments.map((p) => p.value)),
                         ],
+                        [tr("Lãi/lỗ phần đang giữ"), unrealized],
                       ].map(([label, v]) => (
                         <article className="panel metric" key={label}>
                           <span>{label}</span>
@@ -310,7 +310,7 @@ export function InvestmentWorkspace(
                     </div>
                     <p className="expense-muted">
                       {tr(
-                        "Đã chốt từ ngày bắt đầu theo dõi; chưa chốt tính trên giá vốn còn giữ, kể cả vốn mở đầu. Tiền chờ không có ROI.",
+                        "Tổng giá trị gồm tài sản đã mua và tiền chờ. Lãi/lỗ chỉ tính trên phần tài sản đang giữ.",
                       )}
                     </p>
                     {!categories.length ? (
@@ -319,7 +319,7 @@ export function InvestmentWorkspace(
                         <h2>{tr("Bắt đầu từ những gì bạn đang có")}</h2>
                         <p>
                           {tr(
-                            "Tạo danh mục hoặc ví, rồi ghi số dư mở đầu tại ngày bắt đầu theo dõi. Có thể mua trực tiếp từ Bên ngoài.",
+                            "Tạo danh mục với ví tiền chờ riêng. Nạp tiền vào ví rồi ghi mua, hoặc nhập tài sản mở đầu nếu đã có.",
                           )}
                         </p>
                         <button
@@ -346,10 +346,11 @@ export function InvestmentWorkspace(
                               <thead>
                                 <tr>
                                   <th>{tr("Danh mục")}</th>
-                                  <th>{tr("Vốn còn lại")}</th>
-                                  <th>{tr("Giá trị hiện tại")}</th>
-                                  <th>{tr("Chưa chốt / ROI")}</th>
-                                  <th>{tr("Đã chốt")}</th>
+                                  <th>{tr("Vốn đang đầu tư")}</th>
+                                  <th>{tr("Giá trị tài sản đã mua")}</th>
+                                  <th>{tr("Tiền chờ")}</th>
+                                  <th>{tr("Tổng giá trị hiện tại")}</th>
+                                  <th>{tr("Lãi/lỗ / Tỷ lệ")}</th>
                                   <th>{tr("Định giá")}</th>
                                   <th>{tr("Thao tác")}</th>
                                 </tr>
@@ -364,13 +365,14 @@ export function InvestmentWorkspace(
                                       </th>
                                       <td>{money(p.cost)}</td>
                                       <td>{display(p.value)}</td>
+                                      <td>{money(p.cash)}</td>
+                                      <td>{display(p.total)}</td>
                                       <td>
                                         {display(p.unrealized)}
                                         <small>
                                           {formatROI(p.roi, locale)}
                                         </small>
                                       </td>
-                                      <td>{money(p.realized)}</td>
                                       <td>
                                         {p.valueDate ?? tr("Chưa có")}
                                         {p.stale && (
@@ -389,35 +391,6 @@ export function InvestmentWorkspace(
                             .filter((p) => p.active)
                             .map(positionCard)}
                         </div>
-                        <section className="panel">
-                          <h2>{tr("Ví tiền chờ")}</h2>
-                          <HelpButton
-                            pageId="investments"
-                            sectionId="portfolio"
-                            label={tr("Tiền chờ là gì?")}
-                          />
-                          {wallets.filter((p) => p.active).length ? (
-                            wallets
-                              .filter((p) => p.active)
-                              .map((p) => (
-                                <div className="investment-wallet" key={p.id}>
-                                  <div>
-                                    <h3>
-                                      {p.emoji} {p.name}
-                                    </h3>
-                                    <strong>{money(p.cash)}</strong>
-                                  </div>
-                                  {positionActions(p)}
-                                </div>
-                              ))
-                          ) : (
-                            <p>
-                              {tr(
-                                "Chưa có ví tiền chờ. Bạn vẫn có thể mua/bán với nguồn Bên ngoài.",
-                              )}
-                            </p>
-                          )}
-                        </section>
                       </>
                     )}
                   </>
@@ -557,73 +530,80 @@ export function InvestmentWorkspace(
                           "Xóa khỏi danh sách đang dùng bằng cách lưu trữ khi hết tài sản. Toàn bộ lịch sử vẫn được giữ.",
                         )}
                       </p>
-                      {categories.map((c) => {
-                        const r = ruleAt(c, date);
-                        return (
-                          <article key={c.id} className="investment-activity">
-                            <div>
-                              <h3>
-                                {r?.emoji ?? c.rules[0].emoji} {name(c.id)}
-                              </h3>
-                              <p>
-                                {c.kind === "cash"
-                                  ? tr("Ví tiền chờ")
-                                  : tr("Danh mục đầu tư")}{" "}
-                                {tr("· từ")} {formatDate(c.start!, locale)}
-                                {r?.active === false ? tr(" · đã lưu trữ") : ""}
-                              </p>
-                            </div>
-                            <div className="expense-actions">
-                              <button
-                                className="expense-secondary"
-                                onClick={() =>
-                                  open({ type: "configure", categoryId: c.id })
-                                }
-                              >
-                                <EditCommandGlyph
-                                  size={17}
-                                  aria-hidden="true"
-                                />
-                                {tr("Sửa")}
-                                <span className="sr-only"> {name(c.id)}</span>
-                              </button>
-                              <button
-                                className="expense-secondary"
-                                onClick={() =>
-                                  open({
-                                    type: "transaction",
-                                    kind:
-                                      c.kind === "cash"
-                                        ? "openingCash"
-                                        : "openingInvestment",
-                                    categoryId: c.id,
-                                  })
-                                }
-                              >
-                                {tr("Mở đầu")}
-                                <span className="sr-only"> {name(c.id)}</span>
-                              </button>
-                              <button
-                                className="expense-secondary"
-                                onClick={() =>
-                                  open({
-                                    type:
-                                      r?.active === false
-                                        ? "restore"
-                                        : "archive",
-                                    categoryId: c.id,
-                                  })
-                                }
-                              >
-                                {r?.active === false
-                                  ? tr("Khôi phục")
-                                  : tr("Xóa / lưu trữ")}
-                                <span className="sr-only"> {name(c.id)}</span>
-                              </button>
-                            </div>
-                          </article>
-                        );
-                      })}
+                      {categories
+                        .filter((c) => c.kind === "investment")
+                        .map((c) => {
+                          const r = ruleAt(c, date);
+                          return (
+                            <article key={c.id} className="investment-activity">
+                              <div>
+                                <h3>
+                                  {r?.emoji ?? c.rules[0].emoji} {name(c.id)}
+                                </h3>
+                                <p>
+                                  {c.kind === "cash"
+                                    ? tr("Ví tiền chờ")
+                                    : tr("Danh mục đầu tư")}{" "}
+                                  {tr("· từ")} {formatDate(c.start!, locale)}
+                                  {r?.active === false
+                                    ? tr(" · đã lưu trữ")
+                                    : ""}
+                                </p>
+                              </div>
+                              <div className="expense-actions">
+                                <button
+                                  className="expense-secondary"
+                                  onClick={() =>
+                                    open({
+                                      type: "configure",
+                                      categoryId: c.id,
+                                    })
+                                  }
+                                >
+                                  <EditCommandGlyph
+                                    size={17}
+                                    aria-hidden="true"
+                                  />
+                                  {tr("Sửa")}
+                                  <span className="sr-only"> {name(c.id)}</span>
+                                </button>
+                                <button
+                                  className="expense-secondary"
+                                  onClick={() =>
+                                    open({
+                                      type: "transaction",
+                                      kind:
+                                        c.kind === "cash"
+                                          ? "openingCash"
+                                          : "openingInvestment",
+                                      categoryId: c.id,
+                                    })
+                                  }
+                                >
+                                  {tr("Mở đầu")}
+                                  <span className="sr-only"> {name(c.id)}</span>
+                                </button>
+                                <button
+                                  className="expense-secondary"
+                                  onClick={() =>
+                                    open({
+                                      type:
+                                        r?.active === false
+                                          ? "restore"
+                                          : "archive",
+                                      categoryId: c.id,
+                                    })
+                                  }
+                                >
+                                  {r?.active === false
+                                    ? tr("Khôi phục")
+                                    : tr("Xóa / lưu trữ")}
+                                  <span className="sr-only"> {name(c.id)}</span>
+                                </button>
+                              </div>
+                            </article>
+                          );
+                        })}
                       {!categories.length && <p>{tr("Chưa có danh mục.")}</p>}
                     </section>
                   </>

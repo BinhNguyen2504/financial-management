@@ -17,7 +17,7 @@ const base = {
   note: text.default(""),
   counterparty: z.string().trim().max(200).default(""),
 };
-const cash = { cashCategoryId: id.nullable().default(null) };
+const cash = { cashCategoryId: id };
 const charges = {
   fee: moneySchema.default("0"),
   tax: moneySchema.default("0"),
@@ -82,6 +82,8 @@ export const actionSchema = z.discriminatedUnion("type", [
       id,
       start: dateSchema,
       kind: kindSchema,
+      parentCategoryId: id.nullable().optional(),
+      walletId: id.optional(),
       ...metadata,
     })
     .strict(),
@@ -91,6 +93,7 @@ export const actionSchema = z.discriminatedUnion("type", [
       categoryId: id,
       date: dateSchema,
       kind: kindSchema,
+      parentCategoryId: id.nullable().optional(),
       ...metadata,
     })
     .strict(),

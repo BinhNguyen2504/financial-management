@@ -1,3 +1,4 @@
+import { defaultWalletId } from "../investments/model";
 import { validateFundBook } from "../funds/validate";
 import { validateGoalBook, sourceKey } from "../goals/engine";
 import type { GoalBook } from "../goals/schema";
@@ -209,7 +210,14 @@ export function validateBackup(input: unknown): FullBackup {
       }
       requireValid(rules.length > 0, "thiếu quy tắc danh mục.");
       const creation = t[`${prefix}_audit`].find(
-        (a) => a.action.type === "createCategory" && a.action.id === c.id,
+        (a) =>
+          a.action.type === "createCategory" &&
+          (a.action.id === c.id ||
+            (prefix === "investments" &&
+              "kind" in a.action &&
+              a.action.kind === "investment" &&
+              (("walletId" in a.action ? a.action.walletId : undefined) ??
+                defaultWalletId(a.action.id)) === c.id)),
       );
       requireValid(
         creation &&
@@ -228,6 +236,22 @@ export function validateBackup(input: unknown): FullBackup {
         );
       } else {
         const data = c.data as InvestmentBook["categories"][number];
+        if (data.kind === "cash")
+          requireValid(
+            !!data.parentCategoryId &&
+              books.investments?.categories.some(
+                (parent) =>
+                  parent.id === data.parentCategoryId &&
+                  parent.kind === "investment" &&
+                  parent.start <= data.start,
+              ),
+            "ví tiền chờ thiếu danh mục sở hữu; dữ liệu Đầu tư cũ không tương thích.",
+          );
+        else
+          requireValid(
+            !data.parentCategoryId,
+            "danh mục đầu tư không có danh mục cha.",
+          );
         const sequences = new Set(data.rules.map((r) => r.sequence));
         requireValid(
           data.rules[0].date === data.start &&

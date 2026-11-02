@@ -120,7 +120,7 @@ Khi bắt đầu native mới cân nhắc cấu trúc `apps/web`, `apps/mobile` 
 
 ## Đầu tư — 18/10/2026
 
-Đầu tư có domain/application/repository/API/UI riêng, theo tổng danh mục VND và nhiều ví tiền chờ. Dùng lại cơ chế Auth, RLS, preview, advisory lock, version và idempotency của các module hiện có; không dùng engine vàng/sổ tiền gửi cho danh mục tổng tiền. Mua/bán là một command cập nhật vốn, định giá và ví trong cùng transaction. Sáu bảng mới giữ metadata có ngày, revisions giao dịch/định giá, audit và command; không có tháng chốt. Trang await kiểm tra truy cập server. Chi tiết [Đầu tư](features/investments.md).
+Đầu tư có domain/application/repository/API/UI riêng, theo tổng danh mục VND. Từ 02/11/2026, mỗi ví có parentCategoryId thuộc một danh mục; tạo danh mục và ví mặc định nguyên tử. Projection portfolios cộng ví vào tổng từng danh mục, còn raw positions dùng cho Mục tiêu và tổng module để không cộng trùng. Lãi/lỗ UI chỉ tính tài sản còn giữ. Dùng lại cơ chế Auth, RLS, preview, advisory lock, version và idempotency của các module hiện có; không dùng engine vàng/sổ tiền gửi cho danh mục tổng tiền. Mua/bán là một command cập nhật vốn, định giá và ví trong cùng transaction. Sáu bảng mới giữ metadata có ngày, revisions giao dịch/định giá, audit và command; không có tháng chốt. Trang await kiểm tra truy cập server. Chi tiết [Đầu tư](features/investments.md).
 
 Không tự nối số dư với các module khác hoặc tạo báo cáo tài sản ròng toàn ứng dụng. Migration cloud và kiểm chứng thiết bị thật là bước riêng.
 

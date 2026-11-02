@@ -132,6 +132,8 @@ export const catalog = {
     "Independent ledger; add, withdraw and transfer between funds/locations",
   "Sửa/hủy có lịch sử, nguồn thay đổi được xem trước rồi áp dụng":
     "Edit/void with history; preview source changes before applying",
+  "Giao dịch căn cột tiền, nút biểu tượng sửa/hủy gọn trên mọi màn hình":
+    "Aligned transaction amounts and compact edit/void icon buttons across screen sizes",
   "Mục tiêu": "Goals",
   "Từ mục tiêu đến kế hoạch": "From goals to plans",
   "Theo dõi mục tiêu tiền, hạn hoàn thành và mức tích lũy cần thiết.":

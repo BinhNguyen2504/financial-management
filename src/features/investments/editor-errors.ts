@@ -19,11 +19,7 @@ export function investmentFieldErrors(
         errors[key] = "Nhập số nguyên VND không âm, tối đa 24 chữ số.";
     }
   }
-  if (
-    errors.cashCategoryId &&
-    fields.transactionKind === "transfer" &&
-    !fields.cashCategoryId
-  )
-    errors.cashCategoryId = "Chọn ví nhận";
+  if (errors.cashCategoryId)
+    errors.cashCategoryId = "Chọn ví tiền chờ thuộc danh mục.";
   return errors;
 }

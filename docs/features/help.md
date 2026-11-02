@@ -1,5 +1,10 @@
 # Help theo từng trang
 
+## Cập nhật Đầu tư — 02/11/2026
+
+Help giữ các anchor cũ để liên kết ngữ cảnh hoạt động, thay nội dung bằng ví riêng từng danh mục, ví dụ 10/7/3/8 triệu và công thức lãi/lỗ phần đang giữ. Mua/bán qua ví; bán hết giữ tiền trong ví, vốn và lãi/lỗ bằng 0; mua lại theo dõi phần mới. vi/en đồng bộ, không còn giải thích lãi đã chốt/kết quả kỳ trong bài Đầu tư.
+
+
 Triển khai trong source ngày 20/10/2026. Help phục vụ người quản lý tài chính cá nhân, kể cả người mới; nội dung tiếng Việt, theo định hướng sản phẩm đã duyệt. Phạm vi 12 trang trong app: Tổng quan, Chi tiêu, Thu nhập, Tiết kiệm, Đầu tư, Quỹ an toàn, Cài đặt, Hồ sơ, Thu & chi, Tài khoản, Mục tiêu và Báo cáo.
 
 ## Cách dùng

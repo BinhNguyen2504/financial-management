@@ -12,6 +12,17 @@ export function replay(
   asOf: string,
   cutoff = Infinity,
 ): InvestmentState {
+  for (const c of book.categories)
+    if (
+      c.kind === "cash" &&
+      !book.categories.some(
+        (p) =>
+          p.id === c.parentCategoryId &&
+          p.kind === "investment" &&
+          p.start <= c.start,
+      )
+    )
+      fail("Ví tiền chờ chưa thuộc danh mục. Dữ liệu Đầu tư cũ cần tạo lại.");
   const entries = new Map(
     book.categories.map((c) => [
       c.id,
@@ -19,7 +30,7 @@ export function replay(
         c,
         cash: 0n,
         cost: 0n,
-        value: null as bigint | null,
+        value: 0n as bigint | null,
         valueDate: null as string | null,
         realized: 0n,
       },
@@ -38,6 +49,15 @@ export function replay(
       fail("Danh mục chưa bắt đầu hoặc đã lưu trữ tại ngày giao dịch.");
     if (kind && v.c.kind !== kind)
       fail("Loại danh mục không phù hợp với giao dịch.");
+    if (v.c.kind === "cash") {
+      const parent =
+        (v.c.parentCategoryId ? entries.get(v.c.parentCategoryId) : null) ??
+        fail("Ví tiền chờ chưa thuộc danh mục. Dữ liệu Đầu tư cũ cần tạo lại.");
+      if (parent.c.kind !== "investment")
+        fail("Ví tiền chờ chưa thuộc danh mục. Dữ liệu Đầu tư cũ cần tạo lại.");
+      if (date < parent.c.start || !ruleAt(parent.c, date, seq)?.active)
+        fail("Danh mục chưa bắt đầu hoặc đã lưu trữ tại ngày giao dịch.");
+    }
     return v;
   }
   for (const { transaction: t, sequence } of activeTransactions(book)) {
@@ -46,6 +66,11 @@ export function replay(
       cashId = "cashCategoryId" in t ? t.cashCategoryId : null;
     if (cashId === t.categoryId) fail("Hai phía giao dịch phải khác nhau.");
     const wallet = cashId ? category(cashId, t.date, sequence, "cash") : null;
+    if (
+      (t.kind === "buy" || t.kind === "sell") &&
+      (!wallet || wallet.c.parentCategoryId !== t.categoryId)
+    )
+      fail("Chọn ví tiền chờ thuộc danh mục đang mua/bán.");
     const e: TransactionEffect = {
       id: t.id,
       date: t.date,
@@ -153,7 +178,7 @@ export function replay(
     effects.push(e);
   }
   const positions = [...entries.values()]
-    .filter((v) => v.c.start <= asOf)
+    .filter((v) => v.c.start <= asOf && !!ruleAt(v.c, asOf, cutoff))
     .map((v) => {
       const r = ruleAt(v.c, asOf, cutoff)!;
       const value = v.c.kind === "cash" ? v.cash : v.value;
@@ -165,7 +190,11 @@ export function replay(
         emoji: r.emoji,
         description: r.description,
         kind: v.c.kind,
-        active: r.active,
+        active:
+          r.active &&
+          (v.c.kind !== "cash" ||
+            !!ruleAt(entries.get(v.c.parentCategoryId!)!.c, asOf, cutoff)
+              ?.active),
         cash: v.cash.toString(),
         cost: v.cost.toString(),
         value: value?.toString() ?? null,

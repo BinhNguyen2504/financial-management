@@ -99,7 +99,7 @@ App iOS tương lai dùng Flutter/Dart, giữ mô hình nghiệp vụ/API nhưng
 
 ## Đầu tư — 18/10/2026
 
-Bốn tab đã được người dùng chọn: Danh mục, Giao dịch, Báo cáo, Quản lý. Danh mục tổng tiền; bảng desktop và thẻ mobile, ví tiền chờ tách thành khu vực riêng. Sáu chỉ số đầu trang phân biệt tài sản/vốn/tiền chờ và lãi đã/chưa chốt/tổng. Không tính ROI cho tiền chờ.
+Từ 02/11/2026: giữ bốn tab Danh mục, Giao dịch, Báo cáo, Quản lý. Bảng desktop/thẻ mobile hiển thị vốn đang đầu tư, tài sản đã mua, tiền chờ, tổng giá trị và lãi/lỗ phần đang giữ. Ví quản lý trong chi tiết danh mục. Bỏ lãi đã bán và kết quả kỳ khỏi UI/CSV. Mua/bán qua ví cùng danh mục; bán hết về ví không tự lưu trữ.
 
 Form mua/bán nhập giá trị còn giữ sau giao dịch và nguồn/đích ví hoặc Bên ngoài; có xem trước và xác nhận, giữ nháp khi lỗi/xung đột, khóa nội dung khi kết quả lưu chưa xác định. Chi tiết giao dịch thể hiện hai phía trước/sau và revision. “Xóa / lưu trữ” chỉ thực hiện khi hết tài sản, có thể khôi phục.
 
@@ -291,3 +291,7 @@ Lỗi quyền xử lý đã rollback báo rõ hệ thống chưa đủ quyền, 
 ## Mục tiêu — 30/10/2026
 
 Trang trả lời “đã chuẩn bị bao nhiêu, còn thiếu gì và bước tiếp theo là gì”. Thẻ hai cột desktop/một cột mobile, tiến độ cùng cơ sở tính và hạn; nguồn có tỷ lệ còn khả dụng. Dữ liệu thiếu khác 0. Form nhóm rõ, preview trước/sau và xác nhận; hoàn thành không tự rút tiền. Không cộng tiến độ thành tổng tài sản. Giữ token/font/shell, năm theme, che tiền và vi/en. Xem [Goals](features/goals.md).
+
+## Cột giao dịch Quỹ an toàn — 02/11/2026
+
+Danh sách ngoài trang và dialog ba quỹ dùng cột thao tác 96px trên desktop: hai nút icon 44×44px cách nhau 8px, tên trợ năng/tooltip đầy đủ vi/en. Tiền căn phải với chữ số đều, tiền và thao tác giữa dọc hàng. Container tối đa 700px đưa thao tác xuống hàng riêng; tối đa 480px đặt loại giao dịch/tiền ở đầu, metadata bên dưới. Chỉ nhóm nút trong hàng giao dịch không xuống dòng; các nhóm nút khác giữ responsive hiện có. Tiền dài và ghi chú được xuống dòng trong cột riêng, không cắt giá trị. Xem [đặc tả Quỹ](features/funds.md).

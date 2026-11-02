@@ -93,3 +93,11 @@ Ba quỹ dùng chung bố cục chi tiết: giao dịch căn phải số tiền 
 ## Liên kết Mục tiêu — 30/10/2026
 
 Mục tiêu đã có source. Từng Quỹ là nguồn chỉ đọc cho cột mốc tài chính; không chia cho chi dùng. Không đổi số dư, cấu hình, nơi giữ hoặc sổ Quỹ. Backup V3 chứa cả hai module, không cộng các sổ thành tài sản ròng. Xem [Goals](goals.md).
+
+## Cột tiền và thao tác giao dịch — 02/11/2026
+
+Danh sách ngoài trang và tab Giao dịch trong chi tiết cả ba quỹ dùng hai nút chỉ có icon: bút để sửa, thùng rác để hủy. Mỗi nút 44×44px, cách nhau 8px, có tên trợ năng và tooltip `title` đầy đủ bằng vi/en. Nút vẫn mở form sửa/hủy với lý do, xem trước và xác nhận; không hủy trực tiếp từ danh sách.
+
+Vùng nội dung trên 700px có ba cột thông tin, tiền và thao tác 96px; tiền và thao tác căn giữa dọc hàng, tiền căn phải với chữ số đều. Từ 481–700px, thao tác nằm ở hàng riêng; tối đa 480px, loại giao dịch và tiền ở hàng đầu, thông tin ở dưới, thao tác cuối. Hai nút luôn cạnh nhau. Ghi chú và tiền dài được xuống dòng trong phần riêng, không che nút hoặc làm tràn trang; Privacy Mode giữ cách che tiền hiện có.
+
+Đã đối chiếu README, catalog, landing copy/Help preview và hướng UX. Public preview vẫn chỉ minh họa số dư quỹ bằng dữ liệu cố định, không giả lập nút sửa/hủy trên dữ liệu preview và không gọi API tài chính. Không đổi API/schema, backup hoặc ranh giới Auth. Bằng chứng local xem [Validation](../07-validation.md).

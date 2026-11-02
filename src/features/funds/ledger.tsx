@@ -207,20 +207,20 @@ export function FundLedger({
                   </strong>
                   <div className="fund-actions">
                     <button
-                      className="expense-secondary"
+                      className="expense-icon-button"
                       onClick={() => onEdit({ type: "revise", transaction: t })}
-                      aria-label={tr("Sửa")}
-                      title={tr("Sửa")}
+                      aria-label={tr("Sửa giao dịch")}
+                      title={tr("Sửa giao dịch")}
                     >
                       <EditActionIcon size={18} aria-hidden="true" />
-                      {tr("Sửa")}
                     </button>
                     <button
-                      className="expense-secondary"
+                      className="expense-icon-button"
                       onClick={() => onEdit({ type: "cancel", transaction: t })}
+                      aria-label={tr("Hủy giao dịch")}
+                      title={tr("Hủy giao dịch")}
                     >
                       <CancelEntryIcon size={17} aria-hidden="true" />
-                      {tr("Hủy giao dịch")}
                     </button>
                   </div>
                 </article>

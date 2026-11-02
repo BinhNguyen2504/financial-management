@@ -1,8 +1,15 @@
 import { actionSchema, type InvestmentAction } from "./schema";
 import type { Clock, InvestmentBook, InvestmentView } from "./types";
-import { fail, emptyBook, ruleAt, activeTransactions } from "./model";
+import {
+  fail,
+  emptyBook,
+  ruleAt,
+  activeTransactions,
+  defaultWalletId,
+} from "./model";
 
 import { replay } from "./replay";
+import { portfolioPositions } from "./portfolios";
 export { replay } from "./replay";
 export {
   InvestmentError,
@@ -27,14 +34,28 @@ export function applyAction(
     if (date > clock.today) fail("Không ghi dữ liệu trong tương lai.");
   };
   switch (action.type) {
-    case "createCategory":
+    case "createCategory": {
       dateAllowed(action.start);
       if (book.categories.some((c) => c.id === action.id))
         fail("Mã danh mục đã tồn tại.");
+      if (action.kind === "cash") {
+        const parent = action.parentCategoryId
+          ? cat(action.parentCategoryId)
+          : fail("Chọn danh mục sở hữu ví tiền chờ.");
+        if (
+          parent.kind !== "investment" ||
+          parent.start > action.start ||
+          !ruleAt(parent, action.start)?.active
+        )
+          fail("Danh mục sở hữu ví chưa hoạt động tại ngày bắt đầu.");
+      } else if (action.parentCategoryId)
+        fail("Danh mục đầu tư không thể thuộc một danh mục khác.");
       book.categories.push({
         id: action.id,
         start: action.start,
         kind: action.kind,
+        parentCategoryId:
+          action.kind === "cash" ? action.parentCategoryId : null,
         rules: [
           {
             date: action.start,
@@ -46,7 +67,29 @@ export function applyAction(
           },
         ],
       });
+      if (action.kind === "investment") {
+        const walletId = action.walletId ?? defaultWalletId(action.id);
+        if (book.categories.some((c) => c.id === walletId))
+          fail("Mã danh mục đã tồn tại.");
+        book.categories.push({
+          id: walletId,
+          start: action.start,
+          kind: "cash",
+          parentCategoryId: action.id,
+          rules: [
+            {
+              date: action.start,
+              sequence: seq,
+              name: action.name,
+              description: "",
+              emoji: "💼",
+              active: true,
+            },
+          ],
+        });
+      }
       break;
+    }
     case "configureCategory":
     case "archiveCategory":
     case "restoreCategory": {
@@ -55,18 +98,32 @@ export function applyAction(
       if (action.date < c.start) fail("Ngày hiệu lực trước ngày bắt đầu.");
       const old = ruleAt(c, action.date)!;
       if (action.type === "configureCategory") {
-        if (
-          action.kind !== c.kind &&
-          book.revisions.some(
-            (r) =>
-              r.transaction &&
-              (r.transaction.categoryId === c.id ||
-                ("cashCategoryId" in r.transaction &&
-                  r.transaction.cashCategoryId === c.id)),
+        const parentId =
+          action.parentCategoryId === undefined
+            ? c.parentCategoryId
+            : action.parentCategoryId;
+        if (c.kind !== action.kind)
+          fail("Không đổi loại danh mục. Hãy tạo danh mục hoặc ví mới.");
+        if (parentId !== c.parentCategoryId) {
+          if (
+            book.revisions.some(
+              (r) =>
+                r.transaction &&
+                (r.transaction.categoryId === c.id ||
+                  ("cashCategoryId" in r.transaction &&
+                    r.transaction.cashCategoryId === c.id)),
+            )
           )
-        )
-          fail("Không đổi loại danh mục đã có phát sinh.");
-        c.kind = action.kind;
+            fail("Không đổi danh mục sở hữu ví đã có giao dịch.");
+          const parent = parentId ? cat(parentId) : null;
+          if (
+            c.kind !== "cash" ||
+            parent?.kind !== "investment" ||
+            parent.start > c.start
+          )
+            fail("Chọn danh mục sở hữu ví tiền chờ.");
+          c.parentCategoryId = parentId;
+        }
       }
       c.rules.push({
         ...old,
@@ -164,6 +221,20 @@ export function applyAction(
         fail(
           "Cần hết giá vốn và giá trị tài sản, hoặc hết tiền ví, trước khi xóa/lưu trữ.",
         );
+      if (p.kind === "investment") {
+        const state = replay(book, r.date, r.sequence);
+        if (
+          book.categories
+            .filter((w) => w.parentCategoryId === c.id)
+            .some(
+              (w) =>
+                BigInt(
+                  state.positions.find((x) => x.id === w.id)?.cash ?? "0",
+                ) !== 0n,
+            )
+        )
+          fail("Cần rút hết tiền chờ trước khi lưu trữ danh mục.");
+      }
     }
   book.version = seq;
   book.audit.push({ version: seq, at: clock.now, action });
@@ -174,9 +245,14 @@ export function toView(
   asOf: string,
   clock: Clock,
 ): InvestmentView {
+  const state = replay(
+    book ?? emptyBook(),
+    asOf > clock.today ? clock.today : asOf,
+  );
   return {
     book,
-    state: replay(book ?? emptyBook(), asOf > clock.today ? clock.today : asOf),
+    state,
+    portfolios: portfolioPositions(book, state),
     today: clock.today,
     month: asOf.slice(0, 7),
   };

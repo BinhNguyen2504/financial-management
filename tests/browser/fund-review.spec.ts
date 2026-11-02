@@ -129,18 +129,18 @@ test("synthetic Fund review renders garden, pagination, archived locations, hist
     .selectOption("");
   await filters.locator("summary").click();
   await expect(
-    row.getByRole("button", { name: "Sửa", exact: true }),
-  ).toHaveText("Sửa");
+    row.getByRole("button", { name: "Sửa giao dịch", exact: true }),
+  ).toHaveAttribute("title", "Sửa giao dịch");
   await expect(
     row.getByRole("button", { name: "Hủy giao dịch", exact: true }),
-  ).toHaveText("Hủy giao dịch");
+  ).toHaveAttribute("title", "Hủy giao dịch");
   const rightEdges = await transactions
     .locator(".fund-transaction-amount")
     .evaluateAll((elements) =>
       elements.map((el) => el.getBoundingClientRect().right),
     );
   expect(Math.max(...rightEdges) - Math.min(...rightEdges)).toBeLessThan(2);
-  await row.getByRole("button", { name: "Sửa", exact: true }).click();
+  await row.getByRole("button", { name: "Sửa giao dịch", exact: true }).click();
   await expect(page.getByRole("dialog").last()).toContainText("Sửa giao dịch");
   await page
     .getByRole("dialog")

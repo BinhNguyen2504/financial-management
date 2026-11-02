@@ -117,7 +117,7 @@ describe("editor draft to action compatibility", () => {
     expect(allocations[id]).toBe("0");
   });
 
-  it("retains investment correction identity, fees and the external-money null wallet", () => {
+  it("retains investment correction identity, fees and its settlement wallet", () => {
     const fields = Object.freeze({
       date: "2026-10-28",
       categoryId,
@@ -127,7 +127,7 @@ describe("editor draft to action compatibility", () => {
       fee: "0001",
       tax: "0",
       value: large,
-      cashCategoryId: "",
+      cashCategoryId: lotId,
       reason: "Correction",
     });
     const old = {
@@ -141,7 +141,7 @@ describe("editor draft to action compatibility", () => {
       fee: "0",
       tax: "0",
       value: "1",
-      cashCategoryId: null,
+      cashCategoryId: lotId,
     };
     expect(
       buildInvestmentAction({
@@ -167,7 +167,7 @@ describe("editor draft to action compatibility", () => {
         fee: "1",
         tax: "0",
         value: large,
-        cashCategoryId: null,
+        cashCategoryId: lotId,
       },
     });
   });

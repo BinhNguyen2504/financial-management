@@ -1,4 +1,4 @@
-**Đầu tư đã triển khai source ngày 18/10/2026:** tổng danh mục VND và ví tiền chờ, mở đầu tách dòng vốn mới, giá vốn bán nhập tay, định giá có revision. Sáu bảng `investments_*`, lưu chuỗi tiền chính xác, RLS cùng owner và lịch sử append-only. Xem [Đầu tư](features/investments.md); không dùng các thực thể mã/lô dự kiến bên dưới cho bản tổng danh mục.
+**Đầu tư cập nhật source ngày 02/11/2026:** tổng danh mục VND, mỗi ví có `parentCategoryId` thuộc một danh mục; tạo danh mục kèm ví mặc định nguyên tử, mua/bán qua ví, giá vốn bán nhập tay và định giá có revision. Tổng giá trị có tiền chờ; lãi/lỗ chỉ tính phần đang giữ. Sáu bảng `investments_*`, lưu chuỗi tiền chính xác, RLS cùng owner và lịch sử append-only. Xem [Đầu tư](features/investments.md); không dùng các thực thể mã/lô dự kiến bên dưới cho bản tổng danh mục.
 
 # Mô hình dữ liệu sơ bộ
 

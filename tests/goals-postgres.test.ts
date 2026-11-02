@@ -257,7 +257,7 @@ describe("Goals PostgreSQL", () => {
       await run(user, action);
     }
     const v = await readGoalView(repo, user, clock);
-    expect(v.sources.items[0]).toMatchObject({
+    expect(v.sources.items.find((p) => p.sourceId === asset)).toMatchObject({
       capital: "100",
       value: "120",
       valueDate: "2026-09-01",

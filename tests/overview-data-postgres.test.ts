@@ -45,7 +45,15 @@ import {
 } from "../src/domain/overview/summary";
 import * as before from "./helpers/overview-baseline";
 
-const clock = { today: "2026-10-29", now: "2026-10-29T00:00:00.000Z" };
+const liveMonth = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Ho_Chi_Minh",
+  year: "numeric",
+  month: "2-digit",
+}).format(new Date());
+const clock = {
+  today: `${liveMonth}-15`,
+  now: `${liveMonth}-15T00:00:00.000Z`,
+};
 const admin = postgres(process.env.TEST_DATABASE_ADMIN_URL!, { max: 1 });
 let queries: string[] = [],
   rowCount = 0,

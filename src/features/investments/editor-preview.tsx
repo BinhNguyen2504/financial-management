@@ -34,11 +34,11 @@ export function InvestmentEditorPreview({
               const before = preview.result.before.positions.find(
                 (b) => b.id === p.id,
               );
-              return (["cost", "value", "realized"] as const)
+              return (["cash", "cost", "value"] as const)
                 .filter((field) => before?.[field] !== p[field])
                 .map((field) => ({
                   key: `${p.id}/${field}`,
-                  label: `${p.name} · ${{ cost: tr("Giá vốn"), value: tr("Giá trị"), realized: tr("Lãi / lỗ đã chốt") }[field]}`,
+                  label: `${p.name} · ${{ cost: tr("Giá vốn"), value: tr("Giá trị"), cash: tr("Tiền chờ") }[field]}`,
                   before:
                     before?.[field] === null
                       ? tr("Thiếu định giá")

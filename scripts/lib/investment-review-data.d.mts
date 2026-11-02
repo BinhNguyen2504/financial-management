@@ -13,6 +13,7 @@ export interface InvestmentSample {
 export function buildInvestmentReviewData(options: {
   ownerId: string;
   today?: string;
+  description?: string;
 }): InvestmentSample;
 export function buildInvestmentReviewSQL(sample: InvestmentSample): {
   seed: string;

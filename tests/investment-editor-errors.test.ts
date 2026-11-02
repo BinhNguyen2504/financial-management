@@ -25,6 +25,7 @@ describe("investment editor validation feedback", () => {
     const result = errors({ categoryId: "", amount: "", value: "" });
     expect(result).toEqual({
       categoryId: "Chọn một danh mục có sẵn.",
+      cashCategoryId: "Chọn ví tiền chờ thuộc danh mục.",
       amount: "Nhập số tiền bằng VND.",
       value: "Nhập số tiền bằng VND.",
     });
@@ -47,6 +48,7 @@ describe("investment editor validation feedback", () => {
           kind: "buy",
           date: "2026-10-29",
           categoryId: id,
+          cashCategoryId: id,
           amount: "9".repeat(24),
           value: "0",
         },
@@ -70,7 +72,7 @@ describe("investment editor validation feedback", () => {
     expect(parsed.success).toBe(false);
     if (parsed.success) throw new Error("Expected invalid form");
     expect(investmentFieldErrors(parsed.error.issues, {})).toMatchObject({
-      cashCategoryId: "Chọn ví tiền phù hợp hoặc để trống nếu không bắt buộc.",
+      cashCategoryId: "Chọn ví tiền chờ thuộc danh mục.",
       reason: "Nhập lý do thay đổi để giữ lịch sử rõ ràng.",
     });
   });

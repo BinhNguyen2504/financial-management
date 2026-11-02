@@ -41,9 +41,9 @@ const helpPreview = {
   savings:
     "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.",
   investments:
-    "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví. Xem trước tác động trước khi lưu giao dịch.",
+    "Mỗi danh mục gồm tài sản đã mua và tiền chờ. Lãi/lỗ chỉ tính trên phần đang giữ; cập nhật định giá không thay đổi tiền trong ví. Xem trước rồi xác nhận giao dịch.",
   funds:
-    "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt đã xác nhận và hệ số bạn chọn. Cập nhật nguồn từ Chi tiêu cần xem trước và xác nhận; đổi mục tiêu không tự thêm tiền vào quỹ.",
+    "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt đã xác nhận và hệ số bạn chọn. Cập nhật nguồn từ Chi tiêu cần xem trước và xác nhận; đổi mục tiêu không tự thêm tiền vào quỹ. Trong sổ giao dịch, dùng biểu tượng bút để sửa và thùng rác để hủy, có lưu lịch sử.",
 };
 // Fixed illustrative data, including in server-rendered public SEO content.
 // Never substitute account data or fetch financial APIs for this preview.
@@ -182,26 +182,19 @@ const data = {
   },
   investments: {
     title: "Nhìn rõ những khoản đang đầu tư.",
-    subtitle: "Theo dõi tài sản và tiền chờ, kèm ngày cập nhật giá trị.",
+    subtitle: "Tổng giá trị gồm tài sản đã mua và tiền chờ riêng của danh mục.",
     label: "Tài sản trong Đầu tư",
-    value: "72000000",
+    value: "11000000",
     secondary: "Danh mục và ví",
     secondaryValue: "1 danh mục · 1 ví",
-    columns: ["Danh mục / ví", "Giá trị"],
+    columns: ["Danh mục", "Tổng giá trị hiện tại"],
     rows: [
       {
         name: "Cổ phiếu",
-        note: "Định giá 30/06/2026",
+        note: "Tài sản 8 triệu + tiền chờ 3 triệu · Vốn 7 triệu · Lãi 1 triệu",
         emoji: "📈",
-        amount: "65000000",
-        percent: 90,
-      },
-      {
-        name: "Tiền chờ TCBS",
-        note: "Tiền chờ · Không tính ROI",
-        emoji: "💼",
-        amount: "7000000",
-        percent: 10,
+        amount: "11000000",
+        percent: 100,
       },
     ],
     chartLabel: "TÀI SẢN ĐẦU TƯ CUỐI THÁNG",
@@ -445,7 +438,7 @@ export function ProductPreview({
                         <strong>{money(data.investments.value)}</strong>
                         <small>{tr("Gồm khoản đầu tư và tiền chờ")}</small>
                         <span>
-                          {tr("Lãi/lỗ chưa chốt")} · {money("5000000")}
+                          {tr("Lãi/lỗ phần đang giữ")} · {money("1000000")}
                         </span>
                       </section>
                       <section>
@@ -511,7 +504,11 @@ export function ProductPreview({
                                 <small>
                                   {active === "funds"
                                     ? tr("Hoàn thành {0}%", { 0: row.percent })
-                                    : tr(row.note)}
+                                    : hidden && active === "investments"
+                                      ? tr(
+                                          "Tài sản và tiền chờ của cùng danh mục",
+                                        )
+                                      : tr(row.note)}
                                 </small>
                                 {active === "budgets" && (
                                   <span className="preview-payment">

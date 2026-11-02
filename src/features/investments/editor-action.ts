@@ -33,6 +33,7 @@ export function buildInvestmentAction({
       id: entityId,
       start: f.start,
       kind: f.kind,
+      parentCategoryId: f.kind === "cash" ? f.parentCategoryId : null,
       name: f.name,
       emoji: f.emoji,
       description: f.description,
@@ -43,6 +44,7 @@ export function buildInvestmentAction({
       categoryId: mode.categoryId,
       date: f.date,
       kind: f.kind,
+      parentCategoryId: f.kind === "cash" ? f.parentCategoryId : null,
       name: f.name,
       emoji: f.emoji,
       description: f.description,
@@ -81,7 +83,7 @@ export function buildInvestmentAction({
   if (kind === "buy" || kind === "sell") {
     t.fee = normalizeInteger(f.fee);
     t.tax = normalizeInteger(f.tax);
-    t.cashCategoryId = f.cashCategoryId || null;
+    t.cashCategoryId = f.cashCategoryId;
   }
   if (kind === "transfer") t.cashCategoryId = f.cashCategoryId;
   return actionSchema.parse(

@@ -25,7 +25,20 @@ const directory = resolve(
   `investments-review-${data.investmentToday}-${data.datasetId.slice(0, 8)}`,
 );
 await mkdir(directory, { recursive: true, mode: 0o700 });
-const readme = `# Investment UI review\n\nOwner: ${data.ownerId}\nDataset: ${data.datasetId}\nDate: ${data.investmentToday}\n\nReferences: Notion/investment-1.png and investment-2.png. Starting cost/value pairs for stocks, equity funds, bond funds and crypto reference the screenshots; dates and later transactions are synthetic. This is review data, not a migration of actual financial history.\n\nExisting Income, Expenses and Savings are preserved. All four modules must have matching review markers before the complete reset is allowed.\n\n1. Run 01-enable-and-seed.sql once in the configured Supabase project SQL Editor as the migration/admin role. It adds all six Investment tables only if every one is missing, rejects partial schemas, then seeds this owner in the same transaction. Do not run reset.\n2. Refresh /investments while signed in as this owner. 00-inspect.sql verifies all 28 tables and review markers. Repeating the exact seed preserves review edits.\n3. If schema is already installed, 04-seed-investments-only.sql or data:import can seed through the normal expense_api/RLS role. The CLI saves a backup and reads back amounts.\n4. ONLY AFTER UI/UX APPROVAL: export 02-backup.sql and replace NOT_CONFIRMED in 03-reset.sql with RESET REVIEW ${data.ownerId}. The reset clears all four financial modules for this owner, including review edits, and returns another snapshot immediately before deletion. It preserves Auth/profile and other owners. It refuses mismatched markers and rolls back data and trigger changes on error.\n\nCases: initial capital/value, multiple cash wallets, monthly DCA-style contributions, buys with fees, partial profit/loss sales, direct external settlement, wallet transfers/withdrawal, full liquidation, zero-proceeds write-off, archived categories, stale/fresh valuation, corrected valuation and canceled duplicate deposit.\n\nNever execute the reset as part of seed/import. Credentials are not included in this folder. No cloud seed or reset is implied by generating these files.\n`;
+const readme = `# Investment UI review
+
+Owner: ${data.ownerId}
+Dataset: ${data.datasetId}
+Date: ${data.investmentToday}
+
+All amounts and dates are illustrative. Five portfolios own six cash wallets. Stocks use the 10m deposit, 7m purchase, 3m cash and 8m valuation example. Bitcoin illustrates selling all and buying again; an index fund retains only cash. Other cases cover partial sales, fees/taxes, wallet transfers, withdrawal, dated valuations, correction and cancellation.
+
+Existing modules are preserved when seeding an empty Investment ledger. If the Investment schema is absent, run 01-enable-and-seed.sql with the migration/admin connection. Otherwise seed through the runtime RLS import and read back. Repeating the seed preserves review edits.
+
+For an existing test ledger, use scripts/prepare-investment-refresh.mjs with --source <existing review sample-data.json>. It exports a backup and prepares an admin SQL package that replaces only Investments, checks the exact snapshot and blocks Goal references.
+
+The historical 03-reset.sql clears four modules and must not be used for this Investment refresh. Generating this package does not write cloud data or deploy the application.
+`;
 for (const [name, content] of Object.entries({
   "00-inspect.sql": sql.inspect,
   "01-enable-and-seed.sql": sql.enable,

@@ -8,7 +8,7 @@ Module `expenses/` đã triển khai công thức hũ chi tháng/tích lũy, c�
 
 Module `income/` quản lý thực nhận danh mục–tháng và khoản thu phát sinh, cấu hình tên/trạng thái theo tháng hiệu lực, báo cáo dùng BigInt. Thu nhập hoạt động độc lập với Chi tiêu và tài khoản. Xuất CSV có bản dịch nằm ngoài domain ở `src/i18n/report-exports/`.
 
-Module `investments/` quản lý tổng danh mục VND và nhiều ví tiền chờ, mua/bán với vốn bán nhập tay, định giá, revisions và báo cáo xuyên năm. Độc lập với `savings/`; không có mã/lô hoặc chốt tháng. Giao dịch và các mốc lưu trữ được kiểm tra lại khi sửa quá khứ.
+Module `investments/` quản lý tổng danh mục VND, ví sở hữu riêng theo `parentCategoryId`, mua/bán qua ví với vốn bán nhập tay, định giá, revisions và báo cáo xuyên năm. Projection danh mục cộng tiền chờ vào tổng giá trị; lãi/lỗ chỉ tính tài sản đang giữ. Độc lập với `savings/`; không có mã/lô hoặc chốt tháng. Giao dịch và các mốc lưu trữ được kiểm tra lại khi sửa quá khứ.
 
 ## Bổ sung backup toàn tài khoản — 18/10/2026
 

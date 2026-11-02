@@ -126,11 +126,11 @@ export const modules = [
     icon: "investments",
     label: "Vốn và giá trị hiện tại",
     description:
-      "Theo dõi tổng danh mục, ví tiền chờ, mua bán, định giá và lãi/lỗ có lịch sử.",
+      "Theo dõi vốn, tài sản đang giữ và tiền chờ riêng từng danh mục; cập nhật định giá để biết lãi/lỗ.",
     scope: [
-      "Danh mục tổng tiền và nhiều ví tiền chờ, VND",
+      "Mỗi danh mục có ví tiền chờ riêng, theo tổng tiền VND",
       "Mua/bán cập nhật tài sản và tiền chờ trong một lần lưu",
-      "Giá vốn bán nhập tay; phí, thuế, lãi/lỗ đã chốt và chưa chốt",
+      "Lãi/lỗ chỉ tính trên phần đang giữ; bán về ví, rút khi cần",
       "Định giá theo ngày; báo cáo nhiều năm, xuất bảng dữ liệu và sao lưu",
       "Ghi giao dịch theo nhóm, xem trước tác động rồi xác nhận lưu",
       "Chi tiết giao dịch trước/sau, phiên bản sửa và giữ vị trí khi quay lại",
@@ -152,6 +152,7 @@ export const modules = [
       "Minh họa bảo vệ ở tiêu đề, độc lập với tiến độ từng quỹ",
       "Ghi sổ độc lập; thêm, rút và chuyển giữa quỹ/nơi giữ",
       "Sửa/hủy có lịch sử, nguồn thay đổi được xem trước rồi áp dụng",
+      "Giao dịch căn cột tiền, nút biểu tượng sửa/hủy gọn trên mọi màn hình",
     ],
     questions: [],
   },

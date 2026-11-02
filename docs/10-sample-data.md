@@ -1,5 +1,10 @@
 # Dữ liệu mẫu để review UI/UX
 
+## Bộ mẫu Đầu tư mới — 02/11/2026
+
+Bộ local/cloud review generator hiện tạo 5 danh mục, 6 ví (11 position), có ví dụ cổ phiếu vốn 7 triệu, định giá 8 triệu, tiền chờ 3 triệu; tổng 11 triệu. Bitcoin minh họa bán hết rồi mua lại, Quỹ chỉ số minh họa chỉ còn tiền chờ. Có bán một phần, phí/thuế, chuyển ví, rút, định giá sửa và nạp hủy. Tất cả là dữ liệu minh họa; không có danh mục mang tên tất toán/mất vốn. Gói cũ có ngày bên dưới chỉ là lịch sử. Thay dữ liệu chỉ trong module Đầu tư, có backup, kiểm tra owner và tham chiếu Mục tiêu; không dùng reset 28 bảng.
+
+
 Lựa chọn ngày 16/10/2026: **nạp vào tài khoản Supabase hiện tại**. Không cần cung cấp mật khẩu, OTP hoặc service-role key. `data:sample` chỉ sinh file local. Khi `.env.local` đã kết nối app với Supabase, `data:import` có thể nạp bằng đúng role runtime, giữ RLS. SQL Editor là cách thay thế và dùng cho reset sau review.
 
 ## Tạo và nạp mẫu

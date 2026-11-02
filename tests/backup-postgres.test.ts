@@ -180,6 +180,19 @@ describe("full-account transfer via runtime RLS", () => {
     expect(copy.profile).toEqual(profile);
     expect(backupBooks(copy)).toEqual(backupBooks(backup));
     expect(
+      copy.tables.investments_categories
+        .filter((c) => c.data.kind === "cash")
+        .every((c) => !!c.data.parentCategoryId),
+    ).toBe(true);
+    const legacy = structuredClone(backup);
+    for (const c of legacy.tables.investments_categories)
+      delete c.data.parentCategoryId;
+    const emptyTarget = await owner();
+    await expect(
+      repo.import(emptyTarget, randomUUID(), legacy),
+    ).rejects.toThrow(/không tương thích/);
+    expect((await repo.status(emptyTarget)).empty).toBe(true);
+    expect(
       copy.tables.income_oneoffs.some(
         (r) => r.amount === "999999999999999999999999",
       ),

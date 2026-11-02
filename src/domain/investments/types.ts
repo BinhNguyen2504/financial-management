@@ -13,6 +13,7 @@ export interface InvestmentCategory {
   id: string;
   start: string;
   kind: "investment" | "cash";
+  parentCategoryId?: string | null;
   rules: CategoryRule[];
 }
 export interface Revision {
@@ -82,4 +83,9 @@ export interface InvestmentView {
   state: InvestmentState;
   today: string;
   month: string;
+  portfolios: PortfolioPosition[];
+}
+export interface PortfolioPosition extends Position {
+  wallets: Position[];
+  total: string | null;
 }

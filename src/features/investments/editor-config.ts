@@ -13,6 +13,7 @@ export const transactionNames: Record<InvestmentTransaction["kind"], string> = {
 export type EditorMode = { categoryId?: string } & (
   | {
       type: "create" | "configure" | "archive" | "restore";
+      parentCategoryId?: string;
       categoryId?: string;
     }
   | {

@@ -37,6 +37,7 @@ async function command(page: Page, action: unknown) {
 async function save(page: Page) {
   const titleId = await page
     .getByRole("dialog")
+    .last()
     .getAttribute("aria-labelledby");
   const d = page.locator(`dialog[aria-labelledby="${titleId}"]`);
   await d
@@ -53,14 +54,15 @@ async function category(page: Page, name: string, kind = "investment") {
     .getByRole("button", { name: "Thêm danh mục", exact: true })
     .click();
   await page.getByLabel("Tên danh mục", { exact: true }).fill(name);
-  await page
-    .getByRole("combobox", { name: "Loại danh mục", exact: true })
-    .selectOption(kind);
   await page.getByLabel("Ngày bắt đầu", { exact: true }).fill(start);
   await save(page);
-  return (await view(page)).book!.categories.find(
-    (c) => c.rules[0].name === name,
-  )!.id;
+  const v = await view(page);
+  const asset = v.book!.categories.find(
+    (c) => c.kind === "investment" && c.rules[0].name === name,
+  )!;
+  return kind === "cash"
+    ? v.book!.categories.find((c) => c.parentCategoryId === asset.id)!.id
+    : asset.id;
 }
 async function begin(page: Page, kind: string, id: string) {
   await page
@@ -89,8 +91,10 @@ test("complete aggregate investing flow, reports, downloads and responsive light
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await login(page);
-  const cash = await category(page, "Tiền chờ kiểm thử", "cash"),
-    asset = await category(page, "Cổ phiếu kiểm thử");
+  const asset = await category(page, "Cổ phiếu kiểm thử");
+  const cash = (await view(page)).book!.categories.find(
+    (c) => c.parentCategoryId === asset,
+  )!.id;
   await begin(page, "openingCash", cash);
   await page.getByLabel("Số tiền (VND)", { exact: true }).fill("20000000");
   await save(page);
@@ -138,7 +142,7 @@ test("complete aggregate investing flow, reports, downloads and responsive light
   });
   expect(v.state.positions.find((p) => p.id === cash)?.cash).toBe("39790000");
   await expect(page.locator(".investment-workspace")).toContainText(
-    "4.800.000",
+    "9.990.000",
   );
   await page.screenshot({
     path: `artifacts/investments-${info.project.name}.png`,
@@ -160,7 +164,7 @@ test("complete aggregate investing flow, reports, downloads and responsive light
     .selectOption("sell");
   await page.getByRole("button", { name: /Xem giao dịch/ }).click();
   await expect(page.getByRole("dialog")).toContainText("29.800.000");
-  await expect(page.getByRole("dialog")).toContainText("4.800.000");
+  await expect(page.getByRole("dialog")).not.toContainText("Lãi / lỗ đã chốt");
   await page
     .getByRole("dialog")
     .getByRole("button", { name: "Đóng", exact: true })
@@ -182,7 +186,7 @@ test("complete aggregate investing flow, reports, downloads and responsive light
     .getByRole("button", { name: "Xuất bảng dữ liệu", exact: true })
     .click();
   const csv = await csvPromise;
-  expect(await readFile((await csv.path())!, "utf8")).toContain("4800000");
+  expect(await readFile((await csv.path())!, "utf8")).toContain("9990000");
   await page.getByRole("tab", { name: "Quản lý", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Tải backup JSON", exact: true }),
@@ -348,11 +352,11 @@ test("sample portfolio, privacy scope, cross-year reports and full exports", asy
   await login(page);
   const sample = await fixture(page);
   await expect(page.locator(".investment-workspace")).toContainText(
-    "49.090.000",
+    "3.000.000",
   );
   await page.getByRole("button", { name: "Ẩn số tiền", exact: true }).click();
   await expect(page.locator(".investment-workspace")).not.toContainText(
-    "49.090.000",
+    "3.000.000",
   );
   await page
     .getByRole("button", { name: "Ghi giao dịch", exact: true })
@@ -375,14 +379,14 @@ test("sample portfolio, privacy scope, cross-year reports and full exports", asy
     .getByRole("button", { name: "Đóng", exact: true })
     .click();
   await expect(page.locator(".investment-workspace")).not.toContainText(
-    "49.090.000",
+    "3.000.000",
   );
   await page.getByRole("tab", { name: "Báo cáo", exact: true }).click();
   await page.getByLabel("Từ ngày", { exact: true }).fill(start);
   await expect(
     page.getByRole("heading", { name: "Bảng diễn biến", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("tabpanel")).not.toContainText("49.090.000");
+  await expect(page.getByRole("tabpanel")).not.toContainText("3.000.000");
   await page.getByRole("tab", { name: "Danh mục", exact: true }).focus();
   await page.keyboard.press("End");
   await expect(
@@ -397,12 +401,12 @@ test("sample portfolio, privacy scope, cross-year reports and full exports", asy
   const data = await (
     await page.request.get("/api/v1/investments/backup")
   ).json();
-  expect(data.book.categories).toHaveLength(7);
+  expect(data.book.categories).toHaveLength(11);
   expect(
     data.book.revisions.find(
       (r: { transaction?: { categoryId: string; amount?: string } }) =>
         r.transaction?.categoryId === sample.ids.cash &&
-        r.transaction.amount === "20000000",
+        r.transaction.amount === "10000000",
     ),
   ).toBeTruthy();
   await page.getByRole("button", { name: "Hiện số tiền", exact: true }).click();
@@ -434,4 +438,119 @@ test("investments page and API enforce auth and cookie origin", async ({
       "cache-control"
     ],
   ).toBe("private, no-store");
+});
+
+test("portfolio-owned wallets follow 10/7/3/8, sell all, withdraw and restart current gain/loss", async ({
+  page,
+}, info) => {
+  await login(page);
+  const asset = await category(page, "Danh mục 10-7-3");
+  await page
+    .getByRole("button", { name: "Chi tiết Danh mục 10-7-3", exact: true })
+    .click();
+  const parent = page.getByRole("dialog", {
+    name: "Danh mục 10-7-3",
+    exact: true,
+  });
+  await expect(
+    parent.getByRole("heading", { name: "Ví tiền chờ", exact: true }),
+  ).toBeVisible();
+  await parent.getByRole("button", { name: "Nạp tiền", exact: true }).click();
+  await page.getByLabel("Số tiền (VND)", { exact: true }).fill("10000000");
+  await save(page);
+  await parent.getByRole("button", { name: "Mua", exact: true }).click();
+  const editor = page.getByRole("dialog", {
+    name: "Ghi giao dịch",
+    exact: true,
+  });
+  await expect(
+    editor.getByLabel("Nguồn tiền", { exact: true }).locator("option"),
+  ).toHaveCount(2);
+  await expect(editor.getByLabel("Nguồn tiền", { exact: true })).toHaveValue(
+    (await view(page)).book!.categories.find(
+      (c) => c.parentCategoryId === asset,
+    )!.id,
+  );
+  await expect(editor).not.toContainText("Bên ngoài");
+  await editor
+    .getByLabel("Tiền mua trước phí/thuế (VND)", { exact: true })
+    .fill("7000000");
+  await editor
+    .getByLabel("Giá trị tài sản còn giữ sau giao dịch (VND)", { exact: true })
+    .fill("7000000");
+  await save(page);
+  await parent.getByRole("button", { name: "Định giá", exact: true }).click();
+  await page
+    .getByLabel("Giá trị định giá (VND)", { exact: true })
+    .fill("8000000");
+  await save(page);
+  expect((await view(page)).portfolios[0]).toMatchObject({
+    cost: "7000000",
+    value: "8000000",
+    cash: "3000000",
+    total: "11000000",
+    unrealized: "1000000",
+  });
+  await expect(parent).toContainText("11.000.000");
+  await expect(parent).not.toContainText("Thiếu định giá");
+  await expect(parent).not.toContainText(/đã chốt|chưa chốt|tất toán/);
+  expect(await parent.evaluate((d) => d.scrollWidth <= d.clientWidth)).toBe(
+    true,
+  );
+  await page.screenshot({
+    path: `artifacts/investments-owned-wallet-${info.project.name}.png`,
+  });
+  await parent
+    .getByRole("button", { name: "Thêm ví tiền chờ", exact: true })
+    .click();
+  await page.getByLabel("Tên danh mục", { exact: true }).fill("Ví phụ");
+  await save(page);
+  await expect(parent.locator(".investment-wallet")).toHaveCount(2);
+  await parent.getByRole("button", { name: "Bán", exact: true }).click();
+  await page
+    .getByLabel("Tiền bán trước phí/thuế (VND)", { exact: true })
+    .fill("9000000");
+  await page
+    .getByRole("button", {
+      name: "Bán hết: lấy toàn bộ vốn, giá trị còn lại 0",
+      exact: true,
+    })
+    .click();
+  await save(page);
+  expect((await view(page)).portfolios[0]).toMatchObject({
+    cost: "0",
+    value: "0",
+    cash: "12000000",
+    unrealized: "0",
+    active: true,
+  });
+  const cashWallet = parent
+    .locator(".investment-wallet")
+    .filter({ hasText: "Danh mục 10-7-3" });
+  await cashWallet
+    .getByRole("button", { name: "Rút tiền", exact: true })
+    .click();
+  await page.getByLabel("Số tiền (VND)", { exact: true }).fill("4000000");
+  await save(page);
+  expect((await view(page)).portfolios[0]).toMatchObject({
+    cost: "0",
+    cash: "8000000",
+    total: "8000000",
+    unrealized: "0",
+    roi: null,
+  });
+  await parent.getByRole("button", { name: "Mua", exact: true }).click();
+  await page
+    .getByLabel("Tiền mua trước phí/thuế (VND)", { exact: true })
+    .fill("3000000");
+  await page
+    .getByLabel("Giá trị tài sản còn giữ sau giao dịch (VND)", { exact: true })
+    .fill("3200000");
+  await save(page);
+  expect((await view(page)).portfolios[0]).toMatchObject({
+    cost: "3000000",
+    cash: "5000000",
+    total: "8200000",
+    unrealized: "200000",
+  });
 });

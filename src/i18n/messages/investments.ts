@@ -1,4 +1,63 @@
 export const investments = {
+  "Tổng giá trị sau giao dịch": "Total value after transaction",
+  "Tài sản và tiền chờ của cùng danh mục":
+    "Holdings and available cash in the same portfolio",
+  "Theo dõi vốn, tài sản đang giữ và tiền chờ riêng từng danh mục; cập nhật định giá để biết lãi/lỗ.":
+    "Track cost, current holdings and each portfolio’s cash; update valuations to see gains and losses.",
+  "Mỗi danh mục có ví tiền chờ riêng, theo tổng tiền VND":
+    "Each portfolio has its own cash wallets, tracked in VND totals",
+  "Lãi/lỗ chỉ tính trên phần đang giữ; bán về ví, rút khi cần":
+    "Gain/loss covers current holdings; sale proceeds return to cash until withdrawn",
+  "Mỗi danh mục gồm tài sản đã mua và tiền chờ. Lãi/lỗ chỉ tính trên phần đang giữ; cập nhật định giá không thay đổi tiền trong ví. Xem trước rồi xác nhận giao dịch.":
+    "Each portfolio includes current holdings and available cash. Gain/loss covers holdings only; updating a valuation does not change wallet cash. Preview and confirm transactions.",
+  "Tổng giá trị gồm tài sản đã mua và tiền chờ riêng của danh mục.":
+    "Total value includes current holdings and the portfolio’s own available cash.",
+  "Vốn đang đầu tư": "Current holdings cost",
+  "Giá trị tài sản đã mua": "Current holdings value",
+  "Tổng giá trị hiện tại": "Current total value",
+  "Lãi/lỗ phần đang giữ": "Current holdings gain/loss",
+  "Tỷ lệ lãi/lỗ": "Gain/loss rate",
+  "Lãi/lỗ / Tỷ lệ": "Gain/loss / Rate",
+  Bitcoin: "Bitcoin",
+  "Chọn ví tiền chờ": "Choose a cash wallet",
+  "Thêm ví tiền chờ": "Add cash wallet",
+  "Tiền chưa mua tài sản vẫn nằm trong tổng giá trị danh mục. Tiền bán về ví; chỉ rút mới đưa tiền ra khỏi danh mục.":
+    "Uninvested cash remains part of the portfolio total. Sale proceeds return to the wallet; withdraw to take money outside.",
+  "Danh mục mới có một ví tiền chờ mặc định. Số dư và tài sản mở đầu được ghi riêng tại ngày bắt đầu.":
+    "New portfolios include a default cash wallet. Record opening cash and holdings separately on the start date.",
+  "Tổng giá trị gồm tài sản đã mua và tiền chờ. Lãi/lỗ chỉ tính trên phần tài sản đang giữ.":
+    "Total value includes current holdings and available cash. Gain/loss covers current holdings only.",
+  "Tạo danh mục với ví tiền chờ riêng. Nạp tiền vào ví rồi ghi mua, hoặc nhập tài sản mở đầu nếu đã có.":
+    "Create a portfolio with its own cash wallet. Deposit before buying, or record existing opening holdings.",
+  "Lọc loại giao dịch chỉ áp dụng dòng tiền và giao dịch; số dư và lãi/lỗ phần đang giữ luôn dùng đầy đủ lịch sử.":
+    "Transaction type filters apply to cash flows and transactions; balances and current holdings gain/loss always use complete history.",
+  "Biểu đồ lãi/lỗ phần đang giữ theo tháng, đơn vị VND":
+    "Monthly current holdings gain/loss chart, in VND",
+  "Tài sản 8 triệu + tiền chờ 3 triệu · Vốn 7 triệu · Lãi 1 triệu":
+    "Holdings 8m + cash 3m · Cost 7m · Gain 1m",
+  "Chọn ví tiền chờ thuộc danh mục.":
+    "Choose a cash wallet belonging to this portfolio.",
+  "Chọn danh mục sở hữu ví tiền chờ.":
+    "Choose the portfolio that owns this cash wallet.",
+  "Danh mục sở hữu ví chưa hoạt động tại ngày bắt đầu.":
+    "The owning portfolio is not active on the wallet start date.",
+  "Danh mục đầu tư không thể thuộc một danh mục khác.":
+    "An investment portfolio cannot belong to another portfolio.",
+  "Không đổi loại danh mục. Hãy tạo danh mục hoặc ví mới.":
+    "Category types cannot change. Create a new portfolio or wallet.",
+  "Không đổi danh mục sở hữu ví đã có giao dịch.":
+    "A wallet with transaction history cannot move to another portfolio.",
+  "Cần rút hết tiền chờ trước khi lưu trữ danh mục.":
+    "Withdraw all available cash before archiving the portfolio.",
+  "Ví tiền chờ chưa thuộc danh mục. Dữ liệu Đầu tư cũ cần tạo lại.":
+    "This cash wallet has no owning portfolio. Recreate the legacy investment test data.",
+  "Chọn ví tiền chờ thuộc danh mục đang mua/bán.":
+    "Choose a cash wallet belonging to the portfolio being traded.",
+  "ví tiền chờ thiếu danh mục sở hữu; dữ liệu Đầu tư cũ không tương thích.":
+    "cash wallet has no owning portfolio; legacy investment data is incompatible.",
+  "danh mục đầu tư không có danh mục cha.":
+    "an investment portfolio cannot have a parent portfolio.",
+
   "Thông tin giao dịch": "Transaction details",
   "Số tiền và định giá": "Amounts and valuation",
   "Thông tin bổ sung": "Additional details",

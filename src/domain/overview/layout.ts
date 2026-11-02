@@ -62,7 +62,7 @@ export const widgetCatalog: Record<
   },
   investments: {
     title: "Đầu tư hiện tại",
-    description: "Tổng giá trị và lãi/lỗ chưa chốt.",
+    description: "Tổng giá trị gồm tiền chờ và lãi/lỗ phần đang giữ.",
     href: "/investments",
   },
   funds: {

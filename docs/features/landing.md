@@ -1,5 +1,10 @@
 # Landing và xác thực truy cập
 
+## Cập nhật Đầu tư — 02/11/2026
+
+Preview Đầu tư dùng cố định một danh mục Cổ phiếu: vốn 7 triệu, tài sản 8 triệu và tiền chờ 3 triệu; tổng 11 triệu, lãi phần đang giữ 1 triệu. Ví nằm trong cùng danh mục, không trình bày như tài sản đầu tư ngang hàng. Catalog/copy phản ánh ví riêng từng danh mục và lãi/lỗ phần còn giữ. Không fetch tài chính hoặc dùng dữ liệu tài khoản. Các mục có ngày trước đây giữ làm lịch sử.
+
+
 Cập nhật 27/10/2026. Landing Tiếng Việt/English ở `/`, chia thành bản marketing cho khách và bản theo chủ đề sau đăng nhập; tên Financial Manager, hướng sản phẩm tinh tế và câu chuyện công cụ từ nhu cầu thật.
 
 ## Nội dung và trạng thái
@@ -194,3 +199,7 @@ Thay thế ghi nhận lịch sử về header mobile xuống hàng: giờ dùng 
 ## Preview Tổng quan — 29/10/2026
 
 Thêm tab Tổng quan mặc định với 6 widget minh họa: Cần chú ý và năm module hiện có. Các số tiền dùng lại mẫu của từng tab, không cộng thành tài sản ròng. Copy nêu 10 widget và tùy chỉnh theo tài khoản. Preview vẫn chỉ dùng dữ liệu cố định, không gọi API tài chính; giữ slogan, nhận diện và ranh giới public/auth.
+
+## Đối chiếu thao tác Quỹ an toàn — 02/11/2026
+
+Catalog bổ sung mô tả cột tiền và nút sửa/hủy gọn. Nội dung Help của preview vi/en giải thích biểu tượng bút/thùng rác trong sổ giao dịch thật và việc giữ lịch sử. Preview tiếp tục minh họa số dư ba quỹ với số liệu cố định hiện có; không thêm nút ghi/sửa/hủy giả hoặc đọc API tài chính tài khoản. Xem [đặc tả Quỹ](funds.md).

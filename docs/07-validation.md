@@ -986,3 +986,28 @@ Hoàn tất triển khai bắt đầu 30/10. Node 22.12.0; PostgreSQL cô lập 
 Đã rà và cập nhật catalog, public summary và preview minh họa, Help Goals/Funds, README cùng tài liệu sản phẩm, dữ liệu, kiến trúc, UX, backup và deployment. Preview không gọi API tài chính tài khoản; không thêm Goals vào Tổng quan.
 
 Giới hạn: chưa áp migration 202610300002_goals.sql hoặc triển khai cloud, chưa xác minh Supabase Auth/RLS thực qua triển khai này, không phải bằng chứng iPhone/Android vật lý. Kiểm thử RLS dùng PostgreSQL local và danh tính Auth double.
+
+## Đầu tư: tài sản đang giữ và ví riêng — 02/11/2026
+
+Source chuyển sang ví sở hữu riêng từng danh mục, tổng giá trị gồm tài sản và tiền chờ; lãi/lỗ chỉ trên phần tài sản còn giữ. Bỏ chỉ số đã bán/kết quả kỳ khỏi UI và CSV; cập nhật Help vi/en, catalog, landing preview, README, kiến trúc, UX và dữ liệu mẫu.
+
+- `npm run check`: lint, architecture (293 source files, 0 vi phạm), Prettier, **297/297 unit**, typecheck và production build thành công.
+- `npm run test:db`: **103/103** trên PostgreSQL local cô lập. Có kiểm tra mua/bán nguyên tử, nhiều ví, chống cộng trùng, giữ nguồn Mục tiêu độc lập, backup/restore quan hệ ví, từ chối backup Đầu tư cũ trước ghi, thay mock đúng owner, chặn liên kết Mục tiêu và rollback cả dữ liệu/trigger khi lỗi muộn.
+- Browser trên production build local + PostgreSQL/Auth double: **112/112** (`investments.spec.ts`, `investment-dialogs.spec.ts`, `landing.spec.ts`, `help.spec.ts`), chia đều 28 ca trên Chromium desktop, Chromium mobile, Firefox và WebKit/iPhone mô phỏng. Chạy đầy đủ trên snapshot source sau các sửa cuối; không dùng kết quả các lượt đang sửa trước đó làm bằng chứng hoàn tất. Có luồng UI thực 10/7/3/8, ví bổ sung, bán hết/rút/mua lại, vi/en, 5 theme, sáng/tối, form hẹp, Privacy Mode, network retry, version/idempotency, Auth/Origin và public preview API-free.
+- Trường hợp 10 triệu nạp, mua 7 triệu, định giá thành 8 triệu: ví còn 3 triệu, tổng 11 triệu, lãi 1 triệu. Bán hết về ví 12 triệu rồi rút 4 triệu: tổng 8 triệu, vốn/lãi lỗ bằng 0. Mua lại chỉ tính phần mới.
+- Kiểm tra cloud chỉ đọc qua `expense_api`/RLS, xác nhận bộ Đầu tư cũ còn hiện hữu và không có liên kết Mục tiêu. Đã xuất snapshot sáu bảng và chuẩn bị SQL admin chỉ thay Đầu tư; **0 cloud writes**, chưa chạy SQL này hoặc deploy. Không dùng reset toàn tài khoản.
+
+Log local nằm tại `artifacts/investments-current-holdings/`. Kiểm tra PostgreSQL/Auth double và trình duyệt mô phỏng không xác nhận Supabase Auth thật, deploy hay thiết bị vật lý. Giữ nguyên các kết quả có ngày trước đây ở phía trên.
+
+## Quỹ an toàn: cột tiền và nút giao dịch — 02/11/2026
+
+Đổi nút sửa/hủy sang icon 44×44px có tên trợ năng và tooltip `title` vi/en; cột thao tác desktop còn 96px, tiền và thao tác giữa dọc hàng. Responsive dùng chung cho danh sách ngoài trang và dialog cả ba quỹ; không đổi HTTP/schema hoặc dữ liệu tài khoản.
+
+- Lint toàn repo, typecheck, Prettier các file source/test thay đổi và architecture check: PASS, 293 source files, 0 vi phạm kiến trúc. Sau khi bổ sung kiểm thử cuối, ESLint các file liên quan và `tsc --noEmit` tiếp tục PASS; `git diff --check` sạch.
+- Unit tập trung: **27/27 PASS**, gồm `funds.test.ts`, `fund-review-data.test.ts`, `i18n.test.ts`.
+- Lượt browser cuối: **72/72 PASS**, gồm 52 ca Funds (`funds.spec.ts`, `fund-review.spec.ts`) và 20 ca landing đa ngôn ngữ (`landing-language.spec.ts`), trên Chromium desktop/mobile, Firefox desktop, WebKit mobile mô phỏng. Chạy trên production build local với PostgreSQL cô lập/Auth double. Sáu file ứng dụng/ngôn ngữ thay đổi đã được đối chiếu byte với snapshot production được chạy; hash source/test lưu trong manifest.
+- Hai ca layout vi/en được chạy ở cả bốn cấu hình, kiểm tra danh sách ngoài trang và dialog Emergency/Rainy Day/Sinking tại 320/390/768/1440px; thêm container 479/480/481/699/700/701px. Đo căn giữa dọc, mép phải tiền, hai nút cùng hàng, vùng bấm tối thiểu 44px và khoảng cách 8px; kiểm tra ghi chú dài, chuyển tiền, tiền 24 chữ số, bàn phím mở form sửa/hủy, sáng/tối, 125% cỡ chữ và che/hiện tiền.
+- Bản trước sửa có lượt baseline desktop 1/1 PASS để lưu ảnh so sánh. Kết quả 72/72 phía trên là lượt cuối riêng, không cộng baseline hoặc các lượt focused vào tổng.
+- Design lint chế độ app: 0 FAIL, 4 WARN từ ba selector eyebrow và một khai báo bóng thẻ đã có ngoài vùng sửa; giữ phong cách ứng dụng hiện tại. Ảnh element dài có thể chứa header/footer cố định; dùng ảnh để đối chiếu nội dung hàng và phép đo browser để xác nhận hình học, không coi chúng là bản xuất toàn màn hình.
+
+Log build/browser, ảnh trước/sau, manifest và ghi chú review nằm tại `artifacts/fund-transactions-2026-11-02/`. Đã cập nhật đặc tả Funds, README, hướng UX, catalog và copy/Help preview vi/en; preview giữ số liệu cố định và không gọi API tài chính tài khoản. Không áp migration, không ghi cloud hoặc deploy; kiểm chứng này không đại diện Supabase Auth thật hay thiết bị vật lý.

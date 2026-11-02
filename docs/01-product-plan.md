@@ -19,7 +19,7 @@
 | **P1 — dòng tiền nền** | Auth riêng tư; tài khoản; số dư đầu kỳ; thu/chi/chuyển tiền; sửa/hủy có lịch sử; API v1 | Chốt cách ghi giao dịch, tài khoản và nợ | Thu/chi đúng số dư; chuyển nội bộ không thành thu/chi; không ghi trùng khi retry; RLS chặn truy cập chéo; dùng được hai thiết bị |
 | **P2 — ngân sách và nhập nhanh** | Ngân sách có hiệu lực, số còn lại/chuyển tiếp; mẫu nhập; giao dịch định kỳ; nhập CSV thu/chi có dry-run | P1 và quy tắc ngân sách | Đổi kế hoạch không làm sai quá khứ; nhập lại CSV không nhân đôi; bỏ qua/hoàn tác batch được; xác nhận trước khi ghi |
 | **P3 — tích lũy và mục tiêu** | Tiết kiệm, quỹ an toàn, goals, phân bổ từ tiền/tài khoản; đáo hạn | P1 và quy tắc lãi/quỹ | Một khoản tiền không bị tính hai lần; lãi dự kiến khác lãi thực nhận; phân bổ có giới hạn và lịch sử |
-| **P4 — đầu tư** | Từng mã/nhóm tài sản; mua/bán; phí/thuế; giá vốn; realized/unrealized; phân bổ mục tiêu | P1, chốt phạm vi tài sản và phương pháp giá vốn | Mua/bán nguyên tử; bán một phần đúng giá vốn; tiền chờ khớp; giá có thời điểm; không ROI giả cho cash |
+| **P4 — đầu tư** | Tổng danh mục VND; ví riêng; mua/bán; phí/thuế; giá vốn còn giữ; định giá nhập tay | Nền Auth/RLS; giá vốn phần bán do người dùng nhập | Tổng giá trị gồm tài sản và tiền chờ; lãi/lỗ chỉ phần đang giữ, về 0 khi bán hết; giao dịch nguyên tử |
 | **P5 — báo cáo và đồng bộ nâng cao** | Timeline định giá, dashboard hoàn chỉnh; export; PWA nhập offline theo hàng đợi và xử lý xung đột | P1–P4 và chính sách đồng bộ | Báo cáo đối soát được; retry/offline không trùng; sửa chéo không mất dữ liệu; sign-out không để lộ cache |
 | **P6 — chuyển đổi và đưa vào dùng** | Migration Notion hoàn chỉnh, đối soát, backup/restore, preview rồi production | Dữ liệu export và các module đã nghiệm thu | Tổng khớp nguồn đã xác nhận; thử khôi phục; smoke test production; người dùng dùng thử song song với Notion |
 | **P7 — Flutter iOS** | App Flutter/Dart dùng cùng API/Auth; cài trực tiếp lên iPhone cá nhân | Web ổn định, yêu cầu iOS và phương án signing cụ thể | Hai client cho cùng kết quả; lifecycle/offline/login/deep link và hạn signing được kiểm tra trên thiết bị thật |
@@ -46,7 +46,7 @@ Chưa xây ở P0: AI tư vấn đầu tư, kết nối tài khoản ngân hàng
 
 ## Cập nhật Đầu tư — 18/10/2026
 
-Đã triển khai source bản theo tổng danh mục: nhiều ví tiền chờ, mua/bán nguyên tử, phí/thuế, giá vốn bán nhập tay, định giá có lịch sử, lưu trữ khi hết tài sản, báo cáo nhiều năm và CSV/JSON. Chưa có mã/lô, DCA, giá trực tuyến, chốt tháng hoặc kết nối số dư giữa module. Migration cloud/deploy và iPhone vật lý chưa được xác minh. Xem [Đầu tư](features/investments.md).
+Source cập nhật 02/11/2026: ví riêng từng danh mục, mua/bán qua ví, tổng giá trị gồm tài sản và tiền chờ; lãi/lỗ chỉ tính phần đang giữ. Có giá vốn bán nhập tay, định giá có lịch sử, lưu trữ khi hết tài sản và toàn bộ tiền chờ, báo cáo nhiều năm và CSV/backup JSON. Chưa có mã/lô, DCA, giá trực tuyến, chốt tháng hoặc kết nối số dư giữa module. Migration cloud/deploy và iPhone vật lý chưa được xác minh. Xem [Đầu tư](features/investments.md).
 
 
 ## Bổ sung backup toàn tài khoản — 18/10/2026

@@ -1,5 +1,34 @@
 import { goals } from "./goals";
 export const help = {
+  "Theo dõi phần tài sản đang giữ và tiền chờ của từng danh mục. Giá trị tài sản luôn đi kèm ngày định giá.":
+    "Track current holdings and each portfolio’s available cash. Asset values always include their valuation date.",
+  "Mỗi danh mục có ví tiền chờ riêng. Nạp 10 triệu, mua 7 triệu thì tiền chờ là 3 triệu. Tổng giá trị danh mục bằng giá trị tài sản đã mua cộng tiền chờ.":
+    "Each portfolio has its own cash wallets. Deposit 10 million and buy 7 million: 3 million remains in cash. Portfolio total equals current holdings value plus available cash.",
+  "Lãi/lỗ phần đang giữ": "Gain/loss on current holdings",
+  "Lãi/lỗ = giá trị tài sản đã mua − vốn đang đầu tư. Tiền chờ không tham gia phép tính này. Bán hết thì vốn, giá trị tài sản và lãi/lỗ bằng 0; tiền bán vẫn trong ví. Mua lại theo dõi phần mua mới.":
+    "Gain/loss equals current holdings value minus their remaining cost. Available cash is excluded. Selling all resets holdings cost, value and gain/loss to zero; proceeds remain in the wallet. New purchases start a new holding.",
+  "Tỷ lệ lãi/lỗ": "Gain/loss rate",
+  "Lãi/lỗ phần đang giữ chia vốn đang đầu tư. Khi vốn bằng 0, tỷ lệ hiển thị —. Không tính tỷ lệ cho tiền chờ.":
+    "Current holdings gain/loss divided by their cost. With zero cost, the rate is shown as —. Available cash has no return rate.",
+  "Thêm danh mục đầu tư với tên và ngày bắt đầu; một ví tiền chờ được tạo cùng lúc. Có thể thêm ví trong chi tiết danh mục.":
+    "Create a portfolio with a name and start date; its default wallet is created at the same time. Add more wallets in portfolio details.",
+  "Xem trước rồi xác nhận; kiểm tra tài sản và các ví trong chi tiết danh mục.":
+    "Preview and confirm; review holdings and wallets in portfolio details.",
+  "Mở chi tiết danh mục, chọn nạp/rút hoặc chuyển ở ví tiền chờ.":
+    "Open portfolio details, then deposit, withdraw or transfer from a cash wallet.",
+  "Mở danh mục, chọn mua hoặc bán và ví tiền chờ thuộc danh mục đó. Cần nạp đủ tiền vào ví trước khi mua.":
+    "Open the portfolio, choose buy or sell, and select one of its cash wallets. Fund the wallet before buying.",
+  "Kết quả: mua tăng vốn bằng tiền mua + phí + thuế và trừ ví; bán giảm giá vốn phần bán và đưa tiền ròng về ví. Chỉ rút khỏi ví mới đưa tiền ra ngoài.":
+    "Result: buying increases cost by price plus fees and taxes and debits the wallet. Selling reduces the sold portion’s cost and credits net proceeds to the wallet. Only a withdrawal takes money outside.",
+  "Kết quả: giá trị tài sản và lãi/lỗ phần đang giữ thay đổi; tiền chờ và vốn không thay đổi.":
+    "Result: holdings value and current gain/loss change; available cash and cost stay the same.",
+  "Lưu trữ danh mục khi vốn, giá trị tài sản và toàn bộ tiền chờ đều bằng 0. Bán hết không tự lưu trữ danh mục. Có thể khôi phục.":
+    "Archive a portfolio only when cost, holdings value and all cash balances are zero. Selling all does not archive it automatically. Archived portfolios can be restored.",
+  "Lọc danh mục và loại giao dịch; xem vốn, giá trị tài sản, tiền chờ, tổng giá trị và lãi/lỗ phần đang giữ tại cuối kỳ.":
+    "Filter by portfolio and transaction type; review end-of-period cost, holdings value, cash, total value and current holdings gain/loss.",
+  "Nạp ==10.000.000 ₫==, mua ==7.000.000 ₫==: tiền chờ ==3.000.000 ₫==. Định giá phần đã mua thành ==8.000.000 ₫==: tổng giá trị ==11.000.000 ₫==, lãi ==1.000.000 ₫==.":
+    "Deposit ==10,000,000 ₫== and buy ==7,000,000 ₫==: cash is ==3,000,000 ₫==. Revalue holdings to ==8,000,000 ₫==: total value is ==11,000,000 ₫== and gain is ==1,000,000 ₫==.",
+
   ...goals,
   "Danh sách thương hiệu chia thành ngân hàng và ví điện tử. Biểu tượng hũ có thể chọn từ gợi ý hoặc nhập một emoji từ bàn phím.":
     "Brands are grouped into banks and e-wallets. Choose a suggested jar icon or enter a single emoji from your keyboard.",

@@ -92,13 +92,11 @@ export function useInvestmentWorkspace({
     v === null ? tr("Thiếu định giá") : money(v);
   const sum = (values: (string | null)[]) =>
     values.reduce<bigint>((n, x) => n + BigInt(x ?? "0"), 0n).toString();
-  const investments =
-      state?.positions.filter((p) => p.kind === "investment") ?? [],
+  const investments = view?.portfolios ?? [],
     wallets = state?.positions.filter((p) => p.kind === "cash") ?? [];
-  const realized = sum(investments.map((p) => p.realized)),
-    unrealized = investments.some((p) => p.unrealized === null)
-      ? null
-      : sum(investments.map((p) => p.unrealized));
+  const unrealized = investments.some((p) => p.unrealized === null)
+    ? null
+    : sum(investments.map((p) => p.unrealized));
   const report = (() => {
     try {
       return view
@@ -182,7 +180,6 @@ export function useInvestmentWorkspace({
     sum,
     investments,
     wallets,
-    realized,
     unrealized,
     categories,
     from,

@@ -67,7 +67,7 @@ describe("Cloud review preparation and reset, isolated PostgreSQL only", () => {
       clock.today,
       clock,
     );
-    expect(v.state.positions).toHaveLength(8);
+    expect(v.state.positions).toHaveLength(11);
     expect(v.book?.revisions.filter((r) => r.reason)).toHaveLength(2);
     const cash = v.book!.categories.find((c) => c.kind === "cash")!;
     await runInvestmentCommand(
@@ -164,8 +164,8 @@ describe("Cloud review preparation and reset, isolated PostgreSQL only", () => {
     const [{ backup }] =
       await admin`select backup from pg_temp.fm_review_backup`;
     expect(Object.keys(backup.tables)).toHaveLength(28);
-    expect(backup.tables.investments_transactions.length).toBeGreaterThan(30);
-    expect(backup.tables.investments_valuations.length).toBeGreaterThan(10);
+    expect(backup.tables.investments_transactions.length).toBeGreaterThan(10);
+    expect(backup.tables.investments_valuations.length).toBe(2);
     await expect(execute(admin, a.sql.reset)).rejects.toThrow(/not confirmed/);
     await expect(
       execute(
@@ -226,7 +226,7 @@ describe("Cloud review preparation and reset, isolated PostgreSQL only", () => {
           clock,
         )
       ).state.positions,
-    ).toHaveLength(8);
+    ).toHaveLength(11);
     const [{ n }] =
       await admin`select count(*)::int as n from pg_trigger where not tgisinternal and tgname in ('savings_history_immutable','investments_history_immutable') and tgenabled<>'O'`;
     expect(n).toBe(0);
@@ -269,7 +269,7 @@ describe("Cloud review preparation and reset, isolated PostgreSQL only", () => {
       await execute(isolated, sql.enable!);
       expect(
         await isolated`select * from public.investments_categories where owner_id=${data.ownerId}`,
-      ).toHaveLength(8);
+      ).toHaveLength(11);
       for (const t of investmentTables) {
         const [r] = await isolated.unsafe(
           "select relrowsecurity,relforcerowsecurity from pg_class where oid=$1::regclass",

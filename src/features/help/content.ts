@@ -505,13 +505,13 @@ export const articles: HelpArticles = {
       "Dành cho người muốn theo dõi vốn và giá trị đầu tư theo tổng danh mục, cùng nhiều ví tiền chờ bằng VND. Hiện không quản lý từng mã, khối lượng hoặc lô chứng khoán.",
     ],
     [
-      "Tách tiền góp khỏi kết quả đầu tư; tách tài sản đang đầu tư khỏi tiền đang chờ. Giá trị phải đi kèm ngày cập nhật để tránh hiểu một số cũ là số hiện tại.",
+      "Theo dõi phần tài sản đang giữ và tiền chờ của từng danh mục. Giá trị tài sản luôn đi kèm ngày định giá.",
     ],
     [
       term(
         "portfolio",
         "Danh mục đầu tư và ví tiền chờ",
-        "Danh mục theo tổng vốn và tổng giá trị tài sản còn giữ. Ví tiền chờ theo số tiền chưa đầu tư. Tổng tài sản trong Đầu tư bao gồm cả hai; ví không có ROI.",
+        "Mỗi danh mục có ví tiền chờ riêng. Nạp 10 triệu, mua 7 triệu thì tiền chờ là 3 triệu. Tổng giá trị danh mục bằng giá trị tài sản đã mua cộng tiền chờ.",
       ),
       term(
         "opening",
@@ -530,13 +530,13 @@ export const articles: HelpArticles = {
       ),
       term(
         "profit",
-        "Lãi đã chốt, chưa chốt và kết quả kỳ",
-        "Lãi đã chốt = tiền bán − phí − thuế − giá vốn phần bán. Lãi chưa chốt = giá trị còn giữ − vốn còn lại. Kết quả kỳ còn loại trừ dòng vốn bên ngoài, chuyển nội bộ của phần được lọc và tài sản mở đầu; khác tổng lãi/lỗ đang theo dõi.",
+        "Lãi/lỗ phần đang giữ",
+        "Lãi/lỗ = giá trị tài sản đã mua − vốn đang đầu tư. Tiền chờ không tham gia phép tính này. Bán hết thì vốn, giá trị tài sản và lãi/lỗ bằng 0; tiền bán vẫn trong ví. Mua lại theo dõi phần mua mới.",
       ),
       term(
         "roi",
-        "ROI chưa chốt",
-        "Lãi chưa chốt chia giá vốn còn lại. Khi vốn bằng 0 hoặc đang xem ví tiền chờ, ROI không có giá trị và hiển thị —.",
+        "Tỷ lệ lãi/lỗ",
+        "Lãi/lỗ phần đang giữ chia vốn đang đầu tư. Khi vốn bằng 0, tỷ lệ hiển thị —. Không tính tỷ lệ cho tiền chờ.",
       ),
     ],
     [
@@ -545,9 +545,9 @@ export const articles: HelpArticles = {
         "Tạo danh mục, ví và mở đầu",
         "Khi bắt đầu theo dõi đầu tư.",
         [
-          "Vào Quản lý, thêm danh mục đầu tư hoặc ví tiền chờ với tên và ngày bắt đầu.",
+          "Thêm danh mục đầu tư với tên và ngày bắt đầu; một ví tiền chờ được tạo cùng lúc. Có thể thêm ví trong chi tiết danh mục.",
           "Nếu đã có tài sản, ghi mở đầu: vốn và giá trị thị trường riêng cho danh mục, số dư tiền cho ví.",
-          "Xem trước rồi xác nhận; kiểm tra phần Danh mục và Ví tiền chờ.",
+          "Xem trước rồi xác nhận; kiểm tra tài sản và các ví trong chi tiết danh mục.",
         ],
         "Kết quả: có mốc bắt đầu rõ ràng; không ghi tài sản mở đầu như khoản nạp mới.",
       ),
@@ -556,7 +556,7 @@ export const articles: HelpArticles = {
         "Nạp, rút và chuyển giữa ví",
         "Khi tiền chờ thay đổi.",
         [
-          "Mở ví, chọn nạp/rút hoặc chuyển ví.",
+          "Mở chi tiết danh mục, chọn nạp/rút hoặc chuyển ở ví tiền chờ.",
           "Nhập ngày, số tiền, ví nguồn/đích khác nhau và ghi chú nguồn bên ngoài nếu cần.",
           "Xem trước rồi xác nhận, kiểm tra số dư từng phía.",
         ],
@@ -567,12 +567,12 @@ export const articles: HelpArticles = {
         "Ghi mua hoặc bán",
         "Khi thực sự mua thêm hoặc bán bớt tài sản.",
         [
-          "Mở danh mục và chọn mua hoặc bán; chọn ví thanh toán/nhận tiền hoặc Bên ngoài.",
+          "Mở danh mục, chọn mua hoặc bán và ví tiền chờ thuộc danh mục đó. Cần nạp đủ tiền vào ví trước khi mua.",
           "Nhập ngày, tiền mua/bán, phí, thuế; khi bán nhập thêm giá vốn phần bán.",
           "Nhập giá trị phần tài sản còn giữ sau giao dịch. Với Bán hết, kiểm tra vốn được điền và giá trị còn lại bằng 0; tiền bán vẫn do bạn nhập.",
           "Xem trước thay đổi cả tài sản và ví rồi xác nhận.",
         ],
-        "Kết quả: mua làm tăng vốn bằng tiền mua + phí + thuế; bán nhận tiền ròng và ghi lãi đã chốt. **Không trừ phí lần thứ hai**.",
+        "Kết quả: mua tăng vốn bằng tiền mua + phí + thuế và trừ ví; bán giảm giá vốn phần bán và đưa tiền ròng về ví. Chỉ rút khỏi ví mới đưa tiền ra ngoài.",
       ),
       task(
         "price",
@@ -583,7 +583,7 @@ export const articles: HelpArticles = {
           "Nhập tổng giá trị tài sản còn giữ, không cộng tiền chờ.",
           "**Xem trước** và lưu; đối chiếu ngày định giá hiển thị trên danh mục.",
         ],
-        "Kết quả: giá trị và lãi chưa chốt thay đổi, số dư ví và vốn không thay đổi.",
+        "Kết quả: giá trị tài sản và lãi/lỗ phần đang giữ thay đổi; tiền chờ và vốn không thay đổi.",
       ),
       task(
         "history",
@@ -592,7 +592,7 @@ export const articles: HelpArticles = {
         [
           "Vào Giao dịch, lọc và mở chi tiết để xem hai phía trước/sau cùng các phiên bản; bật xem cả giao dịch đã hủy khi cần.",
           "Sửa hoặc hủy với lý do, xem trước toàn bộ ảnh hưởng rồi lưu.",
-          "Trong Quản lý, sửa thông tin theo ngày hiệu lực; lưu trữ khi danh mục có cả vốn và giá trị bằng 0, hoặc ví có số dư 0. Có thể khôi phục.",
+          "Lưu trữ danh mục khi vốn, giá trị tài sản và toàn bộ tiền chờ đều bằng 0. Bán hết không tự lưu trữ danh mục. Có thể khôi phục.",
         ],
         "Kết quả: lịch sử được giữ, sửa quá khứ không tự thay các định giá đã nhập ở mốc sau; bản sửa phải bảo toàn số dư.",
       ),
@@ -602,14 +602,14 @@ export const articles: HelpArticles = {
         "Khi tổng kết đầu tư trong một khoảng thời gian.",
         [
           "Chọn tháng/quý/năm hoặc khoảng ngày xuyên năm trong Báo cáo.",
-          "Lọc danh mục/ví và loại giao dịch, đọc dòng tiền, kết quả kỳ, cơ cấu và bảng thay thế.",
+          "Lọc danh mục và loại giao dịch; xem vốn, giá trị tài sản, tiền chờ, tổng giá trị và lãi/lỗ phần đang giữ tại cuối kỳ.",
           "Kiểm tra ngày định giá, cảnh báo giá cũ/thiếu; xuất bảng dữ liệu nếu cần, sao lưu toàn tài khoản tại Cài đặt.",
         ],
         "Kết quả: lọc loại giao dịch chỉ lọc hoạt động, không loại lịch sử cần để tính số dư. Không cộng tài sản cuối các tháng với nhau.",
       ),
     ],
     [
-      "Bán ==30.000.000 ₫==, giá vốn phần bán ==25.000.000 ₫==, phí/thuế ==200.000 ₫== → nhận ==29.800.000 ₫==, lãi đã chốt ==4.800.000 ₫==.",
+      "Nạp ==10.000.000 ₫==, mua ==7.000.000 ₫==: tiền chờ ==3.000.000 ₫==. Định giá phần đã mua thành ==8.000.000 ₫==: tổng giá trị ==11.000.000 ₫==, lãi ==1.000.000 ₫==.",
       "Nạp thêm ==10.000.000 ₫== vào ví khiến tổng tài sản tăng ==10.000.000 ₫==, nhưng không phải lợi nhuận đầu tư.",
     ],
     [

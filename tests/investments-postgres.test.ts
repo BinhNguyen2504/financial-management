@@ -34,17 +34,18 @@ async function setup() {
   await admin`insert into auth.users(id) values(${owner})`;
   await command(owner, 0, {
     type: "createCategory",
-    id: wallet,
-    start: "2026-12-01",
-    kind: "cash",
-    name: "TCBS",
-  });
-  await command(owner, 1, {
-    type: "createCategory",
     id: asset,
+    walletId: wallet,
     start: "2026-12-01",
     kind: "investment",
     name: "Cổ phiếu",
+  });
+  await command(owner, 1, {
+    type: "configureCategory",
+    categoryId: wallet,
+    date: "2026-12-01",
+    kind: "cash",
+    name: "TCBS",
   });
   return { owner, wallet, asset };
 }

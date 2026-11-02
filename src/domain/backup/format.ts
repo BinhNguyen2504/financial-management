@@ -86,6 +86,7 @@ const savingsCategory = z.strictObject({
 });
 const investmentCategory = z.strictObject({
   id: uuid,
+  parentCategoryId: uuid.nullable().optional(),
   start: date,
   kind: z.enum(["cash", "investment"]),
   rules: z

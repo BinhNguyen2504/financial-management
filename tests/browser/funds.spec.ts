@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { vietnamClock } from "../../src/domain/expenses/engine";
 import type { FundView } from "../../src/domain/funds/types";
@@ -117,6 +117,197 @@ async function post(
     },
   });
 }
+
+async function expectLedgerLayout(ledger: Locator) {
+  const rows = ledger.locator(".fund-transaction");
+  await expect(rows.first()).toBeVisible();
+  const measurements = await ledger.evaluate((element) => {
+    const width = element.getBoundingClientRect().width;
+    return Array.from(element.querySelectorAll(".fund-transaction")).map(
+      (row) => {
+        const info = row.querySelector(".fund-transaction-info")!;
+        const amount = row.querySelector(".fund-transaction-amount")!;
+        const actions = row.querySelector(".fund-actions")!;
+        const center = (el: Element) => {
+          const rect = el.getBoundingClientRect();
+          return rect.top + rect.height / 2;
+        };
+        const buttons = Array.from(actions.querySelectorAll("button"));
+        const [edit, cancel] = buttons.map((button) =>
+          button.getBoundingClientRect(),
+        );
+        return {
+          width,
+          overflow: row.scrollWidth - row.clientWidth,
+          amountOverflow: amount.scrollWidth - amount.clientWidth,
+          amountRight: amount.getBoundingClientRect().right,
+          amountCenterOffset: Math.abs(center(amount) - center(info)),
+          actionCenterOffset: Math.abs(center(actions) - center(info)),
+          buttonWidths: buttons.map(
+            (button) => button.getBoundingClientRect().width,
+          ),
+          buttonHeights: buttons.map(
+            (button) => button.getBoundingClientRect().height,
+          ),
+          actionTopOffset: Math.abs(edit.top - cancel.top),
+          actionGap: cancel.left - edit.right,
+          iconOnly: buttons.every(
+            (button) =>
+              !button.textContent?.trim() && button.querySelector("svg"),
+          ),
+        };
+      },
+    );
+  });
+  for (const row of measurements) {
+    expect(row.overflow).toBeLessThanOrEqual(1);
+    expect(row.amountOverflow).toBeLessThanOrEqual(1);
+    expect(row.iconOnly).toBe(true);
+    expect(row.actionTopOffset).toBeLessThan(1);
+    expect(row.actionGap).toBeGreaterThanOrEqual(8);
+    for (const size of [...row.buttonWidths, ...row.buttonHeights]) {
+      expect(size).toBeGreaterThanOrEqual(44);
+    }
+    if (row.width > 480) expect(row.amountCenterOffset).toBeLessThan(2);
+    if (row.width > 700) expect(row.actionCenterOffset).toBeLessThan(2);
+  }
+  const edges = measurements.map((row) => row.amountRight);
+  expect(Math.max(...edges) - Math.min(...edges)).toBeLessThan(2);
+}
+
+for (const locale of ["vi", "en"] as const) {
+  test(`transaction columns and icon actions stay aligned in page and all fund dialogs (${locale})`, async ({
+    page,
+  }, info) => {
+    const s = await setup(page);
+    await post(page, s.bank, "123456789012345678901234", {
+      note:
+        "Đối soát khoản dự phòng dài hạn. ".repeat(4) + "ghi_chú_".repeat(12),
+    });
+    await post(page, s.bank, "1200000", { fundId: "rainy_day" });
+    await post(page, s.bank, "8000000", { fundId: "sinking" });
+    await post(page, s.bank, "250000", {
+      kind: "transfer",
+      toFundId: "rainy_day",
+      toLocationId: s.cash,
+      note: "Chuyển dự phòng phát sinh sang nơi giữ tiền mặt",
+    });
+    await page
+      .context()
+      .addCookies([{ name: "fm-locale", value: locale, url: origin() }]);
+    await page.reload();
+    const english = locale === "en";
+    const editName = english ? "Edit transaction" : "Sửa giao dịch";
+    const voidName = english ? "Void transaction" : "Hủy giao dịch";
+    const closeName = english ? "Close" : "Đóng";
+    const ledger = page.locator(".fund-workspace > .panel .fund-ledger");
+    await expect(ledger.locator(".fund-transaction")).toHaveCount(4);
+
+    for (const width of [1440, 768, 390, 320]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await expectLedgerLayout(ledger);
+      await ledger.screenshot({
+        path: `artifacts/fund-transactions-2026-11-02/after/${locale}-${info.project.name}-page-${width}.png`,
+      });
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+      ).toBe(true);
+    }
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    for (const width of [479, 480, 481, 699, 700, 701]) {
+      await ledger.evaluate((element, size) => {
+        element.style.width = `${size}px`;
+      }, width);
+      await expectLedgerLayout(ledger);
+    }
+    await ledger.evaluate((element) => {
+      element.style.removeProperty("width");
+    });
+
+    for (const fund of ["Emergency Fund", "Rainy Day Fund", "Sinking Fund"]) {
+      await page
+        .getByRole("button", {
+          name: new RegExp(fund),
+        })
+        .click();
+      const dialog = page.getByRole("dialog");
+      await dialog
+        .getByRole("tab", {
+          name: english ? "Transactions" : "Giao dịch",
+          exact: true,
+        })
+        .click();
+      const detailLedger = dialog.locator(".fund-ledger");
+      const edit = detailLedger
+        .getByRole("button", { name: editName, exact: true })
+        .first();
+      const cancel = detailLedger
+        .getByRole("button", { name: voidName, exact: true })
+        .first();
+      await expect(edit).toHaveAttribute("title", editName);
+      await expect(cancel).toHaveAttribute("title", voidName);
+      for (const width of [1440, 768, 390, 320]) {
+        await page.setViewportSize({ width, height: 1000 });
+        await expectLedgerLayout(detailLedger);
+      }
+      await detailLedger.screenshot({
+        path: `artifacts/fund-transactions-2026-11-02/after/${locale}-${info.project.name}-${fund}-320.png`,
+      });
+      await edit.focus();
+      await expect(edit).toBeFocused();
+      await page.keyboard.press("Enter");
+      await expect(page.getByRole("dialog").last()).toContainText(editName);
+      await page
+        .getByRole("dialog")
+        .last()
+        .getByRole("button", { name: closeName, exact: true })
+        .click();
+      await cancel.focus();
+      await page.keyboard.press("Enter");
+      await expect(page.getByRole("dialog").last()).toContainText(voidName);
+      await page
+        .getByRole("dialog")
+        .last()
+        .getByRole("button", { name: closeName, exact: true })
+        .click();
+      await dialog
+        .getByRole("button", { name: closeName, exact: true })
+        .click();
+      await page.setViewportSize({ width: 1440, height: 1000 });
+    }
+
+    await page
+      .getByRole("button", {
+        name: english ? "Hide amounts" : "Ẩn số tiền",
+        exact: true,
+      })
+      .click();
+    await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 320, height: 1000 });
+    await page.evaluate(() => {
+      document.documentElement.style.fontSize = "125%";
+    });
+    await expectLedgerLayout(ledger);
+    await expect(ledger).not.toContainText("123.456.789");
+    await expect(ledger).not.toContainText("123,456,789");
+    await ledger.screenshot({
+      path: `artifacts/fund-transactions-2026-11-02/after/${locale}-${info.project.name}-page-320-dark-private-large-text.png`,
+    });
+    await page
+      .getByRole("button", {
+        name: english ? "Show amounts" : "Hiện số tiền",
+        exact: true,
+      })
+      .click();
+    await expectLedgerLayout(ledger);
+    await ledger.screenshot({
+      path: `artifacts/fund-transactions-2026-11-02/after/${locale}-${info.project.name}-page-320-dark-large-text.png`,
+    });
+  });
+}
+
 test("onboarding links living expense, requires user x, previews without writing and saves priorities", async ({
   page,
 }) => {
@@ -183,7 +374,9 @@ test("nested transactions, atomic transfers, corrections and filters retain pare
   await expect(parent).toBeVisible();
   await expect(parent.getByLabel("Tìm giao dịch")).toHaveValue("bổ sung");
   await expect(parent.locator(".fund-transaction")).toHaveCount(1);
-  await parent.getByRole("button", { name: "Sửa", exact: true }).click();
+  await parent
+    .getByRole("button", { name: "Sửa giao dịch", exact: true })
+    .click();
   await page.getByLabel("Số tiền (VND)", { exact: true }).fill("1200000");
   await page.getByLabel("Lý do sửa hoặc hủy").fill("Đối soát lại");
   await save(page);

@@ -114,8 +114,8 @@ export const landing = {
     "Separate opening assets, new contributions and gains/losses. Moving savings between holdings changes where they are held, without increasing total assets.",
   "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví. Xem trước tác động trước khi lưu giao dịch.":
     "Separate capital, available cash and investment results. Dated valuations help you read asset values correctly; updating a valuation does not change wallet cash. Preview the impact before saving a transaction.",
-  "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt đã xác nhận và hệ số bạn chọn. Cập nhật nguồn từ Chi tiêu cần xem trước và xác nhận; đổi mục tiêu không tự thêm tiền vào quỹ.":
-    "Each fund has its own purpose. Targets use confirmed living costs and your chosen multipliers. Updates from Expenses need a preview and confirmation; changing a target does not add money to a fund.",
+  "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt đã xác nhận và hệ số bạn chọn. Cập nhật nguồn từ Chi tiêu cần xem trước và xác nhận; đổi mục tiêu không tự thêm tiền vào quỹ. Trong sổ giao dịch, dùng biểu tượng bút để sửa và thùng rác để hủy, có lưu lịch sử.":
+    "Each fund has its own purpose. Targets use confirmed living costs and your chosen multipliers. Updates from Expenses need a preview and confirmation; changing a target does not add money to a fund. In the transaction ledger, use the pencil to edit and the bin to void; history is preserved.",
   "Chuẩn bị từng quỹ dự phòng theo nhu cầu sinh hoạt của bạn.":
     "Build each reserve fund around your living expenses.",
   "3 tháng": "3 months",

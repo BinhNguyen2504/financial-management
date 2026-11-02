@@ -13,7 +13,12 @@ import {
   dateLabel,
 } from "@/components/dialog-content";
 import { useMoney } from "@/components/privacy";
-import { activeTransactions, ruleAt } from "@/domain/investments/engine";
+import {
+  activeTransactions,
+  ruleAt,
+  replay,
+} from "@/domain/investments/engine";
+import { portfolioPositions } from "@/domain/investments/portfolios";
 import type {
   InvestmentTransaction,
   InvestmentView,
@@ -57,6 +62,11 @@ export function InvestmentDetails({
       ? (ruleAt(c, view.state.asOf) ?? c.rules[0]).name
       : tr("Bên ngoài");
   };
+  const portfolio = view.portfolios.find((item) => item.id === p.id);
+  const relatedIds = new Set([
+    p.id,
+    ...(portfolio?.wallets.map((w) => w.id) ?? []),
+  ]);
   const live = view.book ? activeTransactions(view.book) : [];
   const latestCancelled = (view.book?.revisions ?? [])
     .filter(
@@ -81,8 +91,10 @@ export function InvestmentDetails({
     .filter(
       (t) =>
         t.date <= view.state.asOf &&
-        (t.categoryId === p.id ||
-          ("cashCategoryId" in t && t.cashCategoryId === p.id)),
+        (relatedIds.has(t.categoryId) ||
+          ("cashCategoryId" in t &&
+            !!t.cashCategoryId &&
+            relatedIds.has(t.cashCategoryId))),
     )
     .sort((a, b) => b.date.localeCompare(a.date) || b.sequence - a.sequence);
   const kinds: InvestmentTransaction["kind"][] =
@@ -101,14 +113,18 @@ export function InvestmentDetails({
     >
       <DialogSummary
         label={p.kind === "cash" ? tr("Số dư") : tr("Giá trị hiện tại")}
-        value={display(p.value)}
+        value={display(portfolio?.total ?? p.value)}
       >
         {p.kind === "investment" && (
           <DialogFacts
             items={[
-              { label: tr("Giá vốn còn lại"), value: money(p.cost) },
-              { label: tr("Lãi / lỗ chưa chốt"), value: display(p.unrealized) },
-              { label: tr("Lãi / lỗ đã chốt"), value: money(p.realized) },
+              { label: tr("Vốn đang đầu tư"), value: money(p.cost) },
+              { label: tr("Giá trị tài sản đã mua"), value: display(p.value) },
+              { label: tr("Tiền chờ"), value: money(portfolio?.cash ?? "0") },
+              {
+                label: tr("Lãi/lỗ phần đang giữ"),
+                value: display(p.unrealized),
+              },
               {
                 label: tr("Ngày định giá"),
                 value: `${p.valueDate ? dateLabel(p.valueDate, locale) : tr("Chưa có")}${p.stale ? tr(" · Từ kỳ trước") : ""}`,
@@ -132,6 +148,74 @@ export function InvestmentDetails({
             </button>
           ))}
         </div>
+      )}
+      {portfolio && (
+        <section className="dialog-secondary-section">
+          <h3>{tr("Ví tiền chờ")}</h3>
+          <p className="expense-muted">
+            {tr(
+              "Tiền chưa mua tài sản vẫn nằm trong tổng giá trị danh mục. Tiền bán về ví; chỉ rút mới đưa tiền ra khỏi danh mục.",
+            )}
+          </p>
+          {portfolio.wallets.map((w) => (
+            <article key={w.id} className="investment-wallet">
+              <div>
+                <h4>{w.name}</h4>
+                <strong>{money(w.cash)}</strong>
+              </div>
+              <div className="expense-actions">
+                {p.active &&
+                  w.active &&
+                  (
+                    ["deposit", "withdraw", "transfer", "openingCash"] as const
+                  ).map((kind) => (
+                    <button
+                      type="button"
+                      className="expense-secondary"
+                      key={kind}
+                      onClick={() =>
+                        onEdit({ type: "transaction", kind, categoryId: w.id })
+                      }
+                    >
+                      {localize(transactionNames)[kind]}
+                    </button>
+                  ))}
+                <button
+                  type="button"
+                  className="expense-secondary"
+                  onClick={() =>
+                    onEdit({ type: "configure", categoryId: w.id })
+                  }
+                >
+                  {tr("Sửa")}
+                </button>
+                {p.active && (
+                  <button
+                    type="button"
+                    className="expense-secondary"
+                    onClick={() =>
+                      onEdit({
+                        type: w.active ? "archive" : "restore",
+                        categoryId: w.id,
+                      })
+                    }
+                  >
+                    {w.active ? tr("Xóa / lưu trữ") : tr("Khôi phục")}
+                  </button>
+                )}
+              </div>
+            </article>
+          ))}
+          {p.active && (
+            <button
+              type="button"
+              className="expense-secondary"
+              onClick={() => onEdit({ type: "create", parentCategoryId: p.id })}
+            >
+              {tr("Thêm ví tiền chờ")}
+            </button>
+          )}
+        </section>
       )}
       <DialogList
         items={effects}
@@ -187,7 +271,7 @@ export function InvestmentDetails({
             label:
               p.kind === "cash"
                 ? tr("Biến động số dư")
-                : tr("Giá trị sau giao dịch"),
+                : tr("Tổng giá trị sau giao dịch"),
             numeric: true,
             render: (t) => {
               const effect = view.state.effects.find((e) => e.id === t.id);
@@ -199,7 +283,12 @@ export function InvestmentDetails({
                       BigInt(effect.before[p.id]?.cash ?? "0")
                     ).toString(),
                   )
-                : display(effect.after[p.id]?.value ?? null);
+                : display(
+                    portfolioPositions(
+                      view.book,
+                      replay(view.book!, t.date, t.sequence),
+                    ).find((item) => item.id === p.id)?.total ?? null,
+                  );
             },
           },
           {
@@ -359,10 +448,6 @@ export function InvestmentTransactionDetails({
                         {
                           label: tr("Tiền ròng giao dịch"),
                           value: money(effect.net),
-                        },
-                        {
-                          label: tr("Lãi / lỗ đã chốt"),
-                          value: money(effect.realized),
                         },
                       ]}
                     />

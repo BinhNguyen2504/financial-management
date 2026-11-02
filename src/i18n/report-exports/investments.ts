@@ -1,52 +1,49 @@
-import { sumMoney as sum } from "@/domain/shared/money";
 import type { InvestmentReport } from "@/domain/investments/reports";
 import type { Locale } from "../locale";
 import { translator } from "../translate";
-export function reportCSV(r: InvestmentReport, locale: Locale = "vi") {
-  const tr = translator(locale, "errors");
 
+export function reportCSV(r: InvestmentReport, locale: Locale = "vi") {
+  const tr = translator(locale, "investments");
   const cell = (v: string) =>
     `"${(/^[=+@\-\t\r\n]/.test(v) ? "'" : "") + v.replaceAll('"', '""')}"`;
   const lines: string[][] = [
     [
-      tr("Loại"),
-      tr("Ngày"),
-      tr("Danh mục / ID"),
-      tr("Giá trị đầu kỳ VND"),
-      tr("Giá trị cuối kỳ VND"),
-      tr("Vốn còn lại VND"),
-      tr("Ngày định giá"),
-      tr("Kết quả kỳ VND"),
-      tr("Nạp ngoài VND"),
-      tr("Rút ngoài VND"),
-      tr("Chuyển ròng VND"),
-      tr("Mở đầu VND"),
-      tr("Lãi/lỗ đã chốt kỳ VND"),
-      tr("Lãi/lỗ chưa chốt VND"),
-      tr("Phí/thuế VND"),
-      tr("Ghi chú"),
-    ],
+      "Loại",
+      "Ngày",
+      "Danh mục",
+      "Vốn đang đầu tư",
+      "Giá trị tài sản đã mua",
+      "Tiền chờ",
+      "Tổng giá trị hiện tại",
+      "Lãi/lỗ phần đang giữ",
+      "Ngày định giá",
+      "Nạp ngoài",
+      "Rút ngoài",
+      "Số tiền",
+      "Phí",
+      "Thuế",
+      "Ghi chú",
+    ].map((s) => tr(s)),
   ];
-  for (const c of r.categories)
+  for (const p of r.portfolios)
     lines.push([
-      tr("Tài sản"),
+      tr("Danh mục đầu tư"),
       r.asOf,
-      c.name,
-      c.startValue ?? "",
-      c.value ?? "",
-      c.cost,
-      c.valueDate ?? "",
-      c.result ?? "",
-      c.inflow,
-      c.outflow,
-      c.internal,
-      c.opening,
-      c.realized,
-      c.unrealized ?? "",
-      c.fees,
-      c.value === null
+      p.name,
+      p.cost,
+      p.value ?? "",
+      p.cash,
+      p.total ?? "",
+      p.unrealized ?? "",
+      p.valueDate ?? "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      p.value === null
         ? tr("Thiếu định giá")
-        : c.stale
+        : p.stale
           ? tr("Định giá từ kỳ trước")
           : "",
     ]);
@@ -55,60 +52,47 @@ export function reportCSV(r: InvestmentReport, locale: Locale = "vi") {
       tr("Tổng tháng"),
       m.month,
       "",
-      "",
+      m.cost ?? "",
+      m.assetValue ?? "",
+      m.cash ?? "",
       m.value ?? "",
+      m.profit ?? "",
       "",
-      "",
-      m.result ?? "",
       m.inflow ?? "",
       m.outflow ?? "",
       "",
       "",
       "",
-      "",
-      "",
       m.provisional ? tr("Tạm tính") : "",
     ]);
+  const names = new Map(r.after.positions.map((p) => [p.id, p.name]));
+  const kinds = {
+    openingCash: "Số dư ví mở đầu",
+    openingInvestment: "Tài sản mở đầu",
+    deposit: "Nạp tiền",
+    withdraw: "Rút tiền",
+    transfer: "Chuyển ví",
+    buy: "Mua",
+    sell: "Bán",
+    valuation: "Định giá",
+  };
   for (const e of r.effects)
     lines.push([
-      e.kind,
+      tr(kinds[e.kind]),
       e.date,
-      e.categoryId,
+      names.get(e.categoryId) ?? e.categoryId,
       "",
-      e.net,
-      e.costSold,
+      "",
+      "",
+      "",
       "",
       "",
       BigInt(e.external) > 0n ? e.external : "0",
       BigInt(e.external) < 0n ? (-BigInt(e.external)).toString() : "0",
-      e.internal[e.categoryId] ?? "0",
-      e.opening[e.categoryId] ?? "0",
-      e.realized,
-      "",
-      (BigInt(e.fees) + BigInt(e.tax)).toString(),
+      e.net,
+      e.fees,
+      e.tax,
       e.note,
     ]);
-  lines.push([
-    tr("Tổng kỳ"),
-    r.asOf,
-    "",
-    r.before.total ?? "",
-    r.after.total ?? "",
-    "",
-    "",
-    r.result ?? "",
-    r.activity.inflow,
-    r.activity.outflow,
-    r.reconciliation.internal,
-    r.reconciliation.opening,
-    r.activity.realized,
-    r.after.total === null
-      ? ""
-      : sum(r.categories.map((c) => c.unrealized ?? "0")),
-    r.activity.fees,
-    r.activityFiltered
-      ? tr("Lọc giao dịch chỉ áp dụng hoạt động; số dư giữ đầy đủ")
-      : "",
-  ]);
-  return "\uFEFF" + lines.map((l) => l.map(cell).join(",")).join("\r\n");
+  return "\ufeff" + lines.map((row) => row.map(cell).join(",")).join("\r\n");
 }

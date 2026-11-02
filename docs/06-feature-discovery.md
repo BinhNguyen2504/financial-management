@@ -1,5 +1,10 @@
 # Chuẩn bị đặc tả từng tính năng
 
+## Đầu tư đã chốt lại — 02/11/2026
+
+Theo tổng danh mục VND, ví riêng từng danh mục; mua/bán luôn qua ví, giá vốn phần bán nhập tay, định giá tài sản còn giữ bắt buộc khi mua/bán và cập nhật riêng bất cứ lúc nào. Tổng giá trị cộng tiền chờ; lãi/lỗ chỉ phần đang giữ, bán hết về 0. Không hiển thị lãi đã bán hoặc kết quả kỳ. Xem [đặc tả hiện hành](features/investments.md).
+
+
 Thu nhập đã chốt theo [đặc tả](features/income.md). Chi tiêu đã chốt và triển khai theo [đặc tả ngày 15/10/2026](features/expenses.md). Những câu hỏi ngân sách/chi tiêu đã được trả lời tại đó không còn là blocker của module này; agenda bên dưới dành cho các module còn lại.
 
 Người dùng sẽ cung cấp chi tiết sau; danh sách dưới đây là agenda làm việc, không yêu cầu trả lời hết ngay. Nên bắt đầu với **Tài khoản + Thu/Chi + Chuyển tiền** vì các phần khác dựa trên số liệu này.

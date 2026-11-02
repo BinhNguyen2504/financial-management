@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { buildInvestmentReviewData } from "./investment-review-data.mjs";
 import { REVIEW_FORMAT, validateUUID, vietnamToday } from "./review-data.mjs";
 import { allReviewTables } from "./savings-review-data.mjs";
 export const investmentTables = [
@@ -11,7 +11,7 @@ export const investmentTables = [
 ];
 export const completeReviewTables = [...allReviewTables, ...investmentTables];
 export const investmentReviewDescription = (datasetId) =>
-  `DỮ LIỆU MẪU UI/UX · ${REVIEW_FORMAT} · ${datasetId} · tham khảo investment-1.png/investment-2.png; lịch sử, phí, thuế và định giá chỉ minh họa.`;
+  `DỮ LIỆU MẪU UI/UX · ${REVIEW_FORMAT} · ${datasetId} · danh mục và ví riêng; lịch sử, phí, thuế và định giá chỉ minh họa.`;
 /** Extend the existing marked review dataset; never replace its other modules. */
 export function addInvestmentReviewData(base, { today = vietnamToday() } = {}) {
   validateUUID(base.ownerId);
@@ -24,243 +24,33 @@ export function addInvestmentReviewData(base, { today = vietnamToday() } = {}) {
     today < "2001-01-01"
   )
     throw new Error("Ngày tạo mẫu không hợp lệ.");
-  const year = Number(today.slice(0, 4)),
-    start = `${year - 1}-12-01`,
-    actions = [],
-    at = `${today}T00:00:00.000Z`,
-    description = investmentReviewDescription(base.datasetId);
-  const day = (n, m = 1) =>
-    [
-      `${year}-${String(m).padStart(2, "0")}-${String(n).padStart(2, "0")}`,
-      today,
-    ].sort()[0];
-  function create(name, kind, emoji) {
-    const id = randomUUID();
-    actions.push({
-      type: "createCategory",
-      id,
-      start,
-      kind,
-      name,
-      emoji,
-      description,
-    });
-    return id;
-  }
-  function tx(categoryId, kind, date, fields = {}) {
-    const transaction = {
-      id: randomUUID(),
-      categoryId,
-      kind,
-      date,
-      note: "DỮ LIỆU MẪU UI/UX · giao dịch minh họa",
-      counterparty: "",
-      ...(["buy", "sell"].includes(kind)
-        ? { fee: "0", tax: "0", cashCategoryId: null }
-        : {}),
-      ...fields,
-    };
-    actions.push({ type: "postTransaction", transaction });
-    return transaction;
-  }
-  const cash = create("Tiền chờ TCBS", "cash", "💼"),
-    exchange = create("Tiền chờ Crypto", "cash", "🌐"),
-    stock = create("Cổ phiếu", "investment", "📈"),
-    fund = create("Quỹ cổ phiếu", "investment", "🌿"),
-    bond = create("Quỹ trái phiếu", "investment", "🏦"),
-    crypto = create("Crypto", "investment", "🌐"),
-    closed = create("Khoản đầu tư đã tất toán", "investment", "🍂"),
-    loss = create("Khoản đầu tư mất toàn bộ vốn", "investment", "🪨");
-  tx(cash, "openingCash", start, {
-    amount: "12349",
-    note: "DỮ LIỆU MẪU UI/UX · tham khảo tiền chờ 12.349 từ ảnh; không sử dụng giá trị 0/ROI −100% trong Notion.",
+  const sample = buildInvestmentReviewData({
+    ownerId: base.ownerId,
+    today,
+    description: investmentReviewDescription(base.datasetId),
   });
-  tx(exchange, "openingCash", start, { amount: "300000" });
-  for (const [id, cost, value] of [
-    [stock, "46293098", "44491500"],
-    [fund, "11196750", "11509468"],
-    [bond, "5005620", "5017437"],
-    [crypto, "7500000", "5667000"],
-    [closed, "2000000", "2100000"],
-    [loss, "500000", "0"],
-  ])
-    tx(id, "openingInvestment", start, {
-      cost,
-      value,
-      note: "DỮ LIỆU MẪU UI/UX · gốc/định giá tham khảo ảnh hoặc tự tạo; ngày mở đầu chỉ minh họa.",
-    });
-  let bondValue = 5017437n,
-    stockValue = 44491500n;
-  for (let m = 1; m <= Number(today.slice(5, 7)); m++) {
-    tx(cash, "deposit", day(1, m), {
-      amount: m === 1 ? "7000000" : "3000000",
-      counterparty: "Techcombank (bên ngoài module)",
-      note: `DỮ LIỆU MẪU UI/UX · góp DCA tháng ${m}`,
-    });
-    tx(bond, "buy", day(3, m), {
-      amount: "1300000",
-      fee: "1000",
-      cashCategoryId: cash,
-      value: (bondValue += 1310000n).toString(),
-      note: `DỮ LIỆU MẪU UI/UX · quỹ TCBS tháng ${m}`,
-    });
-    if (m % 2 === 0)
-      tx(stock, "buy", day(5, m), {
-        amount: "412500",
-        fee: "1000",
-        cashCategoryId: cash,
-        value: (stockValue += 420000n).toString(),
-        note: "DỮ LIỆU MẪU UI/UX · HPG tham khảo ghi chú Notion; chỉ theo tổng danh mục, không theo số lượng mã.",
-      });
-    tx(bond, "valuation", day(15, m), {
-      value: (bondValue += 15000n).toString(),
-    });
-    tx(stock, "valuation", day(15, m), {
-      value: (stockValue += m % 2 === 0 ? 650000n : -350000n).toString(),
-    });
-  }
-  tx(cash, "transfer", day(7), {
-    amount: "1000000",
-    cashCategoryId: exchange,
-    note: "DỮ LIỆU MẪU UI/UX · chuyển giữa hai ví tiền chờ",
-  });
-  tx(crypto, "buy", day(8), {
-    amount: "500000",
-    fee: "5000",
-    cashCategoryId: exchange,
-    value: "6200000",
-    note: "DỮ LIỆU MẪU UI/UX · BTC/ETH trong ghi chú, không theo mã",
-  });
-  tx(crypto, "sell", day(10), {
-    amount: "300000",
-    cost: "500000",
-    fee: "10000",
-    cashCategoryId: exchange,
-    value: "5900000",
-    note: "DỮ LIỆU MẪU UI/UX · bán một phần bị lỗ sau phí",
-  });
-  tx(fund, "buy", day(12), {
-    amount: "1000000",
-    value: "12600000",
-    counterparty: "Mua trực tiếp từ bên ngoài",
-    note: "DỮ LIỆU MẪU UI/UX · không qua ví tiền chờ",
-  });
-  tx(fund, "sell", day(13), {
-    amount: "600000",
-    cost: "500000",
-    tax: "600",
-    value: "12000000",
-    counterparty: "Tiền bán về bên ngoài",
-  });
-  tx(stock, "sell", day(16), {
-    amount: "3000000",
-    cost: "2500000",
-    fee: "3000",
-    tax: "3000",
-    cashCategoryId: cash,
-    value: "42100000",
-    note: "DỮ LIỆU MẪU UI/UX · bán lãi, vốn bán và tiền thực nhận khác nhau",
-  });
-  tx(cash, "withdraw", day(17), {
-    amount: "500000",
-    counterparty: "Techcombank (bên ngoài module)",
-  });
-  tx(closed, "sell", day(18), {
-    amount: "2300000",
-    cost: "2000000",
-    fee: "5000",
-    cashCategoryId: cash,
-    value: "0",
-  });
-  actions.push({ type: "archiveCategory", categoryId: closed, date: day(18) });
-  tx(loss, "sell", day(19), {
-    amount: "0",
-    cost: "500000",
-    value: "0",
-    note: "DỮ LIỆU MẪU UI/UX · tất toán mất vốn, tiền bán bằng 0",
-  });
-  actions.push({ type: "archiveCategory", categoryId: loss, date: day(19) });
-  const amended = tx(fund, "valuation", day(20), {
-    value: "12500000",
-    note: "DỮ LIỆU MẪU UI/UX · định giá có lịch sử sửa",
-  });
-  actions.push({
-    type: "reviseTransaction",
-    transactionId: amended.id,
-    replacement: { ...amended, value: "12700000" },
-    reason: "DỮ LIỆU MẪU UI/UX · đối chiếu lại giá trị quỹ",
-  });
-  const cancelled = tx(cash, "deposit", day(21), {
-    amount: "250000",
-    note: "DỮ LIỆU MẪU UI/UX · nhập thử, sau đó hủy",
-  });
-  actions.push({
-    type: "reviseTransaction",
-    transactionId: cancelled.id,
-    replacement: null,
-    reason: "DỮ LIỆU MẪU UI/UX · hủy khoản ghi trùng",
-  });
-  const book = { version: 0, categories: [], revisions: [], audit: [] };
-  for (const action of actions) {
-    const seq = ++book.version;
-    book.audit.push({ version: seq, at, action });
-    if (action.type === "createCategory")
-      book.categories.push({
-        id: action.id,
-        start: action.start,
-        kind: action.kind,
-        rules: [
-          {
-            date: action.start,
-            sequence: seq,
-            name: action.name,
-            description: action.description,
-            emoji: action.emoji,
-            active: true,
-          },
-        ],
-      });
-    else if (action.type === "postTransaction") {
-      const t = action.transaction;
-      book.revisions.push({
-        id: t.id,
-        rootId: t.id,
-        sequence: seq,
-        at,
-        transaction: t,
-        reason: "",
-      });
-    } else if (action.type === "reviseTransaction")
-      book.revisions.push({
-        id: `${action.transactionId}:${seq}`,
-        rootId: action.transactionId,
-        sequence: seq,
-        at,
-        transaction: action.replacement,
-        reason: action.reason,
-      });
-    else if (action.type === "archiveCategory") {
-      const c = book.categories.find((c) => c.id === action.categoryId);
-      c.rules.push({
-        ...c.rules[0],
-        date: action.date,
-        sequence: seq,
-        active: false,
-      });
-    }
-  }
+  for (const c of sample.book.categories)
+    c.rules[0].description = investmentReviewDescription(base.datasetId);
+  // Keep generated default-wallet metadata consistent with the domain's atomic create.
+  for (const c of sample.book.categories.filter(
+    (c) =>
+      c.kind === "cash" &&
+      !sample.actions.some((a) => a.type === "createCategory" && a.id === c.id),
+  ))
+    c.rules[0].description = "";
   return {
     ...base,
     investmentToday: today,
-    investments: book,
+    investments: sample.book,
     investmentsSource: {
-      images: ["Notion/investment-1.png", "Notion/investment-2.png"],
+      images: [],
       syntheticTransactions: true,
       notice:
-        "Các số gốc/giá trị tham khảo Notion, bổ sung số mẫu và ngày minh họa; không phải số dư hoặc giao dịch thật.",
+        "Dữ liệu minh họa theo danh mục và ví riêng; không phải số dư hoặc giao dịch thật.",
     },
   };
 }
+
 const literal = (v) =>
   v === null
     ? "null"

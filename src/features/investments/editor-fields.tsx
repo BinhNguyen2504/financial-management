@@ -161,14 +161,14 @@ export function InvestmentEditorFields({
         group(
           tr("Thông tin danh mục"),
           <>
-            {mode.type === "create" && (
+            {mode.type === "create" && f.kind !== "cash" && (
               <div className="investment-suggestions">
                 {[
                   [tr("Cổ phiếu"), "📈"],
                   [tr("Quỹ cổ phiếu"), "🌿"],
                   [tr("Quỹ trái phiếu"), "🏦"],
                   ["Crypto", "🌐"],
-                  [tr("Tiền chờ TCBS"), "💼"],
+                  [tr("Bitcoin"), "₿"],
                 ].map(([name, emoji]) => (
                   <button
                     type="button"
@@ -177,10 +177,7 @@ export function InvestmentEditorFields({
                     onClick={() => {
                       set("name", name);
                       set("emoji", emoji);
-                      set(
-                        "kind",
-                        name === tr("Tiền chờ TCBS") ? "cash" : "investment",
-                      );
+                      set("kind", "investment");
                     }}
                   >
                     {name}
@@ -190,14 +187,9 @@ export function InvestmentEditorFields({
             )}
             {input("name", tr("Tên danh mục"))}
             {input("emoji", "Emoji")}
-            {select(
-              "kind",
-              tr("Loại danh mục"),
-              <>
-                <option value="investment">{tr("Danh mục đầu tư")}</option>
-                <option value="cash">{tr("Ví tiền chờ")}</option>
-              </>,
-            )}
+            <p className="form-readonly-value">
+              {f.kind === "cash" ? tr("Ví tiền chờ") : tr("Danh mục đầu tư")}
+            </p>
             {input(
               mode.type === "create" ? "start" : "date",
               mode.type === "create" ? tr("Ngày bắt đầu") : tr("Ngày hiệu lực"),
@@ -206,7 +198,7 @@ export function InvestmentEditorFields({
             {input("description", tr("Ghi chú danh mục"), "text", true)}
             <p className="expense-muted">
               {tr(
-                "Số dư mở đầu được ghi riêng tại ngày bắt đầu. Loại danh mục chỉ đổi được khi chưa có phát sinh.",
+                "Danh mục mới có một ví tiền chờ mặc định. Số dư và tài sản mở đầu được ghi riêng tại ngày bắt đầu.",
               )}
             </p>
           </>,
@@ -270,15 +262,13 @@ export function InvestmentEditorFields({
                   "cashCategoryId",
                   cashLabel,
                   <>
-                    <option value="">
-                      {kind === "transfer"
-                        ? tr("Chọn ví nhận")
-                        : tr("Bên ngoài")}
-                    </option>
+                    <option value="">{tr("Chọn ví tiền chờ")}</option>
                     {categories
                       .filter(
                         (c) =>
                           c.kind === "cash" &&
+                          (kind === "transfer" ||
+                            c.parentCategoryId === f.categoryId) &&
                           c.id !== f.categoryId &&
                           ruleAt(c, f.date)?.active,
                       )
@@ -288,7 +278,7 @@ export function InvestmentEditorFields({
                         </option>
                       ))}
                   </>,
-                  kind === "transfer",
+                  true,
                 )}
             </>,
           )}
@@ -357,12 +347,13 @@ export function InvestmentEditorFields({
           {group(
             tr("Thông tin bổ sung"),
             <>
-              {input(
-                "counterparty",
-                tr("Nguồn / đích bên ngoài (tùy chọn)"),
-                "text",
-                true,
-              )}
+              {["deposit", "withdraw"].includes(kind) &&
+                input(
+                  "counterparty",
+                  tr("Nguồn / đích bên ngoài (tùy chọn)"),
+                  "text",
+                  true,
+                )}
               {input("note", tr("Ghi chú giao dịch"), "text", true)}
               {mode.type === "revise" &&
                 input("reason", tr("Lý do sửa / hủy"), "text", true)}

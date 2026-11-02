@@ -1,4 +1,5 @@
 "use client";
+import { settlementWallet } from "@/domain/investments/portfolios";
 import { generationOf } from "@/lib/data-generation";
 import { buildInvestmentAction } from "./editor-action";
 
@@ -68,10 +69,17 @@ export function useInvestmentEditor({
     cashCategoryId:
       "cashCategoryId" in (old ?? {})
         ? ((old as { cashCategoryId: string | null }).cashCategoryId ?? "")
-        : "",
+        : settlementWallet(initial.book, mode.categoryId, initial.today),
     transactionKind:
       old?.kind ?? ("kind" in mode ? mode.kind : undefined) ?? "buy",
-    kind: category?.kind ?? "investment",
+    kind:
+      category?.kind ??
+      ("parentCategoryId" in mode && mode.parentCategoryId
+        ? "cash"
+        : "investment"),
+    parentCategoryId:
+      category?.parentCategoryId ??
+      ("parentCategoryId" in mode ? (mode.parentCategoryId ?? "") : ""),
     name: rule?.name ?? "",
     emoji: rule?.emoji ?? "🌱",
     description: rule?.description ?? "",
@@ -106,7 +114,15 @@ export function useInvestmentEditor({
     (mode.type === "configure" || mode.type === "revise") &&
     draft === originalDraft;
   const set = (key: string, value: string) => {
-    setF((s) => ({ ...s, [key]: value }));
+    setF((s) => ({
+      ...s,
+      [key]: value,
+      ...(key === "categoryId" && ["buy", "sell"].includes(s.transactionKind)
+        ? {
+            cashCategoryId: settlementWallet(view.book, value, s.date),
+          }
+        : {}),
+    }));
     setPreview(null);
     setError("");
     setFieldErrors((previous) => {

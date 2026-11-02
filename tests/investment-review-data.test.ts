@@ -19,14 +19,14 @@ it.each(["2026-01-01", "2026-02-01", "2026-10-18", "2026-12-31", "2027-01-01"])(
     const state = replay(book, today);
     expect(state.missing).toEqual([]);
     expect(state.positions.find((p) => p.id === data.ids.stock)).toMatchObject({
-      cost: "85010000",
-      realized: "4800000",
+      cost: "7000000",
+      unrealized: "1000000",
     });
     expect(state.positions.find((p) => p.id === data.ids.closed)).toMatchObject(
-      { active: false, cost: "0", value: "0" },
+      { active: true, cost: "0", value: "0", unrealized: "0" },
     );
     expect(state.positions.find((p) => p.id === data.ids.cash)?.cash).toBe(
-      "49090000",
+      "3000000",
     );
   },
 );
