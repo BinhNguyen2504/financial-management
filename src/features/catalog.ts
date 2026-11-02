@@ -177,19 +177,18 @@ export const modules = [
   },
   {
     slug: "reports",
-    status: "planned",
+    status: "implemented",
     title: "Báo cáo",
     icon: "reports",
     label: "Hiểu biến động tài chính",
     description:
-      "Biểu đồ và bảng số liệu cùng sử dụng một nguồn dữ liệu đã đối soát.",
+      "Báo cáo tổng hợp theo tháng, quý, năm; so sánh kỳ trước và xuất CSV.",
     scope: [
       "Thu chi theo kỳ và danh mục",
-      "Tài sản ròng, tài sản thanh khoản và phân bổ tài sản",
-      "Lịch sử định giá; phân biệt vốn góp và lợi nhuận",
-      "Bộ lọc thời gian, xem giao dịch nguồn và xuất dữ liệu",
+      "Số cuối kỳ riêng từng sổ; Mục tiêu là tiến độ hiện tại",
+      "Chi tiết chỉ đọc, đối chiếu nguồn và xuất CSV theo tab",
     ],
-    questions: ["Những báo cáo nào quan trọng nhất khi tổng kết tháng?"],
+    questions: [],
   },
   {
     slug: "settings",
@@ -221,10 +220,10 @@ const navigationOrder = [
   "investments",
   "funds",
   "goals",
+  "reports",
   "settings",
   "transactions",
   "accounts",
-  "reports",
 ];
 export const navigationModules = [...modules].sort(
   (a, b) =>
@@ -238,7 +237,7 @@ export const pageHelpSummary =
 
 // Public home presentation is independent of module implementation status.
 export const publicProductSummary =
-  "Quản lý tài chính cá nhân với Financial Manager: theo dõi thu nhập, hũ chi tiêu, tiết kiệm, đầu tư, quỹ an toàn và mục tiêu. Xem thử giao diện không cần tài khoản.";
+  "Quản lý tài chính cá nhân với Financial Manager: theo dõi thu nhập, hũ chi tiêu, tiết kiệm, đầu tư, quỹ an toàn, mục tiêu và báo cáo theo kỳ. Xem thử giao diện không cần tài khoản.";
 
 export const publicHomeSummary =
   "Sau khi đăng nhập, bạn có một không gian riêng với chủ đề yêu thích.";

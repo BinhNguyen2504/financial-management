@@ -34,6 +34,8 @@ test("all 12 pages provide the right help without finance requests, and contents
   const runtimeErrors: string[] = [];
   page.on("pageerror", (error) => runtimeErrors.push(error.message));
   await login(page);
+  // Finish the login destination's initial reads/prefetch before replacing its document.
+  await page.waitForLoadState("networkidle");
   for (const item of helpPages) {
     await page.goto(`/${item.id}`);
     await expect(page.locator("main h1")).toBeVisible();
@@ -96,6 +98,9 @@ test("all 12 pages provide the right help without finance requests, and contents
     await page.keyboard.press("Escape");
     await expect(help(page)).toHaveCount(0);
     await expect(trigger).toBeFocused();
+    // Restoring focus can start a route prefetch. Let it settle before page.goto
+    // disposes this document; WebKit reports interrupted fetches as page errors.
+    await page.waitForLoadState("networkidle");
     page.off("request", record);
     expect(requests, item.id).toEqual([]);
   }

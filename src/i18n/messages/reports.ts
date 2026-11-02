@@ -1,0 +1,160 @@
+export const reports = {
+  "Tổng giá trị": "Total value",
+  "Nạp bên ngoài": "External deposits",
+  "Rút bên ngoài": "External withdrawals",
+  "Tài sản đang giữ": "Current holdings",
+  "Tiền chờ": "Available cash",
+  "Số dư đầu kỳ": "Opening balance",
+  "Số dư cuối kỳ": "Closing balance",
+  "Chi trong tháng": "Monthly spending",
+  "Tích lũy": "Accumulation",
+  "Cố định": "Regular",
+  "Phát sinh": "One-off",
+  "Tạm tính": "Provisional",
+  Quỹ: "Fund",
+  "Quản lý tài chính cá nhân với Financial Manager: theo dõi thu nhập, hũ chi tiêu, tiết kiệm, đầu tư, quỹ an toàn, mục tiêu và báo cáo theo kỳ. Xem thử giao diện không cần tài khoản.":
+    "Manage your personal finances with Financial Manager: track income, spending jars, savings, investments, safety funds, goals and period reports. Try the interface without an account.",
+  "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo chung tổng hợp theo kỳ và giữ riêng từng sổ; chưa có tổng tài sản ròng toàn hệ thống.":
+    "Overview offers 10 configurable widgets for Income, Expenses, Savings, Investments and Safety funds. Combined reports cover each period while keeping ledgers separate; system-wide net worth is not available.",
+  "Chọn kỳ, mở tab cần xem rồi bấm số liệu để đối chiếu nguồn.":
+    "Choose a period, open a tab and select a figure to inspect its source.",
+  "Kết quả: bảng, biểu đồ và CSV dùng cùng dữ liệu báo cáo; chi tiết chỉ đọc, sửa tại module gốc.":
+    "Result: tables, charts and CSV use the same report data; details are read-only, with editing in the source module.",
+  "Thu nhập 28.500.000 ₫, Chi tiêu 12.000.000 ₫: chênh lệch theo sổ là 16.500.000 ₫, chưa phải số dư tài khoản.":
+    "Income of 28,500,000 VND minus spending of 12,000,000 VND gives a ledger difference of 16,500,000 VND, not an account balance.",
+  "Mất kết nối. Hãy thử lại khi có mạng.":
+    "Connection lost. Please retry when online.",
+
+  "Nhìn lại từng kỳ, hiểu rõ từng sổ.":
+    "Review each period, understand each ledger.",
+  "Tổng hợp": "Summary",
+  "Thu–chi": "Income & spending",
+  "Kỳ báo cáo": "Reporting period",
+  Tháng: "Month",
+  Quý: "Quarter",
+  Năm: "Year",
+  "Xuất CSV": "Export CSV",
+  "Cập nhật báo cáo": "Refresh report",
+  "Đang tải Báo cáo…": "Loading reports…",
+  "Chưa tải được Báo cáo. Hãy thử lại.":
+    "Reports could not be loaded. Please try again.",
+  "Chưa tải được chi tiết. Hãy thử lại.":
+    "Details could not be loaded. Please try again.",
+  "Nguồn số liệu đã thay đổi. Cập nhật báo cáo để xem chi tiết mới.":
+    "Source data has changed. Refresh the report to see updated details.",
+  "Không tìm thấy số liệu báo cáo.": "Report figure not found.",
+  "Kỳ này chưa kết thúc": "This period has not ended",
+  "Kỳ trước đầy đủ": "Previous full period",
+  "Số liệu đến": "Data through",
+  "Cập nhật lúc": "Updated at",
+  "Chênh lệch theo sổ": "Ledger difference",
+  "Thu nhập đã ghi nhận": "Recorded income",
+  "Chi tiêu theo sổ hũ": "Jar-ledger spending",
+  "Tiền đã bỏ hũ": "Jar funding",
+  "Thu nhập trừ Chi tiêu theo sổ hũ; chưa phải số dư tài khoản hoặc tiền có thể sử dụng.":
+    "Recorded income minus jar-ledger spending; this is not an account balance or available cash.",
+  "Mỗi module là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.":
+    "Each module is an independent ledger; balances and goal progress are not added into net worth.",
+  "Tiết kiệm cuối kỳ": "Savings at period end",
+  "Tiết kiệm đầu kỳ": "Savings at period start",
+  "Đầu tư cuối kỳ": "Investments at period end",
+  "Quỹ an toàn cuối kỳ": "Safety funds at period end",
+  "Quỹ an toàn đầu kỳ": "Safety funds at period start",
+  "Giá vốn đang giữ": "Remaining cost basis",
+  "Giá trị tài sản đang giữ": "Held asset value",
+  "Lãi/lỗ phần đang giữ": "Current holding profit/loss",
+  "Tiền chờ đầu tư": "Investment cash",
+  "Thu nhập còn khoản chưa nhập; tổng chỉ gồm số đã ghi nhận.":
+    "Some income is unrecorded; the total includes recorded amounts only.",
+  "Chi tiêu năm cũ chưa chốt; số liệu có thể thay đổi.":
+    "Historical spending has not been closed; figures may change.",
+  "Chi tiêu tháng hiện tại là số tạm tính từ sổ hũ.":
+    "Current-month spending is provisional, calculated from jars.",
+  "Tiết kiệm thiếu định giá; chưa đủ dữ liệu tính tổng.":
+    "Savings valuations are missing; a complete total is unavailable.",
+  "Tiết kiệm đang dùng định giá cũ.": "Savings uses older valuations.",
+  "Đầu tư thiếu định giá; chưa đủ dữ liệu tính tổng.":
+    "Investment valuations are missing; a complete total is unavailable.",
+  "Đầu tư đang dùng định giá cũ.": "Investments uses older valuations.",
+  "Kỳ trước có dữ liệu chưa đầy đủ, tạm tính hoặc định giá cũ; cần xem xét khi so sánh.":
+    "The previous period has incomplete or provisional data, or older valuations; consider this when comparing.",
+  "Mục tiêu hiện tại": "Current goals",
+  "Mục tiêu hiển thị tiến độ hiện tại, độc lập với kỳ báo cáo đang chọn.":
+    "Goals show current progress, independently of the selected reporting period.",
+  "Kỳ này chưa diễn ra; chưa có số thực tế.":
+    "This period has not started; actual figures are unavailable.",
+  "Chưa có dữ liệu trong kỳ.": "No data in this period.",
+  "Thiếu dữ liệu": "Missing data",
+  "Lỗi tải nguồn": "Source unavailable",
+  "Chưa có dữ liệu": "No data yet",
+  "Xem nguồn số liệu": "View source data",
+  "Nguồn số liệu": "Source",
+  "Thời điểm": "Date",
+  "Số tiền VND": "Amount VND",
+  "So với kỳ trước": "Compared with previous period",
+  "Chênh lệch": "Change",
+  "Kỳ này": "This period",
+  "Kỳ trước": "Previous period",
+  "Tiến độ %": "Progress %",
+  "Mục tiêu cuối kỳ": "Target at period end",
+  "Giá trị cuối kỳ": "Value at period end",
+  "Giá trị cuối tháng": "Value at month end",
+  "Số dư cuối tháng": "Month-end balance",
+  "Góp vào quỹ": "Fund deposits",
+  "Rút khỏi quỹ": "Fund withdrawals",
+  "Tiến độ Quỹ an toàn cuối kỳ": "Safety funds at period end",
+  "Giao dịch Quỹ an toàn": "Safety fund transactions",
+  "Quỹ an toàn theo tháng": "Safety funds by month",
+  "Thu nhập theo tháng": "Income by month",
+  "Chi tiêu theo tháng": "Spending by month",
+  "Chi tiêu theo hũ": "Spending by jar",
+  "Chi tiêu theo nhóm": "Spending by group",
+  "Chi tiêu theo phương thức": "Spending by payment method",
+  "Tiết kiệm theo tháng": "Savings by month",
+  "Phân bổ Tiết kiệm": "Savings allocation",
+  "Đầu tư theo tháng": "Investments by month",
+  "Danh mục Đầu tư": "Investment portfolios",
+  "Ngày định giá": "Valuation date",
+  "Khoản chưa nhập": "Missing entries",
+  "Nguồn thu": "Income sources",
+  "Thu cố định": "Regular income",
+  "Thu phát sinh": "One-off income",
+  "Đã đạt": "Progress",
+  "Số tiền đích": "Target amount",
+  "Cách ghi nhận": "Tracking mode",
+  "Nguồn liên kết": "Linked sources",
+  "Sổ riêng": "Private ledger",
+  "Thiếu dữ liệu nguồn": "Source data missing",
+  "Định giá cũ": "Older valuation",
+  "Định giá": "Valuation",
+  "Chuyển nội bộ": "Internal transfer",
+  "Mở module gốc": "Open source module",
+  "Cập nhật để xem chi tiết": "Refresh to view details",
+  "Trang trước": "Previous page",
+  "Trang sau": "Next page",
+  "Trang {page} / {pages}": "Page {page} / {pages}",
+  "Kỳ báo cáo trên URL không hợp lệ.":
+    "The report period in the URL is invalid.",
+  "Về tháng hiện tại": "Go to current month",
+  "Diễn biến trong kỳ": "Changes during the period",
+  "Chỉ số biểu đồ": "Chart metric",
+  "So sánh kỳ chưa kết thúc với toàn bộ kỳ trước.":
+    "Comparing an unfinished period with the entire previous period.",
+  "Đang thực hiện": "Active",
+  "Tạm dừng": "Paused",
+  "Hoàn thành": "Completed",
+  "Đã lưu trữ": "Archived",
+  Hạn: "Deadline",
+  "Báo cáo tổng hợp theo tháng, quý, năm; so sánh kỳ trước và xuất CSV.":
+    "Reports by month, quarter and year; previous-period comparisons and CSV export.",
+  "Số cuối kỳ riêng từng sổ; Mục tiêu là tiến độ hiện tại":
+    "Separate period-end balances; goals show current progress",
+  "Chi tiết chỉ đọc, đối chiếu nguồn và xuất CSV theo tab":
+    "Read-only source details and CSV export per tab",
+  "Báo cáo tổng hợp, so sánh và đối chiếu từng sổ.":
+    "Combined reports, comparisons and source reconciliation.",
+  "Thu–chi minh họa; số dư các sổ giữ riêng.":
+    "Illustrative income and spending; ledger balances stay separate.",
+  "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.":
+    "Combined reports use months, quarters or years, with source details and CSV export per tab. The current period is compared with the full previous period and labelled unfinished. Goals always show current progress.",
+} as const;

@@ -233,7 +233,7 @@ export function ThemedLanding() {
               ))}
             <p>
               {tr(
-                "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.",
+                "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo chung tổng hợp theo kỳ và giữ riêng từng sổ; chưa có tổng tài sản ròng toàn hệ thống.",
               )}
             </p>
           </div>

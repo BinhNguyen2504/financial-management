@@ -1,5 +1,11 @@
 # Rà soát UI/UX — 17/10/2026
 
+## Lỗi nhập liệu trong toast — 02/11/2026
+
+Quỹ, Chi tiêu, Thu nhập và Tiết kiệm dùng thông báo tóm tắt dễ đọc cho lỗi kiểm tra dữ liệu, thay vì đưa nguyên `ZodError.message` (mảng JSON kỹ thuật) vào toast. Lỗi từng trường và focus vẫn ở form; lỗi kết quả ghi chưa rõ vẫn có trạng thái cảnh báo riêng.
+
+Trong Ghi giao dịch Quỹ, số tiền trống có hướng dẫn “Nhập số tiền giao dịch.”, dịch thành “Enter the transaction amount.”. Số 0 báo phải lớn hơn 0; quá 24 chữ số báo giới hạn số tiền. Các trường hợp này dừng trước khi gọi API xem trước/lưu, giữ ghi chú và các lựa chọn. Nhập hợp lệ xóa lỗi tại ô; tiếp tục xem trước rồi xác nhận lưu như trước. Bằng chứng local và giới hạn tại [validation](../07-validation.md).
+
 ## Cuộn đến nội dung — 27/10/2026
 
 Trang và `.dialog-body` dùng cuộn mượt cho anchor, mục lục Help, bước xem trước, phân trang và vị trí đã lưu của tab. Đưa focus đến ô lỗi với `preventScroll` rồi cuộn tới giữa vùng đọc; liên kết trong tóm tắt lỗi dùng cùng hành vi. CSS giảm chuyển động hiện có đặt lại `scroll-behavior: auto`. `<html data-scroll-behavior="smooth">` giữ cách Next.js khôi phục cuộn khi chuyển route. Không thêm animation cho cuộn bằng tay hoặc thay đổi stack dialog. Bằng chứng thực tế nằm tại [validation](../07-validation.md).

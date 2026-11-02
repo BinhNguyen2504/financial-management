@@ -1,5 +1,16 @@
 # Xác minh
 
+## Ghi giao dịch Quỹ khi để trống tiền và toast kiểm tra dữ liệu — 02/11/2026
+
+- Sửa đường báo lỗi Quỹ: không đưa nguyên `ZodError.message` vào toast; ô tiền trống dùng “Nhập số tiền giao dịch.” với bản dịch English. Rà cùng loại lỗi và sửa toast Chi tiêu, Thu nhập, Tiết kiệm; Đầu tư đã dùng thông báo tóm tắt và được kiểm tra hồi quy.
+- `npm test`: **297/297** qua (`artifacts/fund-validation-unit.log`). Typecheck, lượt TypeScript cuối sau test Chi tiêu mới, lint toàn repo, format check, architecture **293 source files / 0 violations** và `git diff --check` qua. Log: `artifacts/fund-validation-{typecheck,final-types,lint,format,architecture}.log`.
+- Đợt browser đầu: **24/24** trên Chromium desktop/mobile, Firefox và WebKit; mỗi cấu hình có Quỹ vi/en, số tiền quá dài ở Thu nhập/Tiết kiệm, lỗi số Đầu tư và toast API/kết quả ghi chưa rõ/thử lại. Log: `artifacts/fund-validation-browser.log`.
+- Đợt browser bổ sung: **24/24** trên cùng bốn cấu hình; thêm ca Chi tiêu với số tiền quá dài, giữ preview ngừng hũ, onboarding Quỹ và giao dịch lồng nhau/chuyển tiền/sửa/lọc; chạy lại hai ca Quỹ vi/en. Đây là hai lượt riêng, tổng cộng **48 lần thực thi / 40 ca duy nhất**, không phải một lượt 48 ca. Log: `artifacts/fund-validation-regression.log`.
+- Ca Quỹ xác minh lần lượt tiền trống, 0, 25 chữ số, rồi xóa tiền về trống: hướng dẫn tại ô và toast dễ đọc, `aria-invalid`/`aria-describedby`, focus ô tiền, không có POST preview/commands, ghi chú được giữ. Sau khi nhập 1 triệu: lỗi tại ô được xóa, xem trước chưa ghi sổ, xác nhận lưu tạo đúng một giao dịch và giữ ghi chú. Đã xem ảnh Chromium desktop tiếng Việt và WebKit mobile tiếng Anh; ảnh ca mới nằm trong thư mục `artifacts/browser/funds-fund-transaction-val-*`.
+- Hai runner dựng production **Webpack** riêng (`artifacts/fund-validation-next.log`, `artifacts/fund-validation-regression-next.log`) cùng PostgreSQL cô lập và Auth double; không chạy lại build Turbopack mặc định trong đợt sửa này. Không ghi dữ liệu, áp migration hay deploy cloud; kết quả không chứng minh Supabase Auth, email hoặc thiết bị vật lý thật.
+
+Đã cập nhật README, đặc tả Quỹ, UX và tài liệu phản hồi. Catalog, landing copy, Help/preview đã rà: khả năng và trạng thái module không đổi, hướng dẫn lỗi tại trường hiện có vẫn đúng; giữ số liệu minh họa cố định và không thêm gọi API tài khoản.
+
 ## Sao lưu tương thích schema phân loại cũ — 29/10/2026
 
 - Kiểm tra chỉ đọc trên database được `.env.local` cấu hình: runtime `expense_api` không có quyền CREATE; thiếu `expense_labels.brand_key`/`icon_key`, projection cũ tái hiện PostgreSQL `42703`. Sau sửa, `postgresDataRepository.backup` đọc đủ **35 bảng, schemaVersion 2** trong snapshot read-only bằng owner UUID giả không có dữ liệu. Không xuất dữ liệu tài khoản thật, không ghi/migrate database đang cấu hình và chưa xác minh phiên Auth/trình duyệt của người dùng.
@@ -1045,3 +1056,21 @@ Lượt thăm dò đầu phát hiện footer bỏ qua fragment, thiếu focus We
 Các lượt thăm dò trước đó có lỗi selector label/URL Hồ sơ, giả định nhầm lọc danh mục cha cho giao dịch nằm trong ví và thao tác mũi tên native popup trên macOS. Đã đối chiếu source/trace, sửa fixture theo dữ liệu hiện tại và dùng type-ahead native cho kiểm tra bàn phím; không đổi logic tài chính để làm test qua. Kết quả các lượt này giữ riêng tại `artifacts/select-controls-before.log`, `select-controls-after.log`, `select-controls-release.log`, `select-controls-functional.log`; không dùng làm bằng chứng lượt cuối.
 
 Đã rà/cập nhật catalog, hai landing qua nội dung chung, Help preview vi/en, README, đặc tả Đầu tư, UX và kiến trúc. Preview giữ số liệu minh họa cố định. Các runner tạo PostgreSQL/Auth double riêng và production build tách biệt; không thay API/schema/migration, không ghi/reset cloud hoặc deploy. Bằng chứng WebKit local không đại diện Safari/thiết bị vật lý, Supabase Auth thật hoặc gửi email thật.
+
+
+## Báo cáo chung — 02/11/2026
+
+Đã triển khai `/reports` và hai GET API `/api/v1/reports`, `/api/v1/reports/details`, không thêm migration hoặc ghi tài chính. Tab Tổng hợp/Thu–chi/Tiết kiệm/Đầu tư/Quỹ an toàn dùng kỳ tháng/quý/năm; Mục tiêu luôn là tiến độ hiện tại. Năm cũ Chi tiêu đọc snapshot nếu đã chốt. So sánh kỳ chưa kết thúc với cả kỳ trước có nhãn rõ; không cộng các sổ thành tài sản ròng.
+
+- `npm run check` trên source cuối: **PASS**, gồm ESLint, architecture **308 source files / 0 violations**, Prettier, **314/314 unit**, TypeScript và production build. Log `artifacts/reports-check-final.log`.
+- `npm run test:db`: **107/107 PASS**, PostgreSQL local cô lập, runtime role/RLS. Bốn ca mới đối chiếu projection với sổ chuẩn qua mọi tab, kiểm owner khác, GET không khởi tạo sổ, source thiếu schema/savepoint và chi tiết stale sau đổi version/generation. Log `artifacts/reports-database.log`.
+- Lượt browser cuối: **25/25 PASS** riêng, gồm **20 ca Báo cáo + 5 ca Help toàn bộ trang**, qua Chromium desktop/mobile, Firefox desktop, WebKit desktop và WebKit/iPhone mô phỏng. Log `artifacts/reports-browser-verified.log`.
+- Bộ Báo cáo kiểm CSV bằng đúng response đang hiển thị, chi tiết chỉ đọc và focus trở về, URL/kỳ sau reload, tooltip bàn phím và che tiền, guest 401, bộ lọc sai 422/private-no-store, thiếu dữ liệu khác nguồn lỗi, stale detail, retry, đổi tab nhanh, tiến độ Mục tiêu hiện tại, sắp xếp phần trăm Quỹ đúng số, vi/en, năm theme và bố cục 390/768/1440px. Ảnh tại `artifacts/reports/screenshots/`, gồm ảnh riêng biểu đồ và viewport để tránh nhầm header cố định trong ảnh toàn trang dài.
+- Lượt hồi quy rộng trước đó: **44/45 PASS**, gồm thêm ngôn ngữ/SSR, Help preview và phone preview công khai không gọi API tài chính. Một ca Help trên WebKit desktop báo lỗi native khi full navigation hủy RSC prefetch. Lượt xác nhận trước sửa fixture vẫn **24/25**, không gọi các lượt này là full-clean. Fixture cuối chờ network idle sau đăng nhập/đóng Help trước `page.goto`, giữ nguyên assertions và timeout; ca này qua trong lượt sạch 25/25 kể trên. Log cũ giữ tại `artifacts/reports-browser-final.log` và `artifacts/reports-browser-confirm.log`.
+- Snapshot production dùng trong lượt browser cuối khớp **393 file source/public**, **0 khác biệt** với workspace. Manifest/hash: `artifacts/reports/source-comparison.json`. Không cộng các lượt snapshot/focused thành một lượt rộng 45/45.
+- Unit mới kiểm kỳ trước qua năm/quý/năm nhuận, số vượt độ chính xác Number, số 0/chưa nhập/nguồn lỗi, thiếu định giá vàng và giá tương lai, định giá Đầu tư cũ, bán hết còn tiền chờ, snapshot Chi tiêu, góp hũ không phải thực chi, Quỹ trước khi bắt đầu theo dõi khác số 0, sửa/hủy trước lọc thời gian, ranh giới ngày Việt Nam, chuyển nội bộ, Mục tiêu hiện tại độc lập kỳ cũ, version/generation và CSV an toàn/bản dịch động.
+- Hướng Achromatic ledger, seed **1459982955**; giữ shell/font/palette sản phẩm. Design source lint **0 FAIL / 3 WARN**: hai regex bóng là khai báo tắt bóng panel và đường viền inset của tab, không phải bóng trang trí; dấu gạch ngang dùng cho ô thiếu dữ liệu. Ảnh browser và phép đo overflow là bằng chứng màn hình có đăng nhập; không coi inspector chưa đăng nhập là nghiệm thu trang Báo cáo.
+
+Đã rà/cập nhật catalog/menu, Help vi/en, hai landing qua nội dung chung và preview Báo cáo cố định, README, đặc tả Báo cáo, kiến trúc và UX. Preview tính chênh lệch từ 28.500.000 thu trừ 12.000.000 chi; không đọc API tài chính tài khoản. Giữ nguyên các thay đổi đã có trong workspace.
+
+Tất cả bằng chứng trên là local, dùng PostgreSQL cô lập và Auth contract double. Không seed/reset/ghi dữ liệu cloud, không áp migration hoặc deploy; không chứng minh Supabase Auth/RLS cloud, gửi email thật hoặc thiết bị vật lý.

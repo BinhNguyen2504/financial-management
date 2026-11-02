@@ -176,6 +176,120 @@ async function expectLedgerLayout(ledger: Locator) {
 }
 
 for (const locale of ["vi", "en"] as const) {
+  test(`fund transaction validation keeps empty and invalid amounts readable (${locale})`, async ({
+    page,
+  }, info) => {
+    const { bank } = await setup(page);
+    await page
+      .context()
+      .addCookies([{ name: "fm-locale", value: locale, url: origin() }]);
+    await page.reload();
+    const english = locale === "en";
+    await page
+      .getByRole("button", {
+        name: english ? "Record transaction" : "Ghi giao dịch",
+        exact: true,
+      })
+      .click();
+    const dialog = page.getByRole("dialog");
+    const amount = dialog.getByLabel(
+      english ? "Amount (VND)" : "Số tiền (VND)",
+      { exact: true },
+    );
+    const note = dialog.getByLabel(english ? "Note" : "Ghi chú", {
+      exact: true,
+    });
+    await dialog
+      .getByRole("combobox", {
+        name: english ? "Holding locations" : "Nơi giữ tiền",
+        exact: true,
+      })
+      .selectOption(bank);
+    await note.fill("Giữ bản nháp khi thiếu số tiền");
+    const submit = dialog.getByRole("button", {
+      name: english ? "Preview changes" : "Xem trước thay đổi",
+      exact: true,
+    });
+    const requests: string[] = [];
+    page.on("request", (request) => {
+      if (
+        request.method() === "POST" &&
+        /\/api\/v1\/funds\//.test(request.url())
+      )
+        requests.push(request.url());
+    });
+    for (const [value, message] of [
+      [
+        "",
+        english ? "Enter the transaction amount." : "Nhập số tiền giao dịch.",
+      ],
+      [
+        "0",
+        english ? "Amount must be greater than 0." : "Số tiền phải lớn hơn 0.",
+      ],
+      [
+        "1234567890123456789012345",
+        english
+          ? "Enter a non-negative whole VND amount, up to 24 digits."
+          : "Nhập số tiền VND nguyên, không âm, tối đa 24 chữ số.",
+      ],
+      [
+        "",
+        english ? "Enter the transaction amount." : "Nhập số tiền giao dịch.",
+      ],
+    ]) {
+      await amount.fill(value);
+      await submit.click();
+      await expect(amount).toHaveAttribute("aria-invalid", "true");
+      await expect(amount).toBeFocused();
+      await expect(amount).toHaveAccessibleDescription(
+        new RegExp(message.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+      );
+      await expect(dialog.locator(".fund-field-error")).toHaveText(message);
+      const toast = dialog.locator('[data-toast-kind="error"]');
+      await expect(toast).toContainText(
+        english
+          ? "Check the highlighted fields."
+          : "Kiểm tra các trường được đánh dấu.",
+      );
+      await expect(dialog).not.toContainText(
+        /invalid_format|"pattern"|"origin"|"path"/,
+      );
+      await expect(note).toHaveValue("Giữ bản nháp khi thiếu số tiền");
+      expect(requests).toHaveLength(0);
+    }
+    await page.screenshot({
+      path: info.outputPath(`fund-empty-amount-${locale}.png`),
+    });
+    await amount.fill("1000000");
+    await expect(amount).not.toHaveAttribute("aria-invalid", "true");
+    await expect(dialog.locator(".fund-field-error")).toHaveCount(0);
+    await submit.click();
+    await expect(
+      dialog.getByRole("region", {
+        name: english ? "Preview changes" : "Xem trước thay đổi",
+        exact: true,
+      }),
+    ).toBeVisible();
+    expect(requests).toHaveLength(1);
+    expect((await view(page)).book?.revisions).toHaveLength(0);
+    await dialog
+      .getByRole("button", {
+        name: english ? "Confirm save" : "Xác nhận lưu",
+        exact: true,
+      })
+      .click();
+    await expect(dialog).toBeHidden();
+    const saved = await view(page);
+    expect(saved.book?.revisions).toHaveLength(1);
+    expect(saved.book?.revisions[0].transaction).toMatchObject({
+      amount: "1000000",
+      note: "Giữ bản nháp khi thiếu số tiền",
+    });
+  });
+}
+
+for (const locale of ["vi", "en"] as const) {
   test(`transaction columns and icon actions stay aligned in page and all fund dialogs (${locale})`, async ({
     page,
   }, info) => {

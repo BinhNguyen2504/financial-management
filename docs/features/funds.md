@@ -1,5 +1,11 @@
 # Quỹ an toàn — 19/10/2026
 
+## Kiểm tra số tiền giao dịch — 02/11/2026
+
+Gửi form Ghi giao dịch khi chưa nhập tiền hiển thị “Nhập số tiền giao dịch.” ngay dưới ô, đặt `aria-invalid`, liên kết hướng dẫn bằng `aria-describedby` và focus về ô tiền. Toast dùng “Kiểm tra các trường được đánh dấu.”, không đưa JSON kiểm tra dữ liệu ra giao diện. Số 0 hoặc quá 24 chữ số có thông báo riêng; các lỗi này dừng trước khi gọi API xem trước/lưu. Giữ các lựa chọn và ghi chú; sửa số tiền rồi tiếp tục xem trước và xác nhận lưu. Áp dụng cho form ghi/sửa giao dịch và vi/en, không đổi quy tắc số tiền phải lớn hơn 0.
+
+Đã rà catalog, landing copy và preview minh họa: phạm vi module và hướng dẫn lỗi tại trường hiện có vẫn đúng, không cần thêm thao tác giả lập trên preview. Preview tiếp tục chỉ dùng dữ liệu cố định. README, UX và tài liệu phản hồi cập nhật cùng bản sửa. Kết quả kiểm tra local xem [Validation](../07-validation.md).
+
 `/funds` cung cấp Emergency (biến cố lớn), Rainy Day (phát sinh nhỏ), Sinking (chi phí thiết yếu đã biết trước). Mục tiêu mua sắm/cuộc sống nằm ở Financial Goals riêng. Nội dung hướng dẫn tham khảo [CFPB](https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/) và [MoneyHelper](https://www.moneyhelper.org.uk/en/blog/everyday-money/sinking-funds-explained). Phân biệt ba quỹ là cách tổ chức sản phẩm; số tháng và ưu tiên do người dùng chọn.
 
 Tinh chỉnh 26/10/2026: nguồn CFPB/MoneyHelper dùng `.external-link` chung với Cài đặt và Thu nhập, có chữ đậm, màu theo theme, gạch chân luôn hiện và phản hồi hover/focus. Chữ được xuống dòng trên mobile, giữ đích mở tab mới; cùng thành phần hướng dẫn xuất hiện ở onboarding và chi tiết quỹ.

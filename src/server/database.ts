@@ -2,6 +2,7 @@ import { postgresOverviewDataRepository } from "./overview-data-repository";
 import { postgresOverviewRepository } from "./overview-repository";
 import { postgresFundRepository } from "./fund-repository";
 import { postgresGoalRepository } from "./goal-repository";
+import { postgresReportRepository } from "./report-repository";
 import "server-only";
 import postgres from "postgres";
 import { postgresDataRepository } from "./data-repository";
@@ -12,6 +13,9 @@ import { postgresSavingsRepository } from "./savings-repository";
 import { postgresInvestmentRepository } from "./investment-repository";
 
 let sql: postgres.Sql | undefined;
+export function reportRepository() {
+  return postgresReportRepository(databaseConnection());
+}
 export function goalRepository(expectedGeneration?: number) {
   return postgresGoalRepository(databaseConnection(), expectedGeneration);
 }

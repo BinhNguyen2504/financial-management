@@ -53,6 +53,34 @@ async function setup(page: Page) {
   ).toBeVisible();
 }
 
+test("expense schema validation keeps oversized amounts out of technical toasts", async ({
+  page,
+}) => {
+  await setup(page);
+  await page
+    .getByRole("button", { name: "Hũ đang dùng", exact: true })
+    .filter({ visible: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Sửa hũ / mức mặc định", exact: true })
+    .click();
+  const dialog = page.locator(".expense-dialog[open]:not([inert])");
+  const amount = dialog.getByLabel("Mức mặc định mỗi tháng");
+  await amount.fill("1234567890123456789012345");
+  await dialog
+    .getByRole("button", { name: "Xem trước thay đổi", exact: true })
+    .click();
+  await expect(amount).toHaveAttribute("aria-invalid", "true");
+  await expect(amount).toBeFocused();
+  await expect(dialog.locator('[data-toast-kind="error"]')).toContainText(
+    "Kiểm tra các trường được đánh dấu.",
+  );
+  await expect(dialog).not.toContainText(
+    /invalid_format|"pattern"|"origin"|"path"/,
+  );
+  await expect(amount).toHaveValue("1234567890123456789012345");
+});
+
 test("classification controls, row alignment, transparent PNG brands and semantic actions", async ({
   page,
 }, info) => {

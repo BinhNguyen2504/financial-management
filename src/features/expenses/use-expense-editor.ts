@@ -181,18 +181,15 @@ export function useExpenseEditor({
     if (e instanceof ZodError) setFieldErrors(fieldErrorsFromIssues(e.issues));
     else if (e instanceof RequestError && e.fieldErrors)
       setFieldErrors(e.fieldErrors);
-    setError(
+    const message =
       e instanceof ZodError
         ? tr("Kiểm tra các trường được đánh dấu.")
         : e instanceof Error
           ? e.message
-          : tr("Không thể lưu. Vui lòng thử lại."),
-    );
+          : tr("Không thể lưu. Vui lòng thử lại.");
+    setError(message);
     setConflict(e instanceof RequestError && e.code === "VERSION_CONFLICT");
-    toast(
-      "error",
-      e instanceof Error ? e.message : tr("Chưa hoàn tất. Hãy thử lại."),
-    );
+    toast("error", message);
     focusFirstInvalid(
       document.querySelector(".expense-dialog[open]:not([inert]) .dialog-body"),
       errorRef.current,

@@ -1,5 +1,7 @@
 import { goals } from "./goals";
+import { reports } from "./reports";
 export const help = {
+  ...reports,
   "Theo dõi phần tài sản đang giữ và tiền chờ của từng danh mục. Giá trị tài sản luôn đi kèm ngày định giá.":
     "Track current holdings and each portfolio’s available cash. Asset values always include their valuation date.",
   "Mỗi danh mục có ví tiền chờ riêng. Nạp 10 triệu, mua 7 triệu thì tiền chờ là 3 triệu. Tổng giá trị danh mục bằng giá trị tài sản đã mua cộng tiền chờ.":

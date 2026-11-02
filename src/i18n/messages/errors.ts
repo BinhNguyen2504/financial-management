@@ -1,4 +1,5 @@
 export const errors = {
+  "Nhập số tiền giao dịch.": "Enter the transaction amount.",
   "Danh mục không tồn tại.": "Category does not exist.",
   "Danh mục chưa bắt đầu hoặc đã lưu trữ tại ngày giao dịch.":
     "Category has not started or is archived on the transaction date.",

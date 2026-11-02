@@ -75,7 +75,7 @@ Trang `[module]` giữ bản đồ phạm vi cho module chưa triển khai; vẫ
 
 ## Ghi dữ liệu và API cho iOS
 
-Đề xuất `/api/v1/accounts`, `/transactions`, `/budgets`, `/goals`, `/trades`, `/valuations`, `/reports` và `/imports`. Đây là các hợp đồng mở rộng dự kiến. Hiện đã có `/api/v1/income`, `/api/v1/expenses`, `/api/v1/savings`, `/api/v1/investments` và `/api/v1/funds`; các module có preview/commands, báo cáo tùy module. Viết OpenAPI/schema request-response trước khi app iOS dùng API.
+Đề xuất `/api/v1/accounts`, `/transactions`, `/budgets`, `/trades`, `/valuations` và `/imports`. Đây là các hợp đồng mở rộng dự kiến. Hiện đã có `/api/v1/income`, `/api/v1/expenses`, `/api/v1/savings`, `/api/v1/investments`, `/api/v1/funds`, `/api/v1/goals` và `/api/v1/reports`; các module có preview/commands, báo cáo tùy module. Viết OpenAPI/schema request-response trước khi app iOS dùng API.
 
 Web dùng session cookie được xác minh phía server; native về sau dùng bearer access token đã kiểm chứng issuer/audience/expiry. Không tin `owner_id` từ request. Mọi use case lấy chủ sở hữu từ danh tính đã xác thực, kiểm quan hệ tài khoản/tài sản thuộc cùng chủ.
 
@@ -249,3 +249,10 @@ Help giới hạn nút giải thích theo chiều rộng vùng chứa. Header mo
 ## Select dùng chung — 02/11/2026
 
 `styles/experience/form-controls.css`, nhập cuối trong `experience.css`, sở hữu appearance, box sizing, font, khe mũi tên và chiều cao tối thiểu cho select một lựa chọn trong app/dialog. Độ ưu tiên đủ cao để background/font shorthand của route không ghi đè sau client navigation. Select Năm/Tháng dùng biến `--select-padding-inline-end` cho kích thước gọn; bộ chọn ngôn ngữ public giữ chevron riêng. Multiple/listbox không nhận reset; forced colors trả về appearance native. Không thêm component JS hoặc thay hợp đồng API. Xem [quy tắc control](features/select-controls-2026-11-02.md).
+
+
+## Báo cáo chung — 02/11/2026
+
+`/reports` có server pageAccess và API private/no-store. Report domain dựng chỉ số, bảng và nguồn đối chiếu từ các bộ tính hiện có; application chỉ phụ thuộc domain và giao diện repository. Repository PostgreSQL dùng một transaction `REPEATABLE READ READ ONLY`, set owner/RLS và savepoint từng module; không lấy audit/command, không khóa ghi hoặc khởi tạo sổ. Chỉ đọc module cần cho tab, dùng lại nguồn đã đọc cho Mục tiêu. Không có migration mới.
+
+`GET /api/v1/reports` nhận tab, period=month|quarter|year, year, month (quý lấy từ tháng). Trả kỳ/asOf, kỳ trước đầy đủ, generatedAt, phiên bản nguồn/generation, trạng thái module, warnings, metrics và tables. `GET /api/v1/reports/details` nhận thêm metric, versions và page; 20 dòng/trang, trả 409 REPORT_CHANGED nếu nguồn đổi. Không nhận owner từ client. Client bỏ phản hồi cũ khi đổi kỳ/tài khoản; CSV dùng chính response đang hiển thị. Không lưu số liệu trên trình duyệt. Xem [đặc tả](features/reports.md).

@@ -304,8 +304,19 @@ Nhóm nút thường cách 12px, icon gọn 8px, mô tả/thông báo cách nút
 
 Ở chữ 200%, nhãn Help dài được xuống dòng thay vì đẩy trang tràn ngang. Header mobile dành vùng co giãn theo cỡ chữ cho tên ứng dụng, cho các nút xuống hàng khi cần; menu tài khoản mở dưới chiều cao header hiện tại, có cuộn và giữ trong viewport.
 
+## Thông báo lỗi kiểm tra dữ liệu — 02/11/2026
+
+Toast của form Quỹ, Chi tiêu, Thu nhập và Tiết kiệm dùng tóm tắt dễ đọc cho lỗi kiểm tra dữ liệu; chi tiết ở đúng trường, không hiển thị mảng lỗi Zod. Ghi giao dịch Quỹ phân biệt tiền trống (“Nhập số tiền giao dịch.”), số 0 và số dài quá 24 chữ số; focus ô cần sửa, giữ bản nháp và dừng trước yêu cầu xem trước/lưu. Vi/en có cùng hành vi; trạng thái chưa rõ kết quả ghi giữ thông báo cảnh báo riêng. Xem [phản hồi giao diện](features/ui-feedback.md).
+
 ## Select và hàng phụ bộ lọc — 02/11/2026
 
 Select một lựa chọn trong ứng dụng/dialog giữ HTML native nhưng chuẩn hóa khung đóng, mũi tên theo theme, chữ 16px và chiều cao tối thiểu 44px; control tăng theo cỡ chữ. Giữ kích thước gọn riêng của Năm/Tháng và ngôn ngữ, không thêm mũi tên thứ hai. Forced colors dùng lại giao diện native.
 
 Bộ lọc giao dịch Đầu tư dùng grid 4/2/1 cột theo vùng nội dung 900/560px, các ô cao 46px tại cỡ chữ chuẩn, căn đáy và cách 16px. Tùy chọn hiện giao dịch đã hủy ở hàng phụ cùng mép trái; checkbox 20px, chữ cách 10px và vùng nhãn bấm tối thiểu 44px. Giữ thứ tự DOM/Tab và lọc trực tiếp. Xem [đặc tả và kiểm chứng](features/select-controls-2026-11-02.md).
+
+
+## Báo cáo chung — 02/11/2026
+
+Bộ lọc tháng/quý/năm dùng chung cho sáu tab Tổng hợp, Thu–chi, Tiết kiệm, Đầu tư, Quỹ an toàn, Mục tiêu; lựa chọn nằm trên URL. Giữ shell/font và năm chủ đề. Hướng Achromatic ledger (seed 1459982955), giữ màu/chữ sản phẩm và sidebar hiện có vì đây là màn hình trong app. Chỉ số nhóm trong một vùng, số căn phải/tabular trong bảng, bảng dài cuộn trong vùng dữ liệu. Dữ liệu thật, nhãn thiếu/tạm tính rõ; không có số tài sản ròng tổng hợp.
+
+Bấm chỉ số mở dialog đối chiếu chỉ đọc, phân trang 20 dòng; sửa tại module gốc. Kỳ đang diễn ra so với cả kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn hiện ngày cập nhật và không tham gia so sánh kỳ cũ. Biểu đồ có bảng thay thế, tooltip chuột/chạm/Tab và chế độ che tiền. CSV xuất dữ liệu đầy đủ theo tab, độc lập phân trang và vẫn chứa số đầy đủ như các CSV hiện có. Landing chỉ dùng dữ liệu minh họa cố định.

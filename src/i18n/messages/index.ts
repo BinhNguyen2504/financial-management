@@ -1,4 +1,5 @@
 import { goals } from "./goals";
+import { reports } from "./reports";
 import { overview } from "./overview";
 import { landing } from "./landing";
 import { auth } from "./auth";
@@ -13,6 +14,7 @@ import { profile } from "./profile";
 import { savings } from "./savings";
 import { settings } from "./settings";
 export const english = {
+  ...reports,
   ...overview,
   ...common,
   ...expenses,
@@ -31,6 +33,7 @@ export const english = {
 export type MessageKey = keyof typeof english;
 
 export const namespaces = {
+  reports,
   overview,
   common,
   expenses,

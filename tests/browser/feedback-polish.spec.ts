@@ -17,6 +17,29 @@ async function login(page: Page) {
   ).toBeVisible();
 }
 
+test("income schema validation keeps oversized amounts out of technical toasts", async ({
+  page,
+}) => {
+  await login(page);
+  await page
+    .getByRole("button", { name: "Thêm thu phát sinh", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByLabel("Tên", { exact: true }).fill("Bản nháp số tiền");
+  const amount = dialog.getByLabel("Số tiền thực nhận (VND)");
+  await amount.fill("1234567890123456789012345");
+  await dialog.getByRole("button", { name: "Lưu", exact: true }).click();
+  await expect(amount).toHaveAttribute("aria-invalid", "true");
+  await expect(amount).toBeFocused();
+  await expect(dialog.locator('[data-toast-kind="error"]')).toContainText(
+    "Kiểm tra các trường được đánh dấu bên dưới.",
+  );
+  await expect(dialog).not.toContainText(
+    /invalid_format|"pattern"|"origin"|"path"/,
+  );
+  await expect(amount).toHaveValue("1234567890123456789012345");
+});
+
 test("thin menu scrollbars retain keyboard access in expanded, collapsed and mobile menus", async ({
   page,
   browserName,

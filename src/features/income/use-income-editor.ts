@@ -177,9 +177,12 @@ export function useIncomeEditor({
         unknownWrite ? "warning" : "error",
         unknownWrite
           ? tr("Chưa xác nhận được kết quả lưu. Bấm lưu lại để kiểm tra.")
-          : e instanceof Error
-            ? e.message
-            : tr("Chưa hoàn tất. Hãy thử lại."),
+          : e instanceof ZodError ||
+              (e instanceof IncomeAPIError && e.fieldErrors)
+            ? tr("Kiểm tra các trường được đánh dấu bên dưới.")
+            : e instanceof Error
+              ? e.message
+              : tr("Chưa hoàn tất. Hãy thử lại."),
       );
     } finally {
       setBusy(false);

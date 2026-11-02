@@ -306,6 +306,29 @@ async function openTx(page: Page, kind: string) {
   await page.getByLabel("Loại giao dịch", { exact: true }).selectOption(kind);
   await page.getByLabel("Ngày giao dịch", { exact: true }).fill(day);
 }
+test("savings schema validation keeps oversized amounts out of technical toasts", async ({
+  page,
+}) => {
+  await login(page);
+  await category(page, "Ví kiểm tra số tiền");
+  await openTx(page, "deposit");
+  const dialog = page.getByRole("dialog");
+  const amount = dialog.getByLabel("Số tiền (VND)", { exact: true });
+  await amount.fill("1234567890123456789012345");
+  await dialog
+    .getByRole("button", { name: "Xem trước thay đổi", exact: true })
+    .click();
+  await expect(amount).toHaveAttribute("aria-invalid", "true");
+  await expect(amount).toBeFocused();
+  await expect(dialog.locator('[data-toast-kind="error"]')).toContainText(
+    "Kiểm tra các trường được đánh dấu.",
+  );
+  await expect(dialog).not.toContainText(
+    /invalid_format|"pattern"|"origin"|"path"/,
+  );
+  await expect(amount).toHaveValue("1234567890123456789012345");
+});
+
 test("savings chart tooltips show hovered data, preserve keyboard focus and mask money", async ({
   page,
 }, info) => {

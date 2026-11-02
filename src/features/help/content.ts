@@ -987,41 +987,47 @@ export const articles: HelpArticles = {
   ),
   reports: article(
     [
-      "Trang Báo cáo chung **đang phát triển**. Hiện báo cáo được cung cấp riêng trong các mục đã triển khai.",
+      "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
     ],
     [
-      "Đọc con số cùng kỳ, phạm vi và nguồn dữ liệu. ==Tổng số dư khác tổng dòng tiền, tiền góp khác lợi nhuận==; chỉ so sánh khi hiểu đang đo gì.",
+      "Mỗi module là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.",
     ],
     [
       term(
         "scope",
-        "Báo cáo theo từng mục",
-        "Tổng hợp từ sổ của từng trang theo bộ lọc riêng. Không phải báo cáo tài sản ròng hợp nhất của toàn ứng dụng.",
+        "Chênh lệch theo sổ",
+        "Thu nhập trừ Chi tiêu theo sổ hũ; chưa phải số dư tài khoản hoặc tiền có thể sử dụng.",
       ),
       term(
         "balance-flow",
         "Số dư và dòng tiền",
         "Số dư là giá trị tại một thời điểm; dòng tiền là phần vào/ra trong một kỳ. Không cộng số dư cuối từng tháng thành tổng tài sản.",
       ),
+      term(
+        "current-goals",
+        "Mục tiêu hiện tại",
+        "Mục tiêu hiển thị tiến độ hiện tại, độc lập với kỳ báo cáo đang chọn.",
+      ),
     ],
     [
       task(
         "available",
-        "Mở báo cáo hiện có",
+        "Xem nguồn số liệu",
         "Khi cần thống kê hoặc xuất số liệu.",
         [
-          "Vào Thu nhập, Chi tiêu, Tiết kiệm hoặc Đầu tư rồi mở phần Báo cáo.",
-          "Chọn kỳ và bộ lọc phù hợp; đọc bảng, biểu đồ và nhãn thiếu dữ liệu/tạm tính.",
-          "Xuất bảng dữ liệu ở các mục có nút xuất; dùng Cài đặt cho bản sao lưu toàn bộ dữ liệu.",
+          "Chọn kỳ, mở tab cần xem rồi bấm số liệu để đối chiếu nguồn.",
+          "Kỳ này chưa kết thúc",
+          "Xuất CSV",
         ],
-        "Kết quả: có báo cáo trong phạm vi sổ đang xem. Chi tiêu hiện báo cáo tương tác trong năm hiện tại; không suy thành báo cáo chung.",
+        "Kết quả: bảng, biểu đồ và CSV dùng cùng dữ liệu báo cáo; chi tiết chỉ đọc, sửa tại module gốc.",
       ),
     ],
     [
-      "Tài sản cuối tháng 1 là ==10.000.000 ₫== và cuối tháng 2 là ==12.000.000 ₫==: tài sản ở cuối tháng 2 là ==12.000.000 ₫==, không phải ==22.000.000 ₫==.",
+      "Thu nhập 28.500.000 ₫, Chi tiêu 12.000.000 ₫: chênh lệch theo sổ là 16.500.000 ₫, chưa phải số dư tài khoản.",
     ],
     [
-      "Chưa có tài sản ròng hoặc báo cáo thu–chi hợp nhất toàn ứng dụng. Một số tiền xuất hiện ở hai sổ không được tự loại trùng.",
+      "Chi tiêu tháng hiện tại là số tạm tính từ sổ hũ.",
+      "Kỳ trước có dữ liệu chưa đầy đủ, tạm tính hoặc định giá cũ; cần xem xét khi so sánh.",
     ],
   ),
 };

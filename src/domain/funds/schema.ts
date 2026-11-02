@@ -51,9 +51,11 @@ const transactionFields = {
   id: z.uuid(),
   fundId: fundIdSchema,
   locationId: z.uuid(),
-  amount: moneySchema.pipe(
-    z.string().refine((v) => BigInt(v) > 0n, "Số tiền phải lớn hơn 0."),
-  ),
+  amount: z
+    .string()
+    .min(1, "Nhập số tiền giao dịch.")
+    .pipe(moneySchema)
+    .pipe(z.string().refine((v) => BigInt(v) > 0n, "Số tiền phải lớn hơn 0.")),
   occurredAt: z.iso.datetime({ offset: true }),
   note,
 };

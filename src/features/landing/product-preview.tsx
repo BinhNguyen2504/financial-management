@@ -27,9 +27,12 @@ const tabs = modules.filter((item) =>
     "investments",
     "funds",
     "goals",
+    "reports",
   ].includes(item.slug),
 );
 const helpPreview = {
+  reports:
+    "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
   goals:
     "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Xem trước thay đổi, quay lại điều chỉnh rồi xác nhận lưu trong ứng dụng.",
   overview:
@@ -52,7 +55,43 @@ const illustrativeGoal = {
   current: "40000000",
   monthly: "5000000",
 };
+const illustrativeReport = { income: "28500000", spending: "12000000" };
 const data = {
+  reports: {
+    title: "Báo cáo tổng hợp, so sánh và đối chiếu từng sổ.",
+    subtitle: "Thu–chi minh họa; số dư các sổ giữ riêng.",
+    label: "Thu nhập đã ghi nhận",
+    value: illustrativeReport.income,
+    secondary: "Chênh lệch theo sổ",
+    secondaryValue: (
+      BigInt(illustrativeReport.income) - BigInt(illustrativeReport.spending)
+    ).toString(),
+    columns: ["Nguồn số liệu", "Số tiền VND"],
+    rows: [
+      {
+        name: "Thu nhập",
+        note: "Tổng thực nhận",
+        emoji: "",
+        amount: illustrativeReport.income,
+        percent: 100,
+      },
+      {
+        name: "Chi tiêu",
+        note: "Chi tiêu theo sổ hũ",
+        emoji: "",
+        amount: illustrativeReport.spending,
+        percent: 42,
+      },
+    ],
+    chartLabel: "Thu–chi minh họa; số dư các sổ giữ riêng.",
+    bars: [
+      100,
+      Number(
+        (BigInt(illustrativeReport.spending) * 100n) /
+          BigInt(illustrativeReport.income),
+      ),
+    ],
+  },
   goals: {
     title: "Mua xe, từng bước chuẩn bị.",
     subtitle: "Sổ riêng và kế hoạch góp; số liệu minh họa cố định.",
@@ -469,7 +508,9 @@ export function ProductPreview({
                         <div>
                           <span>{tr(selected.secondary)}</span>
                           <strong>
-                            {active === "budgets" || active === "goals"
+                            {active === "budgets" ||
+                            active === "goals" ||
+                            active === "reports"
                               ? money(selected.secondaryValue)
                               : tr(selected.secondaryValue)}
                           </strong>

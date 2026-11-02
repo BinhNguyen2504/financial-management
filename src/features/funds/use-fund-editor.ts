@@ -139,24 +139,23 @@ export function useFundEditor({
     invalidate();
   }
   function report(e: unknown) {
+    const message =
+      e instanceof z.ZodError || (e instanceof FundAPIError && e.fieldErrors)
+        ? tr("Kiểm tra các trường được đánh dấu.")
+        : e instanceof Error
+          ? e.message
+          : tr("Chưa hoàn tất. Hãy thử lại.");
     if (e instanceof z.ZodError) {
       setFieldErrors(fieldErrorsFromIssues(e.issues, true));
-      setError(tr("Kiểm tra các trường được đánh dấu."));
     } else if (e instanceof FundAPIError && e.fieldErrors) {
       setFieldErrors(e.fieldErrors);
-      setError(tr("Kiểm tra các trường được đánh dấu."));
-    } else
-      setError(
-        e instanceof Error ? e.message : tr("Chưa hoàn tất. Hãy thử lại."),
-      );
+    }
+    setError(message);
     focusFirstInvalid(
       document.querySelector(".expense-dialog[open]:not([inert]) .dialog-body"),
       errorRef.current,
     );
-    toast(
-      "error",
-      e instanceof Error ? e.message : tr("Chưa hoàn tất. Hãy thử lại."),
-    );
+    toast("error", message);
   }
   function action(): FundAction {
     return buildFundAction({
