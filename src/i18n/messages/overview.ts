@@ -29,8 +29,8 @@ export const overview = {
     "Choose up to five jars to check regularly.",
   "Sổ đã đến hạn và sẽ đáo hạn trong 7 ngày.":
     "Outstanding deposits due now or within seven days.",
-  "Lời nhắn mỗi ngày theo chủ đề của bạn.":
-    "A daily note in your selected theme.",
+  "Lời nhắn mới khi chuyển trang hoặc tải lại, tối đa 35 từ.":
+    "A fresh note on page navigation or reload, up to 35 words.",
   "Tùy chỉnh Tổng quan": "Customize overview",
   "Thay đổi được xem thử trên trang. Chọn Lưu để đồng bộ với tài khoản.":
     "Preview your changes on the page. Save to sync them with your account.",

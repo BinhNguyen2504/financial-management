@@ -1,4 +1,6 @@
 export const catalog = {
+  "200 lời nhắn Việt/Anh, tối đa 35 từ; đổi khi chuyển trang hoặc tải lại":
+    "200 notes in Vietnamese and English, up to 35 words; a fresh one on navigation or reload",
   "Xem trước kế hoạch và giao dịch, quay lại chỉnh rồi xác nhận lưu":
     "Preview plans and transactions, go back to edit, then confirm saving",
   "Ghi giao dịch theo nhóm, xem trước tác động rồi xác nhận lưu":

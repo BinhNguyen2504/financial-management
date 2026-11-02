@@ -45,3 +45,7 @@ Migration `202610290001_overview_layouts.sql` vẫn là điều kiện lưu cấ
 Hai cột khi vùng nội dung từ 760px, còn lại một cột; dialog mobile toàn màn hình. Giữ thứ tự DOM/bàn phím, theme, sáng/tối, Việt/Anh và Privacy Mode. Landing dùng năm thẻ số liệu mẫu cố định, không đọc API tài khoản. Catalog, README, Help và tài liệu kiến trúc/UX được cập nhật cùng thay đổi.
 
 Kết quả kiểm chứng tối ưu được ghi riêng trong `docs/07-validation.md`, tách local PostgreSQL/Auth double khỏi cloud và thiết bị thật. Lịch sử kiểm chứng triển khai widget ban đầu được giữ nguyên.
+
+## Lời nhắn theo lượt đọc — 02/11/2026
+
+Một chút bình yên dùng kho 200 cặp Việt/Anh chung toàn ứng dụng, mỗi bản tối đa 35 từ. Chuyển trang/reload đổi câu; đổi ngôn ngữ, theme, refresh số liệu hoặc chỉnh bố cục giữ câu. Nếu layout đang xem (kể cả draft) có peace, chỉ hiện trong widget; nếu không có thì hiện đầu trang. Chờ biết layout trước khi đặt câu, lỗi layout có thể hiện đầu trang và chuyển về widget sau retry mà không đổi câu. Không PUT, không thay mặc định/schema hoặc bỏ widget đã lưu. Preview công khai có một câu minh họa cố định. Xem [quote](quotes.md).

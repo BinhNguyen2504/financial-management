@@ -206,7 +206,7 @@ export function MarketingLanding() {
           </span>
           <p>
             {tr(
-              "Chọn một mục, thử che số tiền. Mọi thao tác ở đây chỉ để khám phá.",
+              "Chọn một mục, thử che số tiền. Lời nhắn và số liệu ở đây là minh họa cố định.",
             )}
           </p>
         </div>

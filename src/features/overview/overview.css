@@ -210,9 +210,6 @@
   background: var(--accent);
   height: 100%;
 }
-.overview-widget .daily-note {
-  margin: 0;
-}
 .overview-refresh,
 .overview-preview-note {
   display: flex;

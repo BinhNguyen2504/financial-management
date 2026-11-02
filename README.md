@@ -227,3 +227,7 @@ Database đã bật reset cần migration bổ sung `202610300001_reset_owner_cl
 ## Cột giao dịch Quỹ an toàn — 02/11/2026
 
 Danh sách giao dịch và chi tiết ba quỹ dùng nút bút/thùng rác 44×44px để sửa/hủy, có tooltip và tên trợ năng vi/en. Tiền căn phải, giữa dọc hàng trên desktop; màn hình hẹp đưa thao tác xuống hàng riêng, hai nút vẫn cạnh nhau. Giữ xem trước/xác nhận và lịch sử. Catalog, landing copy và preview minh họa đã được đối chiếu; dữ liệu preview cố định. Xem [đặc tả](docs/features/funds.md) và [kiểm chứng local](docs/07-validation.md).
+
+## Lời nhắn truyền cảm hứng — 02/11/2026
+
+Không gian ứng dụng có 200 lời nhắn tự viết Việt/Anh, mỗi bản tối đa 35 từ. Câu đổi khi chuyển trang hoặc reload, không lặp trước khi dùng hết kho; đổi ngôn ngữ chỉ đổi bản dịch. Chữ serif nghiêng, dấu ngoặc kép SVG và nền nhẹ theo theme tạo điểm nhấn, không dùng emoji. Tổng quan giữ widget lời nhắn đã chọn; nếu tắt widget, câu nằm ở đầu trang. Lượt đọc chỉ lưu theo tab, ngoài dữ liệu tài chính và backup; storage bị chặn thì không bảo đảm nhớ qua reload. Preview công khai dùng một câu cố định. Xem [đặc tả quote](docs/features/quotes.md).

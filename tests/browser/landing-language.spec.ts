@@ -229,6 +229,8 @@ test("member home shares language with Settings and another tab across all theme
 }, testInfo) => {
   const errors = watchErrors(page);
   await login(page);
+  // Finish sidebar prefetches before replacing the document in WebKit.
+  await page.waitForLoadState("networkidle");
   await page.goto("/");
   await picker(page).selectOption("en");
   await expect(page.locator("h1")).toContainText("A clearer place");

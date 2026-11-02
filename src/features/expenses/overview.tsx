@@ -2,7 +2,6 @@
 import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
-import { DailyNote } from "@/components/daily-note";
 import { Garden } from "@/components/garden";
 import { LoadingSpinner, LoadingStatus } from "@/components/loading";
 import { useMoney } from "@/components/privacy";
@@ -120,7 +119,6 @@ export function ExpenseOverview({ configured }: { configured: boolean }) {
         </div>
         <Garden />
       </section>
-      <DailyNote />
       {configured && <ImportSuggestion />}
       <section aria-labelledby="month-overview-title">
         <div className="section-title overview-month-heading">

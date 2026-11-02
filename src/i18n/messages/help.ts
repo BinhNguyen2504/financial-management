@@ -1,6 +1,8 @@
 import { goals } from "./goals";
 import { reports } from "./reports";
 export const help = {
+  "Một chút bình yên có 200 lời nhắn Việt/Anh, mỗi câu tối đa 35 từ. Câu đổi khi chuyển trang hoặc tải lại; đổi ngôn ngữ chỉ đổi bản dịch. Bật widget để đặt lời nhắn trong lưới Tổng quan, tắt widget để hiện ở đầu trang. Lượt đọc lưu theo tab, ngoài backup tài chính.":
+    "A moment of calm offers 200 notes in Vietnamese and English, each up to 35 words. A new note appears on page navigation or reload; changing language only changes its translation. Enable the widget to place it in the Overview grid, or disable it to show it at the top. Reading progress stays in this tab, outside financial backups.",
   ...reports,
   "Theo dõi phần tài sản đang giữ và tiền chờ của từng danh mục. Giá trị tài sản luôn đi kèm ngày định giá.":
     "Track current holdings and each portfolio’s available cash. Asset values always include their valuation date.",

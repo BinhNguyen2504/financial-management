@@ -1498,3 +1498,18 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* The public app fragment keeps one fixed quote; navigation never draws a session quote. */
+.preview-quote .daily-note {
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  grid-template-columns: 22px minmax(0, 1fr);
+  column-gap: 12px;
+}
+.preview-quote .daily-note-mark {
+  width: 22px;
+  height: 20px;
+}
+.preview-quote .daily-note-message {
+  font-size: var(--font-size-18);
+}

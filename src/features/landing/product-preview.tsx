@@ -1,4 +1,5 @@
 "use client";
+import { QuoteCard } from "@/features/quotes/card";
 import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
 import { formatMoney } from "@/i18n/format";
@@ -400,6 +401,16 @@ export function ProductPreview({
               )}
               <span>{tr("Riêng tư")}</span>
             </button>
+          </div>
+          <div className="preview-quote">
+            <QuoteCard
+              quote={{
+                id: "illustrative-quote",
+                topic: "goals",
+                vi: "Một bước nhỏ hôm nay cũng xứng đáng được ghi nhận.",
+                en: "One small step today deserves to be recognised.",
+              }}
+            />
           </div>
           <AnimatedDetails className="preview-help" key={active}>
             <summary>

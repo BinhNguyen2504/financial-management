@@ -1,4 +1,5 @@
 "use client";
+import { DailyNote } from "@/components/daily-note";
 import Link from "next/link";
 import { useRef } from "react";
 import { SlidersHorizontal } from "lucide-react";
@@ -36,6 +37,8 @@ function AccountOverview({ configured }: { configured: boolean }) {
   }
   return (
     <div className="zen-overview overview-workspace">
+      {(!configured || vm.layout || !vm.loading) &&
+        !vm.layout?.widgets.includes("peace") && <DailyNote />}
       <header className="overview-heading">
         <div>
           <HelpPageTitle>{t("Tổng quan")}</HelpPageTitle>

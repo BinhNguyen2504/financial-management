@@ -143,26 +143,6 @@ button:disabled {
 .welcome-garden > .garden-art {
   justify-self: center;
 }
-.daily-note {
-  display: flex;
-  gap: 13px;
-  align-items: center;
-  padding: 20px 4px;
-  margin: 8px 0 26px;
-  color: var(--primary);
-}
-.daily-note p {
-  font-size: var(--font-size-16);
-  color: var(--muted);
-}
-.daily-note p > span:first-child {
-  display: block;
-  font-size: var(--font-size-12);
-  letter-spacing: 1.3px;
-  font-weight: var(--weight-strong);
-  color: var(--primary);
-  margin-bottom: 3px;
-}
 .overview-month-heading {
   align-items: flex-end;
   flex-wrap: wrap;
@@ -330,13 +310,6 @@ button:disabled {
 .expense-page-heading .lead {
   max-width: 65ch;
   line-height: 1.65;
-}
-.expenses-workspace > .expense-page-heading:has(+ .daily-note) {
-  margin-bottom: 0;
-}
-.expenses-workspace > .daily-note {
-  padding-block: 14px;
-  margin-bottom: 22px;
 }
 .expense-metrics .metric {
   padding: 20px;
@@ -751,17 +724,6 @@ button:disabled {
   }
   .welcome-garden .expense-primary {
     margin-top: 20px;
-  }
-  .daily-note {
-    padding-inline: 0;
-    margin-bottom: 22px;
-    align-items: flex-start;
-  }
-  .daily-note > svg {
-    margin-top: 4px;
-  }
-  .daily-note p {
-    font-size: var(--font-size-14);
   }
   .section-title {
     flex-wrap: wrap;

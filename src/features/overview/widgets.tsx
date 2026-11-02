@@ -71,7 +71,7 @@ export function OverviewWidget({
     </p>
   );
   let content: ReactNode = null;
-  if (id === "peace") content = <DailyNote />;
+  if (id === "peace") content = <DailyNote showLabel={false} />;
   if (id === "income") {
     const v = data("income");
     if (v)

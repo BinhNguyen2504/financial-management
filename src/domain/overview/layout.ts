@@ -87,6 +87,6 @@ export const widgetCatalog: Record<
   },
   peace: {
     title: "Một chút bình yên",
-    description: "Lời nhắn mỗi ngày theo chủ đề của bạn.",
+    description: "Lời nhắn mới khi chuyển trang hoặc tải lại, tối đa 35 từ.",
   },
 };

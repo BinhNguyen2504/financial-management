@@ -5,7 +5,6 @@ import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { useI18n } from "@/i18n/provider";
 import { ColumnPicker, ColumnTable } from "@/components/column-table";
-import { DailyNote } from "@/components/daily-note";
 import { Garden } from "@/components/garden";
 import { LoadingSpinner, LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
@@ -154,7 +153,6 @@ export function ExpenseWorkspace(
           </div>
         )}
       </div>
-      <DailyNote />
       {!configured ? (
         <section className="panel expense-setup">
           <Garden variant="jar" />

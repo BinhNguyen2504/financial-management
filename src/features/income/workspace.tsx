@@ -4,7 +4,6 @@ import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
 
-import { DailyNote } from "@/components/daily-note";
 import { Garden } from "@/components/garden";
 import { LoadingSpinner, LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
@@ -149,7 +148,6 @@ export function IncomeWorkspace(
           <Garden variant="harvest" />
         </div>
       </div>
-      <DailyNote />
       {!configured ? (
         <section className="panel">
           <h2>{tr("Thu nhập chưa sẵn sàng")}</h2>

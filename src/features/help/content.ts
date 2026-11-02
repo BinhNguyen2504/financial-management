@@ -123,6 +123,7 @@ export const articles: HelpArticles = {
     ],
     [
       "Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.",
+      "Một chút bình yên có 200 lời nhắn Việt/Anh, mỗi câu tối đa 35 từ. Câu đổi khi chuyển trang hoặc tải lại; đổi ngôn ngữ chỉ đổi bản dịch. Bật widget để đặt lời nhắn trong lưới Tổng quan, tắt widget để hiện ở đầu trang. Lượt đọc lưu theo tab, ngoài backup tài chính.",
       "Lỗi một nguồn không làm mất widget khác. Số liệu lần tải trước được ghi nhãn khi cập nhật thất bại. Bố cục xung đột cần tải bản mới, không tự ghi đè.",
     ],
   ),

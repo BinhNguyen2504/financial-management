@@ -118,3 +118,7 @@ Năm trang tài chính dùng `illustrated-heading` với vùng chữ, hình và 
 Chi tiêu dùng cảnh `jar` theo theme. Quỹ an toàn dùng `SafetyScene` riêng: cây và khiên bảo vệ (Khu vườn), hải đăng (Dòng nước), két dự phòng (Kim ngân), nến trong vòm che (Lửa ấm), vòm đá che mầm cây (Đất lành). Không dùng tỷ lệ giả cho tiêu đề Quỹ; các thẻ `ProgressScene` vẫn phản ánh tiến độ thực tế. Cảnh mới khác nhà kính/bồn nước/heo đất/đèn lồng/chum của Tiết kiệm và các cảnh Đầu tư.
 
 Preview thành viên dùng hình cho cả năm module, khung tối đa 160px để hợp giao diện thu nhỏ; preview khách không đổi nhận diện. SVG là trang trí tĩnh và ẩn với trình đọc màn hình; lựa chọn theme vẫn bằng CSS, không thêm API hoặc dữ liệu tài khoản.
+
+## Lời nhắn dùng chung giữa các theme — 02/11/2026
+
+Bộ bảy câu đổi theo ngày được thay bằng 200 câu tự viết Việt/Anh, tối đa 35 từ mỗi bản, dùng chung toàn bộ theme để tăng độ đa dạng. Theme chỉ đổi màu nền/nhãn/dấu ngoặc kép SVG; nội dung giữ ID khi đổi theme. Chữ serif nghiêng có vai trò riêng, không emoji hoặc animation. Chuyển trang/reload mới lấy câu tiếp theo. Các mô tả lời nhắn theo ngày trong lịch sử là hành vi trước thay đổi này. Xem [đặc tả quote](quotes.md).

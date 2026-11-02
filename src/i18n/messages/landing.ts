@@ -52,8 +52,8 @@ export const landing = {
   "Tháng này nhận bao nhiêu? Các hũ còn lại thế nào? Phần tích lũy đang ở đâu? Khám phá từng mục bằng dữ liệu minh họa bên dưới.":
     "How much came in this month? What is left in your jars? Where are your savings? Explore each section using the illustrative data below.",
   "BẢN XEM THỬ TƯƠNG TÁC": "INTERACTIVE PREVIEW",
-  "Chọn một mục, thử che số tiền. Mọi thao tác ở đây chỉ để khám phá.":
-    "Choose a section and try hiding amounts. Everything here is for exploration.",
+  "Chọn một mục, thử che số tiền. Lời nhắn và số liệu ở đây là minh họa cố định.":
+    "Choose a section and try hiding amounts. The note and figures here are fixed examples.",
   "02 / CHO TỪNG QUYẾT ĐỊNH MỖI NGÀY": "02 / FOR EVERYDAY DECISIONS",
   "Quản lý thu chi,": "Manage income, expenses,",
   "tiết kiệm và đầu tư.": "savings and investments.",

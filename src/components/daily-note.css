@@ -1,0 +1,83 @@
+/* One pale field and a book-like voice, compact beside working financial screens. */
+.daily-note {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: start;
+  gap: 6px 18px;
+  margin: 0 0 28px;
+  padding: 22px 26px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--primary-soft) 48%, var(--surface));
+  color: var(--text);
+  min-width: 0;
+}
+.daily-note-mark {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 36px;
+  height: 32px;
+  margin-top: 2px;
+  color: var(--primary);
+  opacity: 0.65;
+}
+.daily-note-label {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-strong);
+  color: var(--primary);
+}
+.daily-note-message {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin: 0;
+  max-width: 72ch;
+  font-family:
+    "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(20px, 1.25vw + 6px, 24px);
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.daily-note:has(> .daily-note-label) .daily-note-message {
+  grid-row: 2;
+}
+.daily-note-placeholder {
+  display: block;
+  min-height: 1.5em;
+}
+.overview-widget .daily-note {
+  margin: 0;
+  padding: 18px;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 6px 12px;
+  flex: 1;
+}
+.overview-widget .daily-note-mark {
+  width: 26px;
+  height: 24px;
+}
+.overview-widget .daily-note-message {
+  font-size: var(--font-size-20);
+}
+@media (max-width: 600px) {
+  .daily-note {
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 6px 12px;
+    padding: 18px 16px;
+    margin-bottom: 22px;
+  }
+  .daily-note-mark {
+    width: 24px;
+    height: 23px;
+    margin-top: 3px;
+  }
+  .daily-note-message,
+  .overview-widget .daily-note-message {
+    font-size: var(--font-size-18);
+  }
+}

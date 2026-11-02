@@ -16,16 +16,6 @@ export function displayMode(value: string | null): DisplayMode {
   return value === "light" || value === "dark" ? value : "system";
 }
 
-const commonNotes = [
-  "Mỗi khoản để dành là một chút bình yên cho ngày mai.",
-  "Bạn có thể bắt đầu nhỏ, rồi lớn lên theo nhịp của mình.",
-  "Một lần nhìn lại hôm nay, một bước chủ động hơn ngày mai.",
-  "Chăm sóc tài chính cũng là một cách chăm sóc bản thân.",
-  "Không cần vội. Những thói quen nhỏ cần thời gian để nảy mầm.",
-  "Dành chỗ cho điều cần thiết và cả những niềm vui vừa đủ.",
-  "Một tháng chưa như ý cũng là cơ hội để hiểu mình hơn.",
-];
-
 export const visualThemes = {
   forest: {
     name: "Khu vườn",
@@ -50,7 +40,6 @@ export const visualThemes = {
       accumulation: "Từng chút vun đắp",
       developing: "Đang vun đắp",
     },
-    notes: commonNotes,
   },
   water: {
     name: "Dòng nước",
@@ -75,11 +64,6 @@ export const visualThemes = {
       accumulation: "Từng giọt tích lũy",
       developing: "Đang khơi dòng",
     },
-    notes: commonNotes.map((note, index) =>
-      index === 4
-        ? "Không cần vội. Từng giọt nhỏ sẽ tích thành một dòng nước."
-        : note,
-    ),
   },
   gold: {
     name: "Kim ngân",
@@ -104,11 +88,6 @@ export const visualThemes = {
       accumulation: "Từng đồng tích lũy",
       developing: "Đang tích lũy",
     },
-    notes: commonNotes.map((note, index) =>
-      index === 4
-        ? "Không cần vội. Từng đồng để dành góp nên một khoản vững vàng."
-        : note,
-    ),
   },
   fire: {
     name: "Lửa ấm",
@@ -133,11 +112,6 @@ export const visualThemes = {
       accumulation: "Từng chút giữ lửa",
       developing: "Đang thắp sáng",
     },
-    notes: commonNotes.map((note, index) =>
-      index === 4
-        ? "Không cần vội. Từng chút để dành giữ một ngọn lửa bền lâu."
-        : note,
-    ),
   },
   earth: {
     name: "Đất lành",
@@ -162,11 +136,6 @@ export const visualThemes = {
       accumulation: "Từng lớp bồi đắp",
       developing: "Đang xây nền",
     },
-    notes: commonNotes.map((note, index) =>
-      index === 4
-        ? "Không cần vội. Từng lớp nhỏ bồi nên một nền tảng vững vàng."
-        : note,
-    ),
   },
 } as const;
 

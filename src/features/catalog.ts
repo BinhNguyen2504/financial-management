@@ -19,6 +19,7 @@ export const modules = [
       "Thu nhập, Chi tiêu tháng này; Tiết kiệm, Đầu tư và Quỹ an toàn hiện tại",
       "Cần chú ý theo module đang hiện; tùy chọn phân bổ, hũ, đáo hạn và lời nhắn",
       "Bố cục widget đồng bộ theo tài khoản; không cộng các sổ thành tài sản ròng",
+      "200 lời nhắn Việt/Anh, tối đa 35 từ; đổi khi chuyển trang hoặc tải lại",
     ],
     questions: [],
   },
