@@ -239,3 +239,9 @@ Role definer của reset không cần quyền Auth schema. `financial_request_ow
 ## Goals — 30/10/2026
 
 Bổ sung domain → application → repository → workspace. Đọc nguồn server trong transaction, khóa Expenses → Savings → Investments → Funds → Goals. Kiểm phiên bản Goals, nguồn liên quan và data generation; GET không ghi. API theo Auth/Origin/no-store chung. V3 backup/restore/reset bao gồm sáu bảng Goals; V1/V2 giữ wire shape gốc. Xem [Goals](features/goals.md).
+
+## Nhóm thao tác dùng chung — 02/11/2026
+
+`Modal` sở hữu `.dialog-footer-actions`; `footer: ReactNode` giữ nguyên, caller truyền nút/fragment. CSS token 8/12/16/24px dùng chung với trạng thái trống/lỗi qua `action-layout.css`; cột icon Quỹ 96px giữ 8px. Footer xử lý focus chuột bằng `focusPointerControl`, mobile xuống dòng theo thứ tự DOM; body vẫn cuộn độc lập. Không đổi API/schema. Xem [quy tắc và phạm vi](features/action-layout-2026-11-02.md).
+
+Help giới hạn nút giải thích theo chiều rộng vùng chứa. Header mobile có thể xuống hàng khi chữ lớn; popover tài khoản neo vào header và giới hạn chiều cao theo viewport. Kiểm thử hình học bao gồm cả nội dung nhãn, vùng bấm và menu mở.

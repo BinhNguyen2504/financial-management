@@ -81,3 +81,7 @@ Nút Hiểu vốn, giá trị và tiền chờ nằm cùng hàng công cụ gọ
 ### Điều kiện khôi phục và làm trống — 29/10/2026
 
 Help Cài đặt giải thích dữ liệu chặn gồm sổ/cấu hình/lịch sử/dữ liệu đã xóa hoặc hủy ở mọi năm. Xóa từng mục không làm tài khoản trống. Hướng dẫn hai cách: dùng tài khoản trống khác hoặc thao tác làm trống riêng sau khi lưu backup và xác nhận xóa toàn bộ; không tự import/gộp. Chưa có migration thì reset chưa được bật.
+
+## Nút giải thích và chữ lớn — 02/11/2026
+
+Nút Help theo ngữ cảnh giới hạn trong chiều rộng khối chứa; nhãn dài tự xuống dòng, icon không co. Đã tái hiện trên Firefox ở chữ 200%: nút giải thích mức sinh hoạt Quỹ gây tràn ngang 31px, sau giới hạn chiều rộng còn 0px. Header/menu và footer giữ bounds/focus theo [quy tắc bố cục thao tác](action-layout-2026-11-02.md); không đổi nội dung hay nguồn dữ liệu Help.

@@ -1,0 +1,43 @@
+/* Actions own their spacing; a reset paragraph margin is never a spacer. */
+.action-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--action-gap);
+  min-width: 0;
+}
+.action-group-separated {
+  margin-block: var(--action-content-gap);
+}
+.action-message {
+  display: grid;
+  gap: var(--action-content-gap);
+  justify-items: start;
+  min-width: 0;
+}
+.dialog-content-stack {
+  display: grid;
+  gap: var(--action-content-gap);
+  min-width: 0;
+}
+.dialog-content-stack > button {
+  justify-self: start;
+}
+.action-message > :is(h2, h3, p) {
+  margin: 0;
+}
+.action-message > :is(button, a),
+.action-group > :is(button, a),
+.expense-actions > :is(button, a),
+.fund-actions > :is(button, a),
+.goal-actions > :is(button, a),
+.settings-actions > :is(button, a) {
+  max-width: 100%;
+  min-height: 44px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.settings-actions > a {
+  display: inline-flex;
+  align-items: center;
+}

@@ -53,7 +53,7 @@ test("navigation, persistent appearance, installation guidance and profile retur
   expect(
     (await navigation.locator(".navigation-name").allTextContents()).slice(
       0,
-      7,
+      8,
     ),
   ).toEqual([
     "Tổng quan",
@@ -62,11 +62,12 @@ test("navigation, persistent appearance, installation guidance and profile retur
     "Tiết kiệm",
     "Đầu tư",
     "Quỹ an toàn",
+    "Mục tiêu",
     "Cài đặt",
   ]);
   await expect(
     navigation.getByRole("link", { name: /Mục tiêu/ }),
-  ).toContainText("Đang phát triển");
+  ).not.toContainText("Đang phát triển");
   await page.getByRole("button", { name: "Thu gọn menu", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute(
     "data-sidebar",
@@ -346,7 +347,7 @@ test("unchanged drafts and field errors work consistently in savings and investm
       type: "createCategory",
       id: randomUUID(),
       start: feature === "savings" ? month : today,
-      kind: "cash",
+      kind: feature === "savings" ? "cash" : "investment",
       name: "Ví kiểm tra biểu mẫu",
       description: "",
       emoji: "🌱",

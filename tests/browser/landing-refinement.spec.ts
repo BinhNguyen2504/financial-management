@@ -89,7 +89,7 @@ test("phone preview scrolls fully, keeps controls available and never reads acco
     for (const locale of ["vi", "en"]) {
       await page.locator(".public-language select").selectOption(locale);
       const tabs = preview.getByRole("tab");
-      for (let index = 0; index < 6; index++) {
+      for (let index = 0; index < (await tabs.count()); index++) {
         await tabs.nth(index).click();
         await preview.evaluate((el) =>
           el.scrollIntoView({ block: "center", behavior: "instant" }),
@@ -130,8 +130,8 @@ test("phone preview scrolls fully, keeps controls available and never reads acco
       await preview.locator(".preview-privacy").click();
       await tabs.nth(0).focus();
       await page.keyboard.press("End");
-      await expect(tabs.nth(5)).toBeFocused();
-      await expect(tabs.nth(5)).toBeInViewport();
+      await expect(tabs.last()).toBeFocused();
+      await expect(tabs.last()).toBeInViewport();
       await fits(page);
     }
   }

@@ -359,7 +359,7 @@ export function MarketingLanding() {
             <div className="marketing-answer">
               <p>
                 {tr(
-                  "Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn đã có trong bản hiện tại.",
+                  "Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu đã có trong bản hiện tại.",
                 )}
               </p>
               <div className="marketing-status-list">

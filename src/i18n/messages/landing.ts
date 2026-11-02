@@ -1,5 +1,9 @@
 // Public product copy and fixed illustrative data only; never account data.
 export const landing = {
+  "Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu đã có trong bản hiện tại.":
+    "Income, Expenses, Savings, Investments, Safety funds and Goals are available in the current version.",
+  "Chưa. Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu đã có trong phiên bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản phẩm.":
+    "Not yet. Income, Expenses, Savings, Investments, Safety funds and Goals are available in the current version; other parts are still being built. The introduction is reviewed and updated alongside product changes.",
   "Nội dung xem thử ứng dụng": "App preview content",
   "Tìm câu trả lời để bắt đầu tự tin hơn.":
     "Find the answers you need to get started with confidence.",

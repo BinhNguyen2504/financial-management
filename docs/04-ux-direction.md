@@ -295,3 +295,11 @@ Trang trả lời “đã chuẩn bị bao nhiêu, còn thiếu gì và bước 
 ## Cột giao dịch Quỹ an toàn — 02/11/2026
 
 Danh sách ngoài trang và dialog ba quỹ dùng cột thao tác 96px trên desktop: hai nút icon 44×44px cách nhau 8px, tên trợ năng/tooltip đầy đủ vi/en. Tiền căn phải với chữ số đều, tiền và thao tác giữa dọc hàng. Container tối đa 700px đưa thao tác xuống hàng riêng; tối đa 480px đặt loại giao dịch/tiền ở đầu, metadata bên dưới. Chỉ nhóm nút trong hàng giao dịch không xuống dòng; các nhóm nút khác giữ responsive hiện có. Tiền dài và ghi chú được xuống dòng trong cột riêng, không cắt giá trị. Xem [đặc tả Quỹ](features/funds.md).
+
+## Bố cục thao tác toàn ứng dụng — 02/11/2026
+
+Nhóm nút thường cách 12px, icon gọn 8px, mô tả/thông báo cách nút tối thiểu 16px. Footer tự quản lý spacing cho mọi module, mobile từ ba nút dành hàng cuối cho nút chính; nhãn dài xuống dòng và giữ thứ tự Tab. Giữ cột giao dịch Quỹ 96px cùng cặp nút 44px/khe 8px. Rà vị trí theo nội dung liên quan, trạng thái trống/lỗi/preview và dialog con; đo hình render, xem ảnh, kiểm tra WebKit/Firefox. Xem [checklist bắt lỗi từ một ví dụ](features/action-layout-2026-11-02.md).
+
+Ô nhập chữ/ngày/select/textarea giữ token 16px kể cả khi module dùng `font: inherit` từ nhãn 14px; kiểm tra cả toolbar, bộ lọc và dialog để tránh co chữ, xuống dòng bất cân đối hoặc zoom khi focus trên điện thoại.
+
+Ở chữ 200%, nhãn Help dài được xuống dòng thay vì đẩy trang tràn ngang. Header mobile dành vùng co giãn theo cỡ chữ cho tên ứng dụng, cho các nút xuống hàng khi cần; menu tài khoản mở dưới chiều cao header hiện tại, có cuộn và giữ trong viewport.

@@ -230,7 +230,7 @@ export function ResetData({
         {tr("Làm trống dữ liệu tài chính")}
       </button>
       {done && (
-        <div className="settings-feedback">
+        <div className="settings-feedback action-message">
           <p role="status">
             {tr(
               "Đã làm trống toàn bộ dữ liệu tài chính. Bạn có thể bắt đầu lại hoặc chọn bản sao lưu để khôi phục.",
@@ -253,7 +253,7 @@ export function ResetData({
           size="detail"
           initialFocusRef={cancel}
           footer={
-            <div className="expense-actions">
+            <>
               <button
                 ref={cancel}
                 className="expense-secondary"
@@ -277,7 +277,7 @@ export function ResetData({
                     : "Xóa toàn bộ dữ liệu tài chính",
                 )}
               </button>
-            </div>
+            </>
           }
         >
           <div className="settings-reset-body">

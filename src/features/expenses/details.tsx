@@ -364,7 +364,7 @@ export function ExpenseLabels({
       )}
       onClose={onClose}
       footer={
-        <div className="expense-actions">
+        <>
           <button
             type="button"
             className="expense-primary"
@@ -372,7 +372,7 @@ export function ExpenseLabels({
           >
             {tr("Thêm phân loại")}
           </button>
-        </div>
+        </>
       }
     >
       <DialogTabs

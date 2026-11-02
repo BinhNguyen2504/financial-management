@@ -203,3 +203,7 @@ Thêm tab Tổng quan mặc định với 6 widget minh họa: Cần chú ý và
 ## Đối chiếu thao tác Quỹ an toàn — 02/11/2026
 
 Catalog bổ sung mô tả cột tiền và nút sửa/hủy gọn. Nội dung Help của preview vi/en giải thích biểu tượng bút/thùng rác trong sổ giao dịch thật và việc giữ lịch sử. Preview tiếp tục minh họa số dư ba quỹ với số liệu cố định hiện có; không thêm nút ghi/sửa/hủy giả hoặc đọc API tài chính tài khoản. Xem [đặc tả Quỹ](funds.md).
+
+## Đối chiếu nhóm thao tác — 02/11/2026
+
+Đã rà header, CTA, preview, FAQ và bản thành viên cùng thay đổi [bố cục toàn ứng dụng](action-layout-2026-11-02.md). Hai FAQ bổ sung Mục tiêu vào tính năng hiện có; Help preview Mục tiêu giải thích xem trước → quay lại chỉnh → xác nhận trong ứng dụng thật, đồng bộ vi/en. Giữ nguyên số liệu minh họa, ranh giới public/auth và không thêm thao tác lưu giả hoặc đọc API tài chính tài khoản.

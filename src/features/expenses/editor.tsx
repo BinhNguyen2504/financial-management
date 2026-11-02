@@ -65,7 +65,7 @@ function ExpenseEditorForm(props: Parameters<typeof useExpenseEditor>[0]) {
               : "form"
         }
         footer={
-          <div className="expense-actions">
+          <>
             <button
               form={formId}
               className="expense-secondary"
@@ -114,7 +114,7 @@ function ExpenseEditorForm(props: Parameters<typeof useExpenseEditor>[0]) {
                 {busy ? tr("Đang kiểm tra…") : tr("Xem trước thay đổi")}
               </button>
             )}
-          </div>
+          </>
         }
       >
         <ExpenseErrors.Provider value={fieldErrors}>

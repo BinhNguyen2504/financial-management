@@ -4,6 +4,7 @@ import { ArrowDown, ArrowUp, Plus } from "lucide-react";
 import { useMoney } from "@/components/privacy";
 import { useToast } from "@/components/toast";
 import { LoadingStatus } from "@/components/loading";
+import { focusPointerControl } from "@/components/pointer-focus";
 import { StatusBadge } from "@/components/status-badge";
 import { HelpPageTitle } from "@/features/help/provider";
 import { formatDate, formatDecimal } from "@/i18n/format";
@@ -60,7 +61,10 @@ function Workspace({
     );
   }
   return (
-    <div className="goals-workspace expenses-workspace">
+    <div
+      className="goals-workspace expenses-workspace"
+      onMouseDownCapture={focusPointerControl}
+    >
       <header className="goal-heading">
         <div>
           <HelpPageTitle>{tr("Mục tiêu")}</HelpPageTitle>
@@ -76,8 +80,8 @@ function Workspace({
         </button>
       </header>
       {error && (
-        <div role="alert" className="expense-error">
-          {tr(error)}
+        <div role="alert" className="expense-error expense-feedback">
+          <p>{tr(error)}</p>
           <button
             className="expense-secondary"
             onClick={() => void reload().catch(() => {})}
@@ -92,7 +96,7 @@ function Workspace({
       {view && (
         <>
           {!all.length ? (
-            <section className="goal-empty panel">
+            <section className="goal-empty panel action-message">
               <h2>{tr("Bắt đầu từ điều bạn muốn đạt.")}</h2>
               <p>
                 {tr(

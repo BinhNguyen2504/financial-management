@@ -28,7 +28,7 @@
 .fund-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--action-gap);
   flex-wrap: wrap;
 }
 .fund-actions button,
@@ -354,6 +354,7 @@
 .fund-transaction .fund-actions {
   justify-content: end;
   flex-wrap: nowrap;
+  gap: var(--action-compact-gap);
 }
 .fund-transaction .fund-actions button {
   flex: 0 0 44px;
@@ -460,17 +461,20 @@
   margin: 0;
 }
 .fund-priorities li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px 44px;
+  align-items: center;
+  gap: var(--action-compact-gap);
   padding: 10px;
   margin-block: 8px;
   border-bottom: 1px solid var(--border);
 }
 .fund-priorities li span {
-  display: inline-block;
-  width: calc(100% - 104px);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .fund-priorities button {
-  vertical-align: middle;
-  margin-left: 6px;
+  margin: 0;
 }
 .fund-field-error {
   color: var(--accent);

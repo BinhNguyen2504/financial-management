@@ -203,8 +203,9 @@ async function source(page: Page): Promise<FullBackup> {
   const wallet = randomUUID();
   await command(page, "investments", {
     type: "createCategory",
-    id: wallet,
-    kind: "cash",
+    id: randomUUID(),
+    walletId: wallet,
+    kind: "investment",
     start: today,
     name: "Tiền chờ",
   });

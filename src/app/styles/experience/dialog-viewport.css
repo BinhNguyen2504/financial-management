@@ -49,6 +49,6 @@
     overscroll-behavior: contain;
   }
   .dialog-shell > .dialog-footer {
-    padding: 12px 16px;
+    padding: 12px 16px max(12px, env(safe-area-inset-bottom, 0px));
   }
 }

@@ -68,18 +68,20 @@
   border-top: 1px solid var(--border);
   background: var(--surface);
 }
-.dialog-footer .expense-actions {
-  margin: 0;
+.dialog-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--action-gap);
+  min-width: 0;
 }
-.dialog-footer .fund-actions {
-  margin: 0;
-  justify-content: flex-end;
-  gap: 12px;
-}
-.dialog-footer :is(.expense-actions, .fund-actions) > button {
-  min-width: 112px;
+.dialog-footer-actions > :is(button, a) {
+  min-width: min(112px, 100%);
+  max-width: 100%;
+  min-height: 44px;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .dialog-shell h3 {
   font-size: var(--text-group-title);
@@ -375,12 +377,11 @@
   .dialog-footer {
     padding: 12px 16px max(12px, env(safe-area-inset-bottom));
   }
-  .dialog-footer .expense-actions {
-    display: flex;
-    flex-wrap: wrap;
+  .dialog-footer-actions > :is(button, a) {
+    flex: 1 1 112px;
   }
-  .dialog-footer .expense-actions > button {
-    flex: 1 1 auto;
+  .dialog-footer-actions:has(> :nth-child(3)) > .expense-primary:last-child {
+    flex-basis: 100%;
   }
   .dialog-summary {
     padding: 16px;

@@ -1,5 +1,7 @@
 # Financial Manager
 
+Tinh chỉnh 02/11/2026: [bố cục thao tác toàn ứng dụng](docs/features/action-layout-2026-11-02.md) thống nhất khoảng cách nút, footer dialog và phản hồi thử lại; giữ bản nháp, bước xem trước/xác nhận và dữ liệu minh họa độc lập.
+
 Ứng dụng quản lý tài chính cá nhân thay thế workflow Notion: **web PWA trên điện thoại và máy tính → cloud có đăng nhập, đồng bộ nhiều thiết bị → Flutter iOS cài trên iPhone cá nhân ở giai đoạn sau**.
 
 ## Trạng thái hiện tại

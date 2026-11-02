@@ -21,7 +21,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--action-gap);
 }
 .expense-primary,
 .expense-secondary,
@@ -91,7 +91,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px 24px;
+  gap: var(--action-content-gap) var(--action-section-gap);
   margin-bottom: 20px;
 }
 .expense-feedback > p {

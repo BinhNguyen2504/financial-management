@@ -72,6 +72,14 @@ body {
   font-size: var(--text-input);
   line-height: 1.5;
 }
+/* Outrank module input shorthands that inherit the smaller label font. */
+.app-shell
+  main
+  :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]),
+.expense-dialog.dialog-shell
+  :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]) {
+  font-size: var(--text-input);
+}
 .app-shell :is(table, .column-table, .income-table),
 .dialog-shell .dialog-data-table {
   font-size: var(--text-table);

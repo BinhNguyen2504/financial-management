@@ -95,7 +95,7 @@ export function SettingsWorkspace() {
           </LoadingStatus>
         )}
         {(statusError || userError) && (
-          <div className="settings-feedback settings-feedback-error">
+          <div className="settings-feedback settings-feedback-error action-message">
             <p role="alert">{userError || statusError}</p>
             <button
               className="expense-secondary"

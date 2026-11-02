@@ -189,3 +189,9 @@ Modal nhận initialFocusRef tùy chọn để dialog bỏ nội dung focus hàn
 ### Tải bố cục Tổng quan — 29/10/2026
 
 Lần đầu Tổng quan hiện một trạng thái tải chung có thông báo và vùng chờ; widget chỉ xuất hiện sau khi có bố cục tài khoản, không dùng sáu widget giả định. Lỗi đọc bố cục có nút thử lại, không hiển thị trạng thái tài khoản chưa cấu hình. Khi thêm widget cần dữ liệu mới, chỉ widget còn thiếu có trạng thái tải; những thẻ đã đọc tiếp tục hiển thị. Tải danh sách hũ chỉ bắt đầu khi bật Hũ theo dõi. Khi hết phiên, kể cả trong lúc lưu bố cục, xóa số liệu/bản nháp và hiện đường dẫn đăng nhập lại.
+
+## Khoảng cách và nhóm thao tác — 02/11/2026
+
+Footer Modal tự nhóm nút cho toàn ứng dụng, bao gồm Mục tiêu truyền fragment; bổ sung spacing cho trạng thái trống và lỗi/thử lại ở các module liên quan. Cặp icon trong cột cố định giữ 8px, nhóm thường 12px; nội dung/nút 16px. Đối chiếu ảnh và số đo cùng hành vi click, Tab, bản nháp và dialog lồng nhau theo [quy tắc mới](action-layout-2026-11-02.md); giữ các hợp đồng dữ liệu/phản hồi ở trên.
+
+Typography của ô nhập có selector đủ ưu tiên trước shorthand từng module; sửa trường hợp ô ngày Đầu tư về 14px. Hồi quy `usability.spec.ts` tiếp tục giữ ngưỡng 16px cho mọi trang, không giảm chuẩn kiểm thử.

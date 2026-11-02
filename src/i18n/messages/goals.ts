@@ -1,4 +1,6 @@
 export const goals = {
+  "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Xem trước thay đổi, quay lại điều chỉnh rồi xác nhận lưu trong ứng dụng.":
+    "Goals use linked sources or a separate ledger, with contribution plans and history. Preview changes, go back to edit, then confirm saving in the app.",
   "Chọn mục tiêu": "Choose a goal",
   "Kết quả: đủ tiền chưa tự hoàn thành. Xác nhận hoàn thành để lưu mốc và giải phóng tỷ lệ liên kết.":
     "Result: a fully funded goal is not completed automatically. Confirm completion to save the milestone and release linked allocations.",

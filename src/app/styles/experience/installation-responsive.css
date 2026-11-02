@@ -101,6 +101,18 @@
     display: none;
   }
 }
+/* Keep the brand's text inside its slot when text is enlarged. Actions may wrap. */
+@media (max-width: 639px) {
+  .app-shell .topbar {
+    flex-wrap: wrap;
+  }
+  .app-shell .mobile-brand {
+    flex-shrink: 0;
+    min-width: min(6.25rem, 100%);
+    max-width: 6.25rem;
+    min-height: 44px;
+  }
+}
 @media (max-width: 640px) {
   .install-steps {
     grid-template-columns: 1fr;

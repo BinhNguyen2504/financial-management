@@ -59,7 +59,7 @@ function EditorForm(props: Parameters<typeof useSavingsEditor>[0]) {
       busy={busy || uncertain}
       size={mode.type === "void" ? "confirm" : "form"}
       footer={
-        <div className="expense-actions">
+        <>
           <button
             form={formId}
             type="button"
@@ -88,7 +88,7 @@ function EditorForm(props: Parameters<typeof useSavingsEditor>[0]) {
                 ? tr("Xác nhận lưu")
                 : tr("Xem trước thay đổi")}
           </button>
-        </div>
+        </>
       }
     >
       <form

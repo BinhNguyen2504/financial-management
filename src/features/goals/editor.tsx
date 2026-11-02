@@ -187,61 +187,63 @@ function Editor({
   return (
     <>
       <Modal title={tr(title)} onClose={close} busy={busy} footer={footer}>
-        <PrivacyReveal />
-        {error && (
-          <div
-            ref={errorRef}
-            tabIndex={-1}
-            role="alert"
-            className="expense-error"
-          >
-            {error}
-            {Object.entries(fields).map(([key, message]) => (
-              <p key={key}>{tr(message)}</p>
-            ))}
-            {needsReload && (
-              <button
-                className="expense-secondary"
-                onClick={() => {
-                  setBusy(true);
-                  void onReload()
-                    .then(() => {
-                      setNeedsReload(false);
-                      setError("");
-                    })
-                    .catch(() => {})
-                    .finally(() => setBusy(false));
-                }}
-              >
-                {tr("Tải dữ liệu mới")}
-              </button>
-            )}
-          </div>
-        )}
-        {uncertain && (
-          <p role="status">
-            {tr(
-              "Chưa xác nhận được kết quả lưu. Giữ nguyên yêu cầu và thử Xác nhận lưu để kiểm tra lại.",
-            )}
-          </p>
-        )}
-        {preview ? (
-          <GoalPreview
-            action={action}
-            view={view}
-            preview={preview}
-            title={title}
-          />
-        ) : (
-          <GoalFields
-            action={action}
-            view={view}
-            fields={fields}
-            change={change}
-            onSubmit={() => void submit()}
-            busy={busy}
-          />
-        )}
+        <div className="dialog-content-stack">
+          <PrivacyReveal />
+          {error && (
+            <div
+              ref={errorRef}
+              tabIndex={-1}
+              role="alert"
+              className="expense-error action-message"
+            >
+              <p>{error}</p>
+              {Object.entries(fields).map(([key, message]) => (
+                <p key={key}>{tr(message)}</p>
+              ))}
+              {needsReload && (
+                <button
+                  className="expense-secondary"
+                  onClick={() => {
+                    setBusy(true);
+                    void onReload()
+                      .then(() => {
+                        setNeedsReload(false);
+                        setError("");
+                      })
+                      .catch(() => {})
+                      .finally(() => setBusy(false));
+                  }}
+                >
+                  {tr("Tải dữ liệu mới")}
+                </button>
+              )}
+            </div>
+          )}
+          {uncertain && (
+            <p role="status">
+              {tr(
+                "Chưa xác nhận được kết quả lưu. Giữ nguyên yêu cầu và thử Xác nhận lưu để kiểm tra lại.",
+              )}
+            </p>
+          )}
+          {preview ? (
+            <GoalPreview
+              action={action}
+              view={view}
+              preview={preview}
+              title={title}
+            />
+          ) : (
+            <GoalFields
+              action={action}
+              view={view}
+              fields={fields}
+              change={change}
+              onSubmit={() => void submit()}
+              busy={busy}
+            />
+          )}
+        </div>
       </Modal>
       {discard && (
         <Modal
@@ -256,7 +258,10 @@ function Editor({
               >
                 {tr("Tiếp tục nhập")}
               </button>
-              <button className="expense-primary" onClick={onClose}>
+              <button
+                className="expense-primary expense-danger"
+                onClick={onClose}
+              >
                 {tr("Bỏ thay đổi")}
               </button>
             </>

@@ -68,7 +68,7 @@
 .settings-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--action-gap);
   align-items: center;
   margin-top: 1rem;
 }
@@ -95,6 +95,9 @@
 }
 .settings-feedback p:last-child {
   margin-bottom: 0;
+}
+.settings-feedback.action-message > p {
+  margin: 0;
 }
 .settings-feedback-error {
   border-color: var(--accent) !important;

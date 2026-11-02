@@ -42,6 +42,11 @@
 .help-context {
   justify-content: flex-start;
   text-align: left;
+  max-width: 100%;
+}
+.help-context > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .help-trigger:hover,
 .help-context:hover {

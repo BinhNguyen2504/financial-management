@@ -253,7 +253,16 @@ export function Modal({
       </div>
       <ToastViewport dialogRef={dialog} />
       <div className="dialog-body">{children}</div>
-      {footer && <div className="dialog-footer">{footer}</div>}
+      {footer && (
+        <div className="dialog-footer">
+          <div
+            className="dialog-footer-actions"
+            onMouseDownCapture={focusPointerControl}
+          >
+            {footer}
+          </div>
+        </div>
+      )}
     </dialog>
   );
 }

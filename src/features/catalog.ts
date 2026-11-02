@@ -170,6 +170,7 @@ export const modules = [
       "Chia tỷ lệ nguồn cho mục tiêu chi dùng, tối đa 100% mỗi nguồn",
       "Sổ góp, rút, chuyển riêng; sửa/hủy giữ lịch sử",
       "Gợi ý mức góp, xác nhận hoàn thành, tạm dừng và lưu trữ",
+      "Xem trước kế hoạch và giao dịch, quay lại chỉnh rồi xác nhận lưu",
     ],
     questions: [],
   },

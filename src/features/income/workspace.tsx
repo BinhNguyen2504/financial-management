@@ -171,7 +171,7 @@ export function IncomeWorkspace(
             </div>
           )}
           {needsLogin && (
-            <section className="panel">
+            <section className="panel action-message">
               <h2>{tr("Đăng nhập để quản lý thu nhập")}</h2>
               <Link className="expense-primary" href="/login?next=/income">
                 {tr("Đăng nhập")}

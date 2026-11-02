@@ -217,8 +217,8 @@ export function InvestmentWorkspace(
             </div>
           </div>
           {error && (
-            <div className="expense-error" role="alert">
-              {tr(error)}
+            <div className="expense-error action-message" role="alert">
+              <p>{tr(error)}</p>
               {status === 401 && (
                 <Link href="/login?next=/investments">
                   {" "}

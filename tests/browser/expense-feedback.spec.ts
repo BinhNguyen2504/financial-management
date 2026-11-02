@@ -61,12 +61,14 @@ test("classification controls, row alignment, transparent PNG brands and semanti
   const dialog = page.locator(".expense-dialog[open]:not([inert])");
   for (const tab of ["Phương thức", "Nhóm mục đích"]) {
     await dialog.getByRole("tab", { name: new RegExp(`^${tab}`) }).click();
-    const rows = dialog.locator("tbody tr").filter({ visible: true });
+    const rows = dialog
+      .locator(".dialog-compact-list > li")
+      .filter({ visible: true });
     for (const row of await rows.all()) {
       await row.scrollIntoViewIfNeeded();
       const name = row.locator(".label-name");
       const box = (await name.boundingBox())!;
-      const cell = (await row.locator("td").first().boundingBox())!;
+      const cell = (await row.locator(".expense-label-row").boundingBox())!;
       if (info.project.name === "desktop" || info.project.name === "firefox")
         expect(
           Math.abs(box.y + box.height / 2 - cell.y - cell.height / 2),
@@ -78,9 +80,7 @@ test("classification controls, row alignment, transparent PNG brands and semanti
         Math.abs(icon.y + icon.height / 2 - text.y - text.height / 2),
       ).toBeLessThan(2);
     }
-    const remove = rows
-      .first()
-      .getByRole("button", { name: "Xóa", exact: true });
+    const remove = rows.first().getByRole("button", { name: /^Xóa / });
     await remove.hover();
     await expect
       .poll(() => remove.evaluate((e) => getComputedStyle(e).color))
@@ -106,10 +106,7 @@ test("classification controls, row alignment, transparent PNG brands and semanti
       .locator("..")
       .evaluate((e) => getComputedStyle(e).backgroundColor),
   ).toBe("rgba(0, 0, 0, 0)");
-  await dialog
-    .getByRole("button", { name: "Sửa", exact: true })
-    .first()
-    .click();
+  await dialog.getByRole("button", { name: /^Sửa / }).first().click();
   await expect(
     dialog.getByRole("combobox", { name: "Loại", exact: true }),
   ).toHaveCount(0);
@@ -128,9 +125,7 @@ test("classification controls, row alignment, transparent PNG brands and semanti
   ).toHaveValue("group");
   await dialog.getByRole("button", { name: "Hủy", exact: true }).click();
   await page.emulateMedia({ colorScheme: "dark" });
-  const deleteButton = dialog
-    .getByRole("button", { name: "Xóa", exact: true })
-    .first();
+  const deleteButton = dialog.getByRole("button", { name: /^Xóa / }).first();
   const darkBackground = await deleteButton.evaluate((element) => {
     const probe = document.createElement("span");
     probe.style.backgroundColor = "var(--danger-soft)";

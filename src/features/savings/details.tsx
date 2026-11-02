@@ -508,7 +508,7 @@ export function SavingsDetails({
           onClose={() => setTransactionId(null)}
           footer={
             !selectedRow.cancelled && (
-              <div className="expense-actions">
+              <>
                 <button
                   type="button"
                   className="expense-secondary"
@@ -529,7 +529,7 @@ export function SavingsDetails({
                   <DeleteCommandGlyph size={17} aria-hidden="true" />
                   {tr("Hủy giao dịch")}
                 </button>
-              </div>
+              </>
             )
           }
         >

@@ -3,7 +3,11 @@ import { randomUUID } from "node:crypto";
 
 // Record actual browser scroll events, rather than only checking a CSS declaration.
 async function recordScroll(container: Locator) {
-  await container.evaluate((element) => {
+  await container.evaluate(async (element) => {
+    // Exclude scroll events queued by setup/Playwright bringing a link into view.
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+    );
     const state = {
       start: element.scrollTop,
       positions: [] as number[],
@@ -108,6 +112,9 @@ for (const reduced of [false, true]) {
 
     const storyLink = page.locator('.public-nav a[href="/#cau-chuyen"]');
     if (await storyLink.isVisible()) {
+      await storyLink.evaluate((element) =>
+        element.scrollIntoView({ block: "center", behavior: "instant" }),
+      );
       await recordScroll(root);
       await storyLink.click();
       await expectScroll(root, reduced);

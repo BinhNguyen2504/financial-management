@@ -138,6 +138,17 @@ test("imported review data renders across budgets, income, savings, overview and
     fullPage: true,
   });
   await page.goto("/overview");
+  await page
+    .getByRole("button", { name: "Tùy chỉnh Tổng quan", exact: true })
+    .click();
+  const customizer = page.getByRole("dialog");
+  await customizer.locator('[data-widget-option="jars"] input').check();
+  await customizer
+    .locator(".overview-jar-options")
+    .getByRole("checkbox", { name: "Ăn uống & cà phê", exact: true })
+    .check();
+  await customizer.getByRole("button", { name: "Lưu", exact: true }).click();
+  await expect(customizer).toBeHidden();
   await expect(page.locator("main")).toContainText("Ăn uống & cà phê");
   await page.screenshot({
     path: `artifacts/browser/review-overview-${info.project.name}.png`,

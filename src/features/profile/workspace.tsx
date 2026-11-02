@@ -31,7 +31,7 @@ export function ProfileWorkspace() {
       {loading ? (
         <LoadingStatus>{tr("Đang tải thông tin cá nhân…")}</LoadingStatus>
       ) : error ? (
-        <div className="panel">
+        <div className="panel action-message">
           <p className="expense-error" role="alert">
             {tr(error)}
           </p>
@@ -40,7 +40,7 @@ export function ProfileWorkspace() {
           </button>
         </div>
       ) : !configured ? (
-        <section className="panel">
+        <section className="panel action-message">
           <h2>{tr("Chưa kết nối dịch vụ đăng nhập")}</h2>
           <p>
             {tr(
@@ -49,7 +49,7 @@ export function ProfileWorkspace() {
           </p>
         </section>
       ) : !user ? (
-        <section className="panel">
+        <section className="panel action-message">
           <h2>{tr("Đăng nhập để xem thông tin cá nhân")}</h2>
           <Link className="expense-primary" href="/login?next=/profile">
             {tr("Đăng nhập")}

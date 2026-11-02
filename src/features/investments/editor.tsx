@@ -71,7 +71,7 @@ function Editor(props: Parameters<typeof useInvestmentEditor>[0]) {
           mode.type === "cancel" || mode.type === "archive" ? "confirm" : "form"
         }
         footer={
-          <div className="expense-actions">
+          <>
             <button
               form={formId}
               type="button"
@@ -102,7 +102,7 @@ function Editor(props: Parameters<typeof useInvestmentEditor>[0]) {
                   ? tr("Xác nhận lưu")
                   : tr("Xem trước thay đổi")}
             </button>
-          </div>
+          </>
         }
       >
         <form
@@ -177,7 +177,7 @@ function Editor(props: Parameters<typeof useInvestmentEditor>[0]) {
           onClose={continueEditing}
           initialFocusRef={continueButton}
           footer={
-            <div className="expense-actions">
+            <>
               <button
                 type="button"
                 className="expense-secondary"
@@ -194,7 +194,7 @@ function Editor(props: Parameters<typeof useInvestmentEditor>[0]) {
               >
                 {tr("Bỏ thay đổi")}
               </button>
-            </div>
+            </>
           }
         >
           <p>

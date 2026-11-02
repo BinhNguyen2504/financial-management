@@ -82,8 +82,8 @@ export function FundsWorkspace() {
         </LoadingStatus>
       )}
       {error && (
-        <div role="alert" className="expense-error">
-          {tr(error)}
+        <div role="alert" className="expense-error expense-feedback">
+          <p>{tr(error)}</p>
           <button
             className="expense-secondary"
             onClick={() => void reload().catch(() => {})}
@@ -107,13 +107,15 @@ export function FundsWorkspace() {
                   "Chọn chi phí sinh hoạt từ Chi tiêu, tự đặt quy mô cho ba quỹ rồi ghi lại tiền đã dành riêng. Mỗi quỹ có một vai trò, một hành trình lớn lên.",
                 )}
               </p>
-              <button
-                className="expense-primary"
-                onClick={() => setEditor({ type: "configure" })}
-              >
-                {tr("Bắt đầu xây quỹ")}{" "}
-                <ArrowRight size={17} aria-hidden="true" />
-              </button>
+              <div className="action-group action-group-separated">
+                <button
+                  className="expense-primary"
+                  onClick={() => setEditor({ type: "configure" })}
+                >
+                  {tr("Bắt đầu xây quỹ")}{" "}
+                  <ArrowRight size={17} aria-hidden="true" />
+                </button>
+              </div>
               <p className="fund-note">
                 {tr(
                   "Tiền trong Fund được ghi độc lập; Financial Goals có không gian riêng.",

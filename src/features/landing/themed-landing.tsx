@@ -324,7 +324,7 @@ export function ThemedLanding() {
             <summary>{tr("Ứng dụng đã hoàn thiện chưa?")}</summary>
             <p>
               {tr(
-                "Chưa. Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn đã có trong phiên bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản phẩm.",
+                "Chưa. Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu đã có trong phiên bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản phẩm.",
               )}
             </p>
           </AnimatedDetails>

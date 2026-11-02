@@ -201,6 +201,7 @@ test("preview, cancel, keyboard reorder, watched jars, empty layout and defaults
   expect((await layout(page)).widgets).toEqual([]);
   await dialog.getByRole("button", { name: "Lưu", exact: true }).click();
   await expect(page.locator("[data-widget]")).toHaveCount(5);
+  await expect(dialog).toHaveCount(0);
   expect((await layout(page)).widgets).toEqual(defaultLayout().widgets);
 });
 

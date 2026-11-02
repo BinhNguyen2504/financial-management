@@ -54,7 +54,7 @@ function IncomeEditorForm(props: Parameters<typeof useIncomeEditor>[0]) {
       busy={busy || uncertain}
       size={deleting ? "confirm" : "form"}
       footer={
-        <div className="expense-actions">
+        <>
           <button
             form={formId}
             type="button"
@@ -90,7 +90,7 @@ function IncomeEditorForm(props: Parameters<typeof useIncomeEditor>[0]) {
                     ? tr("Xác nhận lưu")
                     : tr("Lưu")}
           </button>
-        </div>
+        </>
       }
     >
       <form

@@ -396,7 +396,7 @@ export function InvestmentTransactionDetails({
       onClose={onClose}
       footer={
         current && (
-          <div className="expense-actions">
+          <>
             <button
               type="button"
               className="expense-secondary"
@@ -413,7 +413,7 @@ export function InvestmentTransactionDetails({
               <DeleteCommandGlyph size={17} aria-hidden="true" />
               {tr("Hủy giao dịch")}
             </button>
-          </div>
+          </>
         )
       }
     >

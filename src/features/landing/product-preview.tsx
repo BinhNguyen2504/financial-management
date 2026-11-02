@@ -31,7 +31,7 @@ const tabs = modules.filter((item) =>
 );
 const helpPreview = {
   goals:
-    "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử.",
+    "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Xem trước thay đổi, quay lại điều chỉnh rồi xác nhận lưu trong ứng dụng.",
   overview:
     "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại widget theo tài khoản; các sổ không cộng thành tài sản ròng.",
   budgets:

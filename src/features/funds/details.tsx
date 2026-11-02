@@ -174,7 +174,7 @@ export function FundDetails({
       onClose={onClose}
       size="detail"
       footer={
-        <div className="fund-actions">
+        <>
           <button
             className="expense-secondary"
             onClick={() =>
@@ -191,7 +191,7 @@ export function FundDetails({
           >
             {tr("Thêm tiền")}
           </button>
-        </div>
+        </>
       }
     >
       <div className="fund-detail-summary">

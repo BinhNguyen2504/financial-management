@@ -295,7 +295,9 @@ test("investment edit saves back into the transaction and category without losin
     await admin.end();
   }
   await page.reload();
-  await page.getByRole("button", { name: /Chi tiết Tiền chờ TCBS/ }).click();
+  await page
+    .getByRole("button", { name: "Chi tiết Cổ phiếu", exact: true })
+    .click();
   const parentId = await page
     .getByRole("dialog")
     .getAttribute("aria-labelledby");

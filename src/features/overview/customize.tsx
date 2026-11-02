@@ -68,7 +68,7 @@ export function Customize({
         "Thay đổi được xem thử trên trang. Chọn Lưu để đồng bộ với tài khoản.",
       )}
       footer={
-        <div className="expense-actions">
+        <>
           <button
             className="expense-secondary"
             disabled={saving}
@@ -99,7 +99,7 @@ export function Customize({
             {saving && <LoadingSpinner />}
             {t("Lưu")}
           </button>
-        </div>
+        </>
       }
     >
       <div className="overview-customize">

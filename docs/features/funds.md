@@ -101,3 +101,7 @@ Danh sách ngoài trang và tab Giao dịch trong chi tiết cả ba quỹ dùng
 Vùng nội dung trên 700px có ba cột thông tin, tiền và thao tác 96px; tiền và thao tác căn giữa dọc hàng, tiền căn phải với chữ số đều. Từ 481–700px, thao tác nằm ở hàng riêng; tối đa 480px, loại giao dịch và tiền ở hàng đầu, thông tin ở dưới, thao tác cuối. Hai nút luôn cạnh nhau. Ghi chú và tiền dài được xuống dòng trong phần riêng, không che nút hoặc làm tràn trang; Privacy Mode giữ cách che tiền hiện có.
 
 Đã đối chiếu README, catalog, landing copy/Help preview và hướng UX. Public preview vẫn chỉ minh họa số dư quỹ bằng dữ liệu cố định, không giả lập nút sửa/hủy trên dữ liệu preview và không gọi API tài chính. Không đổi API/schema, backup hoặc ranh giới Auth. Bằng chứng local xem [Validation](../07-validation.md).
+
+## Nhóm thao tác và khả năng phóng chữ — 02/11/2026
+
+Nút bắt đầu xây quỹ tách khỏi mô tả và ghi chú; lỗi tải/thử lại có khe tối thiểu 16px. Footer cấu hình/giao dịch dùng Modal chung với khe 12px và bố cục mobile ba nút; bước ưu tiên dùng tên co giãn, hai nút 44px và khe 8px. Giữ cột giao dịch 96px = 44 + 8 + 44. Nhãn Help dài xuống dòng ở chữ 200% để giữ trong viewport. Không đổi tính tiền, nguồn sinh hoạt, dữ liệu hay bước xác nhận. Xem [rà soát toàn ứng dụng](action-layout-2026-11-02.md).

@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 :root {
+  --action-gap: 12px;
+  --action-compact-gap: 8px;
+  --action-content-gap: 16px;
+  --action-section-gap: 24px;
   color-scheme: light dark;
   --canvas: #f7f3eb;
   --surface: #fffcf6;

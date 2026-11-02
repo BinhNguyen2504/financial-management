@@ -99,11 +99,15 @@
 }
 .goal-actions {
   flex-wrap: wrap;
+  justify-content: flex-start;
   margin-top: auto;
+}
+.goal-card > .goal-actions {
+  justify-content: space-between;
 }
 .goal-order {
   display: flex;
-  gap: 6px;
+  gap: var(--action-compact-gap);
 }
 .goal-facts {
   display: grid;

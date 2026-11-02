@@ -48,3 +48,7 @@ Backup xuất V3 gồm 41 bảng; nhận V1/V2 theo allowlist gốc, chuẩn hó
 Giữ shell/token/font và năm theme, thẻ hai cột desktop/một cột mobile; hướng Achromatic ledger, màu chủ yếu cho tiến độ và trạng thái. Form nhóm rõ, xem trước/xác nhận, xác nhận bỏ nháp, che tiền và vi/en. Seed thiết kế 1650097295; giữ shell hiện tại theo sản phẩm thay shell gợi ý dành cho app mới.
 
 Bản đầu chỉ /goals, không thêm widget hoặc dữ liệu Goals vào Tổng quan. Preview landing dùng số giả cố định: mua xe đích 100 triệu, đã góp 40 triệu, thiếu 60 triệu, dự định 5 triệu/tháng trong 12 tháng. Không đọc API tài chính tài khoản.
+
+## Khoảng cách và focus — 02/11/2026
+
+Trạng thái trống tách mô tả/nút tạo 16px. Footer tạo, xem trước, chi tiết và bỏ nháp dùng bố cục Modal chung: khe 12px, mobile ba nút dành hàng cuối cho xác nhận. Cặp ưu tiên cách 8px; các thao tác chi tiết đứng thành nhóm cạnh nhau. Chuột/chạm WebKit giữ focus nút mở và nút Hủy khi trở về từ dialog bỏ nháp. Quy tắc nghiệp vụ, API và dữ liệu không đổi. Xem [rà soát toàn ứng dụng](action-layout-2026-11-02.md).

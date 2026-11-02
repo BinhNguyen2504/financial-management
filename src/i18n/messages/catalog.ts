@@ -1,4 +1,6 @@
 export const catalog = {
+  "Xem trước kế hoạch và giao dịch, quay lại chỉnh rồi xác nhận lưu":
+    "Preview plans and transactions, go back to edit, then confirm saving",
   "Ghi giao dịch theo nhóm, xem trước tác động rồi xác nhận lưu":
     "Grouped transaction forms with an impact preview before confirming save",
   "Xóa danh mục khi không còn số thu; ngừng nguồn thu đang có dữ liệu":
