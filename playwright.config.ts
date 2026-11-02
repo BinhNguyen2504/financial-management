@@ -22,6 +22,18 @@ export default defineConfig({
   },
   projects: [
     { name: "desktop", use: { viewport: { width: 1440, height: 1000 } } },
+    ...(process.env.TEST_WEBKIT_DESKTOP === "1"
+      ? [
+          {
+            name: "webkit-desktop",
+            use: {
+              browserName: "webkit" as const,
+              viewport: { width: 1440, height: 1000 },
+              launchOptions: {},
+            },
+          },
+        ]
+      : []),
     {
       name: "mobile",
       use: {

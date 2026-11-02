@@ -22,8 +22,7 @@
   font-size: var(--font-size-16);
   max-width: 640px;
 }
-.investment-toolbar,
-.investment-filters {
+.investment-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: end;
@@ -54,6 +53,62 @@
   color: var(--text);
   padding: 10px 12px;
   font: inherit;
+}
+.investment-filters {
+  container: investment-filters / inline-size;
+  margin-bottom: 24px;
+}
+.investment-filter-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+.investment-workspace .investment-filter-fields > label {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.investment-workspace .investment-filter-fields :is(input, select) {
+  box-sizing: border-box;
+  width: 100%;
+  height: max(46px, calc(1.5em + 22px));
+  min-height: max(46px, calc(1.5em + 22px));
+  flex: none;
+  line-height: 1.5;
+}
+.investment-filters label.investment-checkbox {
+  width: fit-content;
+  max-width: 100%;
+  min-height: 44px;
+  margin-top: 16px;
+  gap: 10px !important;
+  color: var(--text);
+  line-height: 1.5;
+  cursor: pointer;
+}
+.investment-filters .investment-checkbox input {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  margin: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.investment-filters .investment-checkbox span {
+  min-width: 0;
+}
+@container investment-filters (min-width: 560px) {
+  .investment-filter-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container investment-filters (min-width: 900px) {
+  .investment-filter-fields {
+    /* Four equal tracks plus three 16px gutters fill the filter content width. */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 .investment-tabs {
   display: flex;
@@ -400,9 +455,6 @@
   }
   .investment-fields {
     grid-template-columns: 1fr;
-  }
-  .investment-filters > label {
-    flex: 1 1 140px;
   }
   .investment-card .expense-actions {
     margin-top: 16px;

@@ -207,3 +207,7 @@ Catalog bổ sung mô tả cột tiền và nút sửa/hủy gọn. Nội dung H
 ## Đối chiếu nhóm thao tác — 02/11/2026
 
 Đã rà header, CTA, preview, FAQ và bản thành viên cùng thay đổi [bố cục toàn ứng dụng](action-layout-2026-11-02.md). Hai FAQ bổ sung Mục tiêu vào tính năng hiện có; Help preview Mục tiêu giải thích xem trước → quay lại chỉnh → xác nhận trong ứng dụng thật, đồng bộ vi/en. Giữ nguyên số liệu minh họa, ranh giới public/auth và không thêm thao tác lưu giả hoặc đọc API tài chính tài khoản.
+
+## Đối chiếu bộ lọc và select — 02/11/2026
+
+Catalog Đầu tư và Help preview vi/en mô tả lọc theo ngày, danh mục/ví, loại và tùy chọn hiện giao dịch đã hủy trong ứng dụng. Đã rà hai landing; thay đổi dùng nguồn catalog/preview chung, không thêm tuyên bố triển khai. Bộ chọn ngôn ngữ giữ chiều cao gọn 44px và một chevron riêng. Dữ liệu preview tiếp tục cố định, không đọc API tài chính hoặc tạo bộ lọc tài khoản giả. Xem [quy tắc control](select-controls-2026-11-02.md).

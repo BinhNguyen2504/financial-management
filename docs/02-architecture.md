@@ -245,3 +245,7 @@ Bổ sung domain → application → repository → workspace. Đọc nguồn se
 `Modal` sở hữu `.dialog-footer-actions`; `footer: ReactNode` giữ nguyên, caller truyền nút/fragment. CSS token 8/12/16/24px dùng chung với trạng thái trống/lỗi qua `action-layout.css`; cột icon Quỹ 96px giữ 8px. Footer xử lý focus chuột bằng `focusPointerControl`, mobile xuống dòng theo thứ tự DOM; body vẫn cuộn độc lập. Không đổi API/schema. Xem [quy tắc và phạm vi](features/action-layout-2026-11-02.md).
 
 Help giới hạn nút giải thích theo chiều rộng vùng chứa. Header mobile có thể xuống hàng khi chữ lớn; popover tài khoản neo vào header và giới hạn chiều cao theo viewport. Kiểm thử hình học bao gồm cả nội dung nhãn, vùng bấm và menu mở.
+
+## Select dùng chung — 02/11/2026
+
+`styles/experience/form-controls.css`, nhập cuối trong `experience.css`, sở hữu appearance, box sizing, font, khe mũi tên và chiều cao tối thiểu cho select một lựa chọn trong app/dialog. Độ ưu tiên đủ cao để background/font shorthand của route không ghi đè sau client navigation. Select Năm/Tháng dùng biến `--select-padding-inline-end` cho kích thước gọn; bộ chọn ngôn ngữ public giữ chevron riêng. Multiple/listbox không nhận reset; forced colors trả về appearance native. Không thêm component JS hoặc thay hợp đồng API. Xem [quy tắc control](features/select-controls-2026-11-02.md).

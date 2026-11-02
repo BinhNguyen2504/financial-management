@@ -122,6 +122,8 @@ export const catalog = {
     "Dated valuations; reports across years, data table export and backups",
   "Chi tiết giao dịch trước/sau, phiên bản sửa và giữ vị trí khi quay lại":
     "Before/after transaction details, revisions and preserved navigation position",
+  "Lọc giao dịch theo ngày, danh mục/ví và loại; tùy chọn hiện cả giao dịch đã hủy":
+    "Filter transactions by date, portfolio/wallet and type; optionally include voided transactions",
   "Quỹ an toàn": "Safety funds",
   "Nền tảng an toàn tài chính": "Your financial safety foundation",
   "Xây Emergency, Rainy Day và Sinking từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.":

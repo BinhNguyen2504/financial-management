@@ -1,0 +1,29 @@
+/* Native selects keep their keyboard/mobile picker; only the closed control is styled.
+ * Outrank route-level background/font shorthands, including after client navigation.
+ * Multiple selects and listboxes retain their native presentation. */
+:is(.app-shell main, .dialog-shell)
+  select:not([multiple]):is(:not([size]), [size="0"], [size="1"]) {
+  appearance: none;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 44px;
+  font-family: inherit;
+  font-size: var(--text-input);
+  line-height: 1.5;
+  padding-right: var(--select-padding-inline-end, 38px);
+  /* prettier-ignore */
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); /* taste-skill-ignore: two solid triangles form the chevron */
+  background-position:
+    calc(100% - 16px) 50%,
+    calc(100% - 11px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+@media (forced-colors: active) {
+  :is(.app-shell main, .dialog-shell)
+    select:not([multiple]):is(:not([size]), [size="0"], [size="1"]) {
+    appearance: auto;
+    background-image: none;
+  }
+}

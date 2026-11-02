@@ -8,8 +8,8 @@ export const investments = {
     "Each portfolio has its own cash wallets, tracked in VND totals",
   "Lãi/lỗ chỉ tính trên phần đang giữ; bán về ví, rút khi cần":
     "Gain/loss covers current holdings; sale proceeds return to cash until withdrawn",
-  "Mỗi danh mục gồm tài sản đã mua và tiền chờ. Lãi/lỗ chỉ tính trên phần đang giữ; cập nhật định giá không thay đổi tiền trong ví. Xem trước rồi xác nhận giao dịch.":
-    "Each portfolio includes current holdings and available cash. Gain/loss covers holdings only; updating a valuation does not change wallet cash. Preview and confirm transactions.",
+  "Mỗi danh mục gồm tài sản đã mua và tiền chờ. Lãi/lỗ chỉ tính trên phần đang giữ; cập nhật định giá không thay đổi tiền trong ví. Xem trước rồi xác nhận giao dịch. Trong ứng dụng, lọc theo ngày, danh mục/ví và loại; có thể hiện cả giao dịch đã hủy.":
+    "Each portfolio includes current holdings and available cash. Gain/loss covers holdings only; updating a valuation does not change wallet cash. Preview and confirm transactions. In the app, filter by date, portfolio/wallet and type; optionally include voided transactions.",
   "Tổng giá trị gồm tài sản đã mua và tiền chờ riêng của danh mục.":
     "Total value includes current holdings and the portfolio’s own available cash.",
   "Vốn đang đầu tư": "Current holdings cost",

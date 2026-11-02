@@ -303,3 +303,9 @@ Nhóm nút thường cách 12px, icon gọn 8px, mô tả/thông báo cách nút
 Ô nhập chữ/ngày/select/textarea giữ token 16px kể cả khi module dùng `font: inherit` từ nhãn 14px; kiểm tra cả toolbar, bộ lọc và dialog để tránh co chữ, xuống dòng bất cân đối hoặc zoom khi focus trên điện thoại.
 
 Ở chữ 200%, nhãn Help dài được xuống dòng thay vì đẩy trang tràn ngang. Header mobile dành vùng co giãn theo cỡ chữ cho tên ứng dụng, cho các nút xuống hàng khi cần; menu tài khoản mở dưới chiều cao header hiện tại, có cuộn và giữ trong viewport.
+
+## Select và hàng phụ bộ lọc — 02/11/2026
+
+Select một lựa chọn trong ứng dụng/dialog giữ HTML native nhưng chuẩn hóa khung đóng, mũi tên theo theme, chữ 16px và chiều cao tối thiểu 44px; control tăng theo cỡ chữ. Giữ kích thước gọn riêng của Năm/Tháng và ngôn ngữ, không thêm mũi tên thứ hai. Forced colors dùng lại giao diện native.
+
+Bộ lọc giao dịch Đầu tư dùng grid 4/2/1 cột theo vùng nội dung 900/560px, các ô cao 46px tại cỡ chữ chuẩn, căn đáy và cách 16px. Tùy chọn hiện giao dịch đã hủy ở hàng phụ cùng mép trái; checkbox 20px, chữ cách 10px và vùng nhãn bấm tối thiểu 44px. Giữ thứ tự DOM/Tab và lọc trực tiếp. Xem [đặc tả và kiểm chứng](features/select-controls-2026-11-02.md).

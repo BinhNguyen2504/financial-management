@@ -41,6 +41,7 @@
 }
 /* Deliberately outrank module input shorthands without depending on route CSS order. */
 .month-year-field .month-year-controls select:not([multiple]) {
+  --select-padding-inline-end: 1.75rem;
   box-sizing: border-box;
   width: 100%;
   max-width: none;
@@ -55,15 +56,6 @@
   font-size: var(--text-input, 1rem);
   line-height: 1.5;
   font-weight: var(--weight-regular, 400);
-  appearance: none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
-    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-  background-position:
-    calc(100% - 16px) 50%,
-    calc(100% - 11px) 50%;
-  background-size: 5px 5px;
-  background-repeat: no-repeat;
 }
 
 /* Keep both values readable when system text size leaves too little room. */

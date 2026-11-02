@@ -134,6 +134,7 @@ export const modules = [
       "Định giá theo ngày; báo cáo nhiều năm, xuất bảng dữ liệu và sao lưu",
       "Ghi giao dịch theo nhóm, xem trước tác động rồi xác nhận lưu",
       "Chi tiết giao dịch trước/sau, phiên bản sửa và giữ vị trí khi quay lại",
+      "Lọc giao dịch theo ngày, danh mục/ví và loại; tùy chọn hiện cả giao dịch đã hủy",
       "Minh họa danh mục riêng cho từng chủ đề giao diện",
     ],
     questions: [],

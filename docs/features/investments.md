@@ -27,6 +27,12 @@ Giữ bốn tab Danh mục, Giao dịch, Báo cáo, Quản lý. Desktop dùng b�
 
 Không hiển thị kết quả đã bán, kết quả đầu-cuối kỳ đã loại dòng tiền, hay những danh mục mẫu mang tên tất toán/mất vốn. Các trường kế toán cũ có thể còn trong engine/backup để giữ lịch sử kỹ thuật, không dùng làm lãi/lỗ hiển thị.
 
+### Bộ lọc giao dịch — 02/11/2026
+
+Bốn trường Từ ngày, Đến ngày, Danh mục/ví và Loại giao dịch dùng grid theo chiều rộng nội dung: từ 900px có bốn cột, 560–899px có hai cột, dưới 560px có một cột; khe 16px. Nhãn ở trên, các ô cùng hàng căn đáy và cao 46px tại cỡ chữ chuẩn, tăng theo chữ lớn. Checkbox “Hiện cả giao dịch đã hủy” nằm dưới grid, cách 16px và cùng mép trái; ô vuông 20px, cách chữ 10px, toàn nhãn là vùng bấm cao tối thiểu 44px.
+
+Select dùng quy tắc chung để tránh control WebKit co nhỏ. Giữ picker native, nhãn trợ năng, thứ tự Tab, lọc ngay khi đổi và giá trị bộ lọc hiện tại; không thêm nút Áp dụng hoặc thay nghĩa giao dịch đã hủy. Xem [quy tắc control và kiểm chứng](select-controls-2026-11-02.md).
+
 ## Lịch sử, API và lưu trữ
 
 Giữ sáu bảng `investments_*`; JSONB của ví bổ sung `parentCategoryId`. Danh mục tài sản có parent null, ví bắt buộc trỏ tới danh mục tài sản cùng owner. Không đổi loại danh mục; ví có lịch sử kể cả đã hủy không đổi chủ sở hữu. Dữ liệu test cũ không có quan hệ ví phải tạo lại, không tự đoán liên kết.

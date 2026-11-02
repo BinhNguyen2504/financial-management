@@ -398,54 +398,58 @@ export function InvestmentWorkspace(
                 {tab === "transactions" && (
                   <>
                     <section className="panel investment-filters">
-                      <label>
-                        {tr("Từ ngày giao dịch")}
-                        <input
-                          type="date"
-                          value={from}
-                          max={date}
-                          onChange={(e) => setFrom(e.target.value)}
-                        />
-                      </label>
-                      <label>
-                        {tr("Đến ngày giao dịch")}
-                        <input
-                          type="date"
-                          value={to}
-                          max={date}
-                          onChange={(e) => setTo(e.target.value)}
-                        />
-                      </label>
-                      <label>
-                        {tr("Danh mục / ví giao dịch")}
-                        <select
-                          value={activityCategory}
-                          onChange={(e) => setActivityCategory(e.target.value)}
-                        >
-                          <option value="">{tr("Tất cả")}</option>
-                          {categories.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {name(c.id)}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label>
-                        {tr("Loại giao dịch lọc")}
-                        <select
-                          value={activityKind}
-                          onChange={(e) => setActivityKind(e.target.value)}
-                        >
-                          <option value="">{tr("Tất cả loại")}</option>
-                          {Object.entries(localize(transactionNames)).map(
-                            ([id, name]) => (
-                              <option key={id} value={id}>
-                                {name}
+                      <div className="investment-filter-fields">
+                        <label>
+                          {tr("Từ ngày giao dịch")}
+                          <input
+                            type="date"
+                            value={from}
+                            max={date}
+                            onChange={(e) => setFrom(e.target.value)}
+                          />
+                        </label>
+                        <label>
+                          {tr("Đến ngày giao dịch")}
+                          <input
+                            type="date"
+                            value={to}
+                            max={date}
+                            onChange={(e) => setTo(e.target.value)}
+                          />
+                        </label>
+                        <label>
+                          {tr("Danh mục / ví giao dịch")}
+                          <select
+                            value={activityCategory}
+                            onChange={(e) =>
+                              setActivityCategory(e.target.value)
+                            }
+                          >
+                            <option value="">{tr("Tất cả")}</option>
+                            {categories.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {name(c.id)}
                               </option>
-                            ),
-                          )}
-                        </select>
-                      </label>
+                            ))}
+                          </select>
+                        </label>
+                        <label>
+                          {tr("Loại giao dịch lọc")}
+                          <select
+                            value={activityKind}
+                            onChange={(e) => setActivityKind(e.target.value)}
+                          >
+                            <option value="">{tr("Tất cả loại")}</option>
+                            {Object.entries(localize(transactionNames)).map(
+                              ([id, name]) => (
+                                <option key={id} value={id}>
+                                  {name}
+                                </option>
+                              ),
+                            )}
+                          </select>
+                        </label>
+                      </div>
                       <label className="investment-checkbox">
                         <input
                           type="checkbox"
@@ -454,7 +458,7 @@ export function InvestmentWorkspace(
                             setIncludeCancelled(e.target.checked)
                           }
                         />
-                        {tr("Hiện cả giao dịch đã hủy")}
+                        <span>{tr("Hiện cả giao dịch đã hủy")}</span>
                       </label>
                     </section>
                     <section className="panel">
