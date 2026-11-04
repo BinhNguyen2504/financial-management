@@ -533,6 +533,7 @@ test("nested transactions, atomic transfers, corrections and filters retain pare
     .poll(async () => (await view(page)).state.funds.map((f) => f.balance))
     .toEqual(["1000000", "200000", "0"]);
   expect((await view(page)).state.contributed).toBe("1200000");
+  await page.locator(".fund-ledger .fund-filter-options > summary").click();
   await page.getByLabel("Quỹ lọc", { exact: true }).selectOption("rainy_day");
   await expect(page.locator(".fund-transaction")).toHaveCount(1);
   await expect(page.locator(".fund-transaction")).toContainText("Phân bổ lại");

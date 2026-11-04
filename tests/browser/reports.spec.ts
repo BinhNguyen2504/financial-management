@@ -276,10 +276,10 @@ test("reports translate, fit five themes, and retain the app shell at three widt
     page.getByRole("heading", { name: "Reports", exact: true }),
   ).toBeVisible();
   await ready(page);
-  await expect(await workspaceAction(page, "Export CSV")).toBeVisible();
+  await expect(await workspaceAction(page, "Export data")).toBeVisible();
   const initial = page.viewportSize()!;
   for (const [index, theme] of [
-    "garden",
+    "forest",
     "water",
     "gold",
     "fire",
@@ -324,9 +324,9 @@ test("reports translate, fit five themes, and retain the app shell at three widt
     .getByRole("button", { name: "Progress % ↕", exact: true })
     .click();
   const names = {
-    emergency: "Emergency",
-    rainy_day: "Rainy Day",
-    sinking: "Sinking",
+    emergency: "Emergency fund",
+    rainy_day: "Rainy day fund",
+    sinking: "Sinking fund",
   };
   const ordered = [
     ...report.tables.find((t) => t.id === "funds.balances")!.rows,

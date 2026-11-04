@@ -1157,3 +1157,14 @@ Các báo cáo JSON/log nằm trong `artifacts/ux-implementation-2026-11-04/`. `
 ### Phạm vi và giới hạn
 
 Nguồn kiểm chứng là production build riêng, PostgreSQL local, Auth double và browser emulation. Các thay đổi backend song song trong workspace được giữ; đối chiếu snapshot cuối tách khỏi bằng chứng audit cũ. Không triển khai cloud, không ghi dữ liệu tài chính tài khoản thật, không reset dữ liệu và không xác nhận RLS/Auth cloud từ kết quả này. Chưa kiểm chứng bàn phím iOS/Android, thanh địa chỉ và vùng an toàn trên thiết bị vật lý. Catalog, Help, FAQ hai landing, preview minh họa, README và tài liệu feature/kiến trúc/UX đã được đối chiếu cùng thay đổi; preview giữ số liệu cố định.
+
+## Dialog làm trống dữ liệu tài chính — 04/11/2026
+
+Email đích có khối riêng; phạm vi xóa/số bản ghi/thông tin giữ lại được chia nhóm. Tiến trình hai bước luôn hiện trên cùng vùng cuộn, tự chuyển bước và focus tiêu đề sau khi tạo backup. Footer bước 1 tải JSON, bước 2 mới hiện nút xóa; checkbox đã lưu và cụm xác nhận vẫn bắt buộc. Input một dòng có border/nền/padding/focus riêng. Cảnh báo bao gồm mọi phân hệ, kể cả Mục tiêu.
+
+- **52/52 browser đạt trong một lượt chạy sạch cuối**: `reset.spec.ts` và `settings-restore-layout.spec.ts`, mỗi bộ trên Chromium desktop/mobile, Firefox và WebKit/iPhone giả lập. Đã kiểm năm theme × sáng/tối, email dài, 320/390px, màn hình ngang 844×390, chữ phóng 200%, focus và cuộn. Input chưa focus đạt tương phản border ≥3:1, chữ ≥4.5:1; chiều cao ≥44px, chữ ≥16px và outline focus ≥3px.
+- Luồng backup lỗi, tải lại JSON, checkbox/cụm xác nhận, tạo backup mới, hết hạn, dữ liệu thay đổi, lỗi quyền, reset/restore và retry cùng request khi mất phản hồi đều qua. Các bài API trong bộ browser chạy trên dữ liệu tổng hợp local.
+- **16/16 Help/i18n** trên source cuối qua. Lint/Prettier cho phạm vi thay đổi, typecheck, kiểm tra kiến trúc **324 source / 0 vi phạm**, `git diff --check` và production build riêng đều qua. Không chạy lại toàn bộ unit hoặc suite database độc lập cho thay đổi giao diện này.
+- Log cuối: `artifacts/reset-dialog-verified.log`, `artifacts/reset-dialog-verified-build.log`; ảnh trong `artifacts/reset-dialog-verified/`. `artifacts/reset-dialog-source-manifest.json` ghi hash của hai bộ browser và xác nhận năm file sản phẩm khớp snapshot đã build. Các lượt trước phát hiện kỳ vọng bản dịch cũ modules/sections và khoảng cuộn cắt input trên Chromium landscape; đã đối chiếu ảnh/trace rồi sửa và chạy lại đủ ma trận, không bỏ assertion.
+
+Đã cập nhật README, backup, UX và Help Việt/Anh; đối chiếu catalog, cả hai landing và preview cố định, giữ copy năng lực/dữ liệu minh họa vì phạm vi chức năng không đổi. Chi tiết ở [đặc tả dialog](features/settings-reset-dialog-2026-11-04.md). Kiểm chứng dùng PostgreSQL cô lập/Auth double/production snapshot, không ghi/reset tài khoản thật, không migrate/deploy và không chứng minh Auth/RLS cloud hay thiết bị vật lý. Các thay đổi khác trong workspace được giữ nguyên.

@@ -62,6 +62,8 @@ Phong cách hiện tại là không gian tài chính an yên: nền kem `#F7F3EB
 
 Nunito variable với Latin/tiếng Việt được phục vụ qua `next/font`; trình duyệt không gọi Google Fonts. Nội dung nét 400, tiêu đề 600, số tiền dùng tabular numerals. Card bo góc 16–24px, spacing 4/8px, hiệu ứng nhẹ và tôn trọng reduced motion. Minh họa SVG cây, hũ và bình tưới xuất hiện ở phần chào, đăng nhập và trạng thái trống. Câu nhắc mỗi ngày là nội dung tự viết, chọn theo ngày Việt Nam, không chạy carousel.
 
+Rà soát spacing 04/11/2026: khối bộ lọc sở hữu lề 24px giữa các nhóm (16px ở màn hình ≤639px), kể cả khi thu gọn; thanh mở/đặt lại cách nội dung lọc 12px. Trang dùng grid không cộng thêm lề của tiêu đề/hướng dẫn vào gap cha. Nhãn thống kê 14px, số tiền nổi bật hơn và tự xuống dòng khi cần; chú thích và nút giải thích cách bảng/biểu đồ 16px. Xem [phạm vi và bằng chứng](features/workspace-spacing-2026-11-04.md).
+
 Tổng quan lấy dữ liệu tháng hiện tại từ API Chi tiêu: mức tháng, thực chi và số còn trong hũ, với nhãn tạm tính. Chưa có module tài sản ròng nên không suy ra chỉ số này. Thu nhập đã có module riêng và được đồng bộ theme/Privacy Mode; Tổng quan vẫn tập trung vào hũ. Các module chưa triển khai có nhãn đang xây dựng.
 
 Danh sách hũ giữ bảng đầy đủ trên máy tính và thẻ trên điện thoại; thẻ nhấn mạnh số còn trong hũ, số phụ nằm trong phần mở rộng. Emoji luôn đi cùng tên hũ; bộ chọn có gợi ý theo tên và lựa chọn cụ thể. Hũ chi tháng dùng thanh đã sử dụng ngân sách; hũ tích lũy dùng cây/số dư, không coi mức góp tháng là mục tiêu tiết kiệm tổng.

@@ -1,0 +1,78 @@
+/* Section spacing belongs to the group, including collapsed mobile filters. */
+.app-shell {
+  --workspace-section-gap: 24px;
+  --workspace-content-gap: 16px;
+}
+
+.app-shell .filter-options {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  margin-block: var(--workspace-section-gap);
+}
+.app-shell .filter-options-tools {
+  margin: 0;
+}
+.app-shell
+  .filter-options-body
+  > :is(.expense-filter-panel, .savings-filters, .investment-filters) {
+  margin: 0;
+}
+
+/* A section heading inside a panel already has the panel's top padding. */
+.app-shell .panel > .expense-section-heading:first-child {
+  margin-top: 0;
+}
+
+/* Grid workspaces own their gutters; child margins must not add a second gap. */
+.app-shell
+  :is(
+    .fund-workspace,
+    .goals-workspace,
+    .reports-workspace,
+    .settings-workspace
+  )
+  > :is(.illustrated-heading, .page-guide) {
+  margin-bottom: 0;
+}
+.app-shell .settings-workspace > .settings-reset {
+  margin-top: 0;
+}
+
+/* Keep explanatory controls and captions clear of the data they describe. */
+.app-shell .investment-desktop > .help-context {
+  margin-bottom: var(--workspace-content-gap);
+}
+.app-shell .savings-chart > :is(.animated-details, .expense-muted) {
+  margin-top: var(--workspace-content-gap);
+}
+.app-shell .reports-chart > * + * {
+  margin-top: var(--workspace-content-gap);
+}
+
+/* Metric labels must not inherit the global section-title scale. */
+.app-shell :is(.expense-metrics, .income-summary) h2 {
+  margin: 0;
+  font-size: var(--text-label);
+  font-weight: var(--weight-medium);
+  line-height: 1.5;
+  text-wrap: initial;
+}
+.app-shell .expense-metrics .metric {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.app-shell .expense-metrics .metric > p {
+  margin: auto 0 0;
+  padding-top: 12px;
+  font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 639px) {
+  .app-shell {
+    --workspace-section-gap: 16px;
+  }
+}
