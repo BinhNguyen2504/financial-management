@@ -13,6 +13,10 @@
 .app-shell .filter-options-tools {
   margin: 0;
 }
+/* Module button display rules must not reveal mobile-only triggers on desktop. */
+.app-shell :is(.action-options-trigger, .filter-options-trigger) {
+  display: none;
+}
 .app-shell
   .filter-options-body
   > :is(.expense-filter-panel, .savings-filters, .investment-filters) {
@@ -74,5 +78,11 @@
 @media (max-width: 639px) {
   .app-shell {
     --workspace-section-gap: 16px;
+  }
+}
+
+@media (max-width: 700px) {
+  .app-shell :is(.action-options-trigger, .filter-options-trigger) {
+    display: flex;
   }
 }

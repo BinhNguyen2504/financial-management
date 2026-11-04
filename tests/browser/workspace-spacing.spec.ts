@@ -73,6 +73,8 @@ test("filters stay separated from metrics and tables when collapsed, expanded an
     const filters = page.locator(".filter-options");
     await expect(filters).toBeVisible();
     const trigger = filters.getByRole("button", { name: /^Bộ lọc/ });
+    if (page.viewportSize()!.width > 700) await expect(trigger).toBeHidden();
+    else await expect(trigger).toBeVisible();
     const minimum = page.viewportSize()!.width <= 639 ? 16 : 24;
     const check = async () => {
       const gaps = await filters.evaluate((element) => {
@@ -153,7 +155,8 @@ test("expense figures keep their hierarchy and section gaps at responsive widths
             ),
           };
         });
-      expect(result.gap).toBeGreaterThanOrEqual(width <= 639 ? 16 : 24);
+      // Firefox can report a 16px gutter as 15.99997px.
+      expect(result.gap).toBeGreaterThanOrEqual((width <= 639 ? 16 : 24) - 0.1);
       expect(result.labelSize).toBeLessThanOrEqual(16);
       expect(result.valueSize).toBeGreaterThan(result.labelSize);
       expect(result.overflow).toBeLessThanOrEqual(1);
@@ -186,6 +189,12 @@ test("grid workspaces and inner panel headings have one source of spacing", asyn
     "profile",
   ]) {
     await go(page, route);
+    const actionTrigger = page.locator(".action-options-trigger");
+    if (await actionTrigger.count()) {
+      if (page.viewportSize()!.width > 700)
+        await expect(actionTrigger).toBeHidden();
+      else await expect(actionTrigger).toBeVisible();
+    }
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth - innerWidth,

@@ -13,11 +13,7 @@ import { SafetyScene } from "@/components/safety-scene";
 import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 
 import { ModuleIcon } from "@/components/module-icon";
-import {
-  modules,
-  navigationSummary,
-  workspaceComfortSummary,
-} from "@/features/catalog";
+import { modules } from "@/features/catalog";
 import { LabelName } from "@/features/expenses/label-visual";
 import { ProgressScene } from "@/features/funds/progress-scene";
 import { ArrowDownLeft, ArrowUpRight, Eye, EyeOff } from "lucide-react";
@@ -123,9 +119,8 @@ const data = {
     bars: [],
   },
   overview: {
-    title: "Một góc nhìn chung, từng khoản rõ ràng.",
-    subtitle:
-      "5 thẻ số liệu chính · tùy chỉnh 10 loại thẻ thông tin theo tài khoản.",
+    title: "Tổng quan",
+    subtitle: "Theo dõi tiền đã thu, đã chi và các khoản bạn đang tích lũy.",
     label: "Tổng thực nhận",
     value: "28500000",
     secondary: "Thẻ thông tin mặc định",
@@ -295,6 +290,26 @@ export function ProductPreview({
     setActive(key);
     workspace.current?.scrollTo({ top: 0, behavior: "instant" });
   };
+  function openPreview(key: PreviewKey) {
+    selectTab(key);
+    buttons.current[tabs.findIndex((tab) => tab.slug === key)]?.focus({
+      preventScroll: true,
+    });
+  }
+  function cardHeading(title: string, key: PreviewKey) {
+    return (
+      <header>
+        <h3>{tr(title)}</h3>
+        <button
+          type="button"
+          onClick={() => openPreview(key)}
+          aria-label={tr(modules.find((item) => item.slug === key)!.title)}
+        >
+          {tr("Mở")} <ArrowUpRight size={14} aria-hidden="true" />
+        </button>
+      </header>
+    );
+  }
   const changeTab = (
     event: KeyboardEvent<HTMLButtonElement>,
     index: number,
@@ -325,6 +340,21 @@ export function ProductPreview({
         <StatusBadge tone="info" size="compact" className="preview-demo-label">
           {tr("Dữ liệu minh họa")}
         </StatusBadge>
+        <button
+          className="preview-privacy"
+          aria-label={tr(
+            hidden ? "Hiện số tiền minh họa" : "Ẩn số tiền minh họa",
+          )}
+          aria-pressed={hidden}
+          onClick={() => setHidden(!hidden)}
+        >
+          {hidden ? (
+            <EyeOff size={18} aria-hidden="true" />
+          ) : (
+            <Eye size={18} aria-hidden="true" />
+          )}
+          <span>{tr("Riêng tư")}</span>
+        </button>
       </div>
       <div className="preview-body">
         <aside className="preview-sidebar" aria-label={tr("Các mục minh họa")}>
@@ -363,12 +393,6 @@ export function ProductPreview({
             ) : (
               <ThemeText name="storyNote" />
             )}
-            <small>{tr("Tải bản sao dữ liệu của bạn trong Cài đặt.")}</small>
-            <small>{tr(navigationSummary)}</small>
-            <small>{tr(workspaceComfortSummary)}</small>
-            <small>
-              {tr("Trang chủ và ứng dụng hỗ trợ Tiếng Việt / English.")}
-            </small>
           </div>
         </aside>
         <div
@@ -378,36 +402,6 @@ export function ProductPreview({
           aria-label={tr("Nội dung xem thử ứng dụng")}
           tabIndex={0}
         >
-          <div className="preview-workspace-top">
-            <dl
-              className="preview-period"
-              aria-label={tr("Kỳ minh họa cố định")}
-            >
-              <div>
-                <dt>{tr("Năm")}</dt>
-                <dd>2026</dd>
-              </div>
-              <div>
-                <dt>{tr("Tháng")}</dt>
-                <dd>{tr("Tháng")} 6</dd>
-              </div>
-            </dl>
-            <button
-              className="preview-privacy"
-              aria-label={tr(
-                hidden ? "Hiện số tiền minh họa" : "Ẩn số tiền minh họa",
-              )}
-              aria-pressed={hidden}
-              onClick={() => setHidden(!hidden)}
-            >
-              {hidden ? (
-                <EyeOff size={18} aria-hidden="true" />
-              ) : (
-                <Eye size={18} aria-hidden="true" />
-              )}
-              <span>{tr("Riêng tư")}</span>
-            </button>
-          </div>
           <div className="preview-quote">
             <QuoteCard
               quote={{
@@ -418,18 +412,6 @@ export function ProductPreview({
               }}
             />
           </div>
-          <AnimatedDetails className="preview-help" key={active}>
-            <summary>
-              {tr("Hướng dẫn ·")}{" "}
-              {tr(modules.find((item) => item.slug === active)!.title)}
-            </summary>
-            <p>{tr(helpPreview[active])}</p>
-            <small>
-              {tr(
-                "Mỗi mục có cách bắt đầu và giải thích số liệu. Mở Hướng dẫn khi cần các bước chi tiết.",
-              )}
-            </small>
-          </AnimatedDetails>
           {tabs.map((item) => (
             <div
               key={item.slug}
@@ -443,12 +425,7 @@ export function ProductPreview({
                 <>
                   <div className="preview-heading">
                     <div>
-                      <p>{tr(item.title)}</p>
-                      <h2>
-                        {active === "savings" || active === "funds"
-                          ? tr(item.title)
-                          : tr(selected.title)}
-                      </h2>
+                      <h2>{tr(item.title)}</h2>
                       <span>{tr(selected.subtitle)}</span>
                     </div>
                     {!neutral &&
@@ -463,36 +440,66 @@ export function ProductPreview({
                     )}
                     {!neutral && active === "funds" && <SafetyScene />}
                   </div>
+                  <AnimatedDetails className="preview-help" key={active}>
+                    <summary>
+                      {tr("Hướng dẫn ·")}{" "}
+                      {tr(modules.find((item) => item.slug === active)!.title)}
+                    </summary>
+                    <p>{tr(helpPreview[active])}</p>
+                    <small>
+                      {tr(
+                        "Mỗi mục có cách bắt đầu và giải thích số liệu. Mở Hướng dẫn khi cần các bước chi tiết.",
+                      )}
+                    </small>
+                  </AnimatedDetails>
+                  <div
+                    className="preview-workspace-top"
+                    hidden={active === "overview"}
+                  >
+                    <dl
+                      className="preview-period"
+                      aria-label={tr("Kỳ minh họa cố định")}
+                    >
+                      <div>
+                        <dt>{tr("Năm")}</dt>
+                        <dd>2026</dd>
+                      </div>
+                      <div>
+                        <dt>{tr("Tháng")}</dt>
+                        <dd>{tr("Tháng")} 6</dd>
+                      </div>
+                    </dl>
+                  </div>
                   {active === "overview" ? (
                     <div className="preview-overview-grid">
                       <section>
-                        <h3>{tr("Thu nhập tháng này")}</h3>
-                        <strong>{money(data.income.value)}</strong>
+                        {cardHeading("Thu nhập tháng này", "income")}
                         <small>{tr("Tổng thực nhận")}</small>
+                        <strong>{money(data.income.value)}</strong>
                       </section>
                       <section>
-                        <h3>{tr("Chi tiêu tháng này")}</h3>
-                        <strong>{money("7350000")}</strong>
+                        {cardHeading("Chi tiêu tháng này", "budgets")}
                         <small>{tr("Thực chi · Tạm tính")}</small>
+                        <strong>{money("7350000")}</strong>
                         <span>
                           {tr("Mức tháng")} · {money(data.budgets.value)}
                         </span>
                       </section>
                       <section>
-                        <h3>{tr("Tiết kiệm hiện tại")}</h3>
-                        <strong>{money(data.savings.value)}</strong>
+                        {cardHeading("Tiết kiệm hiện tại", "savings")}
                         <small>{tr("Theo định giá đã nhập")}</small>
+                        <strong>{money(data.savings.value)}</strong>
                       </section>
                       <section>
-                        <h3>{tr("Đầu tư hiện tại")}</h3>
-                        <strong>{money(data.investments.value)}</strong>
+                        {cardHeading("Đầu tư hiện tại", "investments")}
                         <small>{tr("Gồm khoản đầu tư và tiền chờ")}</small>
+                        <strong>{money(data.investments.value)}</strong>
                         <span>
                           {tr("Lãi/lỗ phần đang giữ")} · {money("1000000")}
                         </span>
                       </section>
                       <section>
-                        <h3>{tr("Quỹ an toàn")}</h3>
+                        {cardHeading("Quỹ an toàn", "funds")}
                         <strong>{money(data.funds.value)}</strong>
                         <small>
                           {tr("Quỹ khẩn cấp đủ trang trải")} ·{" "}

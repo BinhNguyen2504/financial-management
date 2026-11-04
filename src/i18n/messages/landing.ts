@@ -1,5 +1,11 @@
 // Public product copy and fixed illustrative data only; never account data.
 export const landing = {
+  "Khám phá từng sổ với dữ liệu minh họa. Từ Tổng quan, chọn Mở để xem chi tiết hoặc thử che số tiền.":
+    "Explore each ledger with sample data. From Overview, choose Open for details or try hiding amounts.",
+  "Tháng này nhận bao nhiêu? Các hũ còn lại thế nào? Bắt đầu từ Tổng quan, chọn Mở để khám phá từng sổ bằng dữ liệu minh họa.":
+    "How much came in this month? What remains in your jars? Start with Overview and choose Open to explore each ledger with sample data.",
+
+  Mở: "Open",
   "Danh mục cố định là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.":
     "A fixed category is a recurring income source, not necessarily a fixed amount. Additional income is a one-off entry. Not entered is different from a recorded zero. Delete a category when no receipts remain in any month; otherwise use Stop.",
   "Emergency Fund đã chuẩn bị 50% mục tiêu":

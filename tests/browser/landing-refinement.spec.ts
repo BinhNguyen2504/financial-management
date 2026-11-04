@@ -272,3 +272,70 @@ test("FAQ remains native and readable without JavaScript", async ({
     await context.close();
   }
 });
+
+test("preview follows app hierarchy with a concise rail and working book actions", async ({
+  page,
+}, info) => {
+  for (const member of [false, true]) {
+    if (member) {
+      await signIn(page);
+      await page.evaluate(() => {
+        localStorage.setItem("fm-visual-theme", "water");
+        localStorage.setItem("fm-theme", "dark");
+        window.dispatchEvent(new Event("fm-preference-change"));
+      });
+    } else await page.goto("/");
+    const preview = page.locator(".product-preview");
+    for (const width of [1440, 768, 390]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await expect(preview.locator(".preview-heading h2")).toHaveText(
+        "Tổng quan",
+      );
+      await expect(preview.locator(".preview-sidebar-note small")).toHaveCount(
+        0,
+      );
+      await expect(preview.locator(".preview-period")).toBeHidden();
+      await expect(
+        preview.locator(".preview-overview-grid section"),
+      ).toHaveCount(5);
+      const geometry = await preview.evaluate((el) => {
+        const heading = el
+          .querySelector(".preview-heading")!
+          .getBoundingClientRect();
+        const guide = el
+          .querySelector(".preview-help")!
+          .getBoundingClientRect();
+        const grid = el
+          .querySelector(".preview-overview-grid")!
+          .getBoundingClientRect();
+        const workspace = el.querySelector(".preview-workspace")!;
+        return {
+          ordered: heading.bottom <= guide.top && guide.bottom <= grid.top,
+          fits: workspace.scrollWidth <= workspace.clientWidth + 1,
+          height: el.getBoundingClientRect().height,
+        };
+      });
+      expect(geometry.ordered).toBe(true);
+      expect(geometry.fits).toBe(true);
+      expect(geometry.height).toBeLessThan(width >= 1000 ? 1000 : 1200);
+      await preview.scrollIntoViewIfNeeded();
+      await preview.screenshot({
+        path: info.outputPath(
+          `preview-${member ? "member-water-dark" : "guest"}-${width}.png`,
+        ),
+      });
+      await preview
+        .locator(".preview-overview-grid")
+        .getByRole("button", { name: "Thu nhập", exact: true })
+        .click();
+      await expect(
+        preview.getByRole("tab", { name: "Thu nhập", exact: true }),
+      ).toBeFocused();
+      await expect(preview.locator(".preview-period")).toBeVisible();
+      await preview
+        .getByRole("tab", { name: "Tổng quan", exact: true })
+        .click();
+      await fits(page);
+    }
+  }
+});

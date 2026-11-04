@@ -104,7 +104,7 @@ export function ThemedLanding() {
           <span>{tr("01 / MỘT GÓC KHÔNG GIAN CỦA BẠN")}</span>
           <p>
             {tr(
-              "Khám phá các mục với dữ liệu minh họa. Thử che số tiền để xem cách bảo vệ sự riêng tư.",
+              "Khám phá từng sổ với dữ liệu minh họa. Từ Tổng quan, chọn Mở để xem chi tiết hoặc thử che số tiền.",
             )}
           </p>
         </div>

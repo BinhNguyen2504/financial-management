@@ -84,6 +84,17 @@ export function HelpPanel({
         )}
         {article && (
           <>
+            <div className="help-quick-purpose">
+              <strong>{tr("Trang này giúp gì")}</strong>
+              <p>
+                <HelpText
+                  text={
+                    article.sections.find((section) => section.id === "purpose")
+                      ?.paragraphs?.[0] ?? ""
+                  }
+                />
+              </p>
+            </div>
             <GuideSummary pageId={request.pageId} />
             <nav aria-label={tr("Mục lục hướng dẫn")} className="help-toc">
               <p className="help-eyebrow">{tr("NỘI DUNG HƯỚNG DẪN")}</p>

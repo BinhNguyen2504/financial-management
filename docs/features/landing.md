@@ -220,3 +220,9 @@ Catalog Cài đặt và FAQ hai landing vi/en phản ánh trạng thái từng m
 ## Nội dung cho người dùng phổ thông — 04/11/2026
 
 Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.
+
+## Bố cục minh họa sát ứng dụng — 04/11/2026
+
+Preview khách và thành viên dùng tên module thật làm tiêu đề. Thứ tự là câu nhắn → tiêu đề → hướng dẫn thu gọn → kỳ cố định (ở từng sổ) → số liệu. Tổng quan không đặt bộ chọn kỳ chung vì các thẻ phản ánh các phạm vi thời gian khác nhau, giống workspace thật. Năm thẻ tách tiêu đề, nhãn số chính, giá trị và chú thích; nền/border theo theme, hai cột desktop và một cột điện thoại. Nút Mở trên thẻ chuyển sang tab minh họa tương ứng và đưa focus về tab đó.
+
+Cột trái chỉ còn thương hiệu, tên nhóm, menu và một câu ngắn theo theme; bỏ các đoạn hướng dẫn sao lưu, menu, bộ lọc và ngôn ngữ vốn làm sidebar dài hơn nội dung. Nút che tiền nằm trong thanh trên, giữ khả năng truy cập khi cuộn khung điện thoại. Giữ tám tab, dữ liệu hằng số và che tiền riêng; không mô phỏng lưu/tùy chỉnh tài khoản. Đây vẫn là minh họa rút gọn, không phải bản sao đầy đủ mọi màn hình. Đã rà catalog: tên, scope và trạng thái module hiện có không thay đổi; cập nhật copy hai landing, bản dịch và README cùng đợt.

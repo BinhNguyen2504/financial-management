@@ -439,7 +439,7 @@ test("landing remains readable without JavaScript; private routes still redirect
       "Làm chủ tiền bạc.",
     );
     await expect(page.locator(".preview-heading")).toContainText(
-      "Một góc nhìn chung, từng khoản rõ ràng.",
+      "Theo dõi tiền đã thu, đã chi và các khoản bạn đang tích lũy.",
     );
     await expect(
       page.getByRole("link", { name: "Đăng nhập", exact: true }),

@@ -87,6 +87,9 @@ test("new users get actionable empty states and guidance without financial write
   await page.getByLabel("Tên", { exact: true }).fill("Khoản thu đang nhập");
   await page.getByRole("button", { name: /Hiểu khoản thu đang nhập/ }).click();
   const help = page.locator("dialog[open]").last();
+  await expect(help.locator(".help-quick-purpose")).toContainText(
+    "Trang này giúp gì",
+  );
   await expect(help.locator(".page-guide-copy")).toContainText(
     "Đọc kết quả ra sao",
   );

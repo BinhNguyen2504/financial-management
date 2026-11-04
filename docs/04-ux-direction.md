@@ -349,3 +349,7 @@ Sau commit, màn hình dùng view đã xác nhận từ server và giữ kỳ/ta
 ## Nội dung và hướng dẫn tại chỗ — 04/11/2026
 
 Các trang có phần mở rộng giải thích cách bắt đầu và đọc số liệu; Tổng quan nêu rõ việc tiếp theo, tên quỹ và nguồn thu dùng ngôn ngữ gần gũi. Xem [hợp đồng nội dung và đối chiếu tác vụ](features/friendly-content-2026-11-04.md). Không đổi API, schema, dữ liệu hoặc cách tính tiền.
+
+## Preview công khai — 04/11/2026
+
+Dùng tiêu đề module thật và thứ tự câu nhắn → tiêu đề → hướng dẫn → kỳ (nếu có) → số liệu. Sidebar minh họa chỉ giữ menu và một câu ngắn; giải thích nghiệp vụ thuộc hướng dẫn tùy mở. Thẻ Tổng quan có hành động Mở sang tab mẫu cùng sổ, nhãn trước số tiền và chú thích sau. Che tiền đặt ở chrome phía trên như ứng dụng thật; không thêm bộ chọn kỳ chung cho Tổng quan. Chi tiết tại [landing](features/landing.md).

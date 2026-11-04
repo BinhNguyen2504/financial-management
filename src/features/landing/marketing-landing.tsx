@@ -196,7 +196,7 @@ export function MarketingLanding() {
           </div>
           <p>
             {tr(
-              "Tháng này nhận bao nhiêu? Các hũ còn lại thế nào? Phần tích lũy đang ở đâu? Khám phá từng mục bằng dữ liệu minh họa bên dưới.",
+              "Tháng này nhận bao nhiêu? Các hũ còn lại thế nào? Bắt đầu từ Tổng quan, chọn Mở để khám phá từng sổ bằng dữ liệu minh họa.",
             )}
           </p>
         </div>

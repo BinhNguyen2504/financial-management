@@ -63,6 +63,8 @@ Lint, kiểm tra import/cycle/client-server và định dạng là một phần 
 
 Tiết kiệm có `ledger-tables.tsx` (27/10/2026) dùng chung bảng giao dịch tháng và giao dịch nguồn báo cáo; workspace truyền giao dịch đã lọc cùng effects tương ứng. Bảng danh mục tra rule theo tháng đang xem, tên danh mục giao dịch tra theo ngày giao dịch. `ColumnTable` giữ cấu hình cột riêng trên trình duyệt, CSS container query chọn bố cục theo vùng nội dung. Không thêm request, thay đổi domain/schema hay quyền truy cập cho thay đổi bố cục này.
 
+Spacing workspace (04/11/2026) được giới hạn trong `.app-shell` tại `styles/experience/workspace-spacing.css`, nhập sau `workspace-comfort.css`. `FilterOptions` sở hữu khoảng cách ngoài; các trang grid sở hữu gap thay vì cộng lề từ heading/hướng dẫn. Quy tắc nhãn/số thống kê và ẩn trigger mobile có độ ưu tiên đủ để giữ nguyên sau khi stylesheet module được tải. Không thay component state, API hay dữ liệu preview. Xem [phạm vi và kiểm chứng](features/workspace-spacing-2026-11-04.md).
+
 - `src/app`: route web và `/api/v1`, chỉ chuyển request/response, không chứa công thức tài chính trong JSX.
 - `src/features/<feature>`: component, form và view model của mỗi module.
 - `src/domain`: kiểu và hàm thuần phía TypeScript; không import React/Next/Supabase/browser. Flutter sử dụng kết quả qua API, không import TypeScript trực tiếp.

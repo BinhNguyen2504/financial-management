@@ -1168,3 +1168,16 @@ Email đích có khối riêng; phạm vi xóa/số bản ghi/thông tin giữ l
 - Log cuối: `artifacts/reset-dialog-verified.log`, `artifacts/reset-dialog-verified-build.log`; ảnh trong `artifacts/reset-dialog-verified/`. `artifacts/reset-dialog-source-manifest.json` ghi hash của hai bộ browser và xác nhận năm file sản phẩm khớp snapshot đã build. Các lượt trước phát hiện kỳ vọng bản dịch cũ modules/sections và khoảng cuộn cắt input trên Chromium landscape; đã đối chiếu ảnh/trace rồi sửa và chạy lại đủ ma trận, không bỏ assertion.
 
 Đã cập nhật README, backup, UX và Help Việt/Anh; đối chiếu catalog, cả hai landing và preview cố định, giữ copy năng lực/dữ liệu minh họa vì phạm vi chức năng không đổi. Chi tiết ở [đặc tả dialog](features/settings-reset-dialog-2026-11-04.md). Kiểm chứng dùng PostgreSQL cô lập/Auth double/production snapshot, không ghi/reset tài khoản thật, không migrate/deploy và không chứng minh Auth/RLS cloud hay thiết bị vật lý. Các thay đổi khác trong workspace được giữ nguyên.
+
+
+## Khoảng cách workspace — 04/11/2026
+
+Đã sửa khoảng cách 0px giữa thống kê và bộ lọc Chi tiêu, lề cộng trùng ở các trang grid, khoảng cách chú thích/nút giải thích với bảng và biểu đồ, thứ bậc chữ thống kê Chi tiêu/Thu nhập và trigger mobile hiện thừa trên desktop.
+
+- **15/15 browser đạt trong một lượt chạy sạch cuối**: `workspace-spacing.spec.ts` trên Chromium desktop/mobile, Firefox, WebKit desktop và WebKit/iPhone giả lập; 2,2 phút. Bộ lọc Chi tiêu/Tiết kiệm/Đầu tư được đo khi thu gọn, mở, đang lọc và đặt lại. Chi tiêu kiểm ở 320/390/768/1440px, sáng/tối; số tiền rõ hơn nhãn, không tràn ngang/cắt nội dung.
+- Rà 11 trang: Tổng quan, Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ an toàn, Mục tiêu, Báo cáo, Cài đặt, Tài khoản dự kiến và Hồ sơ. Đã xem ảnh render desktop/tablet/mobile, kiểm khoảng cách nội dung và trigger responsive.
+- ESLint/Prettier phạm vi thay đổi, `git diff --check`, production build kèm TypeScript và kiến trúc **324 source / 0 vi phạm** đạt. Không chạy lại toàn bộ unit/database suite cho thay đổi CSS này.
+- Log: `artifacts/spacing-verified-tests.log`, `artifacts/spacing-verified-next.log`; ảnh: `artifacts/workspace-spacing/`; manifest `artifacts/spacing-source-manifest.json` xác nhận hai file CSS sản phẩm khớp production snapshot `browser-app-NS8GkC`.
+- Lượt trước đạt 14/15: Firefox trả khoảng cách 16px thành 15.999969px; đã đối chiếu lỗi/ảnh và cho phép sai số hình học 0,1px. Một lượt trung gian dừng để đưa sửa trigger desktop vào snapshot cuối; không tính lượt đó là bằng chứng hoàn tất.
+
+Đã cập nhật README, kiến trúc, UX và [đặc tả spacing](features/workspace-spacing-2026-11-04.md); đối chiếu catalog, cả hai landing và preview dữ liệu cố định. Kiểm chứng dùng PostgreSQL cô lập/Auth double/production snapshot, không ghi tài khoản thật, không deploy và không chứng minh cloud hoặc thiết bị vật lý. Các thay đổi khác diễn ra trong workspace được giữ nguyên; bằng chứng trên thuộc snapshot và phạm vi spacing đã nêu.

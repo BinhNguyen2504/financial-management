@@ -258,3 +258,7 @@ Mỗi sổ đọc bằng projection gọn, GET/preview dùng snapshot nhất qu�
 ## Nội dung và hướng dẫn tại chỗ — 04/11/2026
 
 Các trang có phần mở rộng giải thích cách bắt đầu và đọc số liệu; Tổng quan nêu rõ việc tiếp theo, tên quỹ và nguồn thu dùng ngôn ngữ gần gũi. Xem [hợp đồng nội dung và đối chiếu tác vụ](docs/features/friendly-content-2026-11-04.md). Không đổi API, schema, dữ liệu hoặc cách tính tiền.
+
+### Minh họa giao diện — 04/11/2026
+
+Bản xem thử dùng tên và thứ tự nội dung sát ứng dụng, sidebar gọn với một câu nhắn, năm thẻ Tổng quan có nút Mở sang từng sổ minh họa. Che tiền nằm trên thanh đầu; điện thoại giữ cuộn nội bộ. Đã rà catalog, copy hai landing và bản dịch; số liệu mẫu cố định, không đọc dữ liệu tài khoản. Xem [phạm vi minh họa](docs/features/landing.md#bố-cục-minh-họa-sát-ứng-dụng--04112026).
