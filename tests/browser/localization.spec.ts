@@ -240,7 +240,10 @@ test("English covers workspaces, Help and the public home while account names st
     const help = page.getByRole("dialog");
     await expect(help.locator(".help-section")).toHaveCount(6);
     expect(
-      (await help.innerText()).replaceAll("Tiếng Việt", "").normalize("NFD"),
+      (await help.innerText())
+        .replaceAll("Tiếng Việt", "")
+        .replaceAll("XÓA TOÀN BỘ", "")
+        .normalize("NFD"),
       route,
     ).not.toMatch(/[ĂăÂâĐđÊêÔôƠơƯư\u0300-\u036f]/u);
     await help.getByRole("button", { name: "Close", exact: true }).click();

@@ -173,10 +173,12 @@ test("context help preserves two underlying dialogs, unsaved values, focus and s
     "hidden",
   );
   await child.getByRole("button", { name: "Đóng", exact: true }).click();
+  await page.getByRole("button", { name: "Bỏ thay đổi", exact: true }).click();
   await expect(parent.getByLabel("Tên hũ", { exact: true })).toHaveValue(
     "Hũ bản nháp Help",
   );
   await parent.getByRole("button", { name: "Đóng", exact: true }).click();
+  await page.getByRole("button", { name: "Bỏ thay đổi", exact: true }).click();
   expect(
     await page.locator("body").evaluate((el) => el.style.overflow),
   ).not.toBe("hidden");

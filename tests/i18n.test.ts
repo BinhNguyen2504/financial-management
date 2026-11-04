@@ -187,7 +187,10 @@ describe("product messages and contextual content", () => {
         article.sections.map((s) => [s.id, s.items?.map((i) => i.id)]),
       ).toEqual(source.sections.map((s) => [s.id, s.items?.map((i) => i.id)]));
       expect(
-        JSON.stringify(article).replaceAll("Tiếng Việt", ""),
+        JSON.stringify(article)
+          .replaceAll("Tiếng Việt", "")
+          .replaceAll("XÓA TOÀN BỘ", "")
+          .normalize("NFD"),
         page,
       ).not.toMatch(/[ĂăÂâĐđÊêÔôƠơƯư\u0300-\u036f]/u);
       for (const task of article.sections.find((s) => s.id === "tasks")!.items!)

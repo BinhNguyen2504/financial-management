@@ -7,6 +7,6 @@ export const articles = translateConfig(
   (message) =>
     help[message as keyof typeof help] ??
     (message.startsWith("Sử dụng ")
-      ? help["Sử dụng {0}"].replace("{0}", message.slice(8))
+      ? help["Sử dụng {0}"].replace("{0}", fallback(message.slice(8)))
       : fallback(message)),
 );

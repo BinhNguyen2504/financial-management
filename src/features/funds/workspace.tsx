@@ -310,7 +310,7 @@ export function FundsWorkspace() {
                 <div className="fund-actions">
                   <button
                     className="expense-secondary"
-                    aria-label={`Xem ${tr(fundNames[f.id])}`}
+                    aria-label={tr("Xem {0}", { 0: tr(fundNames[f.id]) })}
                     onClick={() => setDetail(f.id)}
                   >
                     {tr("Chi tiết")}

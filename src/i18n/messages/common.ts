@@ -1,4 +1,5 @@
 export const common = {
+  "Xem {0}": "View {0}",
   "Mỗi mục có cách bắt đầu và giải thích số liệu. Nút Hướng dẫn mở các bước chi tiết, ngay cả khi đang nhập liệu.":
     "Each section explains how to start and read its figures. Help opens detailed steps, even while you are filling in a form.",
   "Bạn có thể bắt đầu từ đây": "You can start here",

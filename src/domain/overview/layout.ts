@@ -18,10 +18,7 @@ export const layoutSchema = z.strictObject({
   widgets: z
     .array(z.enum(widgetIds))
     .max(10)
-    .refine(
-      (v) => new Set(v).size === v.length,
-      "Thẻ thông tin không được trùng.",
-    ),
+    .refine((v) => new Set(v).size === v.length, "Widget không được trùng."),
   jarIds: z
     .array(z.uuid())
     .max(5)

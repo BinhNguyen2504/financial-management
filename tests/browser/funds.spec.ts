@@ -803,7 +803,9 @@ test("locations archive only at zero; canceled entries remain in history and lis
   for (let i = 0; i < 21; i++)
     await post(page, s.bank, "1", { note: `Khoản kiểm tra ${i}` });
   await page.reload();
-  await expect(page.locator(".fund-transaction")).toHaveCount(20);
+  await expect(page.locator(".fund-transaction")).toHaveCount(10);
+  await page.getByRole("button", { name: "Trang sau", exact: true }).click();
+  await expect(page.locator(".fund-transaction")).toHaveCount(10);
   await page.getByRole("button", { name: "Trang sau", exact: true }).click();
   await expect(page.locator(".fund-transaction")).toHaveCount(1);
   await page

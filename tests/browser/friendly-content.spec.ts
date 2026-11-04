@@ -130,6 +130,9 @@ test("every working page explains its figures in both languages and fits narrow 
     ]) {
       await go(page, route);
       await expect(page.locator(".page-guide summary")).toBeVisible();
+      await page.screenshot({
+        path: `${directory}/${route}-${width}-default.png`,
+      });
       await page.locator(".page-guide summary").click();
       await expect(page.locator(".page-guide-copy")).toContainText(
         "Bắt đầu thế nào",
