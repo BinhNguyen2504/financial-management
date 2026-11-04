@@ -628,8 +628,8 @@ export const help = {
   "Bản sao toàn tài khoản gồm dữ liệu nghiệp vụ và lịch sử, có các trường hồ sơ được hỗ trợ. File không mã hóa và **luôn chứa đầy đủ số tiền dù đang bật ẩn tiền**.":
     "A whole-account copy of business data and history, with supported profile fields. The file is unencrypted and **always contains full amounts even when amounts are hidden**.",
   "Khôi phục vào tài khoản trống": "Restore to an empty account",
-  "Nhập bản sao hợp lệ vào **tài khoản trống dữ liệu tài chính**. Xem các phân hệ và loại dữ liệu đang chặn ngay trong Cài đặt. Xóa/hủy từng giao dịch vẫn giữ sổ và lịch sử. Có thể dùng tài khoản trống khác hoặc chọn Làm trống dữ liệu tài chính sau khi lưu bản sao lưu và xác nhận xóa toàn bộ.":
-    "Import a valid backup into an **account with no financial data**. Settings lists the modules and data types preventing restore. Deleting or cancelling individual transactions retains books and history. Use another empty account or choose Clear financial data after saving a backup and confirming deletion of all financial data.",
+  "Nhập bản sao hợp lệ vào **tài khoản trống dữ liệu tài chính**. Trong Cài đặt, xem mục nào có dữ liệu hoặc trống; mở từng mục để xem sổ và lịch sử. Xóa/hủy từng giao dịch vẫn giữ sổ và lịch sử. Có thể dùng tài khoản trống khác hoặc chọn Làm trống dữ liệu tài chính sau khi lưu bản sao lưu và xác nhận xóa toàn bộ.":
+    "Import a valid backup into an **account with no financial data**. In Settings, see which modules have data or are empty, then expand a module to review its books and history. Deleting or cancelling individual transactions retains books and history. Use another empty account or choose Clear financial data after saving a backup and confirming deletion of all financial data.",
   "Khôi phục hồ sơ tùy chọn": "Optional profile restore",
   "Có thể nhập lại họ tên, ngày sinh và giới tính nếu chọn. Mặc định tắt; không thay email, token hoặc tài khoản đăng nhập.":
     "Optionally import full name, date of birth and gender. Off by default; email, tokens and sign-in identity do not change.",

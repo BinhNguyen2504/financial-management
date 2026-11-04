@@ -753,7 +753,7 @@ export const articles: HelpArticles = {
       term(
         "restore",
         "Khôi phục vào tài khoản trống",
-        "Nhập bản sao hợp lệ vào **tài khoản trống dữ liệu tài chính**. Xem các phân hệ và loại dữ liệu đang chặn ngay trong Cài đặt. Xóa/hủy từng giao dịch vẫn giữ sổ và lịch sử. Có thể dùng tài khoản trống khác hoặc chọn Làm trống dữ liệu tài chính sau khi lưu bản sao lưu và xác nhận xóa toàn bộ.",
+        "Nhập bản sao hợp lệ vào **tài khoản trống dữ liệu tài chính**. Trong Cài đặt, xem mục nào có dữ liệu hoặc trống; mở từng mục để xem sổ và lịch sử. Xóa/hủy từng giao dịch vẫn giữ sổ và lịch sử. Có thể dùng tài khoản trống khác hoặc chọn Làm trống dữ liệu tài chính sau khi lưu bản sao lưu và xác nhận xóa toàn bộ.",
       ),
       term(
         "profile-restore",

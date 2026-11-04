@@ -100,7 +100,9 @@ test("explains retained data and requires a saved backup before clearing and res
     name: "Khôi phục dữ liệu",
     exact: true,
   });
-  await restore.getByText(/^Thu nhập ·/).click();
+  await restore
+    .locator('.restore-blockers details[data-module="income"] > summary')
+    .click();
   await expect(restore).toContainText("Thu nhập phát sinh (kể cả đã xóa)");
   await expect(restore).toContainText(
     "Những thao tác này không làm tài khoản trống",
@@ -416,7 +418,9 @@ test("shows system and account blockers together, localizes diagnosis, and keeps
     exact: true,
   });
   await expect(translated).toContainText("This account already has data");
-  await translated.getByText(/^Income ·/).click();
+  await translated
+    .locator('.restore-blockers details[data-module="income"] > summary')
+    .click();
   await expect(translated).toContainText("Saved processing records");
   await expect(translated).toContainText("Restore is not enabled");
 });

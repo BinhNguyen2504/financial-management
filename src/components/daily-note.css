@@ -33,13 +33,13 @@
   grid-row: 1 / span 2;
   margin: 0;
   max-width: 72ch;
-  font-family:
-    "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-family: var(--font-quote), var(--font-nunito), serif;
   font-style: italic;
+  font-synthesis: none;
   font-weight: 400;
   font-size: clamp(20px, 1.25vw + 6px, 24px);
-  line-height: 1.5;
-  letter-spacing: -0.015em;
+  line-height: 1.65;
+  letter-spacing: normal;
   text-wrap: pretty;
   overflow-wrap: anywhere;
 }
@@ -48,7 +48,7 @@
 }
 .daily-note-placeholder {
   display: block;
-  min-height: 1.5em;
+  min-height: 1.65em;
 }
 .overview-widget .daily-note {
   margin: 0;

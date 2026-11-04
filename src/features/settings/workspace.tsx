@@ -77,15 +77,17 @@ export function SettingsWorkspace() {
       </header>
       <section className="settings-data" aria-labelledby="data-heading">
         <div className="settings-section-heading">
-          <h2 id="data-heading">{tr("Sao lưu và khôi phục")}</h2>
-          <HelpButton
-            pageId="settings"
-            sectionId="restore"
-            label={tr("Điều kiện khôi phục")}
-          />
+          <div className="settings-section-title">
+            <h2 id="data-heading">{tr("Sao lưu và khôi phục")}</h2>
+            <HelpButton
+              pageId="settings"
+              sectionId="restore"
+              label={tr("Điều kiện khôi phục")}
+            />
+          </div>
           <p>
             {tr(
-              "Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn — cùng toàn bộ lịch sử và các kỳ đã chốt.",
+              "Sao lưu toàn bộ dữ liệu tài chính, gồm cả Mục tiêu, lịch sử thay đổi và các kỳ đã chốt.",
             )}
           </p>
         </div>

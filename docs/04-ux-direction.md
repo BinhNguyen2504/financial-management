@@ -324,3 +324,7 @@ Bấm chỉ số mở dialog đối chiếu chỉ đọc, phân trang 20 dòng; 
 ## Lời nhắn có nhịp riêng — 02/11/2026
 
 Một chút bình yên là điểm nghỉ ngắn trước nội dung làm việc: câu serif nghiêng 18–24px, nhãn nhỏ và dấu ngoặc kép SVG, nền tint phẳng cùng theme, không emoji. Không cắt câu, không tự xoay theo giờ, không chiếm focus. Chuyển trang/reload đổi câu; thao tác trong trang giữ câu để tránh phân tâm. Việt/Anh cùng ID; tất cả theme dùng chung kho. Tổng quan giữ vị trí widget nếu đang bật, nếu không hiển thị đầu trang; luôn chỉ một câu. Preview công khai giữ câu cố định. Xem [quote](features/quotes.md).
+
+### Dấu tiếng Việt trong quote — 04/11/2026
+
+Thay chuỗi serif hệ thống bằng Noto Serif tải kèm đủ latin/vietnamese, dùng bản nghiêng thật 400. Bỏ ép sát khoảng chữ, nâng line-height lên 1.65, giữ cỡ 18–24px. Cùng quy tắc áp dụng ở dải đầu trang, widget Tổng quan và câu minh họa trong preview.

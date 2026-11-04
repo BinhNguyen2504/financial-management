@@ -122,3 +122,7 @@ Preview thành viên dùng hình cho cả năm module, khung tối đa 160px đ�
 ## Lời nhắn dùng chung giữa các theme — 02/11/2026
 
 Bộ bảy câu đổi theo ngày được thay bằng 200 câu tự viết Việt/Anh, tối đa 35 từ mỗi bản, dùng chung toàn bộ theme để tăng độ đa dạng. Theme chỉ đổi màu nền/nhãn/dấu ngoặc kép SVG; nội dung giữ ID khi đổi theme. Chữ serif nghiêng có vai trò riêng, không emoji hoặc animation. Chuyển trang/reload mới lấy câu tiếp theo. Các mô tả lời nhắn theo ngày trong lịch sử là hành vi trước thay đổi này. Xem [đặc tả quote](quotes.md).
+
+### Font quote tiếng Việt — 04/11/2026
+
+Noto Serif italic 400 với latin/vietnamese thay font serif sẵn có trên thiết bị. Dấu, khoảng chữ và khoảng dòng dùng cùng cấu hình trên năm theme; quote trong preview dùng cùng component. Xem [quote](quotes.md).

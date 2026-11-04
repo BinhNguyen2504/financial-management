@@ -284,6 +284,32 @@ test("quote typography, full text and contrast fit five themes, both languages a
   );
   await page.reload();
   expect(await quoteId(page)).toBe(longest.id);
+  // Load the real italic face with the complete catalog, including Vietnamese tone marks.
+  const font = await page.locator("main .daily-note blockquote").evaluate(
+    async (element, text) => {
+      const family = getComputedStyle(element).fontFamily.split(",")[0];
+      const loaded = await document.fonts.load(
+        `italic 400 20px ${family}`,
+        text,
+      );
+      return {
+        family,
+        faces: loaded.map((face) => ({
+          status: face.status,
+          style: face.style,
+          family: face.family,
+        })),
+      };
+    },
+    quotes.map((quote) => `${quote.vi} ${quote.en}`).join(" "),
+  );
+  expect(font.family).toMatch(/Noto[_ ]Serif/i);
+  expect(font.faces.length).toBeGreaterThanOrEqual(2);
+  for (const face of font.faces) {
+    expect(face.status).toBe("loaded");
+    expect(face.style).toBe("italic");
+    expect(face.family).toMatch(/Noto[_ ]Serif/i);
+  }
   for (const locale of ["vi", "en"] as const) {
     await page
       .getByRole("radio", {
@@ -347,7 +373,7 @@ test("quote typography, full text and contrast fit five themes, both languages a
           });
           expect(metrics.fit, `${theme}/${mode}/${width}`).toBe(true);
           expect(metrics.full).toBe(true);
-          expect(metrics.font).toContain("Georgia");
+          expect(metrics.font).toMatch(/Noto[_ ]Serif/i);
           expect(metrics.italic).toBe("italic");
           expect(metrics.size).toBeGreaterThanOrEqual(18);
           expect(metrics.textContrast).toBeGreaterThanOrEqual(4.5);

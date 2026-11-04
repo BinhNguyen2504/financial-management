@@ -231,3 +231,7 @@ Danh sách giao dịch và chi tiết ba quỹ dùng nút bút/thùng rác 44×4
 ## Lời nhắn truyền cảm hứng — 02/11/2026
 
 Không gian ứng dụng có 200 lời nhắn tự viết Việt/Anh, mỗi bản tối đa 35 từ. Câu đổi khi chuyển trang hoặc reload, không lặp trước khi dùng hết kho; đổi ngôn ngữ chỉ đổi bản dịch. Chữ serif nghiêng, dấu ngoặc kép SVG và nền nhẹ theo theme tạo điểm nhấn, không dùng emoji. Tổng quan giữ widget lời nhắn đã chọn; nếu tắt widget, câu nằm ở đầu trang. Lượt đọc chỉ lưu theo tab, ngoài dữ liệu tài chính và backup; storage bị chặn thì không bảo đảm nhớ qua reload. Preview công khai dùng một câu cố định. Xem [đặc tả quote](docs/features/quotes.md).
+
+### Font quote tiếng Việt — 04/11/2026
+
+Quote dùng Noto Serif với bộ latin/vietnamese và bản nghiêng thật được phục vụ cùng ứng dụng. Khoảng chữ tự nhiên và dòng thoáng hơn giúp chữ có dấu dễ đọc, đồng nhất ở dải quote, widget Tổng quan và preview.

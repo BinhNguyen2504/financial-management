@@ -1,4 +1,21 @@
 export const settings = {
+  "Sao lưu toàn bộ dữ liệu tài chính, gồm cả Mục tiêu, lịch sử thay đổi và các kỳ đã chốt.":
+    "Back up all financial data, including Goals, change history and closed periods.",
+  "Khôi phục chỉ áp dụng cho tài khoản trống.":
+    "Restore is available only for an empty account.",
+  "1 mục có dữ liệu": "1 module with data",
+  "{0} mục có dữ liệu": "{0} modules with data",
+  "1 mục trống": "1 empty module",
+  "{0} mục trống": "{0} empty modules",
+  "Có dữ liệu": "Has data",
+  "1 bản ghi lưu trữ": "1 stored record",
+  "{0} bản ghi lưu trữ": "{0} stored records",
+  "Gồm sổ, cấu hình và lịch sử; không phải số giao dịch.":
+    "Includes books, configuration and history; these are not transaction counts.",
+  "Vì sao tài khoản vẫn có dữ liệu?": "Why does this account still have data?",
+  "Để tiếp tục khôi phục": "To continue restoring",
+  "Dùng tài khoản trống khác để giữ dữ liệu hiện tại, hoặc lưu bản sao lưu rồi làm trống tài khoản này.":
+    "Use another empty account to keep the current data, or save a backup before clearing this account.",
   "Chưa thể làm trống vì hệ thống chưa cấp đủ quyền xử lý. Dữ liệu chưa bị xóa; hãy tải lại trang sau khi hệ thống được cập nhật.":
     "Data could not be cleared because the system lacks the required access. Your data was not deleted; reload after the system has been updated.",
   "Tải lại trang": "Reload page",

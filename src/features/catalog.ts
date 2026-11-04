@@ -204,6 +204,7 @@ export const modules = [
       "Tiếng Việt/English với định dạng vi-VN/en-GB; cùng tiền VND và giờ Việt Nam",
       "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt",
       "Sao lưu toàn bộ dữ liệu; giải thích dữ liệu chặn khôi phục, làm trống có xác nhận và khôi phục vào tài khoản trống; hồ sơ tùy chọn",
+      "Trạng thái từng mục khi khôi phục; mở chi tiết sổ và lịch sử khi cần",
       "Thêm vào màn hình chính trên thiết bị có hỗ trợ",
     ],
     questions: [],

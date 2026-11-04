@@ -14,7 +14,7 @@ Mỗi trang trong không gian ứng dụng có một lời nhắn. Kho gồm **2
 
 Dải quote nằm trước nội dung chính. Riêng Tổng quan, widget `peace` đã bật trong bố cục đang xem sẽ chứa câu đó; nếu widget tắt thì hiện đầu trang. Không sửa schema, mặc định, thứ tự hay bố cục tài khoản để đặt quote. Xem thử/Hủy chỉ chuyển vị trí, không lấy câu mới. Chờ biết bố cục trước khi hiện; lỗi đọc cấu hình hiện quote ở đầu trang, thử lại thành công có thể đưa về widget mà vẫn giữ câu.
 
-Chữ serif nghiêng có vai trò riêng, dấu ngoặc kép SVG trang trí và nền tint phẳng theo theme. Màu chữ dùng token; không có emoji, gradient, ticker, timer hoặc animation tự chạy. Text xuống dòng đầy đủ, không cắt chữ. Nhãn của dải được lược trong widget vì header đã có cùng tên. SSR/client đầu dùng cùng khung chờ; chọn câu sau mount, không random trong render. Không tự nhận focus hoặc dùng live region.
+Chữ Noto Serif nghiêng có vai trò riêng, tải kèm ứng dụng qua next/font với bộ latin/vietnamese và bản italic 400 thật. Khoảng chữ tự nhiên, line-height 1.65 để dấu tiếng Việt có khoảng thở; không tổng hợp chữ nghiêng. Dấu ngoặc kép SVG trang trí và nền tint phẳng theo theme. Màu chữ dùng token; không có emoji, gradient, ticker, timer hoặc animation tự chạy. Text xuống dòng đầy đủ, không cắt chữ. Nhãn của dải được lược trong widget vì header đã có cùng tên. SSR/client đầu dùng cùng khung chờ; chọn câu sau mount, không random trong render. Không tự nhận focus hoặc dùng live region.
 
 Trang giới thiệu không tham gia lượt đọc. Bên trong phần xem thử ứng dụng có đúng một câu minh họa cố định, dịch Việt/Anh, không thay khi chuyển tab minh họa hoặc reload. Trang đăng nhập không hiển thị quote. Không đọc API tài chính để chọn nội dung.
 

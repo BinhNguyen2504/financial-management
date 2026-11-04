@@ -260,3 +260,7 @@ Help giới hạn nút giải thích theo chiều rộng vùng chứa. Header mo
 ## Hệ thống quote theo điều hướng — 02/11/2026
 
 QuoteProvider trong AppShell quản lý một controller mỗi document bằng useSyncExternalStore. Catalog tĩnh gồm 200 cặp vi/en; effect pathname chọn một câu, effect lặp không làm tiến thêm. SSR và hydration đầu đều có snapshot null. SessionStorage chỉ lưu ID/phiên bản/lượt xáo trộn; lỗi storage dùng bộ nhớ, bfcache khôi phục đọc lại tiến độ của tab. Không API, database, cache tài chính hoặc thay guard pageAccess. Card trình bày tách khỏi controller để preview công khai dùng copy cố định mà không đọc browser storage hay API. Tổng quan quyết định vị trí theo layout đang xem, giữ nguyên widget peace và cấu hình tài khoản. Xem [quote](features/quotes.md).
+
+### Font quote được tải kèm — 04/11/2026
+
+QuoteCard khai báo Noto Serif qua next/font/google, chỉ weight 400/italic, preload latin và vietnamese. CSS variable nằm trên blockquote; font tải cùng static assets, không gửi request đến Google từ trình duyệt. Không phụ thuộc font serif của hệ điều hành. Giữ Nunito cho giao diện và fallback; font-synthesis none, letter-spacing normal và line-height 1.65.

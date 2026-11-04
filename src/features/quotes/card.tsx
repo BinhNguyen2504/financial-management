@@ -1,8 +1,17 @@
 "use client";
 
 import { useI18n } from "@/i18n/provider";
+import { Noto_Serif } from "next/font/google";
 import type { Quote } from "./catalog";
 import "@/components/daily-note.css";
+
+const quoteFont = Noto_Serif({
+  weight: "400",
+  style: "italic",
+  subsets: ["latin", "vietnamese"],
+  display: "swap",
+  variable: "--font-quote",
+});
 
 /** Shared presentation; previews pass fixed copy without the session provider. */
 export function QuoteCard({
@@ -35,7 +44,7 @@ export function QuoteCard({
       >
         <path d="M2 21C2 10 7 4 17 2v5C11 9 9 12 9 17h8v17H2V21Zm21 0C23 10 28 4 38 2v5c-6 2-8 5-8 10h8v17H23V21Z" />
       </svg>
-      <blockquote className="daily-note-message">
+      <blockquote className={`${quoteFont.variable} daily-note-message`}>
         {quote ? (
           quote[locale]
         ) : (

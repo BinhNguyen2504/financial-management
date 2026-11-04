@@ -95,8 +95,8 @@ export const landing = {
     "Sign in with an 8-digit code sent to your email. The code is single-use and valid for 30 minutes. Choose a section to manage first; Help beside the page title explains the terms and each step.",
   "Tôi có thể tự giữ bản sao dữ liệu không?":
     "Can I keep my own copy of my data?",
-  "Có. Trong Cài đặt, tải bản sao lưu và khôi phục vào tài khoản trống. Ứng dụng giải thích dữ liệu đang chặn khôi phục; bạn có thể làm trống tài khoản sau khi tải bản sao lưu và xác nhận xóa. File không có mật khẩu; hãy giữ ở nơi an toàn.":
-    "Yes. In Settings, download a backup and restore into an empty account. The app explains which data prevents restore; you can clear your account after downloading a backup and confirming deletion. The file has no password; keep it somewhere safe.",
+  "Có. Trong Cài đặt, tải bản sao lưu và khôi phục vào tài khoản trống. Xem trạng thái từng mục và mở chi tiết dữ liệu khi cần; bạn có thể làm trống tài khoản sau khi tải bản sao lưu và xác nhận xóa. File không có mật khẩu; hãy giữ ở nơi an toàn.":
+    "Yes. In Settings, download a backup and restore into an empty account. Review each module’s status and expand its details when needed; you can clear your account after downloading a backup and confirming deletion. The file has no password; keep it somewhere safe.",
   "Có thể dùng tiếng Anh không?": "Can I use English?",
   "Có dùng được trên điện thoại không?": "Does it work on a phone?",
   "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu.":
@@ -273,8 +273,8 @@ export const landing = {
   "Có thể dùng trên điện thoại không?": "Can I use it on a phone?",
   "Nếu mất tài khoản, tôi có thể lấy lại dữ liệu không?":
     "Can I recover my data if I lose my account?",
-  "Trong Cài đặt, bạn có thể tải bản sao lưu toàn bộ dữ liệu và khôi phục vào tài khoản trống. Nếu tài khoản có dữ liệu, ứng dụng chỉ rõ mục đang chặn. Bạn có thể làm trống tài khoản hiện tại sau khi tải bản sao lưu, xác nhận đã lưu và xác nhận xóa toàn bộ. File không mật khẩu; hãy giữ ở nơi an toàn. Hồ sơ cá nhân được khôi phục nếu bạn chọn.":
-    "In Settings, download a full backup and restore into an empty account. If the account has data, the app identifies what prevents restore. You can clear this account after downloading a backup, confirming it is saved and confirming deletion of all financial data. The file has no password; keep it somewhere safe. Profile restoration is optional.",
+  "Trong Cài đặt, bạn có thể tải bản sao lưu toàn bộ dữ liệu và khôi phục vào tài khoản trống. Nếu tài khoản có dữ liệu, bạn có thể xem trạng thái từng mục và mở chi tiết khi cần. Bạn có thể làm trống tài khoản hiện tại sau khi tải bản sao lưu, xác nhận đã lưu và xác nhận xóa toàn bộ. File không mật khẩu; hãy giữ ở nơi an toàn. Hồ sơ cá nhân được khôi phục nếu bạn chọn.":
+    "In Settings, download a full backup and restore into an empty account. If the account has data, review each module’s status and expand its details when needed. You can clear this account after downloading a backup, confirming it is saved and confirming deletion of all financial data. The file has no password; keep it somewhere safe. Profile restoration is optional.",
   "Ứng dụng đã hoàn thiện chưa?": "Is the app finished?",
   "Chưa. Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn đã có trong phiên bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản phẩm.":
     "Not yet. Income, Expenses, Savings, Investments and Safety funds are available in the current version; other parts are still being built. The introduction is reviewed and updated alongside product changes.",

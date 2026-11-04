@@ -316,7 +316,7 @@ export function ThemedLanding() {
             </summary>
             <p>
               {tr(
-                "Trong Cài đặt, bạn có thể tải bản sao lưu toàn bộ dữ liệu và khôi phục vào tài khoản trống. Nếu tài khoản có dữ liệu, ứng dụng chỉ rõ mục đang chặn. Bạn có thể làm trống tài khoản hiện tại sau khi tải bản sao lưu, xác nhận đã lưu và xác nhận xóa toàn bộ. File không mật khẩu; hãy giữ ở nơi an toàn. Hồ sơ cá nhân được khôi phục nếu bạn chọn.",
+                "Trong Cài đặt, bạn có thể tải bản sao lưu toàn bộ dữ liệu và khôi phục vào tài khoản trống. Nếu tài khoản có dữ liệu, bạn có thể xem trạng thái từng mục và mở chi tiết khi cần. Bạn có thể làm trống tài khoản hiện tại sau khi tải bản sao lưu, xác nhận đã lưu và xác nhận xóa toàn bộ. File không mật khẩu; hãy giữ ở nơi an toàn. Hồ sơ cá nhân được khôi phục nếu bạn chọn.",
               )}
             </p>
           </AnimatedDetails>

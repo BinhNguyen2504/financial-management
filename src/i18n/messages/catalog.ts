@@ -1,4 +1,6 @@
 export const catalog = {
+  "Trạng thái từng mục khi khôi phục; mở chi tiết sổ và lịch sử khi cần":
+    "Restore status by module; expand books and history when needed",
   "200 lời nhắn Việt/Anh, tối đa 35 từ; đổi khi chuyển trang hoặc tải lại":
     "200 notes in Vietnamese and English, up to 35 words; a fresh one on navigation or reload",
   "Xem trước kế hoạch và giao dịch, quay lại chỉnh rồi xác nhận lưu":

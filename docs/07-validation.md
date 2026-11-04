@@ -1090,3 +1090,17 @@ Tất cả bằng chứng trên là local, dùng PostgreSQL cô lập và Auth c
 Đã rà/cập nhật catalog, Help vi/en, README, kiến trúc/UX, tài liệu theme/Tổng quan và đặc tả quote. Preview dùng chung cho landing khách/thành viên có một câu cố định, không thay khi chuyển tab hoặc reload và không tham gia session quote; caption giải thích rõ dữ liệu minh họa. Không thay API/schema/migration hay bố cục tài khoản đã lưu.
 
 Tất cả kiểm chứng là local; browser dùng production build tách riêng, PostgreSQL cô lập và Auth contract double. Không ghi/reset dữ liệu cloud, không deploy hoặc gửi email thật. Các bằng chứng này không xác nhận Supabase Auth/RLS cloud hoặc thiết bị vật lý.
+
+## Font quote cho tiếng Việt — 04/11/2026
+
+Thay chuỗi Iowan/Palatino/Book Antiqua/Georgia theo hệ điều hành bằng Noto Serif được next/font tải và phục vụ cùng ứng dụng. Chỉ dùng italic 400 thật, preload latin/vietnamese, font-synthesis none; bỏ khoảng chữ âm và tăng line-height từ 1.5 lên 1.65. Áp dụng qua QuoteCard ở dải đầu trang, widget peace và preview cố định, giữ nền/theme/SVG và cơ chế đổi câu.
+
+- Nguồn font: [metadata chính thức Google Fonts](https://raw.githubusercontent.com/google/fonts/main/ofl/notoserif/METADATA.pb) xác nhận italic, weight 400 và bộ vietnamese. API font đối chiếu với tài liệu Next.js trong bản đã cài trước khi sửa.
+- `npm run check`: **329/329 unit tests**, **312 source files / 0 architecture violations**, lint/format/typecheck/production build PASS trên snapshot của lượt này. Log `artifacts/quote-font-check-2026-11-04.log`.
+- Browser: **30/30 PASS**, sáu ca quote qua Chromium desktop/mobile, Firefox desktop, WebKit desktop và WebKit/iPhone mô phỏng. Log `artifacts/quote-font-browser-2026-11-04.log`; last-run có status passed và không failed tests. Giữ toàn bộ kiểm tra điều hướng, quote ID, placement, persistence và preview trước đây.
+- Kiểm typography đã được nâng từ kiểm tên Georgia trong CSS sang tải font thật bằng document.fonts.load với đủ nội dung 200 cặp Việt/Anh: ít nhất hai face latin/vietnamese trả trạng thái loaded, style italic và family Noto Serif. Không chỉ suy luận từ font-family được khai báo.
+- Kiểm đủ 500 tổ hợp theme/mode/locale/viewport như bộ quote trước; text/caption đạt tương phản 4.5:1, nội dung không cắt/tràn, cỡ chữ tối thiểu 18px. Có chữ phóng 125% và reduced motion. Đã xem ảnh mới ở 390/768/1440px và WebKit mobile; ảnh trong `artifacts/quote-font-browser-2026-11-04/`, bản chọn `artifacts/quote-font-vietnamese-2026-11-04.png`.
+- Source design lint của card/CSS: 0 FAIL / 0 WARN. Không dùng lại inspector specimen font hệ thống cũ làm bằng chứng font mới.
+- Đối chiếu 398 file src/public với production snapshot: các file quote khớp. Bốn file Settings thay đổi đồng thời sau lúc tạo snapshot (`settings.css`, `restore-status.tsx`, `workspace.tsx`, `messages/settings.ts`), nằm ngoài thay đổi quote; không coi lượt này là kiểm chứng tích hợp toàn bộ workspace mới nhất. Report `artifacts/quote-font-source-2026-11-04.json`.
+
+Đã cập nhật README, đặc tả quote, kiến trúc/UX và tài liệu theme; rà catalog/copy landing không có mô tả font cần sửa, preview tự nhận font từ card chung. Các kiểm tra là local với PostgreSQL cô lập/Auth double; không deploy hoặc thay dữ liệu cloud, không kiểm thiết bị vật lý. Lịch sử kiểm chứng quote ngày 02/11 được giữ nguyên.
