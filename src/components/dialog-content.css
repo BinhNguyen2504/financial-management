@@ -478,3 +478,29 @@
 .dialog-collection-compact .dialog-list-start > h3 {
   display: none;
 }
+
+/* Optional mobile disclosure keeps the first rows in view; desktop retains inline filters. */
+.dialog-collection .dialog-filters-toggle {
+  display: none;
+}
+.dialog-collection .dialog-filter-fields {
+  display: contents;
+}
+@media (max-width: 640px) {
+  .dialog-collection .dialog-filters-toggle {
+    display: inline-flex;
+    font-size: var(--font-size-14);
+  }
+  .dialog-collection .dialog-filter-fields {
+    display: none;
+  }
+  .dialog-collection .dialog-filter-fields[data-open="true"] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    flex-basis: 100%;
+  }
+  .dialog-collection .dialog-filter-fields > label:first-child {
+    grid-column: 1/-1;
+  }
+}

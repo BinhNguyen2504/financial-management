@@ -198,6 +198,7 @@ export function DialogList<T>({
   empty = "Chưa có dữ liệu.",
   label = "Danh sách",
   renderItem,
+  filterDisclosure = false,
 }: {
   items: T[];
   rowKey: (item: T) => string;
@@ -208,9 +209,12 @@ export function DialogList<T>({
   empty?: string;
   label?: string;
   renderItem?: (item: T) => ReactNode;
+  filterDisclosure?: boolean;
 }) {
   const { t: tr } = useI18n();
 
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filterId = useId();
   const [query, setQuery] = useState("");
   const [values, setValues] = useState<Record<string, string>>({});
   const [from, setFrom] = useState("");
@@ -244,6 +248,62 @@ export function DialogList<T>({
     start.current?.focus({ preventScroll: true });
     start.current?.scrollIntoView({ block: "start" });
   }
+  const activeFilterCount =
+    Object.values(values).filter(Boolean).length +
+    Number(Boolean(from)) +
+    Number(Boolean(to));
+  const filterControls = (
+    <>
+      {filters.map((filter, index) => (
+        <label key={filter.id ?? index}>
+          {filter.label}
+          <select
+            value={values[filter.id ?? String(index)] ?? filter.initial ?? ""}
+            onChange={(e) => {
+              setValues({
+                ...values,
+                [filter.id ?? String(index)]: e.target.value,
+              });
+              setPage(0);
+            }}
+          >
+            {filter.options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ))}
+      {getDate && (
+        <>
+          <label>
+            {tr("Từ ngày")}
+            <input
+              type="date"
+              value={from}
+              onChange={(e) => {
+                setFrom(e.target.value);
+                setPage(0);
+              }}
+            />
+          </label>
+          <label>
+            {tr("Đến ngày")}
+            <input
+              type="date"
+              value={to}
+              min={from || undefined}
+              onChange={(e) => {
+                setTo(e.target.value);
+                setPage(0);
+              }}
+            />
+          </label>
+        </>
+      )}
+    </>
+  );
   return (
     <div
       className={`dialog-collection${renderItem ? " dialog-collection-compact" : ""}`}
@@ -267,55 +327,28 @@ export function DialogList<T>({
               />
             </label>
           )}
-          {filters.map((filter, index) => (
-            <label key={filter.id ?? index}>
-              {filter.label}
-              <select
-                value={
-                  values[filter.id ?? String(index)] ?? filter.initial ?? ""
-                }
-                onChange={(e) => {
-                  setValues({
-                    ...values,
-                    [filter.id ?? String(index)]: e.target.value,
-                  });
-                  setPage(0);
-                }}
-              >
-                {filter.options.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ))}
-          {getDate && (
+          {filterDisclosure ? (
             <>
-              <label>
-                {tr("Từ ngày")}
-                <input
-                  type="date"
-                  value={from}
-                  onChange={(e) => {
-                    setFrom(e.target.value);
-                    setPage(0);
-                  }}
-                />
-              </label>
-              <label>
-                {tr("Đến ngày")}
-                <input
-                  type="date"
-                  value={to}
-                  min={from || undefined}
-                  onChange={(e) => {
-                    setTo(e.target.value);
-                    setPage(0);
-                  }}
-                />
-              </label>
+              <button
+                type="button"
+                className="expense-secondary dialog-filters-toggle"
+                aria-expanded={filtersOpen}
+                aria-controls={filterId}
+                onClick={() => setFiltersOpen(!filtersOpen)}
+              >
+                {tr("Bộ lọc giao dịch")}
+                {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
+              </button>
+              <div
+                id={filterId}
+                className="dialog-filter-fields"
+                data-open={filtersOpen}
+              >
+                {filterControls}
+              </div>
             </>
+          ) : (
+            filterControls
           )}
         </div>
         <p className="dialog-result-count" role="status">
@@ -435,8 +468,10 @@ export function DialogList<T>({
 export function DialogChanges({
   rows,
   numeric = false,
+  subjectLabel,
 }: {
   numeric?: boolean;
+  subjectLabel?: string;
   rows: {
     key: string;
     label: string;
@@ -475,7 +510,7 @@ export function DialogChanges({
         ...(changedRows.some((r) => r.subject)
           ? [
               {
-                label: tr("Hũ"),
+                label: subjectLabel ?? tr("Hũ"),
                 render: (r: (typeof rows)[number]) => r.subject ?? "—",
               },
             ]

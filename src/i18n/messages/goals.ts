@@ -1,4 +1,40 @@
 export const goals = {
+  "Khi bạn muốn thay đổi mục tiêu cần ưu tiên trước.":
+    "When you want to change which goals come first.",
+  "Chọn Sắp xếp ưu tiên cạnh bộ lọc để mở toàn bộ danh sách.":
+    "Select Arrange priorities beside the filters to open the complete list.",
+  "Dùng nút lên/xuống ở từng dòng; xem trước vị trí cũ và mới rồi xác nhận lưu.":
+    "Use the up/down buttons on each row; preview old and new positions, then confirm saving.",
+  "Kết quả: Bộ lọc không giới hạn danh sách sắp xếp. Hủy thay đổi không ghi dữ liệu.":
+    "Result: filters do not limit the priority list. Cancelling changes does not write data.",
+  "Sửa hoặc hủy giao dịch": "Correct or cancel a transaction",
+  "Khi một khoản ghi trong sổ riêng cần điều chỉnh.":
+    "When an entry in a separate ledger needs to be corrected.",
+  "Mở Chi tiết, chọn tab Giao dịch; dùng biểu tượng bút để sửa hoặc thùng rác để hủy.":
+    "Open Details and select Transactions; use the pencil to correct or the bin to cancel.",
+  "Nhập lý do, xem trước thay đổi rồi xác nhận lưu.":
+    "Enter a reason, preview changes, then confirm saving.",
+  "Kết quả: Lịch sử được giữ lại; đóng biểu mẫu sẽ trở về tab đang xem.":
+    "Result: history is retained; closing the editor returns to the active tab.",
+
+  "Sắp xếp ưu tiên": "Arrange priorities",
+  "Tìm và sắp xếp mục tiêu": "Find and arrange goals",
+  "Tên hoặc ghi chú": "Name or note",
+  "{0} / {1} mục tiêu": "{0} / {1} goals",
+  "Thử tên khác hoặc đặt lại bộ lọc để xem các mục tiêu đang theo đuổi.":
+    "Try another name or reset filters to see active and paused goals.",
+  "Tiến độ": "Progress",
+  "Kế hoạch góp": "Contribution plan",
+  "Quản lý mục tiêu": "Manage goal",
+  "Tất cả loại giao dịch": "All transaction types",
+  "Thứ tự ưu tiên": "Priority order",
+  "{0} ở vị trí {1} / {2}.": "{0} is at position {1} / {2}.",
+  "Sắp xếp toàn bộ mục tiêu, kể cả mục đang ẩn bởi bộ lọc. Thay đổi chỉ được lưu sau khi xem trước và xác nhận.":
+    "Arrange all goals, including those hidden by filters. Changes are saved only after a preview and confirmation.",
+  "Danh sách mục tiêu đã thay đổi. Dùng danh sách mới nhất rồi sắp xếp lại.":
+    "The goal list has changed. Use the latest list and arrange it again.",
+  "Dùng thứ tự mới nhất": "Use latest order",
+
   "Các cột mốc có thể trùng nguồn; không cộng tiến độ thành tổng tài sản. Sổ riêng độc lập với các module khác.":
     "Milestones may share sources; progress must not be added into total assets. Separate ledgers are independent of other modules.",
   "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Xem trước thay đổi, quay lại điều chỉnh rồi xác nhận lưu trong ứng dụng.":

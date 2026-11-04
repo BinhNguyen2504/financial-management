@@ -230,6 +230,10 @@ Dialog có tiến trình hai bước luôn hiển thị: tạo bản sao lưu �
 
 /goals có mục tiêu chi dùng và cột mốc tài chính; liên kết nguồn hoặc sổ góp riêng, ưu tiên và kế hoạch góp. Có góp/rút/chuyển, sửa/hủy giữ lịch sử, hoàn thành/tạm dừng/lưu trữ. Backup V3 chứa Goals, nhận V1/V2. Chưa thêm Tổng quan. Xem [đặc tả](docs/features/goals.md), [migration](supabase/migrations/202610300002_goals.sql) và [kiểm chứng](docs/07-validation.md).
 
+Bố cục 05/11/2026: bộ lọc gọn, chi tiết tách tiến độ/kế hoạch/số dư, giao dịch dùng biểu tượng sửa/hủy. Nút **Sắp xếp ưu tiên** mở toàn bộ danh sách, chỉnh nhiều vị trí rồi xem trước/xác nhận một lần. Giữ năm theme và Việt/Anh. Xem [chi tiết thay đổi và kiểm chứng](docs/features/goals-layout-2026-11-05.md).
+
+Bộ mẫu review 05/11/2026: `npm run data:goals:review -- --owner <USER_UID>` chuẩn bị backup/package; `--file <package>/sample-data.json --apply` nạp nguyên tử qua runtime/RLS. Có 13 case khi đủ nguồn, giữ dữ liệu các module khác và các chỉnh sửa khi chạy lại. Reset chờ chốt UI/UX. Xem [hướng dẫn](docs/features/goals-review-data.md).
+
 ## Cột giao dịch Quỹ an toàn — 02/11/2026
 
 Danh sách giao dịch và chi tiết ba quỹ dùng nút bút/thùng rác 44×44px để sửa/hủy, có tooltip và tên trợ năng vi/en. Tiền căn phải, giữa dọc hàng trên desktop; màn hình hẹp đưa thao tác xuống hàng riêng, hai nút vẫn cạnh nhau. Giữ xem trước/xác nhận và lịch sử. Catalog, landing copy và preview minh họa đã được đối chiếu; dữ liệu preview cố định. Xem [đặc tả](docs/features/funds.md) và [kiểm chứng local](docs/07-validation.md).
@@ -262,3 +266,5 @@ Các trang có phần mở rộng giải thích cách bắt đầu và đọc s�
 ### Minh họa giao diện — 04/11/2026
 
 Bản xem thử dùng tên và thứ tự nội dung sát ứng dụng, sidebar gọn với một câu nhắn, năm thẻ Tổng quan có nút Mở sang từng sổ minh họa. Che tiền nằm trên thanh đầu; điện thoại giữ cuộn nội bộ. Đã rà catalog, copy hai landing và bản dịch; số liệu mẫu cố định, không đọc dữ liệu tài khoản. Xem [phạm vi minh họa](docs/features/landing.md#bố-cục-minh-họa-sát-ứng-dụng--04112026).
+
+Rà cuối 05/11/2026: preview dùng chung thứ tự menu với ứng dụng; nút Mở hỗ trợ Việt/Anh và trả focus về tab tương ứng. Bằng chứng local được ghi riêng tại [validation](docs/07-validation.md).

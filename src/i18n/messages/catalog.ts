@@ -1,4 +1,6 @@
 export const catalog = {
+  "Đặt số tiền cần đạt, hạn và sắp xếp ưu tiên có xem trước":
+    "Set a target, deadline and preview priority changes",
   "Xây Emergency, Rainy Day và Sinking từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.":
     "Build Emergency, Rainy Day and Sinking funds from living costs, with illustrations reflecting reserve progress.",
   "Trạng thái từng mục khi khôi phục; mở chi tiết sổ và lịch sử khi cần":

@@ -3,7 +3,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PageGuide } from "@/features/help/page-guide";
 import { useViewState } from "@/components/use-view-state";
 import { useState } from "react";
-import { ArrowDown, ArrowUp, Plus } from "lucide-react";
+import { ArrowDownUp, Plus, RotateCw } from "lucide-react";
 import { useMoney } from "@/components/privacy";
 import { useToast } from "@/components/toast";
 import { LoadingStatus } from "@/components/loading";
@@ -62,14 +62,6 @@ function Workspace({
           .includes(query.toLocaleLowerCase()),
     );
   const selected = view?.book?.goals.find((g) => g.id === detail);
-  const move = (id: string, direction: number) => {
-    const ids = all.map((g) => g.id),
-      i = ids.indexOf(id),
-      j = i + direction;
-    if (j < 0 || j >= ids.length) return;
-    [ids[i], ids[j]] = [ids[j], ids[i]];
-    setEditor({ type: "reorder", ids });
-  };
   function saved(next?: NonNullable<typeof view>) {
     setEditor(null);
     toast("success", tr("Đã lưu thay đổi"));
@@ -135,50 +127,81 @@ function Workspace({
             </section>
           ) : (
             <>
-              <div className="goal-filters">
-                <label>
-                  {tr("Tìm mục tiêu")}
-                  <input
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                </label>
-                <label>
-                  {tr("Trạng thái")}
-                  <select
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                  >
-                    <option value="following">
-                      {tr("Đang theo đuổi và tạm dừng")}
-                    </option>
-                    <option value="all">{tr("Tất cả")}</option>
-                    {Object.entries(statusNames).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {tr(label)}
+              <section
+                className="goal-toolbar"
+                aria-label={tr("Tìm và sắp xếp mục tiêu")}
+              >
+                <div className="goal-filters">
+                  <label className="goal-search">
+                    {tr("Tìm mục tiêu")}
+                    <input
+                      type="search"
+                      value={query}
+                      placeholder={tr("Tên hoặc ghi chú")}
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                  </label>
+                  <label>
+                    {tr("Trạng thái")}
+                    <select
+                      value={filter}
+                      onChange={(e) => setFilter(e.target.value)}
+                    >
+                      <option value="following">
+                        {tr("Đang theo đuổi và tạm dừng")}
                       </option>
-                    ))}
-                  </select>
-                </label>
-                <button
-                  className="expense-secondary"
-                  onClick={() => void reload().catch(() => {})}
-                >
-                  {tr("Tải lại")}
-                </button>
-              </div>
-              {(query || filter !== "following") && (
-                <button
-                  className="expense-secondary"
-                  onClick={() => {
-                    setQuery("");
-                    setFilter("following");
-                  }}
-                >
-                  {tr("Đặt lại bộ lọc")}
-                </button>
-              )}
+                      <option value="all">{tr("Tất cả")}</option>
+                      {Object.entries(statusNames).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {tr(label)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    className="expense-icon-button goal-reload"
+                    aria-label={tr("Tải lại")}
+                    title={tr("Tải lại")}
+                    onClick={() => void reload().catch(() => {})}
+                  >
+                    <RotateCw size={18} aria-hidden="true" />
+                  </button>
+                </div>
+                <div className="goal-toolbar-bottom">
+                  <p className="goal-result-count" role="status">
+                    {tr("{0} / {1} mục tiêu", {
+                      0: goals.length,
+                      1: all.length,
+                    })}
+                  </p>
+                  <div className="goal-toolbar-actions">
+                    {(query || filter !== "following") && (
+                      <button
+                        className="expense-secondary"
+                        onClick={() => {
+                          setQuery("");
+                          setFilter("following");
+                        }}
+                      >
+                        {tr("Đặt lại bộ lọc")}
+                      </button>
+                    )}
+                    <button
+                      className="expense-secondary"
+                      disabled={all.length < 2}
+                      onClick={() =>
+                        setEditor({
+                          type: "reorder",
+                          ids: all.map((g) => g.id),
+                        })
+                      }
+                    >
+                      <ArrowDownUp size={17} aria-hidden="true" />
+                      {tr("Sắp xếp ưu tiên")}
+                    </button>
+                  </div>
+                </div>
+              </section>
               <div className="goal-grid">
                 {goals.map((g) => {
                   const s = view.states.find((s) => s.id === g.id)!;
@@ -267,30 +290,31 @@ function Workspace({
                         >
                           {tr("Chi tiết")}
                         </button>
-                        <div className="goal-order">
-                          <button
-                            className="expense-icon-button"
-                            disabled={g.rank === 0}
-                            aria-label={tr("Ưu tiên {0} lên", { 0: g.name })}
-                            onClick={() => move(g.id, -1)}
-                          >
-                            <ArrowUp size={16} />
-                          </button>
-                          <button
-                            className="expense-icon-button"
-                            disabled={g.rank === all.length - 1}
-                            aria-label={tr("Ưu tiên {0} xuống", { 0: g.name })}
-                            onClick={() => move(g.id, 1)}
-                          >
-                            <ArrowDown size={16} />
-                          </button>
-                        </div>
                       </div>
                     </article>
                   );
                 })}
               </div>
-              {!goals.length && <p>{tr("Không có mục tiêu phù hợp.")}</p>}
+              {!goals.length && (
+                <section className="goal-empty panel">
+                  <EmptyState
+                    title={tr("Không có mục tiêu phù hợp.")}
+                    description={tr(
+                      "Thử tên khác hoặc đặt lại bộ lọc để xem các mục tiêu đang theo đuổi.",
+                    )}
+                  >
+                    <button
+                      className="expense-secondary"
+                      onClick={() => {
+                        setQuery("");
+                        setFilter("following");
+                      }}
+                    >
+                      {tr("Đặt lại bộ lọc")}
+                    </button>
+                  </EmptyState>
+                </section>
+              )}
             </>
           )}
           <p className="goal-note">

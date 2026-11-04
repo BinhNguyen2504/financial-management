@@ -76,7 +76,10 @@ function Editor({
     if (!parsed.success) {
       setFields(fieldErrorsFromIssues(parsed.error.issues, true));
       setError(tr("Kiểm tra các trường được đánh dấu."));
-      requestAnimationFrame(() => errorRef.current?.focus());
+      requestAnimationFrame(() => {
+        errorRef.current?.focus({ preventScroll: true });
+        errorRef.current?.scrollIntoView({ block: "nearest" });
+      });
       return;
     }
     setBusy(true);
@@ -131,7 +134,10 @@ function Editor({
         }
         if (save && (e.status === 0 || e.status >= 500)) setUncertain(true);
       }
-      requestAnimationFrame(() => errorRef.current?.focus());
+      requestAnimationFrame(() => {
+        errorRef.current?.focus({ preventScroll: true });
+        errorRef.current?.scrollIntoView({ block: "nearest" });
+      });
     } finally {
       setBusy(false);
     }
@@ -151,6 +157,17 @@ function Editor({
             ? "Sửa giao dịch"
             : "Hủy giao dịch"
           : "Ghi giao dịch";
+  const currentOrder = [...(view.book?.goals ?? [])]
+    .sort((a, b) => a.rank - b.rank)
+    .map((g) => g.id);
+  const unchangedOrder =
+    action.type === "reorder" &&
+    action.ids.length === currentOrder.length &&
+    action.ids.every((id, index) => id === currentOrder[index]);
+  const invalidOrder =
+    action.type === "reorder" &&
+    (action.ids.length !== currentOrder.length ||
+      currentOrder.some((id) => !action.ids.includes(id)));
   const footer = (
     <>
       <button className="expense-secondary" onClick={close} disabled={busy}>
@@ -181,7 +198,7 @@ function Editor({
           type="submit"
           form="goal-editor"
           className="expense-primary"
-          disabled={busy || needsReload}
+          disabled={busy || needsReload || unchangedOrder || invalidOrder}
         >
           {tr(busy ? "Đang tải…" : "Xem trước thay đổi")}
         </button>
@@ -191,7 +208,7 @@ function Editor({
   return (
     <>
       <Modal title={tr(title)} onClose={close} busy={busy} footer={footer}>
-        <div className="dialog-content-stack">
+        <div className="dialog-content-stack goal-editor-shell">
           <PrivacyReveal />
           {error && (
             <div
@@ -202,7 +219,24 @@ function Editor({
             >
               <p>{error}</p>
               {Object.entries(fields).map(([key, message]) => (
-                <p key={key}>{tr(message)}</p>
+                <p key={key}>
+                  <a
+                    href={`#goal-field-${key.replaceAll(".", "-")}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      const control = document.getElementById(
+                        `goal-field-${key.replaceAll(".", "-")}`,
+                      );
+                      if (control) {
+                        event.preventDefault();
+                        control.focus({ preventScroll: true });
+                        control.scrollIntoView({ block: "center" });
+                      }
+                    }}
+                  >
+                    {tr(message)}
+                  </a>
+                </p>
               ))}
               {needsReload && (
                 <button

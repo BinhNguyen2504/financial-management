@@ -1,5 +1,9 @@
 # Dữ liệu mẫu để review UI/UX
 
+## Bộ mẫu Mục tiêu — 05/11/2026
+
+`npm run data:goals:review -- --owner <USER_UID>` sao lưu và tạo package chỉ đọc; dùng `--file <package>/sample-data.json --apply` để nạp Goal bằng runtime/RLS. Tài khoản đủ nguồn có 13 mục tiêu, gồm hai mốc từ Notion, liên kết chia nguồn, quá hạn/tạm dừng/đủ/vượt đích, hoàn thành còn số dư, lưu trữ và lịch sử hơn 20 giao dịch. Không đổi các sổ nguồn. Script reset được tạo sau khi chốt UI/UX; chưa chạy reset. Xem [case review, lệnh và bảo vệ dữ liệu](features/goals-review-data.md).
+
 ## Bộ mẫu Đầu tư mới — 02/11/2026
 
 Bộ local/cloud review generator hiện tạo 5 danh mục, 6 ví (11 position), có ví dụ cổ phiếu vốn 7 triệu, định giá 8 triệu, tiền chờ 3 triệu; tổng 11 triệu. Bitcoin minh họa bán hết rồi mua lại, Quỹ chỉ số minh họa chỉ còn tiền chờ. Có bán một phần, phí/thuế, chuyển ví, rút, định giá sửa và nạp hủy. Tất cả là dữ liệu minh họa; không có danh mục mang tên tất toán/mất vốn. Gói cũ có ngày bên dưới chỉ là lịch sử. Thay dữ liệu chỉ trong module Đầu tư, có backup, kiểm tra owner và tham chiếu Mục tiêu; không dùng reset 28 bảng.

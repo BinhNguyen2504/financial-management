@@ -1,4 +1,5 @@
 "use client";
+import { GoalPriority } from "./priority";
 import { LocalizedInput } from "@/components/localized-input";
 import { useMoney } from "@/components/privacy";
 import { formatDate, formatDecimal } from "@/i18n/format";
@@ -46,15 +47,34 @@ export function GoalFields({
             : action,
       );
   };
+  const errorKey = (key: string) =>
+    key.replace(
+      "transaction.",
+      action.type === "reviseTransaction" ? "replacement." : "transaction.",
+    );
+  const fieldId = (key: string) =>
+    `goal-field-${errorKey(key).replaceAll(".", "-")}`;
+  const fieldProps = (key: string) => ({
+    id: fieldId(key),
+    "aria-invalid": fields[errorKey(key)] ? true : undefined,
+    "aria-describedby": fields[errorKey(key)]
+      ? `${fieldId(key)}-error`
+      : undefined,
+  });
   const fieldError = (key: string) =>
-    fields[key] ? (
-      <small className="expense-field-error" role="status">
-        {tr(fields[key])}
+    fields[errorKey(key)] ? (
+      <small
+        id={`${fieldId(key)}-error`}
+        className="expense-field-error"
+        role="status"
+      >
+        {tr(fields[errorKey(key)])}
       </small>
     ) : null;
   return (
     <form
       inert={busy}
+      data-goal-form={action.type}
       id="goal-editor"
       className="goal-form"
       onSubmit={(e) => {
@@ -71,6 +91,7 @@ export function GoalFields({
               <input
                 required
                 maxLength={100}
+                {...fieldProps("goal.name")}
                 value={input.name}
                 onChange={(e) => updateGoal({ name: e.target.value })}
               />
@@ -102,6 +123,7 @@ export function GoalFields({
                 required
                 numberKind="integer"
                 inputMode="numeric"
+                {...fieldProps("goal.target")}
                 value={input.target}
                 onValueChange={(target) => updateGoal({ target })}
               />
@@ -112,6 +134,7 @@ export function GoalFields({
               <LocalizedInput
                 type="date"
                 aria-label={tr("Hạn hoàn thành")}
+                {...fieldProps("goal.deadline")}
                 value={input.deadline ?? ""}
                 onValueChange={(deadline) =>
                   updateGoal({ deadline: deadline || null })
@@ -145,6 +168,7 @@ export function GoalFields({
                 required
                 numberKind="integer"
                 inputMode="numeric"
+                {...fieldProps("goal.monthly")}
                 value={input.monthly}
                 onValueChange={(monthly) => updateGoal({ monthly })}
               />
@@ -310,7 +334,7 @@ export function GoalFields({
         </>
       )}
       {transaction && (
-        <fieldset className="goal-wide">
+        <fieldset className="goal-wide goal-transaction-form">
           <legend>{tr("Giao dịch sổ riêng")}</legend>
           <label>
             {tr("Loại giao dịch")}
@@ -374,6 +398,7 @@ export function GoalFields({
               required
               numberKind="integer"
               inputMode="numeric"
+              {...fieldProps("transaction.amount")}
               value={transaction.amount}
               onValueChange={(amount) => updateTransaction({ amount })}
             />
@@ -382,6 +407,7 @@ export function GoalFields({
           <label>
             {tr("Thời điểm (giờ Việt Nam)")}
             <input
+              {...fieldProps("transaction.occurredAt")}
               type="datetime-local"
               required
               value={new Date(Date.parse(transaction.occurredAt) + 7 * 3600000)
@@ -396,15 +422,18 @@ export function GoalFields({
                   });
               }}
             />
+            {fieldError("transaction.occurredAt")}
           </label>
-          <label>
+          <label className="goal-wide">
             {tr("Ghi chú / lý do")}
             <textarea
               required={["withdraw", "transfer"].includes(transaction.kind)}
               maxLength={1000}
+              {...fieldProps("transaction.note")}
               value={transaction.note}
               onChange={(e) => updateTransaction({ note: e.target.value })}
             />
+            {fieldError("transaction.note")}
           </label>
         </fieldset>
       )}
@@ -414,22 +443,20 @@ export function GoalFields({
           <textarea
             required
             maxLength={1000}
+            {...fieldProps("reason")}
             value={action.reason}
             onChange={(e) => change({ ...action, reason: e.target.value })}
           />
+          {fieldError("reason")}
         </label>
       )}
       {action.type === "setStatus" && (
-        <p>
+        <p className="goal-wide goal-note">
           {tr("Xem trước thay đổi trạng thái và số tiền trước khi xác nhận.")}
         </p>
       )}
       {action.type === "reorder" && (
-        <ol>
-          {action.ids.map((id) => (
-            <li key={id}>{view.book?.goals.find((g) => g.id === id)?.name}</li>
-          ))}
-        </ol>
+        <GoalPriority action={action} view={view} change={change} />
       )}
     </form>
   );

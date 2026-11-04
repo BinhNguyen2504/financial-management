@@ -226,3 +226,10 @@ Catalog Cài đặt và FAQ hai landing vi/en phản ánh trạng thái từng m
 Preview khách và thành viên dùng tên module thật làm tiêu đề. Thứ tự là câu nhắn → tiêu đề → hướng dẫn thu gọn → kỳ cố định (ở từng sổ) → số liệu. Tổng quan không đặt bộ chọn kỳ chung vì các thẻ phản ánh các phạm vi thời gian khác nhau, giống workspace thật. Năm thẻ tách tiêu đề, nhãn số chính, giá trị và chú thích; nền/border theo theme, hai cột desktop và một cột điện thoại. Nút Mở trên thẻ chuyển sang tab minh họa tương ứng và đưa focus về tab đó.
 
 Cột trái chỉ còn thương hiệu, tên nhóm, menu và một câu ngắn theo theme; bỏ các đoạn hướng dẫn sao lưu, menu, bộ lọc và ngôn ngữ vốn làm sidebar dài hơn nội dung. Nút che tiền nằm trong thanh trên, giữ khả năng truy cập khi cuộn khung điện thoại. Giữ tám tab, dữ liệu hằng số và che tiền riêng; không mô phỏng lưu/tùy chỉnh tài khoản. Đây vẫn là minh họa rút gọn, không phải bản sao đầy đủ mọi màn hình. Đã rà catalog: tên, scope và trạng thái module hiện có không thay đổi; cập nhật copy hai landing, bản dịch và README cùng đợt.
+
+Hoàn tất 05/11/2026: thứ tự tab lấy chung từ `navigationModules` (Chi tiêu trước Thu nhập); tên truy cập nút gồm cả hành động và sổ, ví dụ “Mở Thu nhập” / “Open Income”. Kiểm chứng trên production snapshot riêng, xem [nhật ký validation](../07-validation.md).
+
+
+## Đồng bộ Mục tiêu — 05/11/2026
+
+Preview Mục tiêu làm rõ nhóm Kế hoạch góp; hướng dẫn minh họa nêu sắp xếp ưu tiên trong danh sách và biểu tượng sửa/hủy giao dịch. Giữ ví dụ cố định đích 100 triệu, đã chuẩn bị 40 triệu, thiếu 60 triệu, dự định 5 triệu/tháng trong 12 tháng. Preview không gọi API tài chính, không đọc dữ liệu tài khoản; thao tác ghi chỉ có trong ứng dụng. Xem [bố cục Mục tiêu](goals-layout-2026-11-05.md).

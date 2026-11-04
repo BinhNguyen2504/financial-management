@@ -1,12 +1,16 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
 import { Modal } from "@/components/modal";
-import { DialogList } from "@/components/dialog-content";
-import { ScrollTabs } from "@/components/scroll-tabs";
+import {
+  DialogList,
+  DialogTabs,
+  DialogNote,
+} from "@/components/dialog-content";
+import { Pencil, Trash2 } from "lucide-react";
+import { GoalProgress } from "./progress";
 import { AnimatedDetails } from "@/components/animated-details";
 import { useMoney } from "@/components/privacy";
-import { formatDate, formatMonth, formatDecimal } from "@/i18n/format";
+import { formatDate, formatDecimal } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 import {
   activeTransactions,
@@ -34,10 +38,8 @@ export function GoalDetails({
   onEdit(action: GoalAction): void;
 }) {
   const { t: tr, locale } = useI18n("goals"),
-    money = useMoney(),
-    [tab, setTab] = useState("progress");
-  const book = view.book!,
-    state = view.states.find((s) => s.id === goal.id)!;
+    money = useMoney();
+  const book = view.book!;
   const time = (v: string) =>
     new Intl.DateTimeFormat(locale === "vi" ? "vi-VN" : "en-GB", {
       timeZone: "Asia/Ho_Chi_Minh",
@@ -96,359 +98,285 @@ export function GoalDetails({
         </>
       }
     >
-      <ScrollTabs className="goal-tabs" aria-label={tr("Chi tiết mục tiêu")}>
-        {[
-          ["progress", "Tiến độ và kế hoạch"],
-          ["source", goal.mode === "ledger" ? "Giao dịch" : "Nguồn liên kết"],
-          ["history", "Lịch sử"],
-        ].map(([id, label]) => (
-          <button
-            key={id}
-            className="expense-secondary"
-            aria-pressed={tab === id}
-            onClick={() => setTab(id)}
-          >
-            {tr(label)}
-          </button>
-        ))}
-      </ScrollTabs>
-      {tab === "progress" && (
-        <section className="goal-detail">
-          <p>{tr(statusNames[goal.status])}</p>
-          <dl className="goal-facts">
-            <dt>{tr("Đã đạt")}</dt>
-            <dd>
-              {state.current === null
-                ? tr("Chưa đủ dữ liệu")
-                : money(state.current)}
-            </dd>
-            <dt>{tr("Số tiền đích")}</dt>
-            <dd>{money(goal.target)}</dd>
-            <dt>{tr("Còn thiếu")}</dt>
-            <dd>{state.remaining === null ? "—" : money(state.remaining)}</dd>
-            <dt>{tr("Hạn hoàn thành")}</dt>
-            <dd>
-              {goal.deadline
-                ? formatDate(goal.deadline, locale)
-                : tr("Không đặt hạn")}
-            </dd>
-            <dt>{tr("Góp dự định / tháng")}</dt>
-            <dd>{money(goal.monthly)}</dd>
-            <dt>{tr("Cần góp / tháng")}</dt>
-            <dd>
-              {state.requiredMonthly === null
-                ? "—"
-                : money(state.requiredMonthly)}
-            </dd>
-            <dt>{tr("Dự kiến tháng đạt")}</dt>
-            <dd>
-              {state.estimatedMonth
-                ? formatMonth(state.estimatedMonth, locale)
-                : "—"}
-            </dd>
-            {state.balance !== null && (
-              <>
-                <dt>{tr("Số dư sổ riêng")}</dt>
-                <dd>{money(state.balance)}</dd>
-              </>
-            )}
-          </dl>
-          {goal.completion && (
-            <p>
-              {tr("Mốc hoàn thành")}: {time(goal.completion.at)} ·{" "}
-              {money(goal.completion.current)} / {money(goal.completion.target)}
-            </p>
-          )}
-          <p>
-            {tr(
-              "Ước tính tính cả tháng này, không giả định lợi nhuận và không tự ghi tiền góp.",
-            )}
-          </p>
-          {state.requiredMonthly !== null &&
-            BigInt(goal.monthly) < BigInt(state.requiredMonthly) &&
-            goal.status === "active" && (
-              <p>{tr("Mức góp dự định thấp hơn mức cần góp để kịp hạn.")}</p>
-            )}
-          {goal.note && <p>{goal.note}</p>}
-          <div className="goal-actions">
-            {goal.status === "active" && (
-              <button
-                className="expense-secondary"
-                onClick={() =>
-                  onEdit({
-                    type: "setStatus",
-                    goalId: goal.id,
-                    status: "paused",
-                    reason: "",
-                  })
-                }
-              >
-                {tr("Tạm dừng")}
-              </button>
-            )}
-            {["paused", "completed", "archived"].includes(goal.status) && (
-              <button
-                className="expense-secondary"
-                onClick={() =>
-                  onEdit({
-                    type: "setStatus",
-                    goalId: goal.id,
-                    status: "active",
-                    reason: "",
-                  })
-                }
-              >
-                {tr("Mở lại mục tiêu")}
-              </button>
-            )}
-            {["active", "paused"].includes(goal.status) && (
-              <button
-                className="expense-primary"
-                disabled={!state.ready}
-                onClick={() =>
-                  onEdit({
-                    type: "setStatus",
-                    goalId: goal.id,
-                    status: "completed",
-                    reason: "",
-                  })
-                }
-              >
-                {tr("Xác nhận hoàn thành")}
-              </button>
-            )}
-            {goal.status !== "archived" && (
-              <button
-                className="expense-secondary"
-                disabled={state.balance !== null && state.balance !== "0"}
-                onClick={() =>
-                  onEdit({
-                    type: "setStatus",
-                    goalId: goal.id,
-                    status: "archived",
-                    reason: "",
-                  })
-                }
-              >
-                {tr("Lưu trữ")}
-              </button>
-            )}
-          </div>
-          {state.balance !== null && state.balance !== "0" && (
-            <small>{tr("Rút hoặc chuyển hết số dư trước khi lưu trữ.")}</small>
-          )}
-        </section>
-      )}
-      {tab === "source" &&
-        (goal.mode === "linked" ? (
-          <section>
-            <p>
-              {tr(goal.basis === "value" ? "Giá trị hiện tại" : "Vốn hiện còn")}
-            </p>
-            {goal.links.map((l) => {
-              const s = view.sources.items.find(
-                (s) => sourceKey(l) === sourceKey(s),
-              );
-              return (
-                <div className="goal-source" key={sourceKey(l)}>
-                  <div>
-                    <strong>
-                      {s?.name ?? tr("Nguồn liên kết chưa sẵn sàng.")}
-                    </strong>
+      <div className="goal-detail-shell">
+        <DialogTabs
+          tabs={[
+            {
+              id: "progress",
+              label: tr("Tiến độ và kế hoạch"),
+              content: <GoalProgress goal={goal} view={view} onEdit={onEdit} />,
+            },
+            {
+              id: "source",
+              label: tr(
+                goal.mode === "ledger" ? "Giao dịch" : "Nguồn liên kết",
+              ),
+              content:
+                goal.mode === "linked" ? (
+                  <section className="goal-sources-detail">
+                    <h3>
+                      {tr(
+                        goal.basis === "value"
+                          ? "Giá trị hiện tại"
+                          : "Vốn hiện còn",
+                      )}
+                    </h3>
+                    {goal.links.map((l) => {
+                      const s = view.sources.items.find(
+                        (s) => sourceKey(l) === sourceKey(s),
+                      );
+                      return (
+                        <div className="goal-source" key={sourceKey(l)}>
+                          <div className="goal-source-name">
+                            <strong>
+                              {s?.name ?? tr("Nguồn liên kết chưa sẵn sàng.")}
+                            </strong>
+                            <p>
+                              {tr(sourceNames[l.kind])} ·{" "}
+                              {formatDecimal(String(l.share / 100), locale)}%
+                            </p>
+                            {s?.valueDate && (
+                              <small>
+                                {tr("Ngày định giá")}:{" "}
+                                {formatDate(s.valueDate, locale)}
+                              </small>
+                            )}
+                            {s?.stale && <small>{tr("Định giá đã cũ")}</small>}
+                          </div>
+                          <Link
+                            className="expense-secondary"
+                            href={`/${l.kind}`}
+                          >
+                            {tr("Xem nguồn")}
+                          </Link>
+                        </div>
+                      );
+                    })}
                     <p>
-                      {tr(sourceNames[l.kind])} ·{" "}
-                      {formatDecimal(String(l.share / 100), locale)}%
+                      {tr(
+                        "Liên kết không chuyển tiền hoặc khóa số dư tại nguồn. Cột mốc có thể tham chiếu chung nguồn.",
+                      )}
                     </p>
-                    {s?.valueDate && (
-                      <small>
-                        {tr("Ngày định giá")}: {formatDate(s.valueDate, locale)}
-                      </small>
-                    )}
-                    {s?.stale && <small>{tr("Định giá đã cũ")}</small>}
-                  </div>
-                  <Link className="expense-secondary" href={`/${l.kind}`}>
-                    {tr("Xem nguồn")}
-                  </Link>
-                </div>
-              );
-            })}
-            <p>
-              {tr(
-                "Liên kết không chuyển tiền hoặc khóa số dư tại nguồn. Cột mốc có thể tham chiếu chung nguồn.",
-              )}
-            </p>
-          </section>
-        ) : (
-          <DialogList
-            label={tr("Giao dịch mục tiêu")}
-            items={activeTransactions(book)
-              .map((x) => x.transaction)
-              .filter((t) => t.goalId === goal.id || t.toGoalId === goal.id)
-              .reverse()}
-            rowKey={(t) => t.id}
-            searchText={(t) => `${t.note} ${tr(kindNames[t.kind])}`}
-            getDate={(t) =>
-              new Intl.DateTimeFormat("en-CA", {
-                timeZone: "Asia/Ho_Chi_Minh",
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              }).format(new Date(t.occurredAt))
-            }
-            filters={[
-              {
-                label: tr("Loại giao dịch"),
-                options: Object.entries(kindNames).map(([value, label]) => ({
-                  value,
-                  label: tr(label),
-                })),
-                value: (t) => t.kind,
-              },
-            ]}
-            columns={[
-              {
-                label: tr("Thời điểm"),
-                kind: "date",
-                render: (t) => time(t.occurredAt),
-              },
-              {
-                label: tr("Loại giao dịch"),
-                render: (t) => (
-                  <>
-                    {tr(kindNames[t.kind])}
-                    {t.kind === "transfer" && (
-                      <small>
-                        {
-                          book.goals.find(
-                            (g) =>
-                              g.id ===
-                              (t.goalId === goal.id ? t.toGoalId : t.goalId),
-                          )?.name
-                        }
-                      </small>
-                    )}
-                  </>
-                ),
-              },
-              {
-                label: tr("Số tiền"),
-                numeric: true,
-                render: (t) => money(t.amount),
-              },
-              { label: tr("Ghi chú"), render: (t) => t.note || "—" },
-              {
-                label: tr("Thao tác"),
-                kind: "actions",
-                render: (t) => (
-                  <div className="goal-actions">
-                    <button
-                      className="expense-secondary"
-                      onClick={() =>
-                        onEdit({
-                          type: "reviseTransaction",
-                          transactionId: t.id,
-                          replacement: t,
-                          reason: "",
-                        })
-                      }
-                    >
-                      {tr("Sửa")}
-                    </button>
-                    <button
-                      className="expense-secondary"
-                      onClick={() =>
-                        onEdit({
-                          type: "reviseTransaction",
-                          transactionId: t.id,
-                          replacement: null,
-                          reason: "",
-                        })
-                      }
-                    >
-                      {tr("Hủy giao dịch")}
-                    </button>
-                  </div>
-                ),
-              },
-            ]}
-          />
-        ))}
-      {tab === "history" && (
-        <DialogList
-          label={tr("Lịch sử mục tiêu")}
-          items={[...history].reverse()}
-          rowKey={(a) => String(a.version)}
-          searchText={(a) =>
-            a.action.type === "reviseTransaction"
-              ? a.action.reason
-              : a.action.type === "saveGoal"
-                ? a.action.goal.name
-                : ""
-          }
-          renderItem={(a) => (
-            <AnimatedDetails>
-              <summary>
-                <span>
-                  {time(a.at)} ·{" "}
-                  {tr(
-                    a.action.type === "saveGoal"
-                      ? "Điều chỉnh mục tiêu"
-                      : a.action.type === "reorder"
-                        ? "Đổi thứ tự ưu tiên"
-                        : a.action.type === "setStatus"
-                          ? statusNames[a.action.status]
-                          : a.action.type === "postTransaction"
-                            ? kindNames[a.action.transaction.kind]
-                            : a.action.replacement
-                              ? "Sửa giao dịch"
-                              : "Hủy giao dịch",
-                  )}
-                </span>
-              </summary>
-              <p>
-                {tr("Phiên bản")}: {a.version}
-              </p>
-              {a.action.type === "saveGoal" && (
-                <dl className="goal-facts">
-                  <dt>{tr("Số tiền đích")}</dt>
-                  <dd>{money(a.action.goal.target)}</dd>
-                  <dt>{tr("Góp dự định / tháng")}</dt>
-                  <dd>{money(a.action.goal.monthly)}</dd>
-                  <dt>{tr("Hạn hoàn thành")}</dt>
-                  <dd>
-                    {a.action.goal.deadline
-                      ? formatDate(a.action.goal.deadline, locale)
-                      : "—"}
-                  </dd>
-                  <dt>{tr("Nguồn liên kết")}</dt>
-                  <dd>
-                    {a.action.goal.links
-                      .map(
-                        (l) =>
-                          `${a.sources.items.find((s) => sourceKey(s) === sourceKey(l))?.name ?? tr(sourceNames[l.kind])} ${formatDecimal(String(l.share / 100), locale)}%`,
+                  </section>
+                ) : (
+                  <DialogList
+                    label={tr("Giao dịch mục tiêu")}
+                    filterDisclosure
+                    items={activeTransactions(book)
+                      .map((x) => x.transaction)
+                      .filter(
+                        (t) => t.goalId === goal.id || t.toGoalId === goal.id,
                       )
-                      .join(", ") || "—"}
-                  </dd>
-                </dl>
-              )}
-              {a.action.type === "postTransaction" && (
-                <p>
-                  {money(a.action.transaction.amount)} ·{" "}
-                  {a.action.transaction.note}
-                </p>
-              )}
-              {a.action.type === "reviseTransaction" && (
-                <p>
-                  {a.action.reason}
-                  {a.action.replacement
-                    ? ` · ${money(a.action.replacement.amount)}`
-                    : ""}
-                </p>
-              )}
-            </AnimatedDetails>
-          )}
+                      .reverse()}
+                    rowKey={(t) => t.id}
+                    searchText={(t) => `${t.note} ${tr(kindNames[t.kind])}`}
+                    getDate={(t) =>
+                      new Intl.DateTimeFormat("en-CA", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      }).format(new Date(t.occurredAt))
+                    }
+                    filters={[
+                      {
+                        label: tr("Loại giao dịch"),
+                        options: [
+                          { value: "", label: tr("Tất cả loại giao dịch") },
+                          ...Object.entries(kindNames).map(
+                            ([value, label]) => ({
+                              value,
+                              label: tr(label),
+                            }),
+                          ),
+                        ],
+                        value: (t) => t.kind,
+                      },
+                    ]}
+                    columns={[
+                      {
+                        label: tr("Thời điểm"),
+                        kind: "date",
+                        render: (t) => (
+                          <time dateTime={t.occurredAt}>
+                            {formatDate(
+                              new Intl.DateTimeFormat("en-CA", {
+                                timeZone: "Asia/Ho_Chi_Minh",
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                              }).format(new Date(t.occurredAt)),
+                              locale,
+                            )}
+                            <small>
+                              {new Intl.DateTimeFormat(
+                                locale === "vi" ? "vi-VN" : "en-GB",
+                                {
+                                  timeZone: "Asia/Ho_Chi_Minh",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              ).format(new Date(t.occurredAt))}
+                            </small>
+                          </time>
+                        ),
+                      },
+                      {
+                        label: tr("Loại giao dịch"),
+                        render: (t) => (
+                          <>
+                            {tr(kindNames[t.kind])}
+                            {t.kind === "transfer" && (
+                              <small>
+                                {
+                                  book.goals.find(
+                                    (g) =>
+                                      g.id ===
+                                      (t.goalId === goal.id
+                                        ? t.toGoalId
+                                        : t.goalId),
+                                  )?.name
+                                }
+                              </small>
+                            )}
+                          </>
+                        ),
+                      },
+                      {
+                        label: tr("Số tiền"),
+                        numeric: true,
+                        render: (t) => money(t.amount),
+                      },
+                      {
+                        label: tr("Ghi chú"),
+                        render: (t) =>
+                          t.note ? <DialogNote text={t.note} /> : "—",
+                      },
+                      {
+                        label: tr("Thao tác"),
+                        kind: "actions",
+                        render: (t) => (
+                          <div className="expense-actions goal-transaction-actions">
+                            <button
+                              className="expense-icon-button"
+                              aria-label={tr("Sửa giao dịch")}
+                              title={tr("Sửa giao dịch")}
+                              onClick={() =>
+                                onEdit({
+                                  type: "reviseTransaction",
+                                  transactionId: t.id,
+                                  replacement: t,
+                                  reason: "",
+                                })
+                              }
+                            >
+                              <Pencil size={17} aria-hidden="true" />
+                            </button>
+                            <button
+                              className="expense-icon-button"
+                              aria-label={tr("Hủy giao dịch")}
+                              title={tr("Hủy giao dịch")}
+                              onClick={() =>
+                                onEdit({
+                                  type: "reviseTransaction",
+                                  transactionId: t.id,
+                                  replacement: null,
+                                  reason: "",
+                                })
+                              }
+                            >
+                              <Trash2 size={17} aria-hidden="true" />
+                            </button>
+                          </div>
+                        ),
+                      },
+                    ]}
+                  />
+                ),
+            },
+            {
+              id: "history",
+              label: tr("Lịch sử"),
+              content: (
+                <DialogList
+                  label={tr("Lịch sử mục tiêu")}
+                  items={[...history].reverse()}
+                  rowKey={(a) => String(a.version)}
+                  searchText={(a) =>
+                    a.action.type === "reviseTransaction"
+                      ? a.action.reason
+                      : a.action.type === "saveGoal"
+                        ? a.action.goal.name
+                        : ""
+                  }
+                  renderItem={(a) => (
+                    <AnimatedDetails className="goal-history-item">
+                      <summary>
+                        <span>
+                          {time(a.at)} ·{" "}
+                          {tr(
+                            a.action.type === "saveGoal"
+                              ? "Điều chỉnh mục tiêu"
+                              : a.action.type === "reorder"
+                                ? "Đổi thứ tự ưu tiên"
+                                : a.action.type === "setStatus"
+                                  ? statusNames[a.action.status]
+                                  : a.action.type === "postTransaction"
+                                    ? kindNames[a.action.transaction.kind]
+                                    : a.action.replacement
+                                      ? "Sửa giao dịch"
+                                      : "Hủy giao dịch",
+                          )}
+                        </span>
+                      </summary>
+                      <p>
+                        {tr("Phiên bản")}: {a.version}
+                      </p>
+                      {a.action.type === "saveGoal" && (
+                        <dl className="goal-facts">
+                          <dt>{tr("Số tiền đích")}</dt>
+                          <dd>{money(a.action.goal.target)}</dd>
+                          <dt>{tr("Góp dự định / tháng")}</dt>
+                          <dd>{money(a.action.goal.monthly)}</dd>
+                          <dt>{tr("Hạn hoàn thành")}</dt>
+                          <dd>
+                            {a.action.goal.deadline
+                              ? formatDate(a.action.goal.deadline, locale)
+                              : "—"}
+                          </dd>
+                          <dt>{tr("Nguồn liên kết")}</dt>
+                          <dd>
+                            {a.action.goal.links
+                              .map(
+                                (l) =>
+                                  `${a.sources.items.find((s) => sourceKey(s) === sourceKey(l))?.name ?? tr(sourceNames[l.kind])} ${formatDecimal(String(l.share / 100), locale)}%`,
+                              )
+                              .join(", ") || "—"}
+                          </dd>
+                        </dl>
+                      )}
+                      {a.action.type === "postTransaction" && (
+                        <p>
+                          {money(a.action.transaction.amount)} ·{" "}
+                          {a.action.transaction.note}
+                        </p>
+                      )}
+                      {a.action.type === "reviseTransaction" && (
+                        <p>
+                          {a.action.reason}
+                          {a.action.replacement
+                            ? ` · ${money(a.action.replacement.amount)}`
+                            : ""}
+                        </p>
+                      )}
+                    </AnimatedDetails>
+                  )}
+                />
+              ),
+            },
+          ]}
         />
-      )}
+      </div>
     </Modal>
   );
 }

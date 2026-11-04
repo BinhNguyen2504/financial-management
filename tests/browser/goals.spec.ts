@@ -303,7 +303,7 @@ test("transfers, corrects and cancels without losing the parent transaction tab"
     .getByRole("button", { name: "Xem mục tiêu Mua xe", exact: true })
     .click();
   const parent = page.getByRole("dialog", { name: "Mua xe", exact: true });
-  await parent.getByRole("button", { name: "Giao dịch", exact: true }).click();
+  await parent.getByRole("tab", { name: "Giao dịch", exact: true }).click();
   await parent
     .getByRole("button", { name: "Ghi giao dịch", exact: true })
     .click();
@@ -320,13 +320,13 @@ test("transfers, corrects and cancels without losing the parent transaction tab"
     .fill("Chia cho chuyến đi");
   await save(page);
   await expect(
-    parent.getByRole("button", { name: "Giao dịch", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
+    parent.getByRole("tab", { name: "Giao dịch", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
   expect((await view(page)).states.find((g) => g.id === b.id)?.balance).toBe(
     "2000000",
   );
   await parent
-    .getByRole("button", { name: "Sửa", exact: true })
+    .getByRole("button", { name: "Sửa giao dịch", exact: true })
     .first()
     .click();
   editor = page.getByRole("dialog").last();
@@ -353,7 +353,7 @@ test("transfers, corrects and cancels without losing the parent transaction tab"
   expect((await view(page)).states.find((g) => g.id === b.id)?.balance).toBe(
     "0",
   );
-  await parent.getByRole("button", { name: "Lịch sử", exact: true }).click();
+  await parent.getByRole("tab", { name: "Lịch sử", exact: true }).click();
   await expect(parent).toContainText("Hủy giao dịch");
 });
 
@@ -365,6 +365,9 @@ test("reorders goals and keeps all themes readable within the viewport", async (
   await save(page);
   await create(page, "Du lịch gia đình");
   await save(page);
+  await page
+    .getByRole("button", { name: "Sắp xếp ưu tiên", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Ưu tiên Du lịch gia đình lên", exact: true })
     .click();
@@ -435,4 +438,121 @@ test("reorders goals and keeps all themes readable within the viewport", async (
         });
       }
     }
+});
+
+test("stages multiple priorities, preserves filtered-out goals, and discards without a write", async ({
+  page,
+}) => {
+  await login(page);
+  for (const name of ["Mua xe", "Du lịch", "Học thêm"]) {
+    await create(page, name);
+    await save(page);
+  }
+  const before = (await view(page)).book!;
+  const names = before.goals.sort((a, b) => a.rank - b.rank).map((g) => g.name);
+  await page
+    .getByRole("searchbox", { name: "Tìm mục tiêu", exact: true })
+    .fill("Mua xe");
+  await expect(page.locator(".goal-card")).toHaveCount(1);
+  const open = page.getByRole("button", {
+    name: "Sắp xếp ưu tiên",
+    exact: true,
+  });
+  await page.setViewportSize({ width: 320, height: 900 });
+  await open.click();
+  const editor = page.getByRole("dialog", {
+    name: "Đổi thứ tự ưu tiên",
+    exact: true,
+  });
+  await expect(editor.locator(".goal-priority-list > li")).toHaveCount(3);
+  expect((await editor.boundingBox())!.height).toBeLessThan(800);
+  const preview = editor.getByRole("button", {
+    name: "Xem trước thay đổi",
+    exact: true,
+  });
+  await expect(preview).toBeDisabled();
+  await editor
+    .getByRole("button", { name: "Ưu tiên Mua xe lên", exact: true })
+    .isDisabled()
+    .then((value) => expect(value).toBe(true));
+  await editor
+    .getByRole("button", { name: "Ưu tiên Học thêm xuống", exact: true })
+    .isDisabled()
+    .then((value) => expect(value).toBe(true));
+  let writes = 0;
+  page.on("request", (request) => {
+    if (
+      request.method() === "POST" &&
+      request.url().includes("/api/v1/goals/commands")
+    )
+      writes++;
+  });
+  const up = editor.getByRole("button", {
+    name: "Ưu tiên Học thêm lên",
+    exact: true,
+  });
+  await up.click();
+  await expect(up).toBeFocused();
+  await up.click();
+  await expect(editor.locator(".goal-priority-list strong")).toHaveText([
+    "Học thêm",
+    "Mua xe",
+    "Du lịch",
+  ]);
+  await expect(
+    editor.getByRole("button", { name: "Ưu tiên Học thêm xuống", exact: true }),
+  ).toBeFocused();
+  expect((await view(page)).book!.version).toBe(before.version);
+  await editor.getByRole("button", { name: "Đóng", exact: true }).click();
+  await expect(page.getByRole("dialog").last()).toHaveAccessibleName(
+    "Bỏ thay đổi?",
+  );
+  await page.getByRole("button", { name: "Bỏ thay đổi", exact: true }).click();
+  expect(writes).toBe(0);
+  await expect(open).toBeFocused();
+  await open.click();
+  await expect(editor.locator(".goal-priority-list strong")).toHaveText(names);
+  await editor
+    .getByRole("button", { name: "Ưu tiên Du lịch lên", exact: true })
+    .click();
+  await editor
+    .getByRole("button", { name: "Ưu tiên Du lịch xuống", exact: true })
+    .click();
+  await expect(preview).toBeDisabled();
+  await up.click();
+  await up.click();
+  await preview.click();
+  await expect(
+    editor.getByRole("region", { name: "Xem trước thay đổi", exact: true }),
+  ).toBeVisible();
+  await expect(
+    editor.getByRole("columnheader", { name: "Mục tiêu", exact: true }),
+  ).toBeVisible();
+  expect(writes).toBe(0);
+  expect((await view(page)).book!.version).toBe(before.version);
+  await editor.getByRole("button", { name: "Quay lại", exact: true }).click();
+  await expect(editor.locator(".goal-priority-list strong")).toHaveText([
+    "Học thêm",
+    "Mua xe",
+    "Du lịch",
+  ]);
+  await save(page);
+  expect(writes).toBe(1);
+  const after = (await view(page)).book!;
+  expect(
+    after.goals.sort((a, b) => a.rank - b.rank).map((g) => g.name),
+  ).toEqual(["Học thêm", "Mua xe", "Du lịch"]);
+  expect(new Set(after.goals.map((g) => g.id)).size).toBe(3);
+  await expect(
+    page.getByRole("searchbox", { name: "Tìm mục tiêu", exact: true }),
+  ).toHaveValue("Mua xe");
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Đặt lại bộ lọc", exact: true })
+    .click();
+  await expect(page.locator(".goal-card h2")).toHaveText([
+    "Học thêm",
+    "Mua xe",
+    "Du lịch",
+  ]);
 });

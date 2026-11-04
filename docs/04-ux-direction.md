@@ -353,3 +353,10 @@ Các trang có phần mở rộng giải thích cách bắt đầu và đọc s�
 ## Preview công khai — 04/11/2026
 
 Dùng tiêu đề module thật và thứ tự câu nhắn → tiêu đề → hướng dẫn → kỳ (nếu có) → số liệu. Sidebar minh họa chỉ giữ menu và một câu ngắn; giải thích nghiệp vụ thuộc hướng dẫn tùy mở. Thẻ Tổng quan có hành động Mở sang tab mẫu cùng sổ, nhãn trước số tiền và chú thích sau. Che tiền đặt ở chrome phía trên như ứng dụng thật; không thêm bộ chọn kỳ chung cho Tổng quan. Chi tiết tại [landing](features/landing.md).
+
+Rà cuối 05/11/2026: menu preview lấy thứ tự từ catalog điều hướng của app; tên truy cập nút Mở bao gồm cả hành động và tên sổ trong hai ngôn ngữ.
+
+
+## Bố cục Mục tiêu — 05/11/2026
+
+Giữ Nunito/năm theme, tăng phân cấp bằng số liệu và nhóm nội dung thay vì kéo giãn nhãn/giá trị. Bộ lọc tìm kiếm rộng, trạng thái vừa đủ, reset/sắp xếp theo kích thước nội dung. Chi tiết dẫn bằng tiến độ, kế hoạch góp và sổ riêng/nguồn liên kết. Giao dịch dùng cặp biểu tượng 44px và nhãn truy cập; sắp xếp nhiều mục diễn ra trong một hộp thoại có nháp và xác nhận. Xem [kiểm chứng bố cục](features/goals-layout-2026-11-05.md).

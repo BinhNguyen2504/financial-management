@@ -23,6 +23,7 @@
     "check": "npm run lint && npm run check:architecture && npm run format:check && npm test && npm run typecheck && npm run build",
     "data:funds:sample": "node scripts/run-typescript.mjs scripts/sample-funds.ts",
     "data:funds:import": "node --env-file=.env.local scripts/run-typescript.mjs scripts/import-funds.ts",
+    "data:goals:review": "node --env-file=.env.local scripts/run-typescript.mjs scripts/review-goals.ts",
     "lint": "eslint src tests scripts \"*.mjs\" \"*.mts\" \"*.ts\" --max-warnings=0",
     "format:check": "prettier --check src tests scripts \"*.mjs\" \"*.mts\" \"*.ts\" package.json \".github/workflows/*.yml\"",
     "check:architecture": "node scripts/check-architecture.mjs"

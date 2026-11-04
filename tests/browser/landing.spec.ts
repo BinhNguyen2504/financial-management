@@ -55,7 +55,7 @@ test("public landing and preview stay independent of financial APIs and account 
   await preview.getByRole("button", { name: "Hiện số tiền minh họa" }).click();
   await expect(preview.getByRole("tabpanel")).toContainText("85.000.000 ₫");
   await preview.getByRole("tab", { name: "Chi tiêu", exact: true }).focus();
-  await page.keyboard.press("ArrowLeft");
+  await page.keyboard.press("ArrowRight");
   await expect(
     preview.getByRole("tab", { name: "Thu nhập", exact: true }),
   ).toBeFocused();

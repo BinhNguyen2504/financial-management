@@ -62,3 +62,7 @@ Một chút bình yên dùng kho 200 cặp Việt/Anh chung toàn ứng dụng, 
 ## Nội dung cho người dùng phổ thông — 04/11/2026
 
 Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.
+
+## Minh họa công khai — 05/11/2026
+
+Preview landing giữ năm thẻ mặc định bằng dữ liệu cố định. Thứ tự câu nhắn, tiêu đề Tổng quan, hướng dẫn và thẻ theo workspace thật; không đặt kỳ chung cho các thẻ có phạm vi thời gian khác nhau. Nút Mở chuyển tới tab mẫu tương ứng và đưa focus về tab đó. Sidebar lấy thứ tự từ `navigationModules`, bỏ các đoạn giải thích dài. Bản mẫu không đọc API tài chính, không dùng tài khoản và không thực hiện tùy chỉnh/lưu bố cục; chi tiết tại [landing](landing.md#bố-cục-minh-họa-sát-ứng-dụng--04112026).

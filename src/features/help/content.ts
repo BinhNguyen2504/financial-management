@@ -986,6 +986,26 @@ export const articles: HelpArticles = {
         ],
         "Kết quả: đủ tiền chưa tự hoàn thành. Xác nhận hoàn thành để lưu mốc và giải phóng tỷ lệ liên kết.",
       ),
+      task(
+        "priority",
+        "Sắp xếp ưu tiên",
+        "Khi bạn muốn thay đổi mục tiêu cần ưu tiên trước.",
+        [
+          "Chọn Sắp xếp ưu tiên cạnh bộ lọc để mở toàn bộ danh sách.",
+          "Dùng nút lên/xuống ở từng dòng; xem trước vị trí cũ và mới rồi xác nhận lưu.",
+        ],
+        "Kết quả: Bộ lọc không giới hạn danh sách sắp xếp. Hủy thay đổi không ghi dữ liệu.",
+      ),
+      task(
+        "transactions",
+        "Sửa hoặc hủy giao dịch",
+        "Khi một khoản ghi trong sổ riêng cần điều chỉnh.",
+        [
+          "Mở Chi tiết, chọn tab Giao dịch; dùng biểu tượng bút để sửa hoặc thùng rác để hủy.",
+          "Nhập lý do, xem trước thay đổi rồi xác nhận lưu.",
+        ],
+        "Kết quả: Lịch sử được giữ lại; đóng biểu mẫu sẽ trở về tab đang xem.",
+      ),
     ],
     [
       "Nguồn 100 triệu chia 40% cho mua xe và 60% cho mua nhà. Cột mốc tích lũy vẫn có thể theo dõi toàn bộ nguồn 100 triệu.",

@@ -13,13 +13,13 @@ import { SafetyScene } from "@/components/safety-scene";
 import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 
 import { ModuleIcon } from "@/components/module-icon";
-import { modules } from "@/features/catalog";
+import { modules, navigationModules } from "@/features/catalog";
 import { LabelName } from "@/features/expenses/label-visual";
 import { ProgressScene } from "@/features/funds/progress-scene";
 import { ArrowDownLeft, ArrowUpRight, Eye, EyeOff } from "lucide-react";
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 
-const tabs = modules.filter((item) =>
+const tabs = navigationModules.filter((item) =>
   [
     "overview",
     "income",
@@ -35,7 +35,7 @@ const helpPreview = {
   reports:
     "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
   goals:
-    "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Xem trước thay đổi, quay lại điều chỉnh rồi xác nhận lưu trong ứng dụng. Số liệu cập nhật trong kỳ đang xem.",
+    "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Sắp xếp ưu tiên trong một danh sách; xem trước rồi xác nhận lưu. Trong sổ giao dịch, dùng biểu tượng bút để sửa và thùng rác để hủy.",
   overview:
     "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại thẻ thông tin theo tài khoản; các sổ không cộng thành tài sản ròng.",
   budgets:
@@ -303,7 +303,7 @@ export function ProductPreview({
         <button
           type="button"
           onClick={() => openPreview(key)}
-          aria-label={tr(modules.find((item) => item.slug === key)!.title)}
+          aria-label={`${tr("Mở")} ${tr(modules.find((item) => item.slug === key)!.title)}`}
         >
           {tr("Mở")} <ArrowUpRight size={14} aria-hidden="true" />
         </button>
@@ -603,6 +603,7 @@ export function ProductPreview({
                           </span>
                           {active === "goals" ? (
                             <div className="goal-preview-plan">
+                              <span>{tr("Kế hoạch góp")}</span>
                               <strong>
                                 {money(illustrativeGoal.monthly)}
                                 {tr("/tháng")}

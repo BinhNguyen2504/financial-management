@@ -265,13 +265,11 @@ test("fund setup separates its call to action, priority controls and three-butto
   const footer = page.locator(".dialog-footer-actions");
   await footer.getByRole("button", { name: "Tiếp tục", exact: true }).click();
   for (const [fund, value] of [
-    ["Emergency", "6"],
-    ["Rainy Day", "1"],
-    ["Sinking", "2"],
+    ["Quỹ khẩn cấp", "6"],
+    ["Quỹ phát sinh", "1"],
+    ["Quỹ chi dự kiến", "2"],
   ]) {
-    await page
-      .getByLabel(`${fund} Fund — hệ số x`, { exact: true })
-      .fill(value);
+    await page.getByLabel(`${fund} — hệ số x`, { exact: true }).fill(value);
   }
   await footer.getByRole("button", { name: "Tiếp tục", exact: true }).click();
   expect((await separated(footer, 12)).controls).toHaveLength(3);

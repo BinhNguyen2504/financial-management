@@ -80,7 +80,7 @@
 .goal-amount span {
   color: var(--muted);
 }
-.goal-card progress {
+:is(.goal-card, .goal-progress-summary) progress {
   width: 100%;
   height: 8px;
   accent-color: var(--primary);
@@ -88,13 +88,13 @@
   border-radius: 8px;
   overflow: hidden;
 }
-.goal-card progress::-webkit-progress-bar {
+:is(.goal-card, .goal-progress-summary) progress::-webkit-progress-bar {
   background: var(--primary-soft);
 }
-.goal-card progress::-webkit-progress-value {
+:is(.goal-card, .goal-progress-summary) progress::-webkit-progress-value {
   background: var(--primary);
 }
-.goal-card progress::-moz-progress-bar {
+:is(.goal-card, .goal-progress-summary) progress::-moz-progress-bar {
   background: var(--primary);
 }
 .goal-actions {
@@ -125,17 +125,54 @@
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
+/* Search takes the remaining space; status and reload retain useful widths. */
+.goal-toolbar {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  min-width: 0;
+}
 .goal-filters {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px) 46px;
   gap: 12px;
   align-items: end;
 }
 .goal-filters label {
   display: grid;
   gap: 6px;
-  flex: 1;
-  min-width: 180px;
+  min-width: 0;
+  font-size: var(--font-size-14);
+  color: var(--muted);
+}
+.goal-reload {
+  width: 46px;
+  height: 46px;
+}
+.goal-toolbar-bottom,
+.goal-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.goal-toolbar-bottom {
+  justify-content: space-between;
+}
+.goal-result-count {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--font-size-14);
+}
+.goal-toolbar-actions {
+  justify-content: flex-end;
+}
+.goal-toolbar-actions button {
+  font-size: var(--font-size-14);
 }
 .goal-filters input,
 .goal-filters select,
@@ -144,7 +181,7 @@
 .goal-form textarea {
   width: 100%;
   min-width: 0;
-  min-height: 44px;
+  min-height: 46px;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 12px;
@@ -220,19 +257,6 @@
   display: grid;
   gap: 16px;
 }
-.goal-tabs {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  margin-bottom: 20px;
-}
-.goal-tabs button {
-  flex-shrink: 0;
-}
-.goal-tabs button[aria-pressed="true"] {
-  background: var(--primary-soft);
-  font-weight: 600;
-}
 .goal-note {
   font-size: var(--font-size-14);
 }
@@ -265,12 +289,365 @@
   .goal-card {
     padding: 18px;
   }
-  .goal-filters label {
-    min-width: 0;
-    flex-basis: 100%;
+  .goal-filters {
+    grid-template-columns: minmax(0, 1fr) 46px;
   }
+  .goal-search {
+    grid-column: 1/-1;
+  }
+  .goal-toolbar {
+    padding: 16px;
+  }
+  .goal-toolbar-bottom {
+    align-items: flex-start;
+  }
+  .goal-toolbar-actions {
+    justify-content: flex-start;
+  }
+  .goal-toolbar-actions button {
+    flex: 1 1 auto;
+  }
+
   .goal-source > span {
     max-width: none;
     width: 100%;
   }
+}
+
+/* Goal dialogs retain the shared frame; only their contents are specialised. */
+.goal-detail-shell,
+.goal-editor-shell {
+  min-width: 0;
+}
+.goal-detail-shell .dialog-tabs {
+  flex-wrap: nowrap;
+  margin-bottom: 20px;
+}
+.goal-detail-shell .dialog-tabs button {
+  flex: none;
+  white-space: nowrap;
+  min-height: 44px;
+}
+.goal-detail {
+  gap: 20px;
+}
+.goal-detail p,
+.goal-preview > p,
+.goal-priority > p {
+  margin: 0;
+}
+.goal-progress-summary {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--canvas);
+  padding: 24px;
+  min-width: 0;
+}
+.goal-progress-summary .goal-summary-label {
+  margin-bottom: -8px;
+  color: var(--muted);
+  font-size: var(--font-size-14);
+}
+.goal-progress-summary .goal-amount strong {
+  font-size: var(--font-size-28);
+  line-height: 1.3;
+}
+.goal-progress-summary progress {
+  display: block;
+  margin-block: 4px;
+}
+.goal-detail-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.goal-section {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: grid;
+  gap: 16px;
+}
+.goal-detail-shell .goal-section h3,
+.goal-status-section h3 {
+  margin: 0;
+}
+.goal-section .dialog-facts {
+  margin: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.goal-section .dialog-facts > div {
+  display: grid;
+  gap: 4px;
+}
+.goal-section .dialog-facts dt {
+  margin: 0;
+}
+.goal-section .dialog-facts dd {
+  font-weight: var(--weight-strong);
+}
+.goal-section:first-child .dialog-facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.goal-section .dialog-note {
+  margin: 0;
+}
+.goal-completion {
+  display: grid;
+  gap: 4px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+.goal-completion h4 {
+  margin: 0;
+}
+.goal-status-section {
+  display: grid;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.goal-status-section .goal-actions {
+  margin: 0;
+}
+.goal-status-section .goal-actions button {
+  font-size: var(--font-size-14);
+}
+.goal-sources-detail > .goal-source {
+  gap: 16px;
+}
+.goal-source-name {
+  flex: 1 1 220px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.goal-sources-detail > p {
+  color: var(--muted);
+  font-size: var(--font-size-14);
+  margin-top: 20px;
+}
+.goal-detail-shell .dialog-collection {
+  margin: 0;
+}
+.goal-detail-shell .dialog-list-start > h3 {
+  margin-bottom: 16px;
+}
+.goal-detail-shell .dialog-data-table .is-date {
+  width: 120px;
+}
+.goal-detail-shell .dialog-data-table .is-actions {
+  width: 112px;
+}
+.goal-detail-shell .dialog-data-table .is-numeric {
+  width: 22%;
+}
+.goal-detail-shell .dialog-data-table small {
+  display: block;
+  color: var(--muted);
+  font-size: var(--font-size-12);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+.goal-detail-shell .dialog-data-table time {
+  font-variant-numeric: tabular-nums;
+}
+.goal-detail-shell .goal-transaction-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+}
+.goal-detail-shell .goal-transaction-actions .expense-icon-button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 0;
+}
+.goal-detail-shell .dialog-data-table .dialog-note {
+  font-size: inherit;
+  line-height: 1.55;
+  margin: 0;
+}
+.goal-detail-shell .column-table-toolbar {
+  margin-block: 12px;
+}
+.goal-history-item {
+  padding-block: 12px;
+}
+.goal-history-item > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 12px;
+  font-size: var(--font-size-14);
+}
+.goal-history-item > summary::before {
+  content: "+";
+  flex: none;
+  font-weight: var(--weight-strong);
+  color: var(--muted);
+}
+.goal-history-item[open] > summary::before {
+  content: "−";
+}
+.goal-history-item > :not(summary) {
+  margin-top: 12px;
+  font-size: var(--font-size-14);
+}
+.goal-editor-shell .goal-form {
+  align-items: start;
+}
+.goal-editor-shell .goal-form :is(p, small) {
+  margin: 0;
+}
+.goal-editor-shell .goal-form small.expense-field-error {
+  color: var(--danger, var(--text));
+}
+.goal-editor-shell .goal-source {
+  padding-block: 16px;
+  gap: 20px;
+  align-items: start;
+}
+.goal-editor-shell .goal-source label:has(input[type="checkbox"]) {
+  align-items: start;
+  min-height: 44px;
+}
+.goal-editor-shell .goal-source label > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.goal-editor-shell .goal-source > span {
+  flex: 0 1 180px;
+}
+.goal-editor-shell .goal-source small {
+  margin-block: 4px;
+}
+.goal-editor-shell .goal-transaction-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.goal-preview {
+  gap: 20px;
+  outline: none;
+}
+.goal-preview > h3 {
+  margin: 0;
+}
+.goal-preview .dialog-collection {
+  margin: 0;
+}
+.goal-priority {
+  min-width: 0;
+  display: grid;
+  gap: 20px;
+}
+.goal-priority-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.goal-priority-list > li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding-block: 16px;
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+.goal-priority-list > li:first-child {
+  border-top: 1px solid var(--border);
+}
+.goal-priority-number {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-size-14);
+  text-align: center;
+}
+.goal-priority-name {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  min-width: 0;
+}
+.goal-priority-name strong {
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-16);
+}
+.goal-priority .goal-order button {
+  width: 44px;
+  height: 44px;
+}
+.goal-editor-shell button:disabled,
+.goal-detail-shell button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+@media (max-width: 700px) {
+  .goal-detail-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .goal-progress-summary {
+    padding: 20px;
+  }
+  .goal-section {
+    padding: 16px;
+  }
+  .goal-progress-summary .goal-amount strong {
+    font-size: var(--font-size-24);
+  }
+  .goal-priority-list > li {
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .goal-editor-shell .goal-source > span {
+    flex-basis: 100%;
+  }
+  .goal-editor-shell .goal-transaction-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .goal-detail-shell
+    .dialog-data-table
+    :is(.is-date, .is-actions, .is-numeric) {
+    width: auto;
+    white-space: normal;
+  }
+  .goal-detail-shell .dialog-data-table td {
+    grid-template-columns: minmax(70px, 28%) minmax(0, 1fr);
+    gap: 8px;
+  }
+  .goal-detail-shell .dialog-data-table .is-actions .expense-actions {
+    justify-content: flex-end;
+  }
+}
+
+.goal-progress-unavailable {
+  display: block;
+  height: 8px;
+  border-radius: 8px;
+  background: var(--primary-soft);
+  margin-block: 4px;
+}
+
+/* Short confirmation/reorder drafts fit their contents; long lists keep one body scroll. */
+.expense-dialog.dialog-shell:has(.goal-priority),
+.expense-dialog.dialog-shell:has(.goal-form[data-goal-form="setStatus"]) {
+  height: fit-content;
+}
+.goal-empty .friendly-empty {
+  gap: 16px;
+}
+.goal-empty .friendly-empty > .expense-actions {
+  margin-top: 0;
 }

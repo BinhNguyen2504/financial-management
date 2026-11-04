@@ -1,10 +1,12 @@
 # Mục tiêu — 30/10/2026
 
+Bổ sung 05/11/2026: [bộ dữ liệu review Mục tiêu](goals-review-data.md) tạo các case từ Notion và tự bổ sung, nạp qua runtime/RLS có backup, kiểm sổ trống/nguồn và đối soát sau ghi. Không đổi giao diện hoặc quy tắc nghiệp vụ. Reset chờ xác nhận UI/UX.
+
 Trạng thái: triển khai source; bằng chứng local ghi trong docs/07-validation.md. Không suy ra đã áp migration hoặc triển khai cloud.
 
 ## Loại và cách ghi nhận
 
-/goals hỗ trợ mục tiêu chi dùng/cuộc sống và cột mốc tài chính. Mỗi mục tiêu chọn sổ riêng hoặc liên kết dữ liệu khi tạo; loại và cách ghi nhận không đổi về sau. Có tên, số tiền đích dương, hạn tùy chọn, ghi chú, mức dự định góp mỗi tháng và thứ tự ưu tiên. Nút lên/xuống xem trước thứ tự mới rồi xác nhận.
+/goals hỗ trợ mục tiêu chi dùng/cuộc sống và cột mốc tài chính. Mỗi mục tiêu chọn sổ riêng hoặc liên kết dữ liệu khi tạo; loại và cách ghi nhận không đổi về sau. Có tên, số tiền đích dương, hạn tùy chọn, ghi chú, mức dự định góp mỗi tháng và thứ tự ưu tiên. Nút Sắp xếp ưu tiên mở toàn bộ danh sách; dùng lên/xuống chỉnh nhiều vị trí, xem trước thứ tự mới rồi xác nhận.
 
 Nguồn liên kết là từng danh mục Tiết kiệm/Đầu tư hoặc từng Quỹ an toàn. Quỹ chỉ dùng với cột mốc. Mục tiêu chi dùng chọn tỷ lệ (tối đa hai số lẻ), lưu basis points nguyên; tổng phần chia của mục tiêu active/paused không quá 100% mỗi nguồn, không phân biệt cơ sở định giá. Cột mốc theo dõi 100% từng nguồn đã chọn, được trùng nguồn.
 
@@ -65,3 +67,12 @@ Trạng thái trống tách mô tả/nút tạo 16px. Footer tạo, xem trước
 ## Nội dung cho người dùng phổ thông — 04/11/2026
 
 Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.
+
+
+## Bố cục và sắp xếp ưu tiên — 05/11/2026
+
+Thay cặp mũi tên trên từng thẻ bằng **Sắp xếp ưu tiên** cạnh bộ lọc. Hộp hiện toàn bộ mục tiêu bất kể bộ lọc, có thứ tự, trạng thái và nút lên/xuống; thay nhiều vị trí trong nháp, xem trước vị trí cũ/mới rồi xác nhận một lần. Không có thay đổi thì không xem trước; đóng nháp đã chỉnh cần xác nhận bỏ.
+
+Chi tiết dùng tab chung với bàn phím và vị trí cuộn riêng. Tiến độ có số tiền/phần trăm/thanh; kế hoạch góp và số dư/mốc hoàn thành tách rõ. Giao dịch dùng biểu tượng sửa/hủy 44px cùng hàng, giữ lý do/xem trước/xác nhận và lịch sử. Lọc loại có lựa chọn Tất cả; dữ liệu và bộ lọc giữ khi chuyển tab hoặc mở form con. Ghi chú dài có thể mở đủ nội dung.
+
+Form nhóm trường, liên kết lỗi với ô nhập; xem trước chỉ hiện thay đổi và gọi đúng “Mục tiêu”. API, quy tắc tính tiền, schema, Auth/RLS và dữ liệu review giữ nguyên. Xem [đặc tả và bằng chứng](goals-layout-2026-11-05.md).

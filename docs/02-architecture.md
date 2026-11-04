@@ -283,3 +283,8 @@ Repository tách mode đọc snapshot khỏi command có khóa; projection SQL g
 ## Nội dung và hướng dẫn tại chỗ — 04/11/2026
 
 Các trang có phần mở rộng giải thích cách bắt đầu và đọc số liệu; Tổng quan nêu rõ việc tiếp theo, tên quỹ và nguồn thu dùng ngôn ngữ gần gũi. Xem [hợp đồng nội dung và đối chiếu tác vụ](features/friendly-content-2026-11-04.md). Không đổi API, schema, dữ liệu hoặc cách tính tiền.
+
+
+## Nội dung hộp thoại Mục tiêu — 05/11/2026
+
+Goals tái sử dụng DialogTabs (tab/scroll/state), DialogNote và DialogPreview. DialogList có tùy chọn filterDisclosure mặc định false: chỉ caller bật mới có bộ lọc phụ thu gọn trên mobile; desktop vẫn hiện bộ lọc theo hàng. DialogChanges nhận subjectLabel tùy chọn, mặc định Hũ; Goals truyền Mục tiêu. GoalPriority chỉ tạo nháp GoalAction.reorder, vẫn qua preview và commands hiện có; không bổ sung bảng hoặc route. Xem [đặc tả bố cục](features/goals-layout-2026-11-05.md).

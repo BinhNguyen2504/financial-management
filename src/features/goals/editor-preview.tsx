@@ -1,5 +1,5 @@
 "use client";
-import { DialogChanges } from "@/components/dialog-content";
+import { DialogChanges, DialogPreview } from "@/components/dialog-content";
 import { useMoney } from "@/components/privacy";
 import { formatDate, formatDecimal } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
@@ -28,13 +28,14 @@ export function GoalPreview({
         ? action.replacement
         : null;
   return (
-    <section aria-label={tr("Xem trước thay đổi")} className="goal-preview">
+    <DialogPreview className="goal-preview">
       <h3>{tr("Xem trước thay đổi")}</h3>
       <p>
         {tr(title)}
         {input ? `: ${input.name}` : ""}
       </p>
       <DialogChanges
+        subjectLabel={tr("Mục tiêu")}
         rows={preview.after.goals.flatMap((g) => {
           const before = preview.before.goals.find((x) => x.id === g.id),
             b = preview.before.states.find((s) => s.id === g.id),
@@ -141,27 +142,6 @@ export function GoalPreview({
           ];
         })}
       />
-      {input && (
-        <dl className="goal-facts">
-          <dt>{tr("Hạn hoàn thành")}</dt>
-          <dd>
-            {input.deadline
-              ? formatDate(input.deadline, locale)
-              : tr("Không đặt hạn")}
-          </dd>
-          <dt>{tr("Góp dự định / tháng")}</dt>
-          <dd>{money(input.monthly)}</dd>
-          <dt>{tr("Nguồn liên kết")}</dt>
-          <dd>
-            {input.links
-              .map(
-                (l) =>
-                  `${view.sources.items.find((s) => sourceKey(s) === sourceKey(l))?.name ?? l.sourceId} (${formatDecimal(String(l.share / 100), locale)}%)`,
-              )
-              .join(", ") || "—"}
-          </dd>
-        </dl>
-      )}
       {action.type === "setStatus" &&
         ["completed", "archived"].includes(action.status) && (
           <p>
@@ -176,6 +156,6 @@ export function GoalPreview({
           {transaction.note}
         </p>
       )}
-    </section>
+    </DialogPreview>
   );
 }

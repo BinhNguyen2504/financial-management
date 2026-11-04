@@ -145,7 +145,7 @@ export const modules = [
     description:
       "Theo dõi số tiền đã chuẩn bị và phần còn thiếu cho mục tiêu của bạn.",
     scope: [
-      "Đặt số tiền cần đạt, hạn và thứ tự ưu tiên",
+      "Đặt số tiền cần đạt, hạn và sắp xếp ưu tiên có xem trước",
       "Liên kết khoản đã có hoặc ghi sổ góp riêng",
       "Theo dõi tiến độ, hoàn thành hoặc tạm dừng",
     ],

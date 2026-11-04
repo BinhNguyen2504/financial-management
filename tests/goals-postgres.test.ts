@@ -17,6 +17,10 @@ import { postgresFundRepository } from "../src/server/fund-repository";
 import { runInvestmentCommand } from "../src/application/investments";
 import { postgresInvestmentRepository } from "../src/server/investment-repository";
 import { actionSchema as investmentAction } from "../src/domain/investments/schema";
+import {
+  applyGoalReviewData,
+  buildGoalReviewData,
+} from "../scripts/lib/goal-review-data";
 const admin = postgres(process.env.TEST_DATABASE_ADMIN_URL!, { max: 2 }),
   sql = postgres(process.env.TEST_DATABASE_URL!, { max: 6, prepare: false }),
   repo = postgresGoalRepository(sql),
@@ -107,6 +111,91 @@ async function savings(user: string, category = randomUUID()) {
   return category;
 }
 describe("Goals PostgreSQL", () => {
+  it("imports review data atomically under RLS, preserves edits on retry and refuses an occupied book", async () => {
+    const user = await owner();
+    await savings(user);
+    const original = await readGoalView(repo, user, clock),
+      sample = buildGoalReviewData({
+        ownerId: user,
+        sources: original.sources,
+        clock,
+      });
+    await expect(
+      applyGoalReviewData(repo, sample, clock.today),
+    ).resolves.toMatchObject({ installed: false });
+    expect((await readGoalView(repo, user, clock)).book).toEqual(
+      sample.expected.book,
+    );
+    const edited = {
+      ...sample.expected.book!.goals.find((g) => g.id === sample.ids.car)!,
+    };
+    const {
+      status: _status,
+      rank: _rank,
+      completion: _completion,
+      ...input
+    } = edited;
+    await run(user, {
+      type: "saveGoal",
+      goal: { ...input, name: "Mua xe đã review" },
+    });
+    await expect(
+      applyGoalReviewData(repo, sample, clock.today),
+    ).resolves.toMatchObject({ installed: true });
+    expect(
+      (await readGoalView(repo, user, clock)).book!.goals.some(
+        (g) => g.name === "Mua xe đã review",
+      ),
+    ).toBe(true);
+    const foreign = await owner();
+    expect((await readGoalView(repo, foreign, clock)).book).toBeNull();
+    const other = buildGoalReviewData({
+      ownerId: user,
+      sources: original.sources,
+      clock,
+    });
+    await expect(applyGoalReviewData(repo, other, clock.today)).rejects.toThrow(
+      "GOALS_NOT_EMPTY",
+    );
+    expect(
+      (await data.backup(user, profile)).tables.savings_books[0].version,
+    ).toBe(original.sources.versions.savings);
+  });
+  it("rolls back a failed review batch and refuses changed sources before writes", async () => {
+    const user = await owner(),
+      original = await readGoalView(repo, user, clock),
+      sample = buildGoalReviewData({
+        ownerId: user,
+        sources: original.sources,
+        clock,
+      });
+    const failing: typeof repo = {
+      transaction: (id, fn, readOnly) =>
+        repo.transaction(
+          id,
+          async (tx) => {
+            let saves = 0;
+            return fn({
+              ...tx,
+              save: async (book) => {
+                await tx.save(book);
+                if (++saves === 4) throw new Error("injected failure");
+              },
+            });
+          },
+          readOnly,
+        ),
+    };
+    await expect(
+      applyGoalReviewData(failing, sample, clock.today),
+    ).rejects.toThrow("injected failure");
+    expect((await readGoalView(repo, user, clock)).book).toBeNull();
+    await savings(user);
+    await expect(
+      applyGoalReviewData(repo, sample, clock.today),
+    ).rejects.toThrow("GOAL_SOURCES_CHANGED");
+    expect((await readGoalView(repo, user, clock)).book).toBeNull();
+  });
   it("keeps repeated ledger commands compact enough for portable backups", async () => {
     const user = await owner(),
       action = create();

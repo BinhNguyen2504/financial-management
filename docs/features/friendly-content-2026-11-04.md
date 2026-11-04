@@ -33,3 +33,10 @@ Biểu mẫu và các nhóm trường hiện có được giữ; không thêm b�
 ## Kiểm chứng
 
 Kết quả cập nhật trong [nhật ký validation](../07-validation.md). Ảnh mới nằm trong `artifacts/friendly-content-2026-11-04/`, tách khỏi ảnh lượt trước. Kiểm thử dùng PostgreSQL và Auth double cục bộ; không chứng minh cloud deployment, Auth thật hoặc hành vi thiết bị vật lý. Chưa thực hiện nghiên cứu sử dụng với khách hàng thực.
+
+## Tổng hợp kiểm chứng — 05/11/2026
+
+- Help mở đầu theo thứ tự **Trang này giúp gì → Bắt đầu thế nào → Đọc kết quả ra sao**; các anchor và bài chi tiết hiện có được giữ.
+- `npm run check` đạt, gồm 336 unit test. Lượt browser chính đạt 242/244; hai ca selector cũ đã sửa và chạy lại 8/8 trên bốn cấu hình. Trạng thái trống Chi tiêu bổ sung đạt 4/4; Help và English cuối đạt 16/16.
+- Tổng cộng 248 tình huống riêng có kết quả cuối đạt qua các lượt riêng, không phải một lượt sạch duy nhất. Xem [nhật ký validation](../07-validation.md) và `artifacts/friendly-content-2026-11-04/verification-summary.json`.
+- Snapshot Help cuối khớp source ứng dụng tại thời điểm tổng hợp, ngoại trừ bốn file landing/preview đang được thay đổi song song đã liệt kê trong validation. Kết quả đợt này không thay thế kiểm chứng cho các thay đổi landing mới.

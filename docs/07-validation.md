@@ -1,5 +1,13 @@
 # Xác minh
 
+## Bộ mẫu Mục tiêu và đối soát cloud — 05/11/2026
+
+- Đọc `Notion/goal.png` và source hiện tại trước khi tạo mẫu. Hai mức đích 85/500 triệu và tên học phí tham khảo ảnh; các mục tiêu/giao dịch tự tạo có ghi chú mẫu. Dữ liệu nguồn liên kết lấy từ database hiện tại, không sửa số dư hoặc định giá để ép tiến độ theo ảnh.
+- Cloud: Goal của UID được yêu cầu ban đầu trống, đủ schema; đã sao lưu owner trước ghi. Nạp **13 mục tiêu, 27 liên kết, 39 revision giao dịch (37 giao dịch gốc), 56 audit**, version **56**, bằng repository ứng dụng qua `expense_api`/authenticated RLS. Role không có superuser/BYPASSRLS; cả sáu bảng Goal bật RLS. Đọc lại toàn bộ book khớp package. Chạy lại cùng package trả `installed=true`, giữ version 56. Đối soát nguyên nội dung **39 bảng ngoài Goal: không thay đổi**. Không ghi dữ liệu owner khác hoặc reset. Bằng chứng private: `artifacts/goals-review-cloud-verified-2026-11-05.json`; package/backup nằm trong `imports/` và `backups/`, không đưa UID/số dư nguồn vào tài liệu public.
+- Local: `npm run test:db` **116/116** qua trên PostgreSQL/Auth double cô lập, gồm import nguyên tử, lỗi giữa batch rollback toàn bộ, từ chối nguồn đổi/sổ khác đã có, RLS giữa owner và chạy lại giữ chỉnh sửa. Unit tập trung Goal và generator **15/15** qua; kiểm replay/tiền sau sửa-hủy-chuyển, nguồn thiếu, 100%/112,5%, quá hạn, tạm dừng và hoàn thành còn số dư. Typecheck, ESLint và Prettier trên các file mới/sửa, `git diff --check` qua.
+- Browser: lượt cuối **4/4** trên Chromium desktop/mobile, Firefox desktop và WebKit mobile; xác minh 13 thẻ qua bộ lọc Tất cả, 40%/112,5%, quá hạn, không tràn ngang, hai trang giao dịch, lịch sử hủy và mục tiêu hoàn thành còn 2 triệu. Đã xem ảnh desktop/mobile. Log `artifacts/goals-review-browser.log`, ảnh `artifacts/browser/goal-review-*.png`; production Webpack build riêng qua trong runner (`artifacts/goals-review-next.log`). Hai lượt trước dừng do selector trong test (label select và hai nút Đóng), đã sửa test theo combobox/footer, không đổi UI. Đây là PostgreSQL/Auth double local, không xác minh browser Auth Supabase, deployment hoặc thiết bị vật lý thật; bằng chứng cloud ở bullet riêng phía trên.
+- Catalog, landing copy và preview đã rà: không thay đổi khả năng hoặc UI sản phẩm, giữ dữ liệu public cố định. README, đặc tả Goal và tài liệu bộ mẫu cập nhật cùng workflow. Script reset chờ người dùng chốt UI/UX; không chạy các package reset cũ.
+
 ## Ghi giao dịch Quỹ khi để trống tiền và toast kiểm tra dữ liệu — 02/11/2026
 
 - Sửa đường báo lỗi Quỹ: không đưa nguyên `ZodError.message` vào toast; ô tiền trống dùng “Nhập số tiền giao dịch.” với bản dịch English. Rà cùng loại lỗi và sửa toast Chi tiêu, Thu nhập, Tiết kiệm; Đầu tư đã dùng thông báo tóm tắt và được kiểm tra hồi quy.
@@ -1181,3 +1189,51 @@ Email đích có khối riêng; phạm vi xóa/số bản ghi/thông tin giữ l
 - Lượt trước đạt 14/15: Firefox trả khoảng cách 16px thành 15.999969px; đã đối chiếu lỗi/ảnh và cho phép sai số hình học 0,1px. Một lượt trung gian dừng để đưa sửa trigger desktop vào snapshot cuối; không tính lượt đó là bằng chứng hoàn tất.
 
 Đã cập nhật README, kiến trúc, UX và [đặc tả spacing](features/workspace-spacing-2026-11-04.md); đối chiếu catalog, cả hai landing và preview dữ liệu cố định. Kiểm chứng dùng PostgreSQL cô lập/Auth double/production snapshot, không ghi tài khoản thật, không deploy và không chứng minh cloud hoặc thiết bị vật lý. Các thay đổi khác diễn ra trong workspace được giữ nguyên; bằng chứng trên thuộc snapshot và phạm vi spacing đã nêu.
+
+## Bố cục minh họa landing — 05/11/2026
+
+Đưa tên module và thứ tự nội dung về sát workspace, bỏ các đoạn giải thích dài dưới sidebar, dùng nền/border rõ cho năm thẻ Tổng quan, đưa che tiền lên chrome và thêm Mở sang từng tab mẫu. Menu lấy chung thứ tự từ `navigationModules`; nút Mở có tên truy cập chứa hành động + tên sổ Việt/Anh.
+
+- **35/35 browser đạt trong một lượt sạch cuối, 2,2 phút**: các ca chọn từ `landing`, `landing-refinement`, `landing-language` trên Chromium desktop/mobile, Firefox, WebKit desktop và WebKit/iPhone giả lập. Bao gồm bố cục khách/thành viên Water/Dark ở 1440/768/390px, khung điện thoại 320/390/600px, cuộn đến cuối, che tiền độc lập, focus khi Mở sổ, chuyển tab bàn phím, Việt/Anh và không JavaScript. Các ca public xác nhận không gọi API tài chính.
+- Production build riêng kèm TypeScript đạt; ESLint/Prettier phạm vi thay đổi và kiến trúc **324 source / 0 vi phạm** đạt. Không chạy lại toàn bộ unit/database suite cho tinh chỉnh preview này.
+- Log cuối: `artifacts/preview-layout-final-tests.log`, `artifacts/preview-layout-final-next.log`, `artifacts/preview-layout-static.log`. Ảnh: `artifacts/preview-layout-final/`; ảnh đối chiếu Water/Dark: `artifacts/landing-preview-water-dark-1440.png` và `artifacts/landing-preview-water-dark-390.png`.
+- Manifest `artifacts/preview-layout-source-manifest.json` xác nhận sáu tệp sản phẩm khớp production snapshot `browser-app-mcnT3h`. Lượt đầu phát hiện ngưỡng chiều cao test desktop áp nhầm tablet (1013px so với 1000px); đã xem trace/ảnh, giới hạn tablet riêng và chạy lại sạch trên source cuối. Không tính các lượt trước thành kết quả cuối.
+
+Đã cập nhật README, UX, đặc tả landing/Tổng quan và copy hai landing vi/en; rà catalog, giữ tên/scope/trạng thái triển khai hiện có. Dữ liệu mẫu cố định; kiểm chứng dùng PostgreSQL cô lập và Auth double, không dùng dữ liệu tài chính tài khoản thật, không migrate/deploy và không chứng minh cloud/thiết bị vật lý.
+
+## Nội dung cho người dùng phổ thông — tổng hợp 05/11/2026
+
+Triển khai [bảng đối chiếu nội dung và tác vụ](features/friendly-content-2026-11-04.md): tên gọi Việt/Anh gần gũi, hướng dẫn bắt đầu/đọc số liệu tại chỗ, Help mở đầu bằng mục đích rồi các bước và ý nghĩa số liệu, trạng thái trống có hành động cụ thể, Tổng quan ưu tiên số liệu và việc tiếp theo. Giữ các nghiệp vụ, ID, bố cục đã lưu, bản nháp và bước xác nhận ghi tiền.
+
+### Kết quả và nguồn bằng chứng
+
+- `npm run check` đạt: lint, kiến trúc **324 tệp / 0 vi phạm**, Prettier, **336/336 unit**, typecheck và production build. Log: `artifacts/friendly-content-2026-11-04/check-complete.log`.
+- Lượt browser chính có **242/244 đạt**, trên Chromium desktop/mobile, Firefox và WebKit/iPhone giả lập; kết quả ở `results.json`, log `regression.log`. Hai ca desktop dùng selector cũ: lọc quỹ chưa mở phần mở rộng và nút xuất còn tên Export CSV. Đã sửa test đi qua đúng điều khiển, cập nhật tên quỹ trong kỳ vọng báo cáo; chạy lại hai ca trên bốn cấu hình đạt **8/8**, ở `focused-results.json` và `focused.log`.
+- Kiểm tra bổ sung trạng thái Chi tiêu trống đạt **4/4**: phân biệt chưa có hũ với không có kết quả lọc; đặt lại bộ lọc không ghi dữ liệu; tạo hũ mở đúng biểu mẫu. Kết quả cuối: `empty-verified-results.json`, `empty-verified.log`. Các lượt xây dựng test trước đó dùng sai locator cho select có nhãn bọc option; đã sửa dùng role/name và giữ các artifact cũ, không tính chúng là lượt đạt.
+- Sau khi hoàn thiện phần mở đầu Help, chạy lại các ca người mới, Help lồng trong hai biểu mẫu, màn hình hẹp/phóng chữ và toàn bộ nội dung English trên bốn cấu hình: **16/16**, ở `help-final-results.json`, `help-final.log`.
+- **248 tình huống riêng biệt có kết quả cuối đạt** khi hợp nhất các lượt trên theo file, tên ca và cấu hình trình duyệt. Đây **không phải một lượt sạch 248/248 trên một snapshot duy nhất**. `verification-summary.json` ghi từng kết quả cuối cùng và lượt nguồn; không còn tình huống chưa được chạy lại đạt trong tập này.
+
+Các đường dẫn artifact ở trên thuộc `artifacts/friendly-content-2026-11-04/`. Ảnh mặc định và mở hướng dẫn ở 390/768/1440px, năm theme tối, ẩn tiền và phóng chữ nằm theo thư mục từng cấu hình. Đã xem ảnh thực tế, kiểm tràn ngang, nháp/focus, bản dịch và bố cục Tổng quan 0/2/8 thẻ; không hạ ngưỡng hình học hoặc bỏ kiểm tra lỗi để làm xanh bộ test.
+
+### Snapshot và giới hạn
+
+`source-manifest.json` ghi đối chiếu source ở thời điểm lượt chính; `source-final-manifest.json` đối chiếu toàn bộ source với snapshot Help cuối `browser-app-vEGeqf`. Khi tổng hợp, bốn file landing/preview đã có thay đổi song song sau snapshot: `marketing-landing.tsx`, `product-preview.tsx`, `themed-landing.tsx` và `i18n/messages/landing.ts`. Chúng được giữ nguyên; bằng chứng hồi quy nêu trên không xác nhận các thay đổi landing mới đó. Các file source còn lại khớp snapshot Help cuối tại thời điểm đối chiếu.
+
+Đã rà/cập nhật catalog, landing và preview minh họa, README, Help cùng tài liệu chức năng/kiến trúc/UX trong đợt nội dung này. Preview dùng dữ liệu cố định và không đọc API tài chính. Các thay đổi song song về reset, spacing và landing giữ báo cáo riêng, không cộng vào kết quả của đợt nội dung.
+
+Kiểm chứng sử dụng production snapshot, PostgreSQL cô lập, Auth contract double và browser emulation. Không chạy migration/deploy, không ghi hoặc reset dữ liệu tài khoản thật. Chưa chứng minh Supabase Auth/RLS cloud, thiết bị vật lý hoặc mức độ dễ dùng qua nghiên cứu với khách hàng thực.
+
+## Bố cục Mục tiêu — 05/11/2026
+
+Phạm vi: bộ lọc/thẻ, tiến độ/kế hoạch, nguồn/giao dịch/lịch sử, form/xem trước và hộp sắp xếp nhiều mục. Giữ API/schema/tiền, bản nháp, năm theme, Việt/Anh và dữ liệu review đang có. Catalog, Help, landing/preview, README, kiến trúc và tài liệu UX/Goals được rà soát/cập nhật cùng thay đổi. Xem [đặc tả và ảnh](features/goals-layout-2026-11-05.md).
+
+- `npm run check`: lint, architecture (326 source files, 0 violations), format, **338/338 unit tests**, typecheck và production build đạt. Log: `artifacts/goals-layout-verified-check.log`.
+- `npm run test:db`: **116/116**, 18 file, trên PostgreSQL local tách biệt; log `artifacts/goals-layout-db.log`.
+- Browser liên quan: **195/195**, 11 phút, một lượt sạch trên production snapshot cuối; gồm Goals, review data, action-layout, Help, landing-refinement và landing trên Chromium desktop/mobile, Firefox desktop, WebKit desktop và WebKit iPhone. Bao phủ 320/390/768/1440px, năm theme sáng/tối, Việt/Anh, bố cục footer với chữ lớn và giảm chuyển động; điều kiện/xung đột/lưu lại được kiểm tra qua API local. Log: `artifacts/goals-layout-verified.log`, build: `artifacts/goals-layout-verified-next.log`.
+- Trước thay đổi: `goal-review-data.spec.ts --project=desktop` đạt 1/1; ảnh giữ trong `artifacts/goals-layout-2026-11-05/before/`.
+- Probe/judge thiết kế chạy trong phiên Playwright đã đăng nhập vào Auth double: 18 lượt đo, bốn bề mặt × 1440/768/390/320px và hai trường hợp English ở 320px (tiền 24 chữ số/tên dài, che tiền, reduced motion). Không có FAIL sau những ngoại lệ giữ nguyên thiết kế chung đã nêu trong đặc tả; bốn WARN cùng chỉ nhãn sidebar “KHÔNG GIAN CÁ NHÂN” ở desktop. Không tràn ngang; bàn phím chuyển tab và Home, che tiền được kiểm tra trực tiếp. Báo cáo/ảnh: `artifacts/goals-layout-2026-11-05/inspection/`.
+- `source-manifest.json` ghi 509 file source/test/script/config; `snapshot-comparison.json` đối chiếu 365 file trong `src/` với bản production dùng cho browser: 0 khác biệt. Không đưa `.env.local`, cookie hoặc dữ liệu tài khoản thật vào bằng chứng.
+
+Các log `goals-layout-browsers.log` và `goals-layout-final.log` thuộc lượt bị dừng để điều chỉnh bố cục; không dùng làm kết quả tổng cuối. Lượt đầu phát hiện khoảng cách empty state 10px (đã chỉnh 16px) và selector Quỹ dùng tên cũ (đã đối chiếu DOM và sửa test). Không sửa quy tắc tài chính để làm test qua.
+
+Giới hạn: browser dùng PostgreSQL local, Auth double, production snapshot và giả lập thiết bị; không chứng minh Auth/RLS cloud, gửi email thật, triển khai Vercel hoặc thiết bị vật lý. Không chạy import/reset/migration cloud hay đổi dữ liệu review của tài khoản.

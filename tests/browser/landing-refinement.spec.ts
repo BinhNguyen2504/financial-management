@@ -326,7 +326,7 @@ test("preview follows app hierarchy with a concise rail and working book actions
       });
       await preview
         .locator(".preview-overview-grid")
-        .getByRole("button", { name: "Thu nhập", exact: true })
+        .getByRole("button", { name: "Mở Thu nhập", exact: true })
         .click();
       await expect(
         preview.getByRole("tab", { name: "Thu nhập", exact: true }),
@@ -337,5 +337,13 @@ test("preview follows app hierarchy with a concise rail and working book actions
         .click();
       await fits(page);
     }
+    await page.locator(".public-language select").selectOption("en");
+    await expect(preview.locator(".preview-heading h2")).toHaveText("Overview");
+    await preview
+      .getByRole("button", { name: "Open Income", exact: true })
+      .click();
+    await expect(preview.locator(".preview-heading h2")).toHaveText("Income");
+    await page.locator(".public-language select").selectOption("vi");
+    await preview.getByRole("tab", { name: "Tổng quan", exact: true }).click();
   }
 });

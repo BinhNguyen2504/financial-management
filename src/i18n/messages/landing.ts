@@ -1,5 +1,8 @@
 // Public product copy and fixed illustrative data only; never account data.
 export const landing = {
+  "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Sắp xếp ưu tiên trong một danh sách; xem trước rồi xác nhận lưu. Trong sổ giao dịch, dùng biểu tượng bút để sửa và thùng rác để hủy.":
+    "Goals use linked sources or a separate ledger, with a contribution plan and history. Arrange priorities in one list; preview, then confirm saving. Use the pencil to correct and the bin to cancel transactions.",
+  "Kế hoạch góp": "Contribution plan",
   "Khám phá từng sổ với dữ liệu minh họa. Từ Tổng quan, chọn Mở để xem chi tiết hoặc thử che số tiền.":
     "Explore each ledger with sample data. From Overview, choose Open for details or try hiding amounts.",
   "Tháng này nhận bao nhiêu? Các hũ còn lại thế nào? Bắt đầu từ Tổng quan, chọn Mở để khám phá từng sổ bằng dữ liệu minh họa.":
