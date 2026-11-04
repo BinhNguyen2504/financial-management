@@ -31,11 +31,11 @@ function TransactionSnapshot({
         <strong>{money(transaction.amount)}</strong>
       </div>
       <p>
-        {fundNames[transaction.fundId]} · {place(transaction.locationId)}
+        {tr(fundNames[transaction.fundId])} · {place(transaction.locationId)}
       </p>
       {transaction.kind === "transfer" && (
         <p>
-          → {fundNames[transaction.toFundId]} ·{" "}
+          → {tr(fundNames[transaction.toFundId])} ·{" "}
           {place(transaction.toLocationId)}
         </p>
       )}
@@ -131,7 +131,7 @@ export function FundHistory({ view }: { view: FundView }) {
                     <dl className="fund-amount-rows">
                       {fundIds.map((fund) => (
                         <div key={fund}>
-                          <dt>{fundNames[fund]}</dt>
+                          <dt>{tr(fundNames[fund])}</dt>
                           <dd>× {configuration.multipliers[fund]}</dd>
                         </div>
                       ))}
@@ -139,7 +139,7 @@ export function FundHistory({ view }: { view: FundView }) {
                     <h4>{tr("Ưu tiên:")}</h4>
                     <ol>
                       {configuration.priority.map((fund) => (
-                        <li key={fund}>{fundNames[fund]}</li>
+                        <li key={fund}>{tr(fundNames[fund])}</li>
                       ))}
                     </ol>
                   </div>

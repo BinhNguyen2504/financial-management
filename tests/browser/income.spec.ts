@@ -174,7 +174,7 @@ test("income CRUD, effective history, reports, CSV and responsive themes", async
   await expect(page.getByRole("dialog")).toContainText("Thưởng một lần");
   await page.keyboard.press("Escape");
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Sửa danh mục Lương thử nghiệm", exact: true })
@@ -199,7 +199,7 @@ test("income CRUD, effective history, reports, CSV and responsive themes", async
   ).toBeVisible();
   await record(page, "Lương mới", "0");
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Ngừng danh mục Lương mới", exact: true })
@@ -236,7 +236,7 @@ test("income CRUD, effective history, reports, CSV and responsive themes", async
   await expect(page.getByRole("dialog")).toBeHidden();
   await addCategory(page, "Chưa có thu");
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Xóa danh mục Chưa có thu", exact: true })
@@ -263,7 +263,7 @@ test("income network retry and independent session conflicts preserve drafts", a
     .getByLabel("Tên", { exact: true })
     .fill("Bản nháp giữ lại");
   await page.getByLabel("Số tiền thực nhận (VND)").fill("123");
-  await page.route("**/api/v1/income/commands", (route) => route.abort());
+  await page.route("**/api/v1/income/commands*", (route) => route.abort());
   await page
     .getByRole("dialog")
     .getByRole("button", { name: "Lưu", exact: true })
@@ -274,7 +274,7 @@ test("income network retry and independent session conflicts preserve drafts", a
   await expect(
     page.getByRole("dialog").getByLabel("Tên", { exact: true }),
   ).toHaveValue("Bản nháp giữ lại");
-  await page.unroute("**/api/v1/income/commands");
+  await page.unroute("**/api/v1/income/commands*");
   const other = await browser.newContext({
     baseURL: process.env.TEST_BASE_URL,
   });
@@ -340,7 +340,7 @@ test("income retries a lost response after commit without duplicating income or 
     .getByLabel("Tên", { exact: true })
     .fill("Mất phản hồi");
   await page.getByLabel("Số tiền thực nhận (VND)").fill("456");
-  await page.route("**/api/v1/income/commands", async (route) => {
+  await page.route("**/api/v1/income/commands*", async (route) => {
     const response = await route.fetch();
     expect(response.ok()).toBe(true);
     await route.abort();
@@ -359,7 +359,7 @@ test("income retries a lost response after commit without duplicating income or 
   await page.clock.setFixedTime(await page.evaluate(() => Date.now() + 61_000));
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await refresh;
-  await page.unroute("**/api/v1/income/commands");
+  await page.unroute("**/api/v1/income/commands*");
   await save(page);
   const result = await view(page);
   expect(result.book!.version).toBe(1);
@@ -544,7 +544,7 @@ test("income category deletion follows remaining receipts across years, includin
   ).toBe(true);
   await page.reload();
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await expect(
     page.getByRole("button", { name: `Ngừng danh mục ${name}`, exact: true }),
@@ -563,7 +563,7 @@ test("income category deletion follows remaining receipts across years, includin
   ).toBe(true);
   await page.reload();
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await expect(
     page.getByRole("button", { name: `Ngừng danh mục ${name}`, exact: true }),
@@ -583,7 +583,7 @@ test("income category deletion follows remaining receipts across years, includin
   await page.getByRole("button", { name: "Xác nhận xóa", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await page
     .getByRole("button", { name: `Xóa danh mục ${name}`, exact: true })
@@ -605,7 +605,7 @@ test("income category deletion follows remaining receipts across years, includin
   expect(after.audit.slice(0, -1)).toEqual(before.audit);
   await page.reload();
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await expect(page.getByRole("heading", { name, exact: true })).toHaveCount(0);
 });
@@ -628,7 +628,7 @@ test("income rejects deletion when another session records a receipt after the d
   ).toBe(true);
   await page.reload();
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await page
     .getByRole("button", {
@@ -655,7 +655,7 @@ test("income rejects deletion when another session records a receipt after the d
   await page.getByRole("button", { name: "Hủy", exact: true }).click();
   await page.reload();
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await expect(
     page.getByRole("button", {

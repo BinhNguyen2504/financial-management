@@ -40,7 +40,7 @@ export function useInvestmentEditor({
   mode: EditorMode;
   view: InvestmentView;
   refresh: () => Promise<InvestmentView>;
-  onSaved: () => void;
+  onSaved: (view?: InvestmentView) => void;
   onClose: () => void;
 }) {
   const { t: tr, config: localize } = useI18n("investments");
@@ -207,9 +207,13 @@ export function useInvestmentEditor({
         });
       else {
         writing = true;
-        await investmentsJSON("/commands", command, generation);
+        const result = await investmentsJSON<{ view?: InvestmentView }>(
+          `/commands?return=view&asOf=${initial.state.asOf ?? initial.today}`,
+          command,
+          generation,
+        );
         toast("success", tr("Đã lưu thay đổi."));
-        onSaved();
+        onSaved(result.view);
       }
     } catch (e) {
       const unknownWrite =

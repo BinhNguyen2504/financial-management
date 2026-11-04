@@ -1,4 +1,6 @@
 export const goals = {
+  "Các cột mốc có thể trùng nguồn; không cộng tiến độ thành tổng tài sản. Sổ riêng độc lập với các module khác.":
+    "Milestones may share sources; progress must not be added into total assets. Separate ledgers are independent of other modules.",
   "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Xem trước thay đổi, quay lại điều chỉnh rồi xác nhận lưu trong ứng dụng.":
     "Goals use linked sources or a separate ledger, with contribution plans and history. Preview changes, go back to edit, then confirm saving in the app.",
   "Chọn mục tiêu": "Choose a goal",
@@ -30,8 +32,8 @@ export const goals = {
     "Choose a receiving goal for the transfer.",
   "Chọn nguồn cho mục tiêu liên kết; sổ riêng không dùng nguồn liên kết.":
     "Select sources for a linked goal; separate ledgers do not use linked sources.",
-  "Các cột mốc có thể trùng nguồn; không cộng tiến độ thành tổng tài sản. Sổ riêng độc lập với các module khác.":
-    "Milestones may share sources; progress must not be added into total assets. Separate ledgers are independent of other modules.",
+  "Các cột mốc có thể trùng nguồn; không cộng tiến độ thành tổng tài sản. Sổ riêng độc lập với các chức năng khác.":
+    "Milestones may share sources; progress must not be added into total assets. Separate ledgers are independent of other sections.",
   "Cách chuẩn bị tiền": "Preparing the money",
   "Cách ghi nhận": "Tracking method",
   "Còn thiếu": "Remaining",

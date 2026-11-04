@@ -163,3 +163,7 @@ Database đã có reset ngày 29/10 cần áp dụng `202610300001_reset_owner_c
 ## Migration Goals — 30/10/2026
 
 Sau đầy đủ migration hiện có và 202610300001_reset_owner_claims.sql, áp 202610300002_goals.sql bằng kết nối migration/admin. File chỉ thêm cấu trúc và mở rộng reset, không seed hoặc làm trống. Sau áp kiểm RLS, đọc/preview/lưu và backup V3. Thiếu schema báo chưa sẵn sàng; áp cùng phiên bản source V3. Phiên làm việc này không áp cloud/deploy. Xem [Goals](features/goals.md).
+
+## Đo tải dữ liệu — 04/11/2026
+
+Các thay đổi [tối ưu tải](features/performance-2026-11-04.md) không cần migration/package. Khi cần chẩn đoán, bật `FINANCIAL_TIMING=1` ở môi trường được kiểm tra, đọc Server-Timing/X-DB-Statements và log duration/count, sau đó tắt. Đo cold/warm, Auth, connection, SQL và request tổng; xác minh region hosting gần DB trước khi đổi cấu hình. Chưa deploy hoặc xác minh hiệu năng online trong đợt này.

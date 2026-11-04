@@ -1,5 +1,11 @@
+import type { CommandViewOptions } from "./shared/command-view";
 import { commandFingerprint } from "./shared/command-fingerprint";
-import { applyAction, view, GoalError } from "../domain/goals/engine";
+import {
+  applyAction,
+  view,
+  GoalError,
+  type GoalView,
+} from "../domain/goals/engine";
 import {
   commandSchema,
   type GoalBook,
@@ -37,6 +43,7 @@ export interface GoalRepository {
   transaction<T>(
     owner: string,
     fn: (tx: GoalTransactionRepository) => Promise<T>,
+    readOnly?: boolean,
   ): Promise<T>;
 }
 export function readGoalView(
@@ -44,8 +51,10 @@ export function readGoalView(
   owner: string,
   clock: Clock,
 ) {
-  return repository.transaction(owner, async (tx) =>
-    view(await tx.read(), await tx.sources(clock.today), clock),
+  return repository.transaction(
+    owner,
+    async (tx) => view(await tx.read(), await tx.sources(clock.today), clock),
+    true,
   );
 }
 export function runGoalCommand(
@@ -54,53 +63,65 @@ export function runGoalCommand(
   raw: GoalCommand,
   clock: Clock,
   preview = false,
-) {
+  options: CommandViewOptions = {},
+): Promise<GoalCommandResult & { view?: GoalView }> {
   const command = commandSchema.parse(raw),
     fingerprint = commandFingerprint(command);
-  return repository.transaction(owner, async (tx) => {
-    const stored = await tx.command(command.id);
-    if (stored) {
-      if (stored.fingerprint !== fingerprint)
+  return repository.transaction(
+    owner,
+    async (tx) => {
+      const stored = await tx.command(command.id);
+      if (stored) {
+        if (stored.fingerprint !== fingerprint)
+          throw new GoalError(
+            "Mã yêu cầu đã dùng với nội dung khác.",
+            409,
+            "IDEMPOTENCY_CONFLICT",
+          );
+        return options.view && !preview
+          ? {
+              ...stored.result,
+              view: view(await tx.read(), await tx.sources(clock.today), clock),
+            }
+          : stored.result;
+      }
+      const before = await tx.read();
+      if ((before?.version ?? 0) !== command.expectedVersion)
         throw new GoalError(
-          "Mã yêu cầu đã dùng với nội dung khác.",
+          "Dữ liệu đã đổi ở phiên khác. Tải dữ liệu mới và xem trước lại; nội dung nhập được giữ.",
           409,
-          "IDEMPOTENCY_CONFLICT",
+          "VERSION_CONFLICT",
         );
-      return stored.result;
-    }
-    const before = await tx.read();
-    if ((before?.version ?? 0) !== command.expectedVersion)
-      throw new GoalError(
-        "Dữ liệu đã đổi ở phiên khác. Tải dữ liệu mới và xem trước lại; nội dung nhập được giữ.",
-        409,
-        "VERSION_CONFLICT",
-      );
-    const sources = await tx.sources(clock.today);
-    // Only source modules used by this action need to match the preview.
-    const action = command.action;
-    const goal =
-      action.type === "saveGoal"
-        ? action.goal
-        : action.type === "setStatus"
-          ? before?.goals.find((g) => g.id === action.goalId)
-          : undefined;
-    for (const kind of new Set(goal?.links.map((l) => l.kind) ?? []))
-      if (sources.versions[kind] !== command.expectedSources[kind])
-        throw new GoalError(
-          "Nguồn tiền đã thay đổi. Tải dữ liệu mới và xem trước lại; nội dung nhập được giữ.",
-          409,
-          "SOURCE_VERSION_CONFLICT",
-        );
-    const after = applyAction(before, action, sources, clock);
-    const result = {
-      version: after.version,
-      before: previewState(view(before, sources, clock)),
-      after: previewState(view(after, sources, clock)),
-    };
-    if (!preview) {
-      await tx.save(after);
-      await tx.remember(command.id, { fingerprint, result });
-    }
-    return result;
-  });
+      const sources = await tx.sources(clock.today);
+      // Only source modules used by this action need to match the preview.
+      const action = command.action;
+      const goal =
+        action.type === "saveGoal"
+          ? action.goal
+          : action.type === "setStatus"
+            ? before?.goals.find((g) => g.id === action.goalId)
+            : undefined;
+      for (const kind of new Set(goal?.links.map((l) => l.kind) ?? []))
+        if (sources.versions[kind] !== command.expectedSources[kind])
+          throw new GoalError(
+            "Nguồn tiền đã thay đổi. Tải dữ liệu mới và xem trước lại; nội dung nhập được giữ.",
+            409,
+            "SOURCE_VERSION_CONFLICT",
+          );
+      const after = applyAction(before, action, sources, clock);
+      const result = {
+        version: after.version,
+        before: previewState(view(before, sources, clock)),
+        after: previewState(view(after, sources, clock)),
+      };
+      if (!preview) {
+        await tx.save(after);
+        await tx.remember(command.id, { fingerprint, result });
+      }
+      return options.view && !preview
+        ? { ...result, view: view(await tx.read(), sources, clock) }
+        : result;
+    },
+    preview,
+  );
 }

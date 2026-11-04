@@ -552,7 +552,7 @@ test("attention follows visible modules and does not display retained alerts for
   await d.locator('[data-widget-option="income"] > label input').uncheck();
   await d.getByRole("button", { name: "Xem thử bố cục", exact: true }).click();
   await expect(page.locator('[data-widget="attention"]')).toContainText(
-    "Bật widget của một module",
+    "Bật thẻ thông tin của một chức năng",
   );
   await expect(page.locator('[data-widget="attention"]')).not.toContainText(
     "Thu cố định chưa nhập",

@@ -152,7 +152,7 @@ export function FundEditorFields({
       >
         {fundIds.map((k) => (
           <option key={k} value={k}>
-            {fundNames[k]}
+            {tr(fundNames[k])}
           </option>
         ))}
       </select>,
@@ -291,7 +291,7 @@ export function FundEditorFields({
               {fundIds.map((k) =>
                 field(
                   `multipliers.${k}`,
-                  tr("{0} — hệ số x", { 0: fundNames[k] }),
+                  tr("{0} — hệ số x", { 0: tr(fundNames[k]) }),
                   <LocalizedInput
                     numberKind="decimal"
                     precision={2}
@@ -327,10 +327,12 @@ export function FundEditorFields({
               <ol className="fund-priorities">
                 {priority.map((k, i) => (
                   <li key={k}>
-                    <span>{fundNames[k]}</span>
+                    <span>{tr(fundNames[k])}</span>
                     <button
                       className="expense-icon-button"
-                      aria-label={tr("Ưu tiên {0} lên", { 0: fundNames[k] })}
+                      aria-label={tr("Ưu tiên {0} lên", {
+                        0: tr(fundNames[k]),
+                      })}
                       disabled={i === 0}
                       onClick={() => {
                         setPriority((s) => {
@@ -346,7 +348,7 @@ export function FundEditorFields({
                     <button
                       className="expense-icon-button"
                       aria-label={tr("Ưu tiên {0} xuống", {
-                        0: fundNames[k],
+                        0: tr(fundNames[k]),
                       })}
                       disabled={i === 2}
                       onClick={() => {

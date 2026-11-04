@@ -67,6 +67,10 @@ test("section heading keeps Help separated from its description in both language
           fontSize === "100%" &&
           [1440, 390].includes(width)
         ) {
+          await page.evaluate(() => {
+            window.scrollTo({ top: 0, behavior: "instant" });
+          });
+          await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
           await page.screenshot({
             path: info.outputPath(`settings-${width}.png`),
             fullPage: true,
@@ -150,6 +154,10 @@ test("occupied account presents module states before optional record details", a
     document.documentElement.style.fontSize = "100%";
   });
   await page.setViewportSize({ width: 390, height: 900 });
+  await page.evaluate(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  });
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await page.screenshot({
     path: info.outputPath("restore-details-390.png"),
     fullPage: true,
@@ -175,8 +183,8 @@ test("system readiness and account data stay independent and fully translated", 
   await expect(page.locator("#backup-file")).toBeDisabled();
   await expect(page.locator("#reset-data button")).toBeDisabled();
   await page.getByRole("radio", { name: "English", exact: true }).check();
-  await expect(status).toContainText("5 modules with data");
-  await expect(status).toContainText("1 empty module");
+  await expect(status).toContainText("5 sections with data");
+  await expect(status).toContainText("1 empty section");
   const income = status.locator('details[data-module="income"]');
   await income.locator("summary").click();
   await expect(income).toContainText("51 stored records");

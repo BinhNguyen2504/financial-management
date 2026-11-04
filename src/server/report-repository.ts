@@ -1,3 +1,4 @@
+import { timePhase } from "./performance";
 import type postgres from "postgres";
 import { z } from "zod";
 import type { ReportRepository } from "../application/reports";
@@ -36,7 +37,7 @@ const queries: Record<SourceId, string> = {
 
 export function postgresReportRepository(sql: postgres.Sql): ReportRepository {
   return {
-    async read(owner, sources) {
+    async read(owner, sources, options) {
       z.uuid().parse(owner);
       return (await sql.begin(
         "isolation level repeatable read read only",
@@ -50,9 +51,27 @@ export function postgresReportRepository(sql: postgres.Sql): ReportRepository {
           for (const source of new Set(sources)) {
             try {
               const book = await tx.savepoint(async (sp) => {
-                const [row] = await sp.unsafe<{ book: Books[typeof source] }[]>(
-                  queries[source],
-                  [owner],
+                if (options && !options.fullSources.includes(source)) {
+                  const tables = [
+                    ...queries[source].matchAll(/public\.(\w+)/g),
+                  ].map((m) => m[1]);
+                  const prefix = source === "expenses" ? "expense" : source;
+                  const [meta] = await timePhase("sql", () =>
+                    sp.unsafe<{ version: number | null; ready: boolean }[]>(
+                      `select (select version from public.${prefix}_books where owner_id=$1) as version,
+                     (select bool_and(to_regclass('public.' || name) is not null) from unnest($2::text[]) name) as ready`,
+                      [owner, tables],
+                    ),
+                  );
+                  if (!meta.ready) throw new Error("REPORT_SCHEMA_NOT_READY");
+                  return meta.version === null
+                    ? null
+                    : ({ version: meta.version } as Books[typeof source]);
+                }
+                const [row] = await timePhase("sql", () =>
+                  sp.unsafe<{ book: Books[typeof source] }[]>(queries[source], [
+                    owner,
+                  ]),
                 );
                 return row?.book ?? null;
               });

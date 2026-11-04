@@ -1,4 +1,5 @@
 "use client";
+import { useDiscardChanges } from "@/components/discard-changes";
 import { generationOf } from "@/lib/data-generation";
 import { buildSavingsAction } from "./editor-action";
 
@@ -10,6 +11,7 @@ import { focusFirstInvalid } from "@/components/form-feedback";
 import { useMoney, useMoneyHidden } from "@/components/privacy";
 import { useToast } from "@/components/toast";
 import {
+  endOfMonth,
   nextMonth,
   quantity,
   quantityText,
@@ -48,7 +50,7 @@ export function useSavingsEditor({
   view: SavingsView;
   month: string;
   onClose(): void;
-  onSaved(): Promise<void>;
+  onSaved(view?: SavingsView): Promise<void>;
   onReload(): Promise<unknown>;
 }) {
   const generation = useRef(generationOf(view)).current;
@@ -286,9 +288,13 @@ export function useSavingsEditor({
         });
       else {
         writing = true;
-        await savingsJSON("/commands", command, generation);
+        const result = await savingsJSON<{ view?: SavingsView }>(
+          `/commands?return=view&asOf=${endOfMonth(month)}`,
+          command,
+          generation,
+        );
         toast("success", tr("Đã lưu thay đổi."));
-        await onSaved();
+        await onSaved(result.view);
       }
     } catch (e) {
       const unknownWrite =
@@ -333,6 +339,12 @@ export function useSavingsEditor({
   }
   const sensitive = mode.type === "transaction" || mode.type === "price";
   const formId = useId();
+  const { close, discardConfirmation } = useDiscardChanges(
+    draft !== originalDraft || !!f.reason || !!saleQuantity,
+    busy || uncertain,
+    onClose,
+    formId,
+  );
   const reloadAfterConflict = async () => {
     setBusy(true);
     try {
@@ -360,7 +372,8 @@ export function useSavingsEditor({
     old,
     mode,
     localizedTitles,
-    onClose,
+    onClose: close,
+    discardConfirmation,
     uncertain,
     formId,
     conflict,

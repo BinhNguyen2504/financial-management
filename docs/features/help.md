@@ -85,3 +85,16 @@ Help Cài đặt giải thích dữ liệu chặn gồm sổ/cấu hình/lịch 
 ## Nút giải thích và chữ lớn — 02/11/2026
 
 Nút Help theo ngữ cảnh giới hạn trong chiều rộng khối chứa; nhãn dài tự xuống dòng, icon không co. Đã tái hiện trên Firefox ở chữ 200%: nút giải thích mức sinh hoạt Quỹ gây tràn ngang 31px, sau giới hạn chiều rộng còn 0px. Header/menu và footer giữ bounds/focus theo [quy tắc bố cục thao tác](action-layout-2026-11-02.md); không đổi nội dung hay nguồn dữ liệu Help.
+
+## Điều kiện khôi phục — 04/11/2026
+
+Help Cài đặt vi/en hướng người dùng xem mục có dữ liệu/trống rồi mở chi tiết sổ/lịch sử khi cần. Nút Help nằm trong hàng tiêu đề, cách mô tả dưới 16px, giữ thao tác bàn phím và trả focus. Đây là cấu trúc còn sót sau đợt spacing trước; không đổi nguồn nội dung hay cách tải Help. Xem [phạm vi](settings-restore-layout-2026-11-04.md).
+
+### Cải thiện thao tác — 04/11/2026
+
+Đối chiếu [thiết kế dùng chung](workspace-comfort-2026-11-04.md): đầu trang gọn, bảo vệ nháp và giữ ngữ cảnh xem theo tài khoản trong phiên. Các lựa chọn nghiệp vụ, dữ liệu và lịch sử hiện có được giữ. Phần khôi phục/làm trống nằm sau lựa chọn giao diện trong Cài đặt; không thay điều kiện restore/reset.
+
+
+## Nội dung cho người dùng phổ thông — 04/11/2026
+
+Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.

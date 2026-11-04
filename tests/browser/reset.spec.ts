@@ -2,12 +2,11 @@ import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { vietnamClock } from "../../src/domain/expenses/engine";
+import { visualThemeKeys } from "../../src/components/visual-theme";
 
-async function login(page: Page) {
+async function login(page: Page, email = `${randomUUID()}@example.test`) {
   await page.goto("/login?next=%2Fsettings");
-  await page
-    .getByLabel("Email", { exact: true })
-    .fill(`${randomUUID()}@example.test`);
+  await page.getByLabel("Email", { exact: true }).fill(email);
   await page
     .getByRole("button", { name: "Gửi mã đăng nhập", exact: true })
     .click();
@@ -82,6 +81,7 @@ async function confirm(page: Page) {
 test("explains retained data and requires a saved backup before clearing and restoring on the same account", async ({
   page,
 }, info) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await login(page);
   await expect(page.locator("#reset-data button")).toBeDisabled();
   await income(page);
@@ -112,7 +112,7 @@ test("explains retained data and requires a saved backup before clearing and res
     name: "Xóa toàn bộ dữ liệu tài chính",
     exact: true,
   });
-  await expect(remove).toBeDisabled();
+  await expect(remove).toHaveCount(0);
   const backup = await backupBeforeReset(page);
   await dialog.getByRole("checkbox").check();
   await expect(remove).toBeDisabled();
@@ -158,12 +158,277 @@ test("explains retained data and requires a saved backup before clearing and res
     .click();
   const editor = page.getByRole("dialog");
   await editor.getByLabel("Tên", { exact: true }).fill("Sau khi khôi phục");
-  const write = page.waitForRequest((request) =>
-    request.url().endsWith("/api/v1/income/commands"),
+  const write = page.waitForRequest(
+    (request) => new URL(request.url()).pathname === "/api/v1/income/commands",
   );
   await editor.getByRole("button", { name: "Lưu", exact: true }).click();
   expect((await write).headers()["x-data-generation"]).toBe("1");
   await expect(editor).toHaveCount(0);
+});
+
+test("reset dialog shows both steps, recovers from backup failures and invalidates old confirmations", async ({
+  page,
+}, info) => {
+  await login(page);
+  await income(page);
+  await page.reload();
+  const dialog = await openReset(page);
+  const steps = dialog.getByRole("list", {
+    name: "Các bước làm trống dữ liệu",
+  });
+  await expect(steps.getByRole("listitem")).toHaveCount(2);
+  await expect(steps.locator('[aria-current="step"]')).toContainText(
+    "Tạo bản sao lưu",
+  );
+  await expect(dialog.getByRole("textbox")).toHaveCount(0);
+  await expect(
+    dialog.getByRole("button", {
+      name: "Xóa toàn bộ dữ liệu tài chính",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await page.screenshot({ path: info.outputPath("reset-step-1.png") });
+  await page.route("**/api/v1/data/reset/prepare", (route) =>
+    route.fulfill({
+      status: 503,
+      json: { error: "Chưa tạo được file. Bạn có thể thử tải lại." },
+    }),
+  );
+  await dialog
+    .getByRole("button", { name: "Tải bản sao lưu trước khi xóa", exact: true })
+    .click();
+  await expect(dialog.getByRole("alert")).toBeFocused();
+  await expect(steps.locator('[aria-current="step"]')).toContainText(
+    "Tạo bản sao lưu",
+  );
+  await expect(dialog.getByRole("textbox")).toHaveCount(0);
+  await page.unroute("**/api/v1/data/reset/prepare");
+  await backupBeforeReset(page);
+  await expect(
+    dialog.getByRole("heading", { name: "2. Kiểm tra và xác nhận xóa" }),
+  ).toBeFocused();
+  await expect(steps.locator('[aria-current="step"]')).toContainText(
+    "Kiểm tra và xác nhận",
+  );
+  const remove = dialog.getByRole("button", {
+    name: "Xóa toàn bộ dữ liệu tài chính",
+    exact: true,
+  });
+  const input = dialog.getByLabel("Nhập XÓA TOÀN BỘ để xác nhận", {
+    exact: true,
+  });
+  await input.fill("XÓA TOÀN BỘ");
+  await expect(remove).toBeDisabled();
+  await dialog.getByRole("checkbox").check();
+  await input.fill("XÓA TOÀN BỘ ");
+  await expect(remove).toBeDisabled();
+  await input.fill("XÓA TOÀN BỘ");
+  await expect(remove).toBeEnabled();
+  const download = page.waitForEvent("download");
+  await dialog.getByRole("link", { name: "Lưu file JSON" }).click();
+  await download;
+  await backupBeforeReset(page);
+  await expect(input).toHaveValue("");
+  await expect(dialog.getByRole("checkbox")).not.toBeChecked();
+  await expect(remove).toBeDisabled();
+  await confirm(page);
+  await page.route("**/api/v1/data/reset", (route) =>
+    route.fulfill({
+      status: 409,
+      json: {
+        code: "RESET_EXPIRED",
+        error:
+          "Bước xác nhận đã hết hạn. Hãy tạo bản sao lưu mới trước khi làm trống.",
+      },
+    }),
+  );
+  await remove.click();
+  await expect(dialog.getByRole("alert")).toContainText("hết hạn");
+  await expect(steps.locator('[aria-current="step"]')).toContainText(
+    "Tạo bản sao lưu",
+  );
+  await expect(input).toHaveCount(0);
+  await expect(remove).toHaveCount(0);
+  await dialog.getByRole("button", { name: "Hủy", exact: true }).click();
+  await page.getByRole("radio", { name: "English", exact: true }).check();
+  await page
+    .locator("#reset-data")
+    .getByRole("button", { name: "Clear financial data", exact: true })
+    .click();
+  const english = page.getByRole("dialog", {
+    name: "Clear financial data",
+    exact: true,
+  });
+  await expect(
+    english.getByRole("list", { name: "Steps to clear financial data" }),
+  ).toContainText("Review and confirm");
+  await expect(english).toContainText("including Goals");
+  const englishDownload = page.waitForEvent("download");
+  await english
+    .getByRole("button", {
+      name: "Download a backup before deleting",
+      exact: true,
+    })
+    .click();
+  await englishDownload;
+  await expect(
+    english.getByLabel("Type XÓA TOÀN BỘ to confirm", { exact: true }),
+  ).toBeVisible();
+  await expect(english.getByRole("checkbox")).not.toBeChecked();
+});
+
+test("reset dialog keeps identity, progress and confirmation legible across themes and narrow viewports", async ({
+  page,
+}, info) => {
+  test.setTimeout(120000);
+  const email = `reset-dialog-long-email-${randomUUID()}@example.test`;
+  await login(page, email);
+  await income(page);
+  await page.reload();
+  for (const visual of visualThemeKeys) {
+    for (const mode of ["light", "dark"]) {
+      await page.evaluate(
+        ({ visual, mode }) => {
+          localStorage.setItem("fm-visual-theme", visual);
+          localStorage.setItem("fm-theme", mode);
+          window.dispatchEvent(new Event("fm-preference-change"));
+        },
+        { visual, mode },
+      );
+      await expect(page.locator("html")).toHaveAttribute(
+        "data-visual-theme",
+        visual,
+      );
+      const dialog = await openReset(page);
+      const identity = dialog.locator(".settings-reset-account strong");
+      await expect(identity).toHaveText(email);
+      const positions = await dialog
+        .locator(".settings-reset-progress > li")
+        .evaluateAll((items) =>
+          items.map((item) => item.getBoundingClientRect().top),
+        );
+      expect(Math.abs(positions[0] - positions[1])).toBeLessThanOrEqual(1);
+      await expect(dialog.locator(".settings-reset-counts > div")).toHaveCount(
+        6,
+      );
+      await expect(dialog).toContainText("không phải số giao dịch");
+      await page.screenshot({
+        path: info.outputPath(`reset-${visual}-${mode}-step-1.png`),
+      });
+      await backupBeforeReset(page);
+      const input = dialog.getByLabel("Nhập XÓA TOÀN BỘ để xác nhận", {
+        exact: true,
+      });
+      await input.scrollIntoViewIfNeeded();
+      await expect(input).toBeInViewport();
+      const appearance = await input.evaluate((element) => {
+        const style = getComputedStyle(element);
+        const luminance = (color: string) => {
+          const channels = color
+            .match(/[\d.]+/g)!
+            .slice(0, 3)
+            .map(Number)
+            .map((value) => {
+              const s = value / 255;
+              return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+            });
+          return (
+            channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722
+          );
+        };
+        const ratio = (a: string, b: string) => {
+          const l = [luminance(a), luminance(b)].sort((a, b) => b - a);
+          return (l[0] + 0.05) / (l[1] + 0.05);
+        };
+        return {
+          border: parseFloat(style.borderTopWidth),
+          borderStyle: style.borderTopStyle,
+          outline: parseFloat(style.outlineWidth),
+          height: element.getBoundingClientRect().height,
+          font: parseFloat(style.fontSize),
+          borderContrast: ratio(style.borderTopColor, style.backgroundColor),
+          textContrast: ratio(style.color, style.backgroundColor),
+        };
+      });
+      expect(appearance).toMatchObject({ borderStyle: "solid" });
+      expect(appearance.border).toBeGreaterThanOrEqual(1);
+      expect(appearance.height).toBeGreaterThanOrEqual(44);
+      expect(appearance.font).toBeGreaterThanOrEqual(16);
+      expect(appearance.borderContrast).toBeGreaterThanOrEqual(3);
+      expect(appearance.textContrast).toBeGreaterThanOrEqual(4.5);
+      await input.focus();
+      expect(
+        await input.evaluate((element) =>
+          parseFloat(getComputedStyle(element).outlineWidth),
+        ),
+      ).toBeGreaterThanOrEqual(3);
+      await page.screenshot({
+        path: info.outputPath(`reset-${visual}-${mode}-step-2.png`),
+      });
+      for (const width of [320, 390]) {
+        const previous = page.viewportSize()!;
+        await page.setViewportSize({ width, height: 740 });
+        await input.scrollIntoViewIfNeeded();
+        await expect(input).toBeInViewport();
+        await expect(
+          dialog.locator(".settings-reset-progress"),
+        ).toBeInViewport();
+        expect(
+          await dialog.evaluate(
+            (element) => element.scrollWidth <= element.clientWidth + 1,
+          ),
+        ).toBe(true);
+        expect(
+          await dialog
+            .locator(".dialog-body")
+            .evaluate(
+              (element) => element.scrollWidth <= element.clientWidth + 1,
+            ),
+        ).toBe(true);
+        if (visual === "forest")
+          await page.screenshot({
+            path: info.outputPath(`reset-${mode}-${width}-step-2.png`),
+          });
+        await dialog.locator(".dialog-body").evaluate((element) => {
+          element.scrollTo({ top: 0, behavior: "instant" });
+        });
+        await expect(identity).toBeInViewport({ ratio: 1 });
+        await expect(identity).toHaveText(email);
+        if (visual === "forest")
+          await page.screenshot({
+            path: info.outputPath(`reset-${mode}-${width}-identity.png`),
+          });
+        await page.setViewportSize(previous);
+      }
+      if (visual === "forest" && mode === "light") {
+        const previous = page.viewportSize()!;
+        await page.setViewportSize({ width: 844, height: 390 });
+        await input.focus();
+        await input.scrollIntoViewIfNeeded();
+        await expect(input).toBeInViewport({ ratio: 1 });
+        await page.screenshot({ path: info.outputPath("reset-landscape.png") });
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.evaluate(() => {
+          document.documentElement.style.fontSize = "200%";
+        });
+        await input.scrollIntoViewIfNeeded();
+        await expect(input).toBeInViewport({ ratio: 1 });
+        expect(
+          await dialog
+            .locator(".dialog-body")
+            .evaluate(
+              (element) => element.scrollWidth <= element.clientWidth + 1,
+            ),
+        ).toBe(true);
+        await page.screenshot({ path: info.outputPath("reset-text-200.png") });
+        await page.evaluate(() => {
+          document.documentElement.style.fontSize = "";
+        });
+        await page.setViewportSize(previous);
+      }
+      await dialog.getByRole("button", { name: "Hủy", exact: true }).click();
+    }
+  }
 });
 
 test("retains and blocks a draft from another tab after reset", async ({
@@ -200,8 +465,9 @@ test("retains and blocks a draft from another tab after reset", async ({
       "Dữ liệu tài chính đã được làm trống ở tab khác.",
     );
     await other.bringToFront();
-    const write = other.waitForResponse((response) =>
-      response.url().endsWith("/api/v1/income/commands"),
+    const write = other.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname === "/api/v1/income/commands",
     );
     await editor.getByRole("button", { name: "Lưu", exact: true }).click();
     const response = await write;
@@ -318,7 +584,7 @@ test("changed data requires a new backup and a lost reset response retries the s
       name: "Xóa toàn bộ dữ liệu tài chính",
       exact: true,
     }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
   await backupBeforeReset(page);
   await confirm(page);
   let calls = 0;

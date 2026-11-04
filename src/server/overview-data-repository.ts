@@ -1,3 +1,4 @@
+import { timePhase } from "./performance";
 import type postgres from "postgres";
 import { z } from "zod";
 import type { Clock } from "../domain/shared/types";
@@ -38,7 +39,9 @@ export function postgresOverviewDataRepository(sql: postgres.Sql) {
       const needsExpenses = overviewSources(widgets).includes("expenses");
       async function read<T>(query: string, args: string[] = [owner]) {
         return withOwnerTransaction(sql, owner, async (tx) => {
-          const [row] = await tx.unsafe<{ book: T }[]>(query, args);
+          const [row] = await timePhase("sql", () =>
+            tx.unsafe<{ book: T }[]>(query, args),
+          );
           return row?.book ?? null;
         });
       }

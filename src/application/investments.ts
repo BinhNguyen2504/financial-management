@@ -1,3 +1,5 @@
+import type { CommandViewOptions } from "./shared/command-view";
+import type { InvestmentView } from "../domain/investments/types";
 import { commandFingerprint } from "./shared/command-fingerprint";
 import {
   applyAction,
@@ -32,6 +34,7 @@ export interface InvestmentRepository {
   transaction<T>(
     owner: string,
     fn: (tx: InvestmentTransactionRepository) => Promise<T>,
+    readOnly?: boolean,
   ): Promise<T>;
 }
 export async function runInvestmentCommand(
@@ -40,39 +43,54 @@ export async function runInvestmentCommand(
   raw: InvestmentCommand,
   clock: Clock,
   preview = false,
-): Promise<CommandResult> {
+  options: CommandViewOptions = {},
+): Promise<CommandResult & { view?: InvestmentView }> {
   const command = commandSchema.parse(raw),
     fingerprint = commandFingerprint(command);
-  return repository.transaction(owner, async (tx) => {
-    const stored = await tx.command(command.id);
-    if (stored) {
-      if (stored.fingerprint !== fingerprint)
+  return repository.transaction(
+    owner,
+    async (tx) => {
+      const stored = await tx.command(command.id);
+      if (stored) {
+        if (stored.fingerprint !== fingerprint)
+          throw new InvestmentError(
+            "Mã yêu cầu đã dùng với nội dung khác.",
+            409,
+            "IDEMPOTENCY_CONFLICT",
+          );
+        return options.view && !preview
+          ? {
+              ...stored.result,
+              view: toView(await tx.read(), options.asOf ?? clock.today, clock),
+            }
+          : stored.result;
+      }
+      const before = await tx.read();
+      if ((before?.version ?? 0) !== command.expectedVersion)
         throw new InvestmentError(
-          "Mã yêu cầu đã dùng với nội dung khác.",
+          "Dữ liệu đã đổi ở phiên khác. Tải lại phiên bản rồi xem trước; nội dung đang nhập được giữ.",
           409,
-          "IDEMPOTENCY_CONFLICT",
+          "VERSION_CONFLICT",
         );
-      return stored.result;
-    }
-    const before = await tx.read();
-    if ((before?.version ?? 0) !== command.expectedVersion)
-      throw new InvestmentError(
-        "Dữ liệu đã đổi ở phiên khác. Tải lại phiên bản rồi xem trước; nội dung đang nhập được giữ.",
-        409,
-        "VERSION_CONFLICT",
-      );
-    const after = applyAction(before, command.action, clock);
-    const result = {
-      version: after.version,
-      before: toView(before, clock.today, clock).state,
-      after: toView(after, clock.today, clock).state,
-    };
-    if (!preview) {
-      await tx.save(after);
-      await tx.remember(command.id, { fingerprint, result });
-    }
-    return result;
-  });
+      const after = applyAction(before, command.action, clock);
+      const result = {
+        version: after.version,
+        before: toView(before, clock.today, clock).state,
+        after: toView(after, clock.today, clock).state,
+      };
+      if (!preview) {
+        await tx.save(after);
+        await tx.remember(command.id, { fingerprint, result });
+      }
+      return options.view && !preview
+        ? {
+            ...result,
+            view: toView(await tx.read(), options.asOf ?? clock.today, clock),
+          }
+        : result;
+    },
+    preview,
+  );
 }
 export function readInvestmentView(
   repository: InvestmentRepository,
@@ -80,7 +98,9 @@ export function readInvestmentView(
   asOf: string,
   clock: Clock,
 ) {
-  return repository.transaction(owner, async (tx) =>
-    toView(await tx.read(), asOf, clock),
+  return repository.transaction(
+    owner,
+    async (tx) => toView(await tx.read(), asOf, clock),
+    true,
   );
 }

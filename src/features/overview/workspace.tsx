@@ -1,4 +1,5 @@
 "use client";
+import { PageGuide } from "@/features/help/page-guide";
 import { DailyNote } from "@/components/daily-note";
 import Link from "next/link";
 import { useRef } from "react";
@@ -42,12 +43,14 @@ function AccountOverview({ configured }: { configured: boolean }) {
       <header className="overview-heading">
         <div>
           <HelpPageTitle>{t("Tổng quan")}</HelpPageTitle>
-          <p>{t("Một góc nhìn chung, từng khoản rõ ràng.")}</p>
+          <p>
+            {t("Theo dõi tiền đã thu, đã chi và các khoản bạn đang tích lũy.")}
+          </p>
         </div>
         <Garden variant="jar" />
         <button
           ref={customizeTrigger}
-          className="expense-primary"
+          className="expense-secondary"
           disabled={!configured || !vm.layoutReady}
           onClick={openCustomizer}
         >
@@ -61,6 +64,7 @@ function AccountOverview({ configured }: { configured: boolean }) {
           </p>
         )}
       </header>
+      <PageGuide pageId="overview" />
       {!configured && (
         <div className="expense-notice">
           {t("Kết nối dịch vụ đăng nhập và lưu trữ để bắt đầu.")}
@@ -136,7 +140,7 @@ function AccountOverview({ configured }: { configured: boolean }) {
       {vm.layout && !vm.layout.widgets.length && (
         <div className="panel overview-empty-layout">
           <h2>{t("Tổng quan theo cách của bạn")}</h2>
-          <p>{t("Thêm widget để xem nhanh những điều bạn quan tâm.")}</p>
+          <p>{t("Thêm thẻ thông tin để xem nhanh những điều bạn quan tâm.")}</p>
           <button
             className="expense-primary"
             disabled={!vm.layoutReady}
@@ -169,7 +173,7 @@ function AccountOverview({ configured }: { configured: boolean }) {
       </div>
       <p className="overview-footnote">
         {t(
-          "Mỗi module là một sổ độc lập. Các giá trị ở đây chưa được cộng thành tài sản ròng.",
+          "Các sổ có thể theo dõi cùng một khoản tiền. Vì vậy, các số ở đây được trình bày riêng, không cộng thành tổng tài sản.",
         )}
       </p>
       {vm.draft && vm.customizing && (

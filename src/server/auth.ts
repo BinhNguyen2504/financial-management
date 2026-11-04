@@ -1,3 +1,4 @@
+import { timePhase } from "./performance";
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
@@ -55,9 +56,11 @@ export async function authenticatedUser(request?: Request) {
       )
     : await serverAuth();
   // getUser verifies the token with Auth rather than trusting a client supplied cookie/sub.
-  const { data, error } = authorization
-    ? await client.auth.getUser(authorization.replace(/^Bearer /i, ""))
-    : await client.auth.getUser();
+  const { data, error } = await timePhase("auth", () =>
+    authorization
+      ? client.auth.getUser(authorization.replace(/^Bearer /i, ""))
+      : client.auth.getUser(),
+  );
   if (
     error &&
     (error.name === "AuthRetryableFetchError" ||

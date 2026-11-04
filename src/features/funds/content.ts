@@ -1,8 +1,8 @@
 import type { FundId, FundTransaction } from "@/domain/funds/schema";
 export const fundNames: Record<FundId, string> = {
-  emergency: "Emergency Fund",
-  rainy_day: "Rainy Day Fund",
-  sinking: "Sinking Fund",
+  emergency: "Quỹ khẩn cấp",
+  rainy_day: "Quỹ phát sinh",
+  sinking: "Quỹ chi dự kiến",
 };
 export const transactionNames: Record<FundTransaction["kind"], string> = {
   opening: "Số dư ban đầu",

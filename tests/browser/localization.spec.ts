@@ -309,7 +309,7 @@ test("cross-tab switches preserve a form, raw invalid money, filters and exact v
     dialog.locator(".field-error").filter({ hasText: "English" }),
   ).toBeVisible();
   let previews = 0;
-  await page.route("**/api/v1/income/commands", (route) => {
+  await page.route("**/api/v1/income/commands*", (route) => {
     previews++;
     return route.continue();
   });
@@ -327,7 +327,7 @@ test("cross-tab switches preserve a form, raw invalid money, filters and exact v
     "Tiết kiệm — tên riêng",
   );
   let command: unknown;
-  await page.route("**/api/v1/income/commands", async (route) => {
+  await page.route("**/api/v1/income/commands*", async (route) => {
     command = route.request().postDataJSON();
     await route.continue();
   });
@@ -377,7 +377,7 @@ test("English validation, network errors and uncertain writes retain drafts and 
   const dialog = page.getByRole("dialog");
   await dialog.getByLabel("Name", { exact: true }).fill("Khoản thu riêng");
   await dialog.locator("#income-field-amount").fill("1250000");
-  await page.route("**/api/v1/income/commands", (route) =>
+  await page.route("**/api/v1/income/commands*", (route) =>
     route.fulfill({
       status: 422,
       contentType: "application/json",
@@ -395,9 +395,9 @@ test("English validation, network errors and uncertain writes retain drafts and 
   await expect(dialog.getByLabel("Name", { exact: true })).toHaveValue(
     "Khoản thu riêng",
   );
-  await page.unroute("**/api/v1/income/commands");
+  await page.unroute("**/api/v1/income/commands*");
   const ids: string[] = [];
-  await page.route("**/api/v1/income/commands", async (route) => {
+  await page.route("**/api/v1/income/commands*", async (route) => {
     ids.push(route.request().postDataJSON().id);
     if (ids.length === 1) {
       await route.fetch();

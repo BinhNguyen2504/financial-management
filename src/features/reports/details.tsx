@@ -62,7 +62,7 @@ export function ReportDetails({
             </>
           ) : (
             <Link className="expense-secondary" href={`/${source}`}>
-              {t("Mở module gốc")}
+              {t("Mở chức năng gốc")}
             </Link>
           )}
           <button className="expense-primary" onClick={onClose}>

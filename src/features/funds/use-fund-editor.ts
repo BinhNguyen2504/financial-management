@@ -1,9 +1,11 @@
 "use client";
+import { useDiscardChanges } from "@/components/discard-changes";
 import { generationOf } from "@/lib/data-generation";
 import { buildFundAction } from "./editor-action";
 import { focusInvalidNumber } from "@/components/localized-input";
 
 import { useI18n } from "@/i18n/provider";
+import type { FundView } from "@/domain/funds/types";
 import type { FundCommandResult } from "@/application/funds";
 import { focusFirstInvalid } from "@/components/form-feedback";
 
@@ -195,9 +197,13 @@ export function useFundEditor({
         });
       else {
         writing = true;
-        await fundsJSON("/commands", command, generation);
+        const result = await fundsJSON<{ view?: FundView }>(
+          "/commands?return=view",
+          command,
+          generation,
+        );
         toast("success", tr("Đã lưu thay đổi."));
-        onSaved();
+        onSaved(result.view);
       }
     } catch (e) {
       if (e instanceof FundAPIError && e.status === 401) {
@@ -262,12 +268,12 @@ export function useFundEditor({
         if (!before) return [];
         return [
           {
-            label: tr("{0} · Số dư", { 0: fundNames[after.id] }),
+            label: tr("{0} · Số dư", { 0: tr(fundNames[after.id]) }),
             before: before.balance,
             after: after.balance,
           },
           {
-            label: tr("{0} · Mục tiêu", { 0: fundNames[after.id] }),
+            label: tr("{0} · Mục tiêu", { 0: tr(fundNames[after.id]) }),
             before: before.target,
             after: after.target,
           },
@@ -285,7 +291,7 @@ export function useFundEditor({
         const [fund, locationId] = key.split(":");
         return [
           {
-            label: `${fundNames[fund as FundId]} · ${view.book?.locations.find((item) => item.id === locationId)?.name ?? tr("Nơi giữ tiền")}`,
+            label: `${tr(fundNames[fund as FundId])} · ${view.book?.locations.find((item) => item.id === locationId)?.name ?? tr("Nơi giữ tiền")}`,
             before,
             after,
           },
@@ -304,6 +310,12 @@ export function useFundEditor({
       setBusy(false);
     }
   };
+  const { close, discardConfirmation } = useDiscardChanges(
+    draft !== originalDraft || !!f.reason,
+    busy || uncertain,
+    onClose,
+    id,
+  );
   return {
     fieldErrors,
     fieldId,
@@ -313,7 +325,8 @@ export function useFundEditor({
     hidden,
     view,
     title,
-    onClose,
+    onClose: close,
+    discardConfirmation,
     busy,
     uncertain,
     mode,

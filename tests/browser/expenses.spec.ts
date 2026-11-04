@@ -208,7 +208,7 @@ test("network errors preserve drafts and Escape restores keyboard access", async
   await expect(
     page.getByRole("button", { name: "Xác nhận lưu" }),
   ).toBeVisible();
-  await page.route("**/api/v1/expenses/commands", async (route) => {
+  await page.route("**/api/v1/expenses/commands*", async (route) => {
     await route.fetch();
     await route.abort("failed");
   });
@@ -217,7 +217,7 @@ test("network errors preserve drafts and Escape restores keyboard access", async
     page.getByRole("dialog").locator(".expense-error"),
   ).toContainText("Chưa xác nhận kết quả lưu");
   expect((await view(page)).book?.jars).toHaveLength(1);
-  await page.unroute("**/api/v1/expenses/commands");
+  await page.unroute("**/api/v1/expenses/commands*");
   await page.getByRole("button", { name: "Xác nhận lưu" }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
   expect(

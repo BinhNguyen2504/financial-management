@@ -33,6 +33,7 @@ function Editor(props: Parameters<typeof useFundEditor>[0]) {
     hidden,
     title,
     onClose,
+    discardConfirmation,
     busy,
     uncertain,
     mode,
@@ -49,111 +50,118 @@ function Editor(props: Parameters<typeof useFundEditor>[0]) {
   } = controller;
 
   return (
-    <ExpenseModal
-      title={title}
-      onClose={onClose}
-      busy={busy || uncertain}
-      size="form"
-      footer={
-        <>
-          <button
-            type="button"
-            className="expense-secondary"
-            disabled={busy || uncertain}
-            onClick={onClose}
-          >
-            <X size={17} aria-hidden="true" />
-            {tr("Hủy")}
-          </button>
-          {mode.type === "configure" && step > 0 && !preview && (
+    <>
+      <ExpenseModal
+        title={title}
+        onClose={onClose}
+        busy={busy || uncertain}
+        size="form"
+        footer={
+          <>
             <button
+              type="button"
               className="expense-secondary"
               disabled={busy || uncertain}
-              onClick={() => setStep((s) => s - 1)}
+              onClick={onClose}
             >
-              {tr("Quay lại")}
+              <X size={17} aria-hidden="true" />
+              {tr("Hủy")}
             </button>
-          )}
-          {mode.type === "configure" && step < 2 && !preview ? (
-            <button className="expense-primary" disabled={busy} onClick={next}>
-              {tr("Tiếp tục")}
-            </button>
-          ) : (
-            <button
-              className={`expense-primary ${mode.type === "cancel" ? "expense-danger" : ""}`}
-              disabled={busy || hidden || conflict || unchanged}
-              aria-busy={busy}
-              onClick={() => void submit()}
+            {mode.type === "configure" && step > 0 && !preview && (
+              <button
+                className="expense-secondary"
+                disabled={busy || uncertain}
+                onClick={() => setStep((s) => s - 1)}
+              >
+                {tr("Quay lại")}
+              </button>
+            )}
+            {mode.type === "configure" && step < 2 && !preview ? (
+              <button
+                className="expense-primary"
+                disabled={busy}
+                onClick={next}
+              >
+                {tr("Tiếp tục")}
+              </button>
+            ) : (
+              <button
+                className={`expense-primary ${mode.type === "cancel" ? "expense-danger" : ""}`}
+                disabled={busy || hidden || conflict || unchanged}
+                aria-busy={busy}
+                onClick={() => void submit()}
+              >
+                {busy ? (
+                  <LoadingSpinner />
+                ) : preview ? (
+                  <Save size={17} aria-hidden="true" />
+                ) : (
+                  <ScanEye size={17} aria-hidden="true" />
+                )}
+                {preview ? tr("Xác nhận lưu") : tr("Xem trước thay đổi")}
+              </button>
+            )}
+          </>
+        }
+      >
+        <div id={controller.id} className="dialog-content-stack">
+          <RequiredFieldsNote />
+          <PrivacyReveal />
+          <HelpButton
+            pageId="funds"
+            sectionId={
+              mode.type === "configure"
+                ? "living"
+                : mode.type === "location"
+                  ? "locations"
+                  : "transactions"
+            }
+            label={tr("Hiểu mục tiêu và số dư quỹ")}
+          />
+          {error && (
+            <div
+              className="expense-error"
+              role="alert"
+              tabIndex={-1}
+              ref={errorRef}
             >
-              {busy ? (
-                <LoadingSpinner />
-              ) : preview ? (
-                <Save size={17} aria-hidden="true" />
-              ) : (
-                <ScanEye size={17} aria-hidden="true" />
+              {tr(error)}
+              {Object.keys(fieldErrors).length > 0 && (
+                <ul>
+                  {Object.entries(fieldErrors).map(([key, message]) => (
+                    <li key={key}>
+                      <a
+                        href={`#${fieldId(key.startsWith("multipliers.") ? key : key.split(".").at(-1)!)}`}
+                      >
+                        {tr(message)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               )}
-              {preview ? tr("Xác nhận lưu") : tr("Xem trước thay đổi")}
+            </div>
+          )}
+          {uncertain && (
+            <p role="status">
+              {tr(
+                "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm Xác nhận lưu để kiểm tra.",
+              )}
+            </p>
+          )}
+          {conflict && (
+            <button
+              className="expense-secondary"
+              disabled={busy}
+              onClick={reloadAfterConflict}
+            >
+              {tr("Tải dữ liệu mới, giữ nội dung nhập")}
             </button>
           )}
-        </>
-      }
-    >
-      <div className="dialog-content-stack">
-        <RequiredFieldsNote />
-        <PrivacyReveal />
-        <HelpButton
-          pageId="funds"
-          sectionId={
-            mode.type === "configure"
-              ? "living"
-              : mode.type === "location"
-                ? "locations"
-                : "transactions"
-          }
-          label={tr("Hiểu mục tiêu và số dư quỹ")}
-        />
-        {error && (
-          <div
-            className="expense-error"
-            role="alert"
-            tabIndex={-1}
-            ref={errorRef}
-          >
-            {tr(error)}
-            {Object.keys(fieldErrors).length > 0 && (
-              <ul>
-                {Object.entries(fieldErrors).map(([key, message]) => (
-                  <li key={key}>
-                    <a
-                      href={`#${fieldId(key.startsWith("multipliers.") ? key : key.split(".").at(-1)!)}`}
-                    >
-                      {tr(message)}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-        {uncertain && (
-          <p role="status">
-            {tr(
-              "Chưa xác nhận kết quả lưu. Nội dung của bạn được giữ; bấm Xác nhận lưu để kiểm tra.",
-            )}
-          </p>
-        )}
-        {conflict && (
-          <button
-            className="expense-secondary"
-            disabled={busy}
-            onClick={reloadAfterConflict}
-          >
-            {tr("Tải dữ liệu mới, giữ nội dung nhập")}
-          </button>
-        )}
-        <FundEditorFields controller={controller} />
-        <FundEditorPreview controller={controller} />
-      </div>
-    </ExpenseModal>
+          <FundEditorFields controller={controller} />
+          <FundEditorPreview controller={controller} />
+        </div>
+      </ExpenseModal>
+      {discardConfirmation}
+    </>
   );
 }

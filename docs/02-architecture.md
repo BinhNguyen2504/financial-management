@@ -264,3 +264,20 @@ QuoteProvider trong AppShell quản lý một controller mỗi document bằng u
 ### Font quote được tải kèm — 04/11/2026
 
 QuoteCard khai báo Noto Serif qua next/font/google, chỉ weight 400/italic, preload latin và vietnamese. CSS variable nằm trên blockquote; font tải cùng static assets, không gửi request đến Google từ trình duyệt. Không phụ thuộc font serif của hệ điều hành. Giữ Nunito cho giao diện và fallback; font-synthesis none, letter-spacing normal và line-height 1.65.
+
+## Bố cục trạng thái khôi phục — 04/11/2026
+
+`SettingsWorkspace` nhóm tiêu đề/Help bằng flex wrap, khối tiêu đề/mô tả dùng gap 16px. `RestoreStatus` trình bày `DataStatus.blockers` theo module, dùng native details cho mục có dữ liệu và trạng thái tĩnh cho mục trống; không thay hợp đồng API. Giữ `empty`, `importReady`, `resetReady` độc lập và luồng backup/reset hiện có. Xem [chi tiết](features/settings-restore-layout-2026-11-04.md).
+
+## Trạng thái xem và bảo vệ nháp — 04/11/2026
+
+Thành phần `useViewState` đọc store phiên theo owner/phân hệ/trường bằng `useSyncExternalStore`, có fallback bộ nhớ khi storage bị chặn. Chỉ giữ lựa chọn xem, không lưu số tiền hoặc editor; workspace có key theo user để tách dữ liệu khi đổi tài khoản. Reports ưu tiên URL tường minh. `useDiscardChanges` giữ snapshot biểu mẫu và kiểm tra thêm số nhập sai trong DOM; confirmation dùng Modal stack hiện có. Các cơ chế này độc lập API/schema và layout Tổng quan. Xem [đặc tả](features/workspace-comfort-2026-11-04.md).
+
+## Luồng đọc và phản hồi sau ghi — 04/11/2026
+
+Repository tách mode đọc snapshot khỏi command có khóa; projection SQL giữ nguyên hợp đồng sổ. API lưu có tùy chọn `return=view`, view/generation nằm ngoài receipt và fingerprint. Cookie API tự xác thực/refresh tại handler, proxy tiếp tục phục vụ trang. Drill-down giữ vector version đầy đủ, chỉ đọc ledger cần cho metric khi nguồn sẵn sàng. Timing request opt-in không chứa dữ liệu tài chính. Xem [chi tiết tương thích và tính nhất quán](features/performance-2026-11-04.md).
+
+
+## Nội dung và hướng dẫn tại chỗ — 04/11/2026
+
+Các trang có phần mở rộng giải thích cách bắt đầu và đọc số liệu; Tổng quan nêu rõ việc tiếp theo, tên quỹ và nguồn thu dùng ngôn ngữ gần gũi. Xem [hợp đồng nội dung và đối chiếu tác vụ](features/friendly-content-2026-11-04.md). Không đổi API, schema, dữ liệu hoặc cách tính tiền.

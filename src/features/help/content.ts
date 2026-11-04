@@ -1,3 +1,4 @@
+import { workspaceComfortSummary } from "@/features/catalog";
 import { fundNames, guides } from "@/features/funds/content";
 import type { HelpArticle, HelpArticles, HelpItem } from "./types";
 
@@ -28,7 +29,11 @@ function article(
         title: "Trang này giúp gì và dành cho ai",
         paragraphs: intro,
       },
-      { id: "mindset", title: "Tư duy sử dụng", paragraphs: mindset },
+      {
+        id: "mindset",
+        title: "Tư duy sử dụng",
+        paragraphs: [...mindset, workspaceComfortSummary],
+      },
       { id: "terms", title: "Thuật ngữ cần biết", items: terms },
       { id: "tasks", title: "Hướng dẫn theo tác vụ", items: tasks },
       {
@@ -47,7 +52,7 @@ function article(
 export const articles: HelpArticles = {
   overview: article(
     [
-      "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Năm thẻ mặc định giữ số liệu chính và cảnh báo; bạn có thể tùy chỉnh 10 loại widget.",
+      "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Năm thẻ mặc định giữ số liệu chính và cảnh báo; bạn có thể tùy chỉnh 10 loại thẻ thông tin.",
     ],
     [
       "Đọc kỳ và tình trạng dữ liệu trước khi đọc số tiền. Thu nhập và Chi tiêu thuộc tháng hiện tại; tài sản và quỹ tính đến hôm nay theo giờ Việt Nam.",
@@ -80,32 +85,32 @@ export const articles: HelpArticles = {
         "Đọc bức tranh tháng",
         "Khi cần nhìn nhanh toàn bộ ứng dụng.",
         [
-          "Đọc số chính và cảnh báo trong từng thẻ theo kỳ bên dưới tiêu đề. Cần chú ý là widget tùy chọn, chỉ kiểm tra các module đang hiển thị.",
-          "Mở module tương ứng để đối chiếu, nhập liệu hoặc cập nhật định giá.",
+          "Đọc số chính và cảnh báo trong từng thẻ theo kỳ bên dưới tiêu đề. Cần chú ý là thẻ thông tin tùy chọn, chỉ kiểm tra các chức năng đang hiển thị.",
+          "Mở chức năng tương ứng để đối chiếu, nhập liệu hoặc cập nhật định giá.",
         ],
-        "Kết quả: Các widget dùng dữ liệu thực đã ghi, không tự tạo giao dịch.",
+        "Kết quả: Các thẻ thông tin dùng dữ liệu thực đã ghi, không tự tạo giao dịch.",
       ),
       task(
         "customize",
-        "Tùy chỉnh widget",
+        "Tùy chỉnh thẻ thông tin",
         "Khi muốn chọn nội dung và thứ tự xem nhanh.",
         [
-          "Mở Tùy chỉnh Tổng quan; bật hoặc tắt từng widget.",
+          "Mở Tùy chỉnh Tổng quan; bật hoặc tắt từng thẻ thông tin.",
           "Dùng nút chuyển lên/xuống để đổi thứ tự; Hũ theo dõi cho chọn tối đa 5 hũ.",
           "Chọn Xem thử bố cục để xem toàn trang; Lưu để đồng bộ tài khoản hoặc Hủy để bỏ thay đổi.",
           "Khôi phục mặc định chỉ đổi bản xem thử; cần Lưu mới áp dụng.",
         ],
-        "Kết quả: Mỗi loại có tối đa một widget. Có thể ẩn tất cả rồi thêm lại. Bố cục dùng chung giữa thiết bị khi tải lại, không nằm trong backup tài chính.",
+        "Kết quả: Mỗi loại có tối đa một thẻ thông tin. Có thể ẩn tất cả rồi thêm lại. Bố cục dùng chung giữa thiết bị khi tải lại, không nằm trong backup tài chính.",
       ),
       task(
         "start-overview",
         "Bắt đầu khi chưa có dữ liệu",
-        "Khi một module chưa có sổ.",
+        "Khi một chức năng chưa có sổ.",
         [
-          "Mở module muốn bắt đầu từ widget hoặc menu.",
-          "Ghi nhận dữ liệu thực theo hướng dẫn của module rồi quay lại Tổng quan.",
+          "Mở chức năng muốn bắt đầu từ thẻ thông tin hoặc menu.",
+          "Ghi nhận dữ liệu thực theo hướng dẫn của chức năng rồi quay lại Tổng quan.",
         ],
-        "Kết quả: Mỗi module có trạng thái trống riêng; không cần tạo Chi tiêu trước khi xem các module khác.",
+        "Kết quả: Mỗi chức năng có trạng thái trống riêng; không cần tạo Chi tiêu trước khi xem các chức năng khác.",
       ),
       task(
         "privacy",
@@ -119,12 +124,12 @@ export const articles: HelpArticles = {
       ),
     ],
     [
-      "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn. Cần chú ý chỉ nhắc khi có widget Tiết kiệm hoặc Sổ sắp đáo hạn đang bật.",
+      "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn. Cần chú ý chỉ nhắc khi có thẻ thông tin Tiết kiệm hoặc Sổ sắp đáo hạn đang bật.",
     ],
     [
-      "Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.",
-      "Một chút bình yên có 200 lời nhắn Việt/Anh, mỗi câu tối đa 35 từ. Câu đổi khi chuyển trang hoặc tải lại; đổi ngôn ngữ chỉ đổi bản dịch. Bật widget để đặt lời nhắn trong lưới Tổng quan, tắt widget để hiện ở đầu trang. Lượt đọc lưu theo tab, ngoài backup tài chính.",
-      "Lỗi một nguồn không làm mất widget khác. Số liệu lần tải trước được ghi nhãn khi cập nhật thất bại. Bố cục xung đột cần tải bản mới, không tự ghi đè.",
+      "Các chức năng là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.",
+      "Một chút bình yên có 200 lời nhắn Việt/Anh, mỗi câu tối đa 35 từ. Câu đổi khi chuyển trang hoặc tải lại; đổi ngôn ngữ chỉ đổi bản dịch. Bật thẻ thông tin để đặt lời nhắn trong lưới Tổng quan, tắt thẻ thông tin để hiện ở đầu trang. Lượt đọc lưu theo tab, ngoài backup tài chính.",
+      "Lỗi một nguồn không làm mất thẻ thông tin khác. Số liệu lần tải trước được ghi nhãn khi cập nhật thất bại. Bố cục xung đột cần tải bản mới, không tự ghi đè.",
     ],
   ),
   budgets: article(
@@ -275,7 +280,7 @@ export const articles: HelpArticles = {
     [
       term(
         "fixed",
-        "Danh mục cố định",
+        "Nguồn thu đều đặn",
         "Nguồn thu dùng lại qua các tháng từ tháng bắt đầu đến khi ngừng, ví dụ Lương. **Cố định là nguồn lặp lại, không phải số tiền bất biến**; app không tự ghi tiền cho bạn.",
       ),
       term(
@@ -305,7 +310,7 @@ export const articles: HelpArticles = {
         "Tạo nguồn thu lặp lại",
         "Khi bắt đầu theo dõi một nguồn thu đều đặn.",
         [
-          "Vào phần Danh mục cố định, chọn Thêm danh mục.",
+          "Vào phần Nguồn thu đều đặn, chọn Thêm danh mục.",
           "Nhập tên, mô tả nếu cần và tháng bắt đầu.",
           "Chọn Lưu; quay lại tháng cần nhập tiền.",
         ],
@@ -368,7 +373,7 @@ export const articles: HelpArticles = {
       ),
     ],
     [
-      "Nguồn Lương nhận ==20.000.000 ₫== tháng này và ==22.000.000 ₫== tháng sau vẫn là một danh mục cố định. Thưởng dự án ==3.000.000 ₫== chỉ một lần có thể ghi vào Thu phát sinh.",
+      "Nguồn Lương nhận ==20.000.000 ₫== tháng này và ==22.000.000 ₫== tháng sau vẫn là một nguồn thu đều đặn. Thưởng dự án ==3.000.000 ₫== chỉ một lần có thể ghi vào Thu phát sinh.",
       "Đã nhập Lương ==10.000.000 ₫==, sau đó nhận thêm ==5.000.000 ₫==: sửa số thực nhận tháng thành ==15.000.000 ₫==, không nhập ==5.000.000 ₫== để mong app cộng dồn.",
     ],
     [
@@ -664,7 +669,7 @@ export const articles: HelpArticles = {
         "Khi lần đầu tạo Quỹ an toàn.",
         [
           "Mở thiết lập, chọn các hũ chi tháng phục vụ nhu cầu sinh hoạt.",
-          "Nhập hệ số cho Emergency, Rainy Day và Sinking; dùng nút lên/xuống để xếp ưu tiên.",
+          "Nhập hệ số cho Quỹ khẩn cấp, Quỹ phát sinh và Quỹ chi dự kiến; dùng nút lên/xuống để xếp ưu tiên.",
           "Xem trước nguồn, mức sinh hoạt và mục tiêu rồi xác nhận.",
         ],
         "Kết quả: mục tiêu được thiết lập, không tự tạo số dư. Mức sinh hoạt bằng 0 hoặc nguồn không phù hợp cần được sửa trước.",
@@ -729,7 +734,7 @@ export const articles: HelpArticles = {
     ],
     [
       "Mức sinh hoạt minh họa ==6.000.000 ₫==, hệ số tự chọn 3 → mục tiêu ==18.000.000 ₫==. Đang có ==9.000.000 ₫== → tiến độ 50%. Đây chỉ là ví dụ phép tính, không phải mức dự phòng bắt buộc.",
-      "Chuyển ==1.000.000 ₫== từ Rainy Day sang Emergency làm thay số dư từng quỹ, tổng dự phòng không đổi.",
+      "Chuyển ==1.000.000 ₫== từ Quỹ phát sinh sang Quỹ khẩn cấp làm thay số dư từng quỹ, tổng dự phòng không đổi.",
     ],
     [
       "Đổi hũ Chi tiêu chưa tự đổi mục tiêu Quỹ an toàn; cần xác nhận nguồn mới.",
@@ -754,6 +759,11 @@ export const articles: HelpArticles = {
         "restore",
         "Khôi phục vào tài khoản trống",
         "Nhập bản sao hợp lệ vào **tài khoản trống dữ liệu tài chính**. Trong Cài đặt, xem mục nào có dữ liệu hoặc trống; mở từng mục để xem sổ và lịch sử. Xóa/hủy từng giao dịch vẫn giữ sổ và lịch sử. Có thể dùng tài khoản trống khác hoặc chọn Làm trống dữ liệu tài chính sau khi lưu bản sao lưu và xác nhận xóa toàn bộ.",
+      ),
+      term(
+        "clear-financial-data",
+        "Làm trống dữ liệu tài chính",
+        "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** trước khi xóa. Tạo file không có nghĩa là bạn đã lưu file.",
       ),
       term(
         "profile-restore",
@@ -983,7 +993,7 @@ export const articles: HelpArticles = {
     [
       "Sổ riêng giữ số dư sau hoàn thành; rút hoặc chuyển hết trước khi lưu trữ.",
       "Ước tính tính cả tháng này, không giả định lợi nhuận và không tự ghi tiền góp.",
-      "Các cột mốc có thể trùng nguồn; không cộng tiến độ thành tổng tài sản. Sổ riêng độc lập với các module khác.",
+      "Các cột mốc có thể trùng nguồn; không cộng tiến độ thành tổng tài sản. Sổ riêng độc lập với các chức năng khác.",
     ],
   ),
   reports: article(
@@ -991,7 +1001,7 @@ export const articles: HelpArticles = {
       "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
     ],
     [
-      "Mỗi module là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.",
+      "Mỗi chức năng là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.",
     ],
     [
       term(
@@ -1018,9 +1028,9 @@ export const articles: HelpArticles = {
         [
           "Chọn kỳ, mở tab cần xem rồi bấm số liệu để đối chiếu nguồn.",
           "Kỳ này chưa kết thúc",
-          "Xuất CSV",
+          "Xuất bảng dữ liệu",
         ],
-        "Kết quả: bảng, biểu đồ và CSV dùng cùng dữ liệu báo cáo; chi tiết chỉ đọc, sửa tại module gốc.",
+        "Kết quả: bảng, biểu đồ và CSV dùng cùng dữ liệu báo cáo; chi tiết chỉ đọc, sửa tại chức năng gốc.",
       ),
     ],
     [

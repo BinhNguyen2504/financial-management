@@ -1,4 +1,10 @@
 "use client";
+import { EmptyState } from "@/components/empty-state";
+import { PageGuide } from "@/features/help/page-guide";
+import { FilterOptions } from "@/components/filter-options";
+import { useUser } from "@/features/profile/user-provider";
+import { ViewControls } from "@/components/view-controls";
+import { ActionOptions } from "@/components/action-options";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { formatDate } from "@/i18n/format";
 
@@ -24,6 +30,12 @@ import { InvestmentReports } from "./report-panel";
 import { useInvestmentWorkspace } from "./use-investment-workspace";
 
 export function InvestmentWorkspace(
+  props: Parameters<typeof useInvestmentWorkspace>[0],
+) {
+  const { user } = useUser();
+  return <AccountInvestment key={user?.id ?? "guest"} {...props} />;
+}
+function AccountInvestment(
   props: Parameters<typeof useInvestmentWorkspace>[0],
 ) {
   const controller = useInvestmentWorkspace(props);
@@ -173,6 +185,7 @@ export function InvestmentWorkspace(
           <AssetScene kind="investments" />
         </div>
       </header>
+      <PageGuide pageId="investments" />
       {!configured ? (
         <section className="panel">
           <h2>{tr("Đầu tư chưa sẵn sàng")}</h2>
@@ -207,15 +220,44 @@ export function InvestmentWorkspace(
               >
                 {tr("Thêm danh mục")}
               </button>
-              <button
-                className="expense-secondary"
-                disabled={loading}
-                onClick={() => void load().catch(() => {})}
-              >
-                {tr("Tải lại")}
-              </button>
+              <ActionOptions>
+                {" "}
+                <button
+                  className="expense-secondary"
+                  disabled={loading}
+                  onClick={() => void load().catch(() => {})}
+                >
+                  {tr("Tải lại")}
+                </button>
+              </ActionOptions>
             </div>
           </div>
+          <ViewControls
+            past={date !== initialToday}
+            onCurrent={() => setDate(initialToday)}
+            count={
+              tab === "reports"
+                ? [
+                    filter.from !== `${initialToday.slice(0, 4)}-01-01`,
+                    filter.to !== initialToday,
+                    filter.kind,
+                    filter.categoryId,
+                    filter.transactionKind,
+                  ].filter(Boolean).length
+                : 0
+            }
+            onReset={() => {
+              setActivityCategory("");
+              setActivityKind("");
+              setFrom("");
+              setTo(initialToday);
+              setIncludeCancelled(false);
+              setFilter({
+                from: `${initialToday.slice(0, 4)}-01-01`,
+                to: initialToday,
+              });
+            }}
+          />
           {error && (
             <div className="expense-error action-message" role="alert">
               <p>{tr(error)}</p>
@@ -316,18 +358,19 @@ export function InvestmentWorkspace(
                     {!categories.length ? (
                       <section className="panel investment-empty">
                         <Garden variant="sprout" />
-                        <h2>{tr("Bắt đầu từ những gì bạn đang có")}</h2>
-                        <p>
-                          {tr(
+                        <EmptyState
+                          title={tr("Bắt đầu từ những gì bạn đang có")}
+                          description={tr(
                             "Tạo danh mục với ví tiền chờ riêng. Nạp tiền vào ví rồi ghi mua, hoặc nhập tài sản mở đầu nếu đã có.",
                           )}
-                        </p>
-                        <button
-                          className="expense-primary"
-                          onClick={() => open({ type: "create" })}
                         >
-                          {tr("Tạo danh mục đầu tiên")}
-                        </button>
+                          <button
+                            className="expense-primary"
+                            onClick={() => open({ type: "create" })}
+                          >
+                            {tr("Tạo danh mục đầu tiên")}
+                          </button>
+                        </EmptyState>
                       </section>
                     ) : (
                       <>
@@ -397,70 +440,90 @@ export function InvestmentWorkspace(
                 )}
                 {tab === "transactions" && (
                   <>
-                    <section className="panel investment-filters">
-                      <div className="investment-filter-fields">
-                        <label>
-                          {tr("Từ ngày giao dịch")}
-                          <input
-                            type="date"
-                            value={from}
-                            max={date}
-                            onChange={(e) => setFrom(e.target.value)}
-                          />
-                        </label>
-                        <label>
-                          {tr("Đến ngày giao dịch")}
-                          <input
-                            type="date"
-                            value={to}
-                            max={date}
-                            onChange={(e) => setTo(e.target.value)}
-                          />
-                        </label>
-                        <label>
-                          {tr("Danh mục / ví giao dịch")}
-                          <select
-                            value={activityCategory}
-                            onChange={(e) =>
-                              setActivityCategory(e.target.value)
-                            }
-                          >
-                            <option value="">{tr("Tất cả")}</option>
-                            {categories.map((c) => (
-                              <option key={c.id} value={c.id}>
-                                {name(c.id)}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <label>
-                          {tr("Loại giao dịch lọc")}
-                          <select
-                            value={activityKind}
-                            onChange={(e) => setActivityKind(e.target.value)}
-                          >
-                            <option value="">{tr("Tất cả loại")}</option>
-                            {Object.entries(localize(transactionNames)).map(
-                              ([id, name]) => (
-                                <option key={id} value={id}>
-                                  {name}
+                    <FilterOptions
+                      count={
+                        [
+                          activityCategory,
+                          activityKind,
+                          from,
+                          to !== initialToday,
+                          includeCancelled,
+                        ].filter(Boolean).length
+                      }
+                      onReset={() => {
+                        setActivityCategory("");
+                        setActivityKind("");
+                        setFrom("");
+                        setTo(initialToday);
+                        setIncludeCancelled(false);
+                      }}
+                    >
+                      <section className="panel investment-filters">
+                        <div className="investment-filter-fields">
+                          <label>
+                            {tr("Từ ngày giao dịch")}
+                            <input
+                              type="date"
+                              value={from}
+                              max={date}
+                              onChange={(e) => setFrom(e.target.value)}
+                            />
+                          </label>
+                          <label>
+                            {tr("Đến ngày giao dịch")}
+                            <input
+                              type="date"
+                              value={to}
+                              max={date}
+                              onChange={(e) => setTo(e.target.value)}
+                            />
+                          </label>
+                          <label>
+                            {tr("Danh mục / ví giao dịch")}
+                            <select
+                              value={activityCategory}
+                              onChange={(e) =>
+                                setActivityCategory(e.target.value)
+                              }
+                            >
+                              <option value="">{tr("Tất cả")}</option>
+                              {categories.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                  {name(c.id)}
                                 </option>
-                              ),
-                            )}
-                          </select>
+                              ))}
+                            </select>
+                          </label>
+                          <label>
+                            {tr("Loại giao dịch lọc")}
+                            <select
+                              value={activityKind}
+                              onChange={(e) => setActivityKind(e.target.value)}
+                            >
+                              <option value="">{tr("Tất cả loại")}</option>
+                              {Object.entries(localize(transactionNames)).map(
+                                ([id, name]) => (
+                                  <option key={id} value={id}>
+                                    {name}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </label>
+                        </div>
+                        <label className="investment-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={includeCancelled}
+                            onChange={(e) =>
+                              setIncludeCancelled(e.target.checked)
+                            }
+                          />
+                          <span>{tr("Hiện cả giao dịch đã hủy")}</span>
                         </label>
-                      </div>
-                      <label className="investment-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={includeCancelled}
-                          onChange={(e) =>
-                            setIncludeCancelled(e.target.checked)
-                          }
-                        />
-                        <span>{tr("Hiện cả giao dịch đã hủy")}</span>
-                      </label>
-                    </section>
+                      </section>{" "}
+                    </FilterOptions>
+
                     <section className="panel">
                       <h2>{tr("Nhật ký giao dịch")}</h2>
                       {!visible.length ? (

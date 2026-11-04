@@ -35,3 +35,7 @@ Rà Tổng quan, Chi tiêu, Thu nhập, Tiết kiệm, Đầu tư, Quỹ an toà
 Đã đối chiếu catalog, landing hai biến thể, preview, README và tài liệu UX/kiến trúc. Catalog làm rõ Quay lại → xác nhận trong Mục tiêu; Help preview giải thích thao tác trong ứng dụng thật. FAQ hai landing bổ sung Mục tiêu vào tính năng hiện có. Preview giữ số liệu cố định, không thêm nút lưu giả hoặc đọc API tài chính tài khoản.
 
 Không đổi API tài chính/schema/migration và không ghi/reset cloud. Runner dùng PostgreSQL/Auth double riêng, chụp source vào artifacts trước build; đây không phải bằng chứng cloud hoặc thiết bị vật lý.
+
+## Bổ sung trường hợp còn sót — 04/11/2026
+
+Cài đặt vẫn có cấu trúc tiêu đề → Help → mô tả cách 0px; lượt trước chưa có phép đo này. Đã nhóm tiêu đề/Help và đặt gap 16px với mô tả. Checklist nay kiểm cả nút đứng trước nội dung, không chỉ nút đứng sau nội dung và footer. Xem [phạm vi rà và bộ kiểm tra mới](settings-restore-layout-2026-11-04.md); không sửa lại kết quả lịch sử ở trên.

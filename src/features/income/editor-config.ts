@@ -7,7 +7,7 @@ export type EditorMode =
   | { type: "oneoff"; row?: IncomeRow }
   | { type: "deleteOneOff"; row: IncomeRow };
 export const titles = {
-  create: "Thêm danh mục cố định",
+  create: "Thêm nguồn thu đều đặn",
   configure: "Sửa danh mục",
   stop: "Ngừng danh mục",
   deleteCategory: "Xóa danh mục",

@@ -1,11 +1,16 @@
 "use client";
+import { EmptyState } from "@/components/empty-state";
+import { PageGuide } from "@/features/help/page-guide";
+import { FilterOptions } from "@/components/filter-options";
+import { useUser } from "@/features/profile/user-provider";
+import { ViewControls } from "@/components/view-controls";
+import { ActionOptions } from "@/components/action-options";
 import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { formatDate, formatTime } from "@/i18n/format";
 
-import { Garden } from "@/components/garden";
 import { AssetScene } from "@/components/asset-scene";
 import { LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
@@ -29,6 +34,10 @@ import { useSavingsWorkspace } from "./use-savings-workspace";
 export function SavingsWorkspace(
   props: Parameters<typeof useSavingsWorkspace>[0],
 ) {
+  const { user } = useUser();
+  return <AccountSavings key={user?.id ?? "guest"} {...props} />;
+}
+function AccountSavings(props: Parameters<typeof useSavingsWorkspace>[0]) {
   const controller = useSavingsWorkspace(props);
   const {
     localize,
@@ -42,6 +51,7 @@ export function SavingsWorkspace(
     error,
     status,
     load,
+    acceptView,
     loading,
     view,
     month,
@@ -121,9 +131,7 @@ export function SavingsWorkspace(
       <div className="expense-page-heading illustrated-heading">
         <div className="heading-copy">
           <p className="eyebrow">{tr("TÍCH LŨY CÓ LỊCH SỬ")}</p>
-          <HelpPageTitle>
-            {tr("Chăm chút")} <span>{tr("ngày mai.")}</span>
-          </HelpPageTitle>
+          <HelpPageTitle>{tr("Tiết kiệm")}</HelpPageTitle>
           <p className="lead">
             {tr("Tiền, sổ tiết kiệm và vàng — từng bước vun đắp theo tháng.")}
           </p>
@@ -132,6 +140,7 @@ export function SavingsWorkspace(
           <AssetScene kind="savings" />
         </div>
       </div>
+      <PageGuide pageId="savings" />
       {!configured ? (
         <section className="panel">
           <h2>{tr("Tiết kiệm chưa sẵn sàng")}</h2>
@@ -185,7 +194,23 @@ export function SavingsWorkspace(
                   max={today.slice(0, 7)}
                   onChange={setMonth}
                 />
-                <div className="expense-actions">
+              </div>
+              <div className="expense-actions savings-main-actions">
+                <button
+                  className="expense-primary"
+                  onClick={() => setEditor({ type: "transaction" })}
+                  disabled={!categories.length || loading}
+                >
+                  <Plus size={17} aria-hidden="true" />
+                  {tr("Ghi giao dịch")}
+                </button>
+                <button
+                  className="expense-secondary"
+                  onClick={() => setEditor({ type: "create" })}
+                >
+                  {tr("Thêm danh mục")}
+                </button>
+                <ActionOptions>
                   <button
                     className="expense-secondary"
                     onClick={() => void load().catch(() => {})}
@@ -206,31 +231,35 @@ export function SavingsWorkspace(
                       ? tr("Mở lại tháng")
                       : tr("Chốt tháng")}
                   </button>
-                </div>
+                  <button
+                    className="expense-secondary"
+                    onClick={() => setEditor({ type: "price" })}
+                    disabled={!categories.some((c) => c.kind === "gold")}
+                  >
+                    {tr("Cập nhật giá vàng")}
+                  </button>
+                </ActionOptions>
               </div>
-              <div className="expense-actions savings-main-actions">
-                <button
-                  className="expense-primary"
-                  onClick={() => setEditor({ type: "transaction" })}
-                  disabled={!categories.length || loading}
-                >
-                  <Plus size={17} aria-hidden="true" />
-                  {tr("Ghi giao dịch")}
-                </button>
-                <button
-                  className="expense-secondary"
-                  onClick={() => setEditor({ type: "create" })}
-                >
-                  {tr("Thêm danh mục")}
-                </button>
-                <button
-                  className="expense-secondary"
-                  onClick={() => setEditor({ type: "price" })}
-                  disabled={!categories.some((c) => c.kind === "gold")}
-                >
-                  {tr("Cập nhật giá vàng")}
-                </button>
-              </div>
+              <ViewControls
+                past={month !== today.slice(0, 7)}
+                onCurrent={() => setMonth(today.slice(0, 7))}
+                count={
+                  tab === "reports"
+                    ? [
+                        filter.from !== `${today.slice(0, 4)}-01-01`,
+                        filter.to !== today,
+                        filter.kind,
+                        filter.categoryId,
+                        filter.transactionKind,
+                      ].filter(Boolean).length
+                    : 0
+                }
+                onReset={() => {
+                  setActivityCategory("");
+                  setActivityKind("");
+                  setFilter({ from: `${today.slice(0, 4)}-01-01`, to: today });
+                }}
+              />
               <ScrollTabs
                 className="savings-tabs"
                 role="tablist"
@@ -372,15 +401,19 @@ export function SavingsWorkspace(
                           ))}
                       </div>
                       {!categories.length && (
-                        <div className="expense-empty">
-                          <Garden variant="jar" />
-                          <h3>{tr("Bắt đầu bằng một khoản nhỏ")}</h3>
-                          <p>
-                            {tr(
-                              "Thêm danh mục, rồi ghi số dư mở đầu hoặc giao dịch đầu tiên.",
-                            )}
-                          </p>
-                        </div>
+                        <EmptyState
+                          title={tr("Bắt đầu bằng một khoản nhỏ")}
+                          description={tr(
+                            "Thêm danh mục, rồi ghi số dư mở đầu hoặc giao dịch đầu tiên.",
+                          )}
+                        >
+                          <button
+                            className="expense-secondary"
+                            onClick={() => setEditor({ type: "create" })}
+                          >
+                            {tr("Tạo danh mục đầu tiên")}
+                          </button>
+                        </EmptyState>
                       )}
                     </section>
                     <SavingsReports
@@ -399,40 +432,52 @@ export function SavingsWorkspace(
                     <h2>
                       {tr("Giao dịch tháng")} {month}
                     </h2>
-                    <div className="savings-filters">
-                      <label>
-                        {tr("Danh mục giao dịch")}
-                        <select
-                          aria-label={tr("Danh mục giao dịch")}
-                          value={activityCategory}
-                          onChange={(e) => setActivityCategory(e.target.value)}
-                        >
-                          <option value="">{tr("Tất cả")}</option>
-                          {categories.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {(ruleAt(c, month) ?? c.rules[0]).name}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label>
-                        {tr("Loại giao dịch lọc")}
-                        <select
-                          aria-label={tr("Loại giao dịch lọc")}
-                          value={activityKind}
-                          onChange={(e) => setActivityKind(e.target.value)}
-                        >
-                          <option value="">{tr("Tất cả")}</option>
-                          {Object.entries(localize(transactionNames)).map(
-                            ([k, v]) => (
-                              <option key={k} value={k}>
-                                {v}
+                    <FilterOptions
+                      count={
+                        [activityCategory, activityKind].filter(Boolean).length
+                      }
+                      onReset={() => {
+                        setActivityCategory("");
+                        setActivityKind("");
+                      }}
+                    >
+                      <div className="savings-filters">
+                        <label>
+                          {tr("Danh mục giao dịch")}
+                          <select
+                            aria-label={tr("Danh mục giao dịch")}
+                            value={activityCategory}
+                            onChange={(e) =>
+                              setActivityCategory(e.target.value)
+                            }
+                          >
+                            <option value="">{tr("Tất cả")}</option>
+                            {categories.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {(ruleAt(c, month) ?? c.rules[0]).name}
                               </option>
-                            ),
-                          )}
-                        </select>
-                      </label>
-                    </div>
+                            ))}
+                          </select>
+                        </label>
+                        <label>
+                          {tr("Loại giao dịch lọc")}
+                          <select
+                            aria-label={tr("Loại giao dịch lọc")}
+                            value={activityKind}
+                            onChange={(e) => setActivityKind(e.target.value)}
+                          >
+                            <option value="">{tr("Tất cả")}</option>
+                            {Object.entries(localize(transactionNames)).map(
+                              ([k, v]) => (
+                                <option key={k} value={k}>
+                                  {v}
+                                </option>
+                              ),
+                            )}
+                          </select>
+                        </label>
+                      </div>
+                    </FilterOptions>
                     <SavingsTransactionTable
                       transactions={monthlyTransactions}
                       categories={categories}
@@ -662,8 +707,12 @@ export function SavingsWorkspace(
                   month={month}
                   onClose={() => setEditor(null)}
                   onReload={load}
-                  onSaved={async () => {
+                  onSaved={async (next) => {
                     setEditor(null);
+                    if (next) {
+                      acceptView(next);
+                      return;
+                    }
                     try {
                       await load();
                     } catch {

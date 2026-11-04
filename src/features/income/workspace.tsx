@@ -1,4 +1,8 @@
 "use client";
+import { EmptyState } from "@/components/empty-state";
+import { PageGuide } from "@/features/help/page-guide";
+import { useUser } from "@/features/profile/user-provider";
+import { ViewControls } from "@/components/view-controls";
 import { generationOf } from "@/lib/data-generation";
 import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
@@ -35,6 +39,10 @@ import { useIncomeWorkspace } from "./use-income-workspace";
 export function IncomeWorkspace(
   props: Parameters<typeof useIncomeWorkspace>[0],
 ) {
+  const { user } = useUser();
+  return <AccountIncome key={user?.id ?? "guest"} {...props} />;
+}
+function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
   const controller = useIncomeWorkspace(props);
   const {
     tr,
@@ -124,9 +132,20 @@ export function IncomeWorkspace(
         ))}
       </div>
     ) : (
-      <p className="expense-empty">
-        {tr("Chưa có khoản thu phát sinh trong kỳ này.")}
-      </p>
+      <EmptyState
+        title={tr("Chưa có khoản thu thêm trong kỳ này")}
+        description={tr(
+          "Khi nhận thưởng, quà tặng hoặc một khoản thu một lần, bạn có thể ghi tại đây.",
+        )}
+      >
+        <button
+          className="expense-secondary"
+          disabled={future}
+          onClick={() => open({ type: "oneoff" })}
+        >
+          {tr("Ghi khoản thu thêm")}
+        </button>
+      </EmptyState>
     );
   }
   return (
@@ -140,7 +159,7 @@ export function IncomeWorkspace(
           <HelpPageTitle>{tr("Thu nhập")}</HelpPageTitle>
           <p className="lead">
             {tr(
-              "Ghi nguồn thu đều đặn và khoản phát sinh, theo dõi từng tháng trong năm.",
+              "Biết tháng này bạn đã nhận bao nhiêu và nguồn thu nào chưa được ghi.",
             )}
           </p>
         </div>
@@ -148,6 +167,7 @@ export function IncomeWorkspace(
           <Garden variant="harvest" />
         </div>
       </div>
+      <PageGuide pageId="income" />
       {!configured ? (
         <section className="panel">
           <h2>{tr("Thu nhập chưa sẵn sàng")}</h2>
@@ -201,6 +221,29 @@ export function IncomeWorkspace(
                   {tr("Thêm thu phát sinh")}
                 </button>
               </div>
+              <ViewControls
+                past={selectedMonth !== today.slice(0, 7)}
+                onCurrent={() => {
+                  setYear(Number(today.slice(0, 4)));
+                  setMonth(Number(today.slice(5, 7)));
+                }}
+                count={
+                  tab === "reports"
+                    ? [
+                        kind !== "all",
+                        !!categoryId,
+                        from !== 1,
+                        to !== 12,
+                      ].filter(Boolean).length
+                    : 0
+                }
+                onReset={() => {
+                  setKind("all");
+                  setCategoryId("");
+                  setFrom(1);
+                  setTo(12);
+                }}
+              />
               <ScrollTabs
                 as="nav"
                 className="expense-segment"
@@ -209,7 +252,7 @@ export function IncomeWorkspace(
                 {[
                   ["month", tr("Nhập thu nhập")],
                   ["reports", tr("Báo cáo")],
-                  ["categories", tr("Danh mục cố định")],
+                  ["categories", tr("Nguồn thu đều đặn")],
                 ].map(([key, label]) => (
                   <button
                     key={key}
@@ -280,18 +323,18 @@ export function IncomeWorkspace(
                   )}
                   <p className="expense-muted">
                     {tr(
-                      "Chưa nhập nghĩa là chưa ghi nhận thu nhập. Nhập 0 ₫ để xác nhận tháng này không có thu nhập từ danh mục này.",
+                      "Chưa nhập: bạn chưa ghi số thực nhận. Nhập 0 ₫ nếu tháng này không nhận tiền từ nguồn đó.",
                     )}
                   </p>
                   <div className="expense-section-heading">
                     <h2>
-                      {tr("Danh mục cố định ·")}{" "}
+                      {tr("Nguồn thu đều đặn ·")}{" "}
                       {monthName(selectedMonth, locale)}
                     </h2>
                     <HelpButton
                       pageId="income"
                       sectionId="fixed"
-                      label={tr("Danh mục cố định là gì?")}
+                      label={tr("Nguồn thu đều đặn là gì?")}
                     />
                     <button
                       className="expense-secondary"
@@ -301,11 +344,12 @@ export function IncomeWorkspace(
                     </button>
                   </div>
                   {!fixedRows.length && (
-                    <p className="expense-empty">
-                      {tr(
-                        "Chưa có danh mục hoạt động trong tháng này. Thêm danh mục để nhập thu nhập định kỳ.",
+                    <EmptyState
+                      title={tr("Chưa có nguồn thu trong tháng này")}
+                      description={tr(
+                        "Thêm nguồn thu như lương để ghi số thực nhận mỗi tháng. Nếu đã có nguồn thu, kiểm tra tháng bắt đầu của nguồn đó.",
                       )}
-                    </p>
+                    />
                   )}
                   <div className="income-list">
                     {fixedRows.map((r) => (
@@ -394,7 +438,7 @@ export function IncomeWorkspace(
               {tab === "categories" && (
                 <>
                   <div className="expense-section-heading">
-                    <h2>{tr("Danh mục cố định")}</h2>
+                    <h2>{tr("Nguồn thu đều đặn")}</h2>
                     <button
                       className="expense-primary"
                       onClick={() => open({ type: "create" })}
@@ -410,7 +454,7 @@ export function IncomeWorkspace(
                   </p>
                   {!categories.length && (
                     <p className="expense-empty">
-                      {tr("Chưa có danh mục cố định.")}
+                      {tr("Chưa có nguồn thu đều đặn.")}
                     </p>
                   )}
                   <div className="income-list">

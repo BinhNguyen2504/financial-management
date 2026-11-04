@@ -52,3 +52,16 @@ Bản đầu chỉ /goals, không thêm widget hoặc dữ liệu Goals vào T�
 ## Khoảng cách và focus — 02/11/2026
 
 Trạng thái trống tách mô tả/nút tạo 16px. Footer tạo, xem trước, chi tiết và bỏ nháp dùng bố cục Modal chung: khe 12px, mobile ba nút dành hàng cuối cho xác nhận. Cặp ưu tiên cách 8px; các thao tác chi tiết đứng thành nhóm cạnh nhau. Chuột/chạm WebKit giữ focus nút mở và nút Hủy khi trở về từ dialog bỏ nháp. Quy tắc nghiệp vụ, API và dữ liệu không đổi. Xem [rà soát toàn ứng dụng](action-layout-2026-11-02.md).
+
+### Cải thiện thao tác — 04/11/2026
+
+Đối chiếu [thiết kế dùng chung](workspace-comfort-2026-11-04.md): đầu trang gọn, bảo vệ nháp và giữ ngữ cảnh xem theo tài khoản trong phiên. Các lựa chọn nghiệp vụ, dữ liệu và lịch sử hiện có được giữ. Phần khôi phục/làm trống nằm sau lựa chọn giao diện trong Cài đặt; không thay điều kiện restore/reset.
+
+### Tối ưu tải dữ liệu — 04/11/2026
+
+Đối chiếu [hợp đồng dùng chung](performance-2026-11-04.md): đọc snapshot/projection, phản hồi view sau commit cho sáu sổ, chi tiết Báo cáo theo metric và foreground chống tải lặp ở Cài đặt. Giữ quy tắc tiền, lịch sử, phiên bản và owner/RLS; không thêm migration hoặc suy ra trạng thái cloud.
+
+
+## Nội dung cho người dùng phổ thông — 04/11/2026
+
+Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.

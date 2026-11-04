@@ -286,6 +286,8 @@ Thẻ khôi phục giải thích mục nào còn dữ liệu và loại bản gh
 
 ### Phân biệt lỗi quyền và mất phản hồi reset — 30/10/2026
 
+**Bổ sung 04/11/2026:** dialog reset dùng chỉ báo hai bước luôn hiện ở đầu vùng cuộn; email nổi bật, phạm vi xóa và thông tin giữ lại tách nhóm, số bản ghi căn hàng và có giải thích. Sau khi tạo backup, tiêu đề bước xác nhận nhận focus; ô nhập có border/nền/focus rõ trong sáng/tối. Chỉ hiện nút xóa ở bước xác nhận. Chi tiết ở [dialog làm trống](features/settings-reset-dialog-2026-11-04.md).
+
 Lỗi quyền xử lý đã rollback báo rõ hệ thống chưa đủ quyền, dữ liệu chưa bị xóa và cho phép đóng hộp thoại. Mất phản hồi mạng giữ mã yêu cầu để kiểm tra lại, không tự khởi tạo thao tác xóa khác. Giữ bản sao lưu/bản nháp và hiển thị lỗi tại thao tác bằng vi/en.
 
 ## Mục tiêu — 30/10/2026
@@ -328,3 +330,20 @@ Một chút bình yên là điểm nghỉ ngắn trước nội dung làm việc
 ### Dấu tiếng Việt trong quote — 04/11/2026
 
 Thay chuỗi serif hệ thống bằng Noto Serif tải kèm đủ latin/vietnamese, dùng bản nghiêng thật 400. Bỏ ép sát khoảng chữ, nâng line-height lên 1.65, giữ cỡ 18–24px. Cùng quy tắc áp dụng ở dải đầu trang, widget Tổng quan và câu minh họa trong preview.
+
+## Help trước mô tả và trạng thái khôi phục — 04/11/2026
+
+Đợt trước bỏ sót Cài đặt: nút Help đứng trước đoạn văn vẫn cách 0px. Kiểm bố cục nội dung/thao tác theo cả hai hướng, gồm tiêu đề → Help → mô tả; khối chứa sở hữu gap 16px. Trạng thái khôi phục ưu tiên câu điều kiện và tên/trạng thái từng mục, chi tiết sổ/lịch sử mở khi cần. Không đưa tổng bản ghi vào nhãn thu gọn để tránh hiểu là số giao dịch. Hướng tiếp tục và trạng thái hệ thống luôn rõ; link làm trống chỉ dẫn đến hướng dẫn. Xem [đặc tả](features/settings-restore-layout-2026-11-04.md).
+
+## Giữ mạch thao tác — 04/11/2026
+
+Giữ năm theme và quote đầy đủ, đưa minh họa nhỏ cạnh tên chức năng. Số chính và thao tác thường dùng được ưu tiên ở màn hình đầu. Mobile mở bộ lọc nâng cao và thao tác phụ khi cần; luôn giữ trạng thái kỳ, tạm tính/thiếu giá/cũ gần số liệu. Khi rời biểu mẫu có thay đổi, chọn Tiếp tục nhập hoặc Bỏ thay đổi. Kỳ/tab/bộ lọc theo từng sổ được nhớ trong phiên tài khoản, có điều khiển về hiện tại/đặt lại. Menu chia nhóm; Cài đặt một trang với thao tác làm trống cuối cùng. Xem [đặc tả và tiêu chí](features/workspace-comfort-2026-11-04.md).
+
+## Chờ dữ liệu và sau lưu — 04/11/2026
+
+Sau commit, màn hình dùng view đã xác nhận từ server và giữ kỳ/tab/bộ lọc; response tải cũ không ghi đè kết quả mới. Lỗi ghi chưa rõ kết quả giữ command/nháp để retry. Cài đặt gộp sự kiện trở lại trang; báo cáo chỉ tính khi phần tương ứng cần. Các con số preview cố định, không mô phỏng lưu vào tài khoản. Xem [hành vi và giới hạn](features/performance-2026-11-04.md).
+
+
+## Nội dung và hướng dẫn tại chỗ — 04/11/2026
+
+Các trang có phần mở rộng giải thích cách bắt đầu và đọc số liệu; Tổng quan nêu rõ việc tiếp theo, tên quỹ và nguồn thu dùng ngôn ngữ gần gũi. Xem [hợp đồng nội dung và đối chiếu tác vụ](features/friendly-content-2026-11-04.md). Không đổi API, schema, dữ liệu hoặc cách tính tiền.

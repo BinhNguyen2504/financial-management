@@ -1,4 +1,8 @@
 "use client";
+import { PageGuide } from "@/features/help/page-guide";
+import { useViewState } from "@/components/use-view-state";
+import { ViewControls } from "@/components/view-controls";
+import { ActionOptions } from "@/components/action-options";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -15,6 +19,7 @@ import { focusPointerControl } from "@/components/pointer-focus";
 import { vietnamClock } from "@/domain/shared/clock";
 import {
   parseQuery,
+  querySchema,
   tabs,
   type Report,
   type ReportQuery,
@@ -43,6 +48,7 @@ const sourceNames = {
   funds: "Quỹ an toàn",
   goals: "Mục tiêu",
 };
+const validQuery = (value: unknown) => querySchema.safeParse(value).success;
 const encodeQuery = (query: ReportQuery) =>
   new URLSearchParams(
     Object.fromEntries(Object.entries(query).map(([k, v]) => [k, String(v)])),
@@ -58,12 +64,18 @@ function AccountReports({ configured }: { configured: boolean }) {
     money = useMoney(),
     hidden = useMoneyHidden(),
     search = useSearchParams();
+  const [rememberedQuery, rememberQuery] = useViewState<ReportQuery>(
+    "reports",
+    "query",
+    parseQuery({}, vietnamClock()),
+    validQuery,
+  );
   const raw = search.toString();
   const selection = useMemo(() => {
     try {
       return {
         query: parseQuery(
-          Object.fromEntries(new URLSearchParams(raw)),
+          raw ? Object.fromEntries(new URLSearchParams(raw)) : rememberedQuery,
           vietnamClock(),
         ),
         invalid: false,
@@ -71,9 +83,13 @@ function AccountReports({ configured }: { configured: boolean }) {
     } catch {
       return { query: parseQuery({}, vietnamClock()), invalid: true };
     }
-  }, [raw]);
+  }, [raw, rememberedQuery]);
   const query = selection.query,
     key = encodeQuery(query);
+  useEffect(() => {
+    if (raw && !selection.invalid && key !== encodeQuery(rememberedQuery))
+      rememberQuery(query);
+  }, [raw, selection.invalid, key, rememberedQuery, rememberQuery, query]);
   const [loaded, setLoaded] = useState<{ key: string; report: Report } | null>(
       null,
     ),
@@ -124,6 +140,7 @@ function AccountReports({ configured }: { configured: boolean }) {
     loaded?.key === key && !selection.invalid ? loaded.report : null;
   function change(next: Partial<ReportQuery>) {
     setDetail(null);
+    rememberQuery({ ...query, ...next });
     window.history.pushState(
       null,
       "",
@@ -162,14 +179,17 @@ function AccountReports({ configured }: { configured: boolean }) {
             )}
             {t("Cập nhật báo cáo")}
           </button>
-          <button
-            className="expense-primary"
-            disabled={!report || busy || !!error || needsLogin}
-            onClick={download}
-          >
-            <Download size={17} aria-hidden="true" />
-            {t("Xuất CSV")}
-          </button>
+          <ActionOptions>
+            {" "}
+            <button
+              className="expense-primary"
+              disabled={!report || busy || !!error || needsLogin}
+              onClick={download}
+            >
+              <Download size={17} aria-hidden="true" />
+              {t("Xuất bảng dữ liệu")}
+            </button>
+          </ActionOptions>
         </div>
       </header>
       <section
@@ -239,6 +259,16 @@ function AccountReports({ configured }: { configured: boolean }) {
           </label>
         )}
       </section>
+      <ViewControls
+        past={
+          query.period !== "month" ||
+          query.year !== Number(vietnamClock().today.slice(0, 4)) ||
+          query.month !== Number(vietnamClock().today.slice(5, 7))
+        }
+        onCurrent={() =>
+          change({ ...parseQuery({}, vietnamClock()), tab: query.tab })
+        }
+      />
       <ScrollTabs as="nav" className="reports-tabs" aria-label={t("Báo cáo")}>
         {tabs.map((tab) => (
           <button
@@ -267,6 +297,7 @@ function AccountReports({ configured }: { configured: boolean }) {
           </button>
         </div>
       )}
+      <PageGuide pageId="reports" />
       {error && (
         <div className="expense-notice" role="alert">
           <p>{t(error)}</p>
@@ -299,54 +330,54 @@ function AccountReports({ configured }: { configured: boolean }) {
               </strong>{" "}
               · {t("Số liệu đến")} {formatDate(report.period.asOf, locale)}
             </p>
-            <p>
-              {t("Kỳ trước đầy đủ")}:{" "}
-              {formatDate(report.previousPeriod.from, locale)} –{" "}
-              {formatDate(report.previousPeriod.to, locale)}
-            </p>
-            <small>
-              {t("Cập nhật lúc")} {formatTime(report.generatedAt, locale)}
-            </small>
-          </div>
-          {report.period.partial && (
-            <p className="expense-notice">
-              {t("Kỳ này chưa kết thúc")} ·{" "}
-              {t("So sánh kỳ chưa kết thúc với toàn bộ kỳ trước.")}
-            </p>
-          )}
-          {report.period.future && (
-            <p className="expense-notice">
-              {t("Kỳ này chưa diễn ra; chưa có số thực tế.")}
-            </p>
-          )}
-          <div className="reports-source-states">
-            {Object.entries(report.sources).map(([source, state]) =>
-              state.status === "error" || state.empty ? (
-                <p
-                  key={source}
-                  role={state.status === "error" ? "alert" : undefined}
-                >
-                  {t(sourceNames[source as keyof typeof sourceNames])}:{" "}
-                  {t(
-                    state.status === "error"
-                      ? "Lỗi tải nguồn"
-                      : "Chưa có dữ liệu",
-                  )}
-                </p>
-              ) : null,
+            {report.period.partial && (
+              <p className="reports-inline-state">
+                {t("Kỳ này chưa kết thúc")}
+              </p>
+            )}
+            {report.period.future && (
+              <p className="reports-inline-state">
+                {t("Kỳ này chưa diễn ra; chưa có số thực tế.")}
+              </p>
             )}
           </div>
-          {report.warnings.length > 0 && (
-            <div className="expense-notice">
-              {report.warnings.map((warning) => (
-                <p key={warning}>{t(warning)}</p>
-              ))}
-            </div>
-          )}
+          {Object.entries(report.sources)
+            .filter(([, state]) => state.status === "error")
+            .map(([source]) => (
+              <p key={source} role="alert">
+                {t(sourceNames[source as keyof typeof sourceNames])}:{" "}
+                {t("Lỗi tải nguồn")}
+              </p>
+            ))}
           <div className="reports-metrics">
             {report.metrics.map((metric) => (
               <article key={metric.id}>
                 <h2>{t(metric.label)}</h2>
+                {report.sources[metric.source]?.empty &&
+                  report.metrics.find(
+                    (item) => item.source === metric.source,
+                  ) === metric && (
+                    <p className="reports-empty-source">
+                      <span>
+                        {t(sourceNames[metric.source])}: {t("Chưa có dữ liệu")}
+                      </span>{" "}
+                      <Link
+                        className="text-link"
+                        href={`/${metric.source === "expenses" ? "budgets" : metric.source}`}
+                      >
+                        {t("Mở {0}", { 0: t(sourceNames[metric.source]) })}
+                      </Link>
+                    </p>
+                  )}
+                {report.warnings
+                  .filter((warning) =>
+                    warning.startsWith(sourceNames[metric.source]),
+                  )
+                  .map((warning) => (
+                    <p key={warning} className="reports-metric-warning">
+                      {t(warning)}
+                    </p>
+                  ))}
                 <button
                   className="reports-metric-value"
                   disabled={busy || !!error}
@@ -358,6 +389,14 @@ function AccountReports({ configured }: { configured: boolean }) {
                 <p>
                   {t("Kỳ trước")}:{" "}
                   {metric.previous === null ? "—" : money(metric.previous)}
+                  {report.warnings.some((warning) =>
+                    warning.startsWith("Kỳ trước"),
+                  ) && (
+                    <span className="reports-metric-warning">
+                      {" "}
+                      · {t("Kỳ trước có lưu ý")}
+                    </span>
+                  )}
                 </p>
                 <p>
                   {t("Chênh lệch")}:{" "}
@@ -375,6 +414,38 @@ function AccountReports({ configured }: { configured: boolean }) {
               </article>
             ))}
           </div>
+          <details className="reports-explanation">
+            <summary>
+              {t("Chi tiết kỳ và chất lượng số liệu")} ·{" "}
+              {report.warnings.length}
+            </summary>
+            <p>
+              {t("Kỳ trước đầy đủ")}:{" "}
+              {formatDate(report.previousPeriod.from, locale)} –{" "}
+              {formatDate(report.previousPeriod.to, locale)}
+            </p>
+            <p>
+              {t("Cập nhật lúc")} {formatTime(report.generatedAt, locale)}
+            </p>
+            {report.period.partial && (
+              <p>{t("So sánh kỳ chưa kết thúc với toàn bộ kỳ trước.")}</p>
+            )}
+            {report.warnings.map((warning) => (
+              <p key={warning}>{t(warning)}</p>
+            ))}
+            {Object.entries(report.sources)
+              .filter(
+                ([source, state]) =>
+                  state.empty &&
+                  !report.metrics.some((metric) => metric.source === source),
+              )
+              .map(([source]) => (
+                <p key={source}>
+                  {t(sourceNames[source as keyof typeof sourceNames])}:{" "}
+                  {t("Chưa có dữ liệu")}
+                </p>
+              ))}
+          </details>
           {(query.tab === "cashflow" || query.tab === "summary") && (
             <p className="reports-note">
               {t(
@@ -407,7 +478,7 @@ function AccountReports({ configured }: { configured: boolean }) {
           </div>
           <p className="reports-note">
             {t(
-              "Mỗi module là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.",
+              "Mỗi chức năng là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.",
             )}
           </p>
           {detail && (

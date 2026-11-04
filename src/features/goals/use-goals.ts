@@ -56,5 +56,11 @@ export function useGoals() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Account identity owns the workspace; metadata refreshes retain its drafts.
   }, [user?.id, reload]);
-  return { view, error, reload, authLost, owner: user?.id };
+  function acceptView(next: GoalView) {
+    if (session.current !== user?.id) return;
+    ticket.current++;
+    setView(next);
+    setError("");
+  }
+  return { view, error, reload, authLost, acceptView, owner: user?.id };
 }

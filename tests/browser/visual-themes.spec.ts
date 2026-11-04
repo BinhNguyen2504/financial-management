@@ -324,7 +324,7 @@ test("invalid preferences fall back and blocked storage still permits session ch
     "earth",
   );
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  const menu = page.locator(".mobile-menu summary");
+  const menu = page.locator(".mobile-menu > summary");
   if (await menu.isVisible()) await menu.click();
   await page.locator('a[href="/overview"]:visible').first().click();
   await expect(page).toHaveURL(/\/overview$/);
@@ -471,7 +471,7 @@ test("selected theme combinations fit all workspaces, help, charts and fund dial
         .getByRole("button", { name: "Hiện số tiền", exact: true })
         .click();
       await page
-        .getByRole("button", { name: "Xem Emergency Fund", exact: true })
+        .getByRole("button", { name: "Xem Quỹ khẩn cấp", exact: true })
         .click();
       await expect(page.getByRole("dialog")).toBeVisible();
       await expect(page.getByRole("dialog").locator("p.eyebrow")).toContainText(

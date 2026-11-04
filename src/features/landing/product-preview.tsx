@@ -13,7 +13,11 @@ import { SafetyScene } from "@/components/safety-scene";
 import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 
 import { ModuleIcon } from "@/components/module-icon";
-import { modules, navigationSummary } from "@/features/catalog";
+import {
+  modules,
+  navigationSummary,
+  workspaceComfortSummary,
+} from "@/features/catalog";
 import { LabelName } from "@/features/expenses/label-visual";
 import { ProgressScene } from "@/features/funds/progress-scene";
 import { ArrowDownLeft, ArrowUpRight, Eye, EyeOff } from "lucide-react";
@@ -35,13 +39,13 @@ const helpPreview = {
   reports:
     "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
   goals:
-    "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Xem trước thay đổi, quay lại điều chỉnh rồi xác nhận lưu trong ứng dụng.",
+    "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Xem trước thay đổi, quay lại điều chỉnh rồi xác nhận lưu trong ứng dụng. Số liệu cập nhật trong kỳ đang xem.",
   overview:
-    "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại widget theo tài khoản; các sổ không cộng thành tài sản ròng.",
+    "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại thẻ thông tin theo tài khoản; các sổ không cộng thành tài sản ròng.",
   budgets:
     "Chia trước, chi sau. Hũ là phần tiền dành cho một mục đích; ngân hàng, ví hay tiền mặt là nơi bạn quy ước để chi. Đối chiếu số còn lại để biết tháng này thừa thiếu ra sao.",
   income:
-    "Danh mục cố định là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.",
+    "Nguồn thu đều đặn là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.",
   savings:
     "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.",
   investments:
@@ -120,10 +124,11 @@ const data = {
   },
   overview: {
     title: "Một góc nhìn chung, từng khoản rõ ràng.",
-    subtitle: "5 thẻ số liệu chính · tùy chỉnh 10 loại widget theo tài khoản.",
+    subtitle:
+      "5 thẻ số liệu chính · tùy chỉnh 10 loại thẻ thông tin theo tài khoản.",
     label: "Tổng thực nhận",
     value: "28500000",
-    secondary: "Widget mặc định",
+    secondary: "Thẻ thông tin mặc định",
     secondaryValue: "5",
     columns: ["Module", "Giá trị minh họa"],
     rows: [],
@@ -135,26 +140,26 @@ const data = {
     subtitle: "Chuẩn bị từng quỹ dự phòng theo nhu cầu sinh hoạt của bạn.",
     label: "Tổng dự phòng",
     value: "42750000",
-    secondary: "Emergency đủ trang trải",
+    secondary: "Quỹ khẩn cấp đủ trang trải",
     secondaryValue: "3 tháng",
     columns: ["Quỹ an toàn", "Đã dự phòng"],
     rows: [
       {
-        name: "Emergency Fund",
+        name: "Quỹ khẩn cấp",
         note: "27 / 54 triệu · Hoàn thành 50%",
         emoji: "🌳",
         amount: "27000000",
         percent: 50,
       },
       {
-        name: "Rainy Day Fund",
+        name: "Quỹ phát sinh",
         note: "6,75 / 9 triệu · Hoàn thành 75%",
         emoji: "☂️",
         amount: "6750000",
         percent: 75,
       },
       {
-        name: "Sinking Fund",
+        name: "Quỹ chi dự kiến",
         note: "9 / 18 triệu · Hoàn thành 50%",
         emoji: "🌉",
         amount: "9000000",
@@ -360,6 +365,7 @@ export function ProductPreview({
             )}
             <small>{tr("Tải bản sao dữ liệu của bạn trong Cài đặt.")}</small>
             <small>{tr(navigationSummary)}</small>
+            <small>{tr(workspaceComfortSummary)}</small>
             <small>
               {tr("Trang chủ và ứng dụng hỗ trợ Tiếng Việt / English.")}
             </small>
@@ -420,7 +426,7 @@ export function ProductPreview({
             <p>{tr(helpPreview[active])}</p>
             <small>
               {tr(
-                "Trong ứng dụng, nút Hướng dẫn giúp bạn tìm hiểu từng mục khi cần.",
+                "Mỗi mục có cách bắt đầu và giải thích số liệu. Mở Hướng dẫn khi cần các bước chi tiết.",
               )}
             </small>
           </AnimatedDetails>
@@ -439,15 +445,9 @@ export function ProductPreview({
                     <div>
                       <p>{tr(item.title)}</p>
                       <h2>
-                        {neutral ? (
-                          tr(selected.title)
-                        ) : active === "funds" ? (
-                          <ThemeText name="previewFunds" />
-                        ) : active === "savings" ? (
-                          <ThemeText name="previewSavings" />
-                        ) : (
-                          tr(selected.title)
-                        )}
+                        {active === "savings" || active === "funds"
+                          ? tr(item.title)
+                          : tr(selected.title)}
                       </h2>
                       <span>{tr(selected.subtitle)}</span>
                     </div>
@@ -495,7 +495,7 @@ export function ProductPreview({
                         <h3>{tr("Quỹ an toàn")}</h3>
                         <strong>{money(data.funds.value)}</strong>
                         <small>
-                          {tr("Emergency đủ trang trải")} ·{" "}
+                          {tr("Quỹ khẩn cấp đủ trang trải")} ·{" "}
                           {tr(data.funds.secondaryValue)}
                         </small>
                       </section>
@@ -613,7 +613,7 @@ export function ProductPreview({
                                   className="marketing-fund-progress"
                                   role="img"
                                   aria-label={tr(
-                                    "Emergency Fund đã chuẩn bị 50% mục tiêu",
+                                    "Quỹ khẩn cấp đã chuẩn bị 50% mục tiêu",
                                   )}
                                 >
                                   <span>

@@ -1,3 +1,5 @@
+import type { CommandViewOptions } from "./shared/command-view";
+import type { ExpenseView } from "../domain/expenses/types";
 import { commandFingerprint } from "./shared/command-fingerprint";
 import {
   applyAction,
@@ -26,6 +28,7 @@ export interface ExpenseRepository {
   transaction<T>(
     owner: string,
     fn: (transaction: ExpenseTransaction) => Promise<T>,
+    readOnly?: boolean,
   ): Promise<T>;
 }
 export async function runExpenseCommand(
@@ -34,45 +37,56 @@ export async function runExpenseCommand(
   input: ExpenseCommand,
   clock: Clock,
   preview = false,
-): Promise<CommandResult> {
+  options: CommandViewOptions = {},
+): Promise<CommandResult & { view?: ExpenseView }> {
   const command = commandSchema.parse(input);
   const fingerprint = commandFingerprint(command);
-  return repository.transaction(owner, async (tx) => {
-    const remembered = await tx.command(command.id);
-    if (remembered) {
-      if (remembered.fingerprint !== fingerprint)
+  return repository.transaction(
+    owner,
+    async (tx) => {
+      const remembered = await tx.command(command.id);
+      if (remembered) {
+        if (remembered.fingerprint !== fingerprint)
+          throw new ExpenseError(
+            "Mã yêu cầu đã được dùng với nội dung khác.",
+            409,
+            "IDEMPOTENCY_CONFLICT",
+          );
+        return options.view && !preview
+          ? { ...remembered.result, view: toView(await tx.read(), clock) }
+          : remembered.result;
+      }
+      const before = await tx.read();
+      if ((before?.version ?? 0) !== command.expectedVersion)
         throw new ExpenseError(
-          "Mã yêu cầu đã được dùng với nội dung khác.",
+          "Dữ liệu đã thay đổi trên phiên khác. Tải lại dữ liệu rồi xem trước lại; nội dung bạn nhập vẫn được giữ.",
           409,
-          "IDEMPOTENCY_CONFLICT",
+          "VERSION_CONFLICT",
         );
-      return remembered.result;
-    }
-    const before = await tx.read();
-    if ((before?.version ?? 0) !== command.expectedVersion)
-      throw new ExpenseError(
-        "Dữ liệu đã thay đổi trên phiên khác. Tải lại dữ liệu rồi xem trước lại; nội dung bạn nhập vẫn được giữ.",
-        409,
-        "VERSION_CONFLICT",
-      );
-    const after = applyAction(before, command.action, clock);
-    const result = {
-      version: after.version,
-      changes: changes(before, after, clock),
-    };
-    if (!preview) {
-      await tx.save(after);
-      await tx.remember(command.id, { fingerprint, result });
-    }
-    return result;
-  });
+      const after = applyAction(before, command.action, clock);
+      const result = {
+        version: after.version,
+        changes: changes(before, after, clock),
+      };
+      if (!preview) {
+        await tx.save(after);
+        await tx.remember(command.id, { fingerprint, result });
+      }
+      return options.view && !preview
+        ? { ...result, view: toView(await tx.read(), clock) }
+        : result;
+    },
+    preview,
+  );
 }
 export async function readExpenseView(
   repository: ExpenseRepository,
   owner: string,
   clock: Clock,
 ) {
-  return repository.transaction(owner, async (tx) =>
-    toView(await tx.read(), clock),
+  return repository.transaction(
+    owner,
+    async (tx) => toView(await tx.read(), clock),
+    true,
   );
 }

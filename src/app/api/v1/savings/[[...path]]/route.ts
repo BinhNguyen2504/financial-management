@@ -1,3 +1,4 @@
+import { timePhase, withFinancialTiming } from "@/server/performance";
 import { requestDataGeneration } from "@/server/data-generation";
 import {
   financialHeaders as headers,
@@ -38,77 +39,95 @@ function failure(error: unknown) {
   });
 }
 export async function GET(request: Request, context: Context) {
-  try {
-    const owner = await authenticatedOwner(request),
-      path = ((await context.params).path ?? []).join("/"),
-      url = new URL(request.url),
-      clock = savingsClock();
-    if (path && !["reports", "backup"].includes(path))
-      throw new SavingsError("Đường dẫn không tồn tại.", 404);
-    const month = monthSchema.parse(
-      url.searchParams.get("month") ?? clock.today.slice(0, 7),
-    );
-    const date = dateSchema.parse(
-      url.searchParams.get("asOf") ?? endOfMonth(month),
-    );
-    const view = await readSavingsView(savingsRepository(), owner, date, clock);
-    if (!path) return jsonResponse(view, { headers });
-    if (path === "backup")
-      return jsonResponse(
-        {
-          format: "financial-manager-savings",
-          schemaVersion: 1,
-          exportedAt: clock.now,
-          book: view.book,
-        },
-        {
-          headers: {
-            ...headers,
-            "Content-Disposition": `attachment; filename="savings-backup-${clock.today}.json"`,
-          },
-        },
+  return withFinancialTiming(request, async () => {
+    try {
+      const owner = await authenticatedOwner(request),
+        path = ((await context.params).path ?? []).join("/"),
+        url = new URL(request.url),
+        clock = savingsClock();
+      if (path && !["reports", "backup"].includes(path))
+        throw new SavingsError("Đường dẫn không tồn tại.", 404);
+      const month = monthSchema.parse(
+        url.searchParams.get("month") ?? clock.today.slice(0, 7),
       );
-    const filter = reportFilterSchema.parse({
-      from: url.searchParams.get("from") ?? `${clock.today.slice(0, 4)}-01-01`,
-      to: url.searchParams.get("to") ?? clock.today,
-      categoryId: url.searchParams.get("categoryId") || undefined,
-      kind: url.searchParams.get("kind") || undefined,
-      transactionKind: url.searchParams.get("transactionKind") || undefined,
-    });
-    const report = buildReport(view.book, filter, clock);
-    if (url.searchParams.get("format") === "csv")
-      return new NextResponse(
-        reportCSV(report, localeOf(url.searchParams.get("locale"))),
-        {
-          headers: {
-            ...headers,
-            "Content-Type": "text/csv; charset=utf-8",
-            "Content-Disposition": `attachment; filename="savings-${filter.from}-${filter.to}.csv"`,
-          },
-        },
+      const date = dateSchema.parse(
+        url.searchParams.get("asOf") ?? endOfMonth(month),
       );
-    return jsonResponse(report, { headers });
-  } catch (error) {
-    return failure(error);
-  }
+      const view = await timePhase("work", () =>
+        readSavingsView(savingsRepository(), owner, date, clock),
+      );
+      if (!path) return jsonResponse(view, { headers });
+      if (path === "backup")
+        return jsonResponse(
+          {
+            format: "financial-manager-savings",
+            schemaVersion: 1,
+            exportedAt: clock.now,
+            book: view.book,
+          },
+          {
+            headers: {
+              ...headers,
+              "Content-Disposition": `attachment; filename="savings-backup-${clock.today}.json"`,
+            },
+          },
+        );
+      const filter = reportFilterSchema.parse({
+        from:
+          url.searchParams.get("from") ?? `${clock.today.slice(0, 4)}-01-01`,
+        to: url.searchParams.get("to") ?? clock.today,
+        categoryId: url.searchParams.get("categoryId") || undefined,
+        kind: url.searchParams.get("kind") || undefined,
+        transactionKind: url.searchParams.get("transactionKind") || undefined,
+      });
+      const report = buildReport(view.book, filter, clock);
+      if (url.searchParams.get("format") === "csv")
+        return new NextResponse(
+          reportCSV(report, localeOf(url.searchParams.get("locale"))),
+          {
+            headers: {
+              ...headers,
+              "Content-Type": "text/csv; charset=utf-8",
+              "Content-Disposition": `attachment; filename="savings-${filter.from}-${filter.to}.csv"`,
+            },
+          },
+        );
+      return jsonResponse(report, { headers });
+    } catch (error) {
+      return failure(error);
+    }
+  });
 }
 export async function POST(request: Request, context: Context) {
-  try {
-    const owner = await authenticatedOwner(request);
-    checkCommandOrigin(request, SavingsError);
-    const path = ((await context.params).path ?? []).join("/");
-    if (path !== "commands" && path !== "preview")
-      throw new SavingsError("Đường dẫn không tồn tại.", 404);
-    const body = await readCommandJSON(request, SavingsError);
-    const result = await runSavingsCommand(
-      savingsRepository(requestDataGeneration(request)),
-      owner,
-      commandSchema.parse(body),
-      savingsClock(),
-      path === "preview",
-    );
-    return jsonResponse(result, { headers });
-  } catch (error) {
-    return failure(error);
-  }
+  return withFinancialTiming(request, async () => {
+    try {
+      const owner = await authenticatedOwner(request);
+      checkCommandOrigin(request, SavingsError);
+      const path = ((await context.params).path ?? []).join("/");
+      if (path !== "commands" && path !== "preview")
+        throw new SavingsError("Đường dẫn không tồn tại.", 404);
+      const body = await readCommandJSON(request, SavingsError);
+      const clock = savingsClock();
+      const result = await timePhase("work", () =>
+        runSavingsCommand(
+          savingsRepository(requestDataGeneration(request)),
+          owner,
+          commandSchema.parse(body),
+          clock,
+          path === "preview",
+          {
+            view:
+              path === "commands" &&
+              new URL(request.url).searchParams.get("return") === "view",
+            asOf: dateSchema.parse(
+              new URL(request.url).searchParams.get("asOf") ?? clock.today,
+            ),
+          },
+        ),
+      );
+      return jsonResponse(result, { headers });
+    } catch (error) {
+      return failure(error);
+    }
+  });
 }

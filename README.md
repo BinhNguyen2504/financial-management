@@ -220,6 +220,10 @@ Chi tiết ba quỹ có cột tiền và nút Sửa/Hủy nhất quán, nơi gi�
 
 Database đã bật reset cần migration bổ sung `202610300001_reset_owner_claims.sql`: role reset đọc owner từ JWT context của server, không phụ thuộc quyền truy cập schema Auth của Supabase. Giao diện phân biệt lỗi quyền đã rollback với mất xác nhận mạng. Xem [hướng xử lý](docs/features/backup.md#sửa-quyền-auth-khi-làm-trống--30102026). Catalog, landing, preview cố định và Help đã rà soát; phạm vi khôi phục/làm trống và dữ liệu minh họa không đổi nên giữ nội dung hiện tại.
 
+### Dialog làm trống dữ liệu — 04/11/2026
+
+Dialog có tiến trình hai bước luôn hiển thị: tạo bản sao lưu → kiểm tra và xác nhận. Email tài khoản được tách nổi bật; phạm vi xóa, số bản ghi của sáu phân hệ và thông tin giữ lại được chia nhóm. Sau khi tạo file, người dùng vẫn phải xác nhận đã lưu và nhập chính xác `XÓA TOÀN BỘ` trong ô có viền rõ. Xem [thiết kế và kiểm chứng](docs/features/settings-reset-dialog-2026-11-04.md).
+
 ## Mục tiêu — 30/10/2026
 
 /goals có mục tiêu chi dùng và cột mốc tài chính; liên kết nguồn hoặc sổ góp riêng, ưu tiên và kế hoạch góp. Có góp/rút/chuyển, sửa/hủy giữ lịch sử, hoàn thành/tạm dừng/lưu trữ. Backup V3 chứa Goals, nhận V1/V2. Chưa thêm Tổng quan. Xem [đặc tả](docs/features/goals.md), [migration](supabase/migrations/202610300002_goals.sql) và [kiểm chứng](docs/07-validation.md).
@@ -235,3 +239,20 @@ Không gian ứng dụng có 200 lời nhắn tự viết Việt/Anh, mỗi bả
 ### Font quote tiếng Việt — 04/11/2026
 
 Quote dùng Noto Serif với bộ latin/vietnamese và bản nghiêng thật được phục vụ cùng ứng dụng. Khoảng chữ tự nhiên và dòng thoáng hơn giúp chữ có dấu dễ đọc, đồng nhất ở dải quote, widget Tổng quan và preview.
+
+## Cài đặt: dễ đọc trạng thái khôi phục — 04/11/2026
+
+Nút Điều kiện khôi phục nằm cùng hàng tiêu đề và cách mô tả 16px. Tài khoản có dữ liệu hiển thị trạng thái từng mục trước; số bản ghi/sổ/lịch sử chỉ hiện khi mở chi tiết, kèm hướng tiếp tục. Giữ điều kiện tài khoản trống, tải sao lưu và xác nhận làm trống hiện có. Đã rà catalog, Help, FAQ hai landing và preview cố định vi/en. Xem [thiết kế và phạm vi kiểm chứng](docs/features/settings-restore-layout-2026-11-04.md).
+
+## Thao tác thoải mái và giữ ngữ cảnh — 04/11/2026
+
+Đầu trang gọn với quote đầy đủ, tên chức năng rõ và thao tác chính gần số liệu. Bảo vệ nháp khi đóng biểu mẫu, nhớ kỳ/tab/bộ lọc theo tài khoản trong phiên, bộ lọc phụ và thao tác phụ gọn trên mobile. Menu chia nhóm, Cài đặt đưa giao diện/ngôn ngữ lên trước; Quỹ hiện 10 giao dịch mỗi trang. Xem [đặc tả](docs/features/workspace-comfort-2026-11-04.md) và [bằng chứng local](docs/07-validation.md). Không đổi quy tắc tiền, khôi phục/reset hoặc layout Tổng quan đã lưu.
+
+## Tối ưu tải và cập nhật dữ liệu — 04/11/2026
+
+Mỗi sổ đọc bằng projection gọn, GET/preview dùng snapshot nhất quán. Sáu module cập nhật từ view được server xác nhận sau lưu, giữ kỳ và bộ lọc; Báo cáo tải chi tiết theo số liệu được chọn. Có timing opt-in cho API, mặc định tắt. Không cần migration/package mới. Xem [hợp đồng, số đo và giới hạn](docs/features/performance-2026-11-04.md); kết quả local không phải cam kết tốc độ online.
+
+
+## Nội dung và hướng dẫn tại chỗ — 04/11/2026
+
+Các trang có phần mở rộng giải thích cách bắt đầu và đọc số liệu; Tổng quan nêu rõ việc tiếp theo, tên quỹ và nguồn thu dùng ngôn ngữ gần gũi. Xem [hợp đồng nội dung và đối chiếu tác vụ](docs/features/friendly-content-2026-11-04.md). Không đổi API, schema, dữ liệu hoặc cách tính tiền.

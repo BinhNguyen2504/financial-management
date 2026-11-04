@@ -67,7 +67,7 @@ test("synthetic Fund review renders garden, pagination, archived locations, hist
   await expect(cards.nth(1)).toContainText("105,00%");
   await expect(cards.nth(1)).toContainText("Vượt mục tiêu 2.100.000");
   await expect(cards.nth(2)).toContainText("25,00%");
-  await expect(page.locator(".fund-next")).toContainText("Emergency Fund");
+  await expect(page.locator(".fund-next")).toContainText("Quỹ khẩn cấp");
   const living = page.locator(".fund-living");
   await living.getByText("Xem các hũ cấu thành", { exact: true }).click();
   await expect(living.locator(".fund-amount-rows > div")).toHaveCount(5);

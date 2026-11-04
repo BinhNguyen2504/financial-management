@@ -1,13 +1,10 @@
+import { timePhase } from "./performance";
+import { readBook } from "./book-projections";
 import { withDataGeneration } from "./data-generation";
 import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
 import type postgres from "postgres";
-import type {
-  IncomeBook,
-  IncomeCategory,
-  MonthlyIncome,
-  OneOffIncome,
-} from "../domain/income/types";
+import type { IncomeBook } from "../domain/income/types";
 import type {
   IncomeRepository,
   IncomeTransaction,
@@ -16,43 +13,17 @@ import type {
 function adapter(
   db: Pick<postgres.Sql, "unsafe">,
   owner: string,
+  readOnly = false,
 ): IncomeTransaction {
   const query = <T extends postgres.Row>(
     sql: string,
     args: (string | number | boolean | null)[] = [],
-  ) => db.unsafe<T[]>(sql, args);
+  ) => timePhase("sql", () => db.unsafe<T[]>(sql, args));
   let baseline: IncomeBook | undefined;
   return {
     async read() {
-      const [header] = await query<{ version: number }>(
-        "select version from public.income_books where owner_id=$1",
-        [owner],
-      );
-      if (!header) return null;
-      const categories = await query<IncomeCategory>(
-        "select id,start_month as start,deleted,rules from public.income_categories where owner_id=$1 order by start_month,id",
-        [owner],
-      );
-      const monthly = await query<MonthlyIncome>(
-        'select category_id as "categoryId",month,amount::text,note from public.income_monthly where owner_id=$1 order by month,category_id',
-        [owner],
-      );
-      const oneOffs = await query<OneOffIncome>(
-        "select id,month,name,description,amount::text,deleted from public.income_oneoffs where owner_id=$1 order by month,id",
-        [owner],
-      );
-      const audit = await query<IncomeBook["audit"][number]>(
-        `select version,to_char(at at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as at,action,detail from public.income_audit where owner_id=$1 order by version`,
-        [owner],
-      );
-      const book: IncomeBook = {
-        ...header,
-        categories: [...categories],
-        monthly: [...monthly],
-        oneOffs: [...oneOffs],
-        audit: [...audit],
-      };
-      baseline = structuredClone(book);
+      const book = await readBook(db, owner, "income");
+      if (book && !readOnly) baseline = structuredClone(book);
       return book;
     },
     async command(id) {
@@ -132,15 +103,21 @@ export function postgresIncomeRepository(
     async transaction<T>(
       owner: string,
       fn: (tx: IncomeTransaction) => Promise<T>,
+      readOnly = false,
     ): Promise<T> {
       if (!/^[0-9a-f-]{36}$/i.test(owner))
         throw new Error("Invalid authenticated owner");
-      return (await withOwnerTransaction(sql, owner, async (tx) => {
-        await lockOwner(tx, [`income:${owner}`]);
-        return withDataGeneration(tx, owner, expectedGeneration, () =>
-          fn(adapter(tx, owner)),
-        );
-      })) as T;
+      return (await withOwnerTransaction(
+        sql,
+        owner,
+        async (tx) => {
+          if (!readOnly) await lockOwner(tx, [`income:${owner}`]);
+          return withDataGeneration(tx, owner, expectedGeneration, () =>
+            fn(adapter(tx, owner, readOnly)),
+          );
+        },
+        readOnly,
+      )) as T;
     },
   };
 }

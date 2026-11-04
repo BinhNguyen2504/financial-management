@@ -3,10 +3,10 @@ export const settings = {
     "Back up all financial data, including Goals, change history and closed periods.",
   "Khôi phục chỉ áp dụng cho tài khoản trống.":
     "Restore is available only for an empty account.",
-  "1 mục có dữ liệu": "1 module with data",
-  "{0} mục có dữ liệu": "{0} modules with data",
-  "1 mục trống": "1 empty module",
-  "{0} mục trống": "{0} empty modules",
+  "1 mục có dữ liệu": "1 section with data",
+  "{0} mục có dữ liệu": "{0} sections with data",
+  "1 mục trống": "1 empty section",
+  "{0} mục trống": "{0} empty sections",
   "Có dữ liệu": "Has data",
   "1 bản ghi lưu trữ": "1 stored record",
   "{0} bản ghi lưu trữ": "{0} stored records",
@@ -22,7 +22,7 @@ export const settings = {
   "Tài khoản chưa có dữ liệu tài chính": "This account has no financial data",
   "Các mục bên dưới đang chặn khôi phục. Số lượng bao gồm sổ, cấu hình, lịch sử và dữ liệu đã xóa hoặc hủy; không đồng nghĩa số giao dịch.":
     "The items below prevent restore. Counts include books, configuration, history and deleted or cancelled data; they are not transaction counts.",
-  "Mở mục để xem dữ liệu": "Open module to review data",
+  "Mở mục để xem dữ liệu": "Open section to review data",
   Trống: "Empty",
   "Xóa/hủy giao dịch, ngừng sử dụng danh mục hoặc đưa số dư về 0 vẫn giữ lại sổ và lịch sử. Những thao tác này không làm tài khoản trống để khôi phục.":
     "Deleting or cancelling transactions, archiving categories or reducing balances to zero retains books and history. These actions do not make the account empty for restore.",
@@ -42,12 +42,23 @@ export const settings = {
   "Xóa toàn bộ dữ liệu tài chính": "Delete all financial data",
   "Kiểm tra kết quả làm trống": "Check clearing result",
   "Tài khoản sẽ được làm trống": "Account to clear",
-  "Thao tác này xóa toàn bộ năm, sổ, danh mục, cấu hình, giao dịch, lịch sử và kỳ đã chốt của cả 5 phân hệ. Không thể hoàn tác trực tiếp; muốn lấy lại dữ liệu cần nhập bản sao lưu.":
-    "This deletes all years, books, categories, configuration, transactions, history and closed periods across all five modules. There is no direct undo; recovering data requires importing a backup.",
+  "Các bước làm trống dữ liệu": "Steps to clear financial data",
+  "Tạo bản sao lưu": "Create a backup",
+  "Kiểm tra và xác nhận": "Review and confirm",
+  "Bước hiện tại": "Current step",
+  "Đã tạo file": "File created",
+  "Sau khi tạo bản sao lưu": "After creating a backup",
+  "Dữ liệu sẽ xóa": "Data to be deleted",
+  "Xóa toàn bộ năm, sổ, danh mục, cấu hình, giao dịch, lịch sử và kỳ đã chốt của tất cả phân hệ, gồm cả Mục tiêu.":
+    "Deletes all years, books, categories, configuration, transactions, history and closed periods across all sections, including Goals.",
+  "Không thể hoàn tác trực tiếp. Muốn lấy lại dữ liệu, bạn cần nhập bản sao lưu.":
+    "There is no direct undo. To recover your data, you need to import a backup.",
+  "Thông tin được giữ lại": "Information that is kept",
   "Tài khoản đăng nhập, hồ sơ cá nhân, bố cục Tổng quan và tùy chọn giao diện được giữ lại.":
     "Your sign-in account, personal profile, Overview layout and appearance preferences are retained.",
-  "1. Tạo và lưu bản sao lưu hiện tại":
-    "1. Create and save a backup of current data",
+  "1. Tạo bản sao lưu hiện tại": "1. Create a backup of current data",
+  "Tải file JSON đầy đủ trước khi tiếp tục xác nhận xóa.":
+    "Download the complete JSON file before continuing to confirm deletion.",
   "Tạo bản sao lưu mới": "Create a new backup",
   "Tải bản sao lưu trước khi xóa": "Download a backup before deleting",
   "Bản sao lưu đã sẵn sàng. Kiểm tra thư mục tải xuống trước khi xác nhận.":
@@ -56,8 +67,7 @@ export const settings = {
   "Xác nhận có hiệu lực đến": "Confirmation expires at",
   "Tôi đã lưu bản sao lưu và kiểm tra file.":
     "I have saved the backup and checked the file.",
-  "2. Xác nhận xóa toàn bộ dữ liệu tài chính":
-    "2. Confirm deletion of all financial data",
+  "2. Kiểm tra và xác nhận xóa": "2. Review and confirm deletion",
   "Nhập XÓA TOÀN BỘ để xác nhận": "Type XÓA TOÀN BỘ to confirm",
   "Chưa xác nhận được kết quả làm trống. Bấm lại để kiểm tra cùng yêu cầu; không tạo yêu cầu xóa mới.":
     "The clearing result is unconfirmed. Retry to check the same request; do not create a new deletion request.",
@@ -188,7 +198,7 @@ export const settings = {
     "Financial data restored. Could not save the profile; retry the profile step separately.",
   "Đã khôi phục dữ liệu tài chính.": "Financial data restored.",
   "Đã khôi phục toàn bộ dữ liệu tài chính. Bạn có thể mở các mục để kiểm tra.":
-    "All financial data restored. Open the modules to check it.",
+    "All financial data restored. Open the sections to check it.",
   "Đã khôi phục dữ liệu tài chính và hồ sơ cá nhân.":
     "Financial data and personal profile restored.",
   "Chưa xác nhận kết quả khôi phục. Bản xem trước được giữ; bấm khôi phục lại để kiểm tra.":

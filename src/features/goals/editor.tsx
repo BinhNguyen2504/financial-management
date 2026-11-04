@@ -21,7 +21,7 @@ export function GoalEditor(props: {
   initial: GoalAction;
   view: GoalView;
   onClose(): void;
-  onSaved(): void;
+  onSaved(view?: GoalView): void;
   onReload(): Promise<GoalView>;
   onAuthLost(): void;
 }) {
@@ -92,8 +92,12 @@ function Editor({
           };
     try {
       if (save) {
-        await goalsJSON("/commands", payload, generation.current);
-        onSaved();
+        const result = await goalsJSON<{ view?: GoalView }>(
+          "/commands?return=view",
+          payload,
+          generation.current,
+        );
+        onSaved(result.view);
       } else {
         const next = await goalsJSON<GoalCommandResult>(
           "/preview",

@@ -15,10 +15,12 @@ export async function proxy(request: NextRequest) {
     !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
   )
     return response;
-  // Native bearer clients are verified by the API handler, not by a cookie refresh.
+  // Financial handlers verify Auth and may refresh cookies themselves. Pages
+  // still refresh here before server rendering their verified account UI.
   if (
-    request.nextUrl.pathname.startsWith("/api/") &&
-    request.headers.get("authorization")
+    request.nextUrl.pathname.startsWith("/api/v1/") ||
+    (request.nextUrl.pathname.startsWith("/api/") &&
+      request.headers.get("authorization"))
   )
     return response;
   const supabase = createServerClient(

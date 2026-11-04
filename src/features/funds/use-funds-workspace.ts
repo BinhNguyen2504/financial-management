@@ -93,8 +93,18 @@ export function useFundsWorkspace() {
     next = config?.priority.find(
       (id) => BigInt(view!.state.funds.find((f) => f.id === id)!.missing) > 0n,
     );
-  const saved = () => {
+  const saved = (next?: FundView) => {
+    if (session.current !== user?.id) return;
     setEditor(null);
+    if (next) {
+      request.current++;
+      setView(next);
+      displayed.current = true;
+      setError("");
+      setLoading(false);
+      setCelebration((n) => n + 1);
+      return;
+    }
     void reload()
       .then(() => setCelebration((n) => n + 1))
       .catch(() =>

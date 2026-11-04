@@ -7,6 +7,7 @@ import { Garden } from "@/components/garden";
 import { ModuleIcon } from "@/components/module-icon";
 import { ThemeIcon, ThemeText } from "@/components/theme-decoration";
 import {
+  workspaceComfortSummary,
   languageSummary,
   modules,
   moduleStatusLabels,
@@ -233,7 +234,7 @@ export function ThemedLanding() {
               ))}
             <p>
               {tr(
-                "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo chung tổng hợp theo kỳ và giữ riêng từng sổ; chưa có tổng tài sản ròng toàn hệ thống.",
+                "Tổng quan có 10 thẻ thông tin tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo chung tổng hợp theo kỳ và giữ riêng từng sổ; chưa có tổng tài sản ròng toàn hệ thống.",
               )}
             </p>
           </div>
@@ -281,6 +282,7 @@ export function ThemedLanding() {
                 "Mở nút Hướng dẫn cạnh tiêu đề trang hoặc phần giải thích cạnh thuật ngữ. Đóng hướng dẫn để tiếp tục với nội dung đang nhập.",
               )}
             </p>
+            <p>{tr(workspaceComfortSummary)}</p>
           </AnimatedDetails>
           <AnimatedDetails>
             <summary>{tr("Tôi có cần đăng nhập để dùng ứng dụng?")}</summary>
@@ -306,7 +308,7 @@ export function ThemedLanding() {
             <summary>{tr("Có thể dùng trên điện thoại không?")}</summary>
             <p>
               {tr(
-                "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu.",
+                "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu. Sau khi lưu, số liệu cập nhật trong kỳ đang xem.",
               )}
             </p>
           </AnimatedDetails>

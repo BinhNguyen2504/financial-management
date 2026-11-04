@@ -1,4 +1,5 @@
 "use client";
+import { PageGuide } from "@/features/help/page-guide";
 import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
 
@@ -51,9 +52,7 @@ export function FundsWorkspace() {
           <p className="eyebrow">
             <ThemeIcon size={16} /> <ThemeText name="fundsEyebrow" />
           </p>
-          <HelpPageTitle>
-            {tr("Vững vàng trước những ngày bất ngờ.")}
-          </HelpPageTitle>
+          <HelpPageTitle>{tr("Quỹ an toàn")}</HelpPageTitle>
           <p>{tr("Từng khoản dự phòng nhỏ, một nền tảng an tâm hơn.")}</p>
         </div>
         <div className="heading-art">
@@ -61,6 +60,12 @@ export function FundsWorkspace() {
         </div>
         {view?.book && (
           <div className="fund-actions heading-actions">
+            <button
+              className="expense-primary"
+              onClick={() => setEditor({ type: "transaction" })}
+            >
+              {tr("Ghi giao dịch")}
+            </button>
             <button
               className="expense-secondary"
               onClick={() => setDetail("locations")}
@@ -81,6 +86,7 @@ export function FundsWorkspace() {
           <ThemeText name="fundsLoading" />
         </LoadingStatus>
       )}
+      <PageGuide pageId="funds" />
       {error && (
         <div role="alert" className="expense-error expense-feedback">
           <p>{tr(error)}</p>
@@ -118,7 +124,7 @@ export function FundsWorkspace() {
               </div>
               <p className="fund-note">
                 {tr(
-                  "Tiền trong Fund được ghi độc lập; Financial Goals có không gian riêng.",
+                  "Quỹ ghi lại tiền bạn đã dành riêng; ứng dụng không tự chuyển tiền. Theo dõi kế hoạch mua sắm và cuộc sống ở Mục tiêu.",
                 )}
               </p>
             </div>
@@ -131,8 +137,8 @@ export function FundsWorkspace() {
                 <p className="eyebrow">
                   <ThemeText name={id} />
                 </p>
-                <h2>{fundNames[id]}</h2>
-                <p>{guides[id].concept}</p>
+                <h2>{tr(fundNames[id])}</h2>
+                <p className="fund-note">{tr(guides[id].concept)}</p>
                 <AnimatedDetails>
                   <summary>{tr("Tìm hiểu cách xây quỹ")}</summary>
                   <FundGuide fund={id} />
@@ -158,7 +164,7 @@ export function FundsWorkspace() {
               <strong>{money(view.state.missing)}</strong>
             </div>
             <div>
-              <span>{tr("Emergency đủ trang trải")}</span>
+              <span>{tr("Quỹ khẩn cấp đủ trang trải")}</span>
               <strong>
                 {view.state.emergencyMonths.replace(".", ",")} {tr("tháng")}
               </strong>
@@ -183,7 +189,7 @@ export function FundsWorkspace() {
                 {config.living.month.split("-").reverse().join("/")}
               </p>
               <p className="fund-note">
-                {tr("Số tháng Emergency dùng mức sinh hoạt này.")}
+                {tr("Số tháng Quỹ khẩn cấp dùng mức sinh hoạt này.")}
               </p>
             </div>
             <AnimatedDetails className="fund-living-breakdown">
@@ -230,7 +236,7 @@ export function FundsWorkspace() {
               {next ? (
                 <>
                   <h2>
-                    <ThemeText name="nextFund" /> {fundNames[next]}.
+                    <ThemeText name="nextFund" /> {tr(fundNames[next])}.
                   </h2>
                   <p>
                     {tr("Còn")}{" "}
@@ -285,7 +291,8 @@ export function FundsWorkspace() {
                     {f.percent.replace(".", ",")}%
                   </span>
                 </div>
-                <h2>{fundNames[f.id]}</h2>
+                <h2>{tr(fundNames[f.id])}</h2>
+                <p className="fund-note">{tr(guides[f.id].concept)}</p>
                 <p className="fund-balance">{money(f.balance)}</p>
                 <p>
                   {tr("Mục tiêu")} {money(f.target)} ·{" "}
@@ -303,7 +310,7 @@ export function FundsWorkspace() {
                 <div className="fund-actions">
                   <button
                     className="expense-secondary"
-                    aria-label={`Xem ${fundNames[f.id]}`}
+                    aria-label={`Xem ${tr(fundNames[f.id])}`}
                     onClick={() => setDetail(f.id)}
                   >
                     {tr("Chi tiết")}

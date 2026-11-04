@@ -1,4 +1,5 @@
 "use client";
+import { PageGuide } from "@/features/help/page-guide";
 import { AnimatedDetails } from "@/components/animated-details";
 import { LanguagePicker } from "@/i18n/language-picker";
 
@@ -75,6 +76,11 @@ export function SettingsWorkspace() {
           {tr("Quản lý dữ liệu của bạn và cách sử dụng ứng dụng.")}
         </p>
       </header>
+      <PageGuide pageId="settings" />
+      <section className="panel settings-appearance">
+        <LanguagePicker />
+        <ThemePicker />
+      </section>
       <section className="settings-data" aria-labelledby="data-heading">
         <div className="settings-section-heading">
           <div className="settings-section-title">
@@ -418,21 +424,6 @@ export function SettingsWorkspace() {
           </section>
         </div>
       </section>
-      {user && (
-        <ResetData
-          key={user.id}
-          status={status}
-          account={user.email ?? user.id}
-          disabled={!!busy || checking || userLoading}
-          onBusy={controller.setBusy}
-          onReset={controller.afterReset}
-          onChoose={chooseFile}
-        />
-      )}
-      <section className="panel settings-appearance">
-        <LanguagePicker />
-        <ThemePicker />
-      </section>
       <AnimatedDetails className="panel settings-install">
         <summary>
           <Smartphone size={22} aria-hidden="true" />
@@ -445,6 +436,17 @@ export function SettingsWorkspace() {
         </summary>
         <InstallGuide />
       </AnimatedDetails>
+      {user && (
+        <ResetData
+          key={user.id}
+          status={status}
+          account={user.email ?? user.id}
+          disabled={!!busy || checking || userLoading}
+          onBusy={controller.setBusy}
+          onReset={controller.afterReset}
+          onChoose={chooseFile}
+        />
+      )}
     </div>
   );
 }

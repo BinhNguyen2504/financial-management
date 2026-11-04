@@ -1,3 +1,5 @@
+import { timePhase } from "./performance";
+import { readBook } from "./book-projections";
 import type postgres from "postgres";
 import { z } from "zod";
 import { withOwnerTransaction, lockOwner } from "./owner-transaction";
@@ -16,43 +18,21 @@ import type { InvestmentBook } from "../domain/investments/types";
 import type { FundBook } from "../domain/funds/types";
 
 type DB = Pick<postgres.Sql, "unsafe">;
-function adapter(db: DB, owner: string): GoalTransactionRepository {
+function adapter(
+  db: DB,
+  owner: string,
+  readOnly = false,
+): GoalTransactionRepository {
   const query = <T extends postgres.Row>(
     sql: string,
     args: (string | number | null)[] = [],
-  ) => db.unsafe<T[]>(sql, args);
-  const data = async <T>(table: string, order = "id"): Promise<T[]> =>
-    (
-      await query<{ data: T }>(
-        `select data from public.${table} where owner_id=$1 order by ${order}`,
-        [owner],
-      )
-    ).map((r) => r.data);
-  const head = async (prefix: string) =>
-    (
-      await query<{ version: number }>(
-        `select version from public.${prefix}_books where owner_id=$1`,
-        [owner],
-      )
-    )[0];
-  const audit = async <T>(prefix: string): Promise<T[]> => [
-    ...(await query<T & postgres.Row>(
-      `select version,to_char(at at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as at,action from public.${prefix}_audit where owner_id=$1 order by version`,
-      [owner],
-    )),
-  ];
+  ) => timePhase("sql", () => db.unsafe<T[]>(sql, args));
   let baseline: GoalBook | null = null;
   return {
     async read() {
-      const h = await head("goals");
-      if (!h) return null;
-      baseline = {
-        version: h.version,
-        goals: await data("goals_definitions"),
-        revisions: await data("goals_transactions", "sequence"),
-        audit: await data("goals_audit", "version"),
-      };
-      return structuredClone(baseline);
+      const book = await readBook(db, owner, "goals");
+      if (book && !readOnly) baseline = structuredClone(book);
+      return structuredClone(book);
     },
     async sources(today) {
       const ready = await query<{
@@ -65,47 +45,12 @@ function adapter(db: DB, owner: string): GoalTransactionRepository {
         investments: InvestmentBook | null = null,
         funds: FundBook | null = null;
       for (const sourceModule of ready.filter((r) => r.ready)) {
-        const h = await head(sourceModule.kind);
-        if (!h) continue;
         if (sourceModule.kind === "savings")
-          savings = {
-            ...h,
-            categories: await data("savings_categories"),
-            revisions: await data("savings_transactions", "sequence"),
-            prices: await data("savings_prices", "sequence"),
-            closes: await data("savings_closes", "sequence"),
-            audit: await audit("savings"),
-          };
+          savings = await readBook(db, owner, "savings", false);
         if (sourceModule.kind === "investments")
-          investments = {
-            ...h,
-            categories: await data("investments_categories"),
-            revisions: [
-              ...(await data<InvestmentBook["revisions"][number]>(
-                "investments_transactions",
-                "sequence",
-              )),
-              ...(await data<InvestmentBook["revisions"][number]>(
-                "investments_valuations",
-                "sequence",
-              )),
-            ].sort((a, b) => a.sequence - b.sequence),
-            audit: await audit("investments"),
-          };
+          investments = await readBook(db, owner, "investments", false);
         if (sourceModule.kind === "funds")
-          funds = {
-            ...h,
-            funds: (
-              await query<{ id: FundBook["funds"][number] }>(
-                "select id from public.funds_definitions where owner_id=$1 order by id",
-                [owner],
-              )
-            ).map((r) => r.id),
-            locations: await data("funds_locations"),
-            configurations: await data("funds_configurations", "sequence"),
-            revisions: await data("funds_transactions", "sequence"),
-            audit: await audit("funds"),
-          };
+          funds = await readBook(db, owner, "funds", false);
       }
       const sources = goalSources({ savings, investments, funds }, today);
       for (const sourceModule of ready)
@@ -194,29 +139,36 @@ export function postgresGoalRepository(
     async transaction<T>(
       owner: string,
       fn: (tx: GoalTransactionRepository) => Promise<T>,
+      readOnly = false,
     ): Promise<T> {
       z.uuid().parse(owner);
-      return await withOwnerTransaction(sql, owner, async (tx) => {
-        const [ready] = await tx.unsafe<{ ready: boolean }[]>(
-          "select to_regclass('public.goals_books') is not null as ready",
-        );
-        if (!ready.ready)
-          throw new GoalError(
-            "Mục tiêu chưa được bật trên hệ thống.",
-            503,
-            "GOALS_MIGRATION_REQUIRED",
+      return await withOwnerTransaction(
+        sql,
+        owner,
+        async (tx) => {
+          const [ready] = await tx.unsafe<{ ready: boolean }[]>(
+            "select to_regclass('public.goals_books') is not null as ready",
           );
-        await lockOwner(tx, [
-          owner,
-          `savings:${owner}`,
-          `investments:${owner}`,
-          `funds:${owner}`,
-          `goals:${owner}`,
-        ]);
-        return withDataGeneration(tx, owner, expectedGeneration, () =>
-          fn(adapter(tx, owner)),
-        );
-      });
+          if (!ready.ready)
+            throw new GoalError(
+              "Mục tiêu chưa được bật trên hệ thống.",
+              503,
+              "GOALS_MIGRATION_REQUIRED",
+            );
+          if (!readOnly)
+            await lockOwner(tx, [
+              owner,
+              `savings:${owner}`,
+              `investments:${owner}`,
+              `funds:${owner}`,
+              `goals:${owner}`,
+            ]);
+          return withDataGeneration(tx, owner, expectedGeneration, () =>
+            fn(adapter(tx, owner, readOnly)),
+          );
+        },
+        readOnly,
+      );
     },
   };
 }

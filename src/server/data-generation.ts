@@ -1,16 +1,21 @@
+import { timePhase } from "./performance";
 import type postgres from "postgres";
 import { ExpenseError } from "../domain/expenses/engine";
 
 type DB = Pick<postgres.Sql, "unsafe">;
 
 export async function dataGeneration(db: DB, owner: string) {
-  const [schema] = await db.unsafe<{ ready: boolean }[]>(
-    "select to_regclass('public.data_generations') is not null as ready",
+  const [schema] = await timePhase("sql", () =>
+    db.unsafe<{ ready: boolean }[]>(
+      "select to_regclass('public.data_generations') is not null as ready",
+    ),
   );
   if (!schema.ready) return 0;
-  const [row] = await db.unsafe<{ generation: number }[]>(
-    "select generation from public.data_generations where owner_id=$1",
-    [owner],
+  const [row] = await timePhase("sql", () =>
+    db.unsafe<{ generation: number }[]>(
+      "select generation from public.data_generations where owner_id=$1",
+      [owner],
+    ),
   );
   return row?.generation ?? 0;
 }
@@ -38,6 +43,14 @@ export async function withDataGeneration<T>(
     );
   const value = await run();
   // HTTP view metadata stays outside domain books and financial backup formats.
+  if (
+    value &&
+    typeof value === "object" &&
+    "view" in value &&
+    value.view &&
+    typeof value.view === "object"
+  )
+    return { ...value, view: { ...value.view, dataGeneration: generation } };
   return value && typeof value === "object" && "book" in value
     ? { ...value, dataGeneration: generation }
     : value;

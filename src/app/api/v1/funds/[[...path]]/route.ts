@@ -1,3 +1,4 @@
+import { timePhase, withFinancialTiming } from "@/server/performance";
 import { requestDataGeneration } from "@/server/data-generation";
 import {
   financialHeaders as headers,
@@ -27,35 +28,48 @@ function failure(error: unknown) {
   });
 }
 export async function GET(request: Request, context: Context) {
-  try {
-    const owner = await authenticatedOwner(request);
-    if ((await context.params).path?.length)
-      throw new FundError("Đường dẫn không tồn tại.", 404);
-    return jsonResponse(
-      await readFundView(fundRepository(), owner, vietnamClock()),
-      { headers },
-    );
-  } catch (error) {
-    return failure(error);
-  }
+  return withFinancialTiming(request, async () => {
+    try {
+      const owner = await authenticatedOwner(request);
+      if ((await context.params).path?.length)
+        throw new FundError("Đường dẫn không tồn tại.", 404);
+      return jsonResponse(
+        await timePhase("work", () =>
+          readFundView(fundRepository(), owner, vietnamClock()),
+        ),
+        { headers },
+      );
+    } catch (error) {
+      return failure(error);
+    }
+  });
 }
 export async function POST(request: Request, context: Context) {
-  try {
-    const owner = await authenticatedOwner(request);
-    checkCommandOrigin(request, FundError);
-    const path = ((await context.params).path ?? []).join("/");
-    if (!["commands", "preview"].includes(path))
-      throw new FundError("Đường dẫn không tồn tại.", 404);
-    const raw = await readCommandJSON(request, FundError, false);
-    const result = await runFundCommand(
-      fundRepository(requestDataGeneration(request)),
-      owner,
-      commandSchema.parse(raw),
-      vietnamClock(),
-      path === "preview",
-    );
-    return jsonResponse(result, { headers });
-  } catch (error) {
-    return failure(error);
-  }
+  return withFinancialTiming(request, async () => {
+    try {
+      const owner = await authenticatedOwner(request);
+      checkCommandOrigin(request, FundError);
+      const path = ((await context.params).path ?? []).join("/");
+      if (!["commands", "preview"].includes(path))
+        throw new FundError("Đường dẫn không tồn tại.", 404);
+      const raw = await readCommandJSON(request, FundError, false);
+      const result = await timePhase("work", () =>
+        runFundCommand(
+          fundRepository(requestDataGeneration(request)),
+          owner,
+          commandSchema.parse(raw),
+          vietnamClock(),
+          path === "preview",
+          {
+            view:
+              path === "commands" &&
+              new URL(request.url).searchParams.get("return") === "view",
+          },
+        ),
+      );
+      return jsonResponse(result, { headers });
+    } catch (error) {
+      return failure(error);
+    }
+  });
 }

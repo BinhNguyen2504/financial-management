@@ -1,4 +1,82 @@
 export const overview = {
+  "Những khoản cần kiểm tra trong năm module.":
+    "Things to check across the five modules.",
+  "Thêm widget để xem nhanh những điều bạn quan tâm.":
+    "Add widgets for a quick look at what matters to you.",
+  "Mỗi module là một sổ độc lập. Các giá trị ở đây chưa được cộng thành tài sản ròng.":
+    "Each module is an independent ledger. These values are not combined into net worth.",
+  "Chưa có dữ liệu. Mở module để bắt đầu ghi nhận.":
+    "No data yet. Open the module to get started.",
+  "Emergency đủ trang trải {0} tháng": "Emergency covers {0} months",
+  "Chưa kiểm tra đủ các module.": "Not all modules could be checked.",
+  "Mở module": "Open module",
+  "Chưa tải được nguồn dữ liệu của widget.":
+    "Could not load this widget’s data source.",
+  "Đang tải widget…": "Loading widget…",
+  "Widget không được trùng.": "Widgets must be unique.",
+  "Xem nhanh năm module với 10 widget; thêm, ẩn và sắp xếp theo tài khoản.":
+    "Quickly view five modules with ten widgets; add, hide and reorder them for your account.",
+  "Bố cục widget đồng bộ theo tài khoản; không cộng các sổ thành tài sản ròng":
+    "Account-synced widget layouts; independent ledgers are not combined into net worth",
+  "Thêm, ẩn và sắp xếp 10 widget theo tài khoản. Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng.":
+    "Add, hide and reorder ten widgets for your account. Modules are independent ledgers; Overview does not combine them into net worth.",
+  "6 widget mặc định · thêm, ẩn và sắp xếp theo tài khoản.":
+    "Six default widgets · add, hide and reorder for your account.",
+  "Widget mặc định": "Default widgets",
+  "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Sáu widget mặc định và bốn widget tùy chọn giúp bạn chọn điều cần nhìn trước.":
+    "View Income, Spending, Savings, Investments and Safety funds on one page. Six default widgets and four optional widgets let you choose what to see first.",
+  "Đọc Cần chú ý rồi xem từng widget theo kỳ ghi bên dưới tiêu đề.":
+    "Read Needs attention, then check each widget and the period below its title.",
+  "Mở module tương ứng để đối chiếu, nhập liệu hoặc cập nhật định giá.":
+    "Open the relevant module to reconcile, record entries or update valuations.",
+  "Các widget dùng dữ liệu thực đã ghi, không tự tạo giao dịch.":
+    "Widgets use your recorded data and do not create transactions.",
+  "Tùy chỉnh widget": "Customize widgets",
+  "Mở Tùy chỉnh Tổng quan; bật hoặc tắt từng widget.":
+    "Open Customize overview and turn individual widgets on or off.",
+  "Mỗi loại có tối đa một widget. Có thể ẩn tất cả rồi thêm lại. Bố cục dùng chung giữa thiết bị khi tải lại, không nằm trong backup tài chính.":
+    "Each type appears at most once. You can hide all widgets and add them again. Layouts are shared across devices on refresh and excluded from financial backups.",
+  "Khi một module chưa có sổ.": "When a module has no ledger yet.",
+  "Mở module muốn bắt đầu từ widget hoặc menu.":
+    "Open the module you want to start with from its widget or the menu.",
+  "Ghi nhận dữ liệu thực theo hướng dẫn của module rồi quay lại Tổng quan.":
+    "Record real data using the module’s guide, then return to Overview.",
+  "Mỗi module có trạng thái trống riêng; không cần tạo Chi tiêu trước khi xem các module khác.":
+    "Each module has its own empty state; you do not need a Spending ledger to see other modules.",
+  "Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.":
+    "Modules are independent ledgers; Overview does not combine them into net worth or calculate spendable funds.",
+  "Lỗi một nguồn không làm mất widget khác. Số liệu lần tải trước được ghi nhãn khi cập nhật thất bại. Bố cục xung đột cần tải bản mới, không tự ghi đè.":
+    "One source failing does not remove other widgets. Previously loaded values are labelled when refresh fails. Conflicting layouts require loading the latest version and are not overwritten automatically.",
+  "Kết quả: Các widget dùng dữ liệu thực đã ghi, không tự tạo giao dịch.":
+    "Result: Widgets use recorded data and do not create transactions.",
+  "Kết quả: Mỗi loại có tối đa một widget. Có thể ẩn tất cả rồi thêm lại. Bố cục dùng chung giữa thiết bị khi tải lại, không nằm trong backup tài chính.":
+    "Result: Each type appears at most once. Hide all widgets and add them again if needed. Layouts sync on refresh and are excluded from financial backups.",
+  "Kết quả: Mỗi module có trạng thái trống riêng; không cần tạo Chi tiêu trước khi xem các module khác.":
+    "Result: Each module has its own empty state; other modules do not require a Spending ledger.",
+  "Tổng quan có 10 widget tùy chỉnh cho năm module; chưa có tổng tài sản ròng toàn hệ thống. Các mục":
+    "Overview offers ten customizable widgets across five modules; there is no system-wide net worth yet. The modules",
+  "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.":
+    "Overview offers ten customizable widgets for Income, Spending, Savings, Investments and Safety funds. Reports remain within each module; there is no system-wide net worth yet.",
+  "Những khoản cần kiểm tra trong các module đang hiển thị.":
+    "Things to check in the modules currently shown.",
+  "Tổng dự phòng và số tháng Emergency.":
+    "Total reserves and months of emergency coverage.",
+  "Bật widget của một module để xem các khoản cần chú ý.":
+    "Enable a module widget to see items needing attention.",
+  "Năm thẻ số liệu chính, tải cùng bố cục tài khoản; tùy chỉnh 10 loại widget.":
+    "Five key metric cards loaded with your account layout; customize ten widget types.",
+  "Cần chú ý theo module đang hiện; tùy chọn phân bổ, hũ, đáo hạn và lời nhắn":
+    "Attention follows visible modules; optional breakdowns, jars, maturities and daily notes",
+  "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Năm thẻ mặc định giữ số liệu chính và cảnh báo; bạn có thể tùy chỉnh 10 loại widget.":
+    "See Income, Spending, Savings, Investments and Safety funds on one page. Five default cards show key figures and warnings; customize ten widget types.",
+  "Đọc số chính và cảnh báo trong từng thẻ theo kỳ bên dưới tiêu đề. Cần chú ý là widget tùy chọn, chỉ kiểm tra các module đang hiển thị.":
+    "Read each card’s key figures, warnings and period. Needs attention is optional and checks only the modules currently shown.",
+  "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn. Cần chú ý chỉ nhắc khi có widget Tiết kiệm hoặc Sổ sắp đáo hạn đang bật.":
+    "Deposits with remaining principal, already due or maturing within seven days, appear in Maturing deposits. Needs attention includes them only when Savings or Maturing deposits is enabled.",
+  "5 thẻ số liệu chính · tùy chỉnh 10 loại widget theo tài khoản.":
+    "5 key metric cards · customize 10 widget types per account.",
+  "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại widget theo tài khoản; các sổ không cộng thành tài sản ròng.":
+    "Five default cards show key figures and warnings. Add, hide and arrange ten widget types per account; independent ledgers are not combined into net worth.",
   "Tổng giá trị gồm tiền chờ và lãi/lỗ phần đang giữ.":
     "Total value including cash, and gain/loss on current holdings.",
   "Tổng quan": "Overview",
@@ -12,8 +90,8 @@ export const overview = {
   "Hũ theo dõi": "Watched jars",
   "Sổ sắp đáo hạn": "Maturing deposits",
   "Một chút bình yên": "A moment of calm",
-  "Những khoản cần kiểm tra trong năm module.":
-    "Things to check across the five modules.",
+  "Những khoản cần kiểm tra trong năm chức năng.":
+    "Things to check across the five sections.",
   "Thực nhận, cố định, phát sinh và khoản chưa nhập.":
     "Received income, recurring and one-off sources, and missing entries.",
   "Mức tháng, thực chi và số còn trong hũ.":
@@ -56,13 +134,13 @@ export const overview = {
   "Đang xem thử bố cục. Chưa lưu vào tài khoản.":
     "Previewing the layout. Changes have not been saved to your account.",
   "Tổng quan theo cách của bạn": "Your overview, your way",
-  "Thêm widget để xem nhanh những điều bạn quan tâm.":
-    "Add widgets for a quick look at what matters to you.",
-  "Mỗi module là một sổ độc lập. Các giá trị ở đây chưa được cộng thành tài sản ròng.":
-    "Each module is an independent ledger. These values are not combined into net worth.",
+  "Thêm thẻ thông tin để xem nhanh những điều bạn quan tâm.":
+    "Add cards for a quick look at what matters to you.",
+  "Mỗi chức năng là một sổ độc lập. Các giá trị ở đây chưa được cộng thành tài sản ròng.":
+    "Each section is an independent ledger. These values are not combined into net worth.",
   "Chưa đủ dữ liệu": "Incomplete data",
-  "Chưa có dữ liệu. Mở module để bắt đầu ghi nhận.":
-    "No data yet. Open the module to get started.",
+  "Chưa có dữ liệu. Mở chức năng để bắt đầu ghi nhận.":
+    "No data yet. Open the section to get started.",
   "Tổng thực nhận": "Total received",
   "Thu cố định": "Recurring income",
   "Thu phát sinh": "One-off income",
@@ -87,7 +165,7 @@ export const overview = {
   "Lãi/lỗ chưa chốt": "Unrealized gain/loss",
   "Tiền chờ": "Investment cash",
   "Tổng dự phòng": "Total reserves",
-  "Emergency đủ trang trải {0} tháng": "Emergency covers {0} months",
+  "Quỹ khẩn cấp đủ trang trải {0} tháng": "Emergency covers {0} months",
   "Nguồn tính mục tiêu quỹ đã thay đổi. Mở Quỹ an toàn để kiểm tra.":
     "The expense source for fund targets has changed. Open Safety funds to review it.",
   Khác: "Other",
@@ -124,18 +202,18 @@ export const overview = {
     "The living expense source is incomplete.",
   "Mở Quỹ an toàn để xem trước và áp dụng.":
     "Open Safety funds to preview and apply changes.",
-  "Chưa kiểm tra đủ các module.": "Not all modules could be checked.",
+  "Chưa kiểm tra đủ các chức năng.": "Not all sections could be checked.",
   "Chưa có khoản cần chú ý từ dữ liệu đã ghi.":
     "No items need attention in the recorded data.",
   "Thu gọn": "Collapse",
   "Xem tất cả": "View all",
   "Đến {0}": "As of {0}",
-  "Mở module": "Open module",
+  "Mở chức năng": "Open section",
   "Chưa cập nhật được. Đang hiển thị số liệu lần tải trước.":
     "Could not refresh. Showing the last loaded figures.",
-  "Chưa tải được nguồn dữ liệu của widget.":
-    "Could not load this widget’s data source.",
-  "Đang tải widget…": "Loading widget…",
+  "Chưa tải được nguồn dữ liệu của thẻ thông tin.":
+    "Could not load this card’s data source.",
+  "Đang tải thẻ thông tin…": "Loading card…",
   "Chưa thể lưu bố cục. Hãy cập nhật cấu hình hệ thống.":
     "Layout storage is not ready. Update the system configuration.",
   "Bố cục đã đổi trên thiết bị khác. Tải bố cục mới để tiếp tục.":
@@ -150,25 +228,25 @@ export const overview = {
     "The overview response is invalid. Please try again.",
   "Chưa lưu được bố cục. Hãy thử lại.":
     "Could not save the layout. Please try again.",
-  "Widget không được trùng.": "Widgets must be unique.",
+  "Thẻ thông tin không được trùng.": "Widgets must be unique.",
   "Hũ không được trùng.": "Jars must be unique.",
   "Thử tải lại": "Retry",
   "Đăng nhập": "Sign in",
   "Xem thử bố cục": "Preview layout",
   "Chỉnh tiếp": "Continue editing",
-  "Xem nhanh năm module với 10 widget; thêm, ẩn và sắp xếp theo tài khoản.":
-    "Quickly view five modules with ten widgets; add, hide and reorder them for your account.",
+  "Xem nhanh năm chức năng với 10 thẻ thông tin; thêm, ẩn và sắp xếp theo tài khoản.":
+    "Quickly view five sections with ten cards; add, hide and reorder them for your account.",
   "Thu nhập, Chi tiêu tháng này; Tiết kiệm, Đầu tư và Quỹ an toàn hiện tại":
     "Income and Spending this month; current Savings, Investments and Safety funds",
   "Cần chú ý, phân bổ chi tiêu, hũ theo dõi và sổ sắp đáo hạn":
     "Needs attention, spending breakdown, watched jars and maturing deposits",
-  "Bố cục widget đồng bộ theo tài khoản; không cộng các sổ thành tài sản ròng":
-    "Account-synced widget layouts; independent ledgers are not combined into net worth",
-  "Thêm, ẩn và sắp xếp 10 widget theo tài khoản. Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng.":
-    "Add, hide and reorder ten widgets for your account. Modules are independent ledgers; Overview does not combine them into net worth.",
-  "6 widget mặc định · thêm, ẩn và sắp xếp theo tài khoản.":
-    "Six default widgets · add, hide and reorder for your account.",
-  "Widget mặc định": "Default widgets",
+  "Bố cục thẻ thông tin đồng bộ theo tài khoản; không cộng các sổ thành tài sản ròng":
+    "Account-synced card layouts; independent ledgers are not combined into net worth",
+  "Thêm, ẩn và sắp xếp 10 thẻ thông tin theo tài khoản. Các chức năng là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng.":
+    "Add, hide and reorder ten cards for your account. Modules are independent ledgers; Overview does not combine them into net worth.",
+  "6 thẻ thông tin mặc định · thêm, ẩn và sắp xếp theo tài khoản.":
+    "Six default cards · add, hide and reorder for your account.",
+  "Thẻ thông tin mặc định": "Default cards",
   Module: "Module",
   "Giá trị minh họa": "Illustrative value",
   "Kiểm tra số dư hũ tháng này.": "Review this month’s jar balances.",
@@ -179,62 +257,62 @@ export const overview = {
   "Sổ quỹ độc lập": "Independent fund ledger",
   "Minh họa · Các giá trị không cộng thành tài sản ròng.":
     "Illustration · These values are not combined into net worth.",
-  "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Sáu widget mặc định và bốn widget tùy chọn giúp bạn chọn điều cần nhìn trước.":
-    "View Income, Spending, Savings, Investments and Safety funds on one page. Six default widgets and four optional widgets let you choose what to see first.",
+  "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Sáu thẻ thông tin mặc định và bốn thẻ thông tin tùy chọn giúp bạn chọn điều cần nhìn trước.":
+    "View Income, Spending, Savings, Investments and Safety funds on one page. Six default cards and four optional cards let you choose what to see first.",
   "Đọc kỳ và tình trạng dữ liệu trước khi đọc số tiền. Thu nhập và Chi tiêu thuộc tháng hiện tại; tài sản và quỹ tính đến hôm nay theo giờ Việt Nam.":
     "Read the period and data status before the amounts. Income and Spending cover the current month; assets and funds are shown as of today in Vietnam time.",
   "Nếu thiếu định giá, chỉ phần đã có giá được trình bày và ghi rõ chưa đầy đủ. Giá cũ có cảnh báo; khoản thu chưa nhập khác với đã ghi nhận 0 đồng.":
     "When valuations are missing, the known portion is shown and labelled incomplete. Older valuations have a warning; missing income differs from a recorded zero.",
   "Khi cần nhìn nhanh toàn bộ ứng dụng.":
     "When you need a quick view across the app.",
-  "Đọc Cần chú ý rồi xem từng widget theo kỳ ghi bên dưới tiêu đề.":
-    "Read Needs attention, then check each widget and the period below its title.",
-  "Mở module tương ứng để đối chiếu, nhập liệu hoặc cập nhật định giá.":
-    "Open the relevant module to reconcile, record entries or update valuations.",
-  "Các widget dùng dữ liệu thực đã ghi, không tự tạo giao dịch.":
+  "Đọc Cần chú ý rồi xem từng thẻ thông tin theo kỳ ghi bên dưới tiêu đề.":
+    "Read Needs attention, then check each card and the period below its title.",
+  "Mở chức năng tương ứng để đối chiếu, nhập liệu hoặc cập nhật định giá.":
+    "Open the relevant section to reconcile, record entries or update valuations.",
+  "Các thẻ thông tin dùng dữ liệu thực đã ghi, không tự tạo giao dịch.":
     "Widgets use your recorded data and do not create transactions.",
-  "Tùy chỉnh widget": "Customize widgets",
+  "Tùy chỉnh thẻ thông tin": "Customize cards",
   "Khi muốn chọn nội dung và thứ tự xem nhanh.":
     "When you want to choose your overview content and order.",
-  "Mở Tùy chỉnh Tổng quan; bật hoặc tắt từng widget.":
-    "Open Customize overview and turn individual widgets on or off.",
+  "Mở Tùy chỉnh Tổng quan; bật hoặc tắt từng thẻ thông tin.":
+    "Open Customize overview and turn individual cards on or off.",
   "Dùng nút chuyển lên/xuống để đổi thứ tự; Hũ theo dõi cho chọn tối đa 5 hũ.":
     "Use the move up/down buttons to reorder; Watched jars supports up to five jars.",
   "Chọn Xem thử bố cục để xem toàn trang; Lưu để đồng bộ tài khoản hoặc Hủy để bỏ thay đổi.":
     "Select Preview layout to see the full page; Save to sync your account or Cancel to discard changes.",
   "Khôi phục mặc định chỉ đổi bản xem thử; cần Lưu mới áp dụng.":
     "Restore defaults only changes the preview; select Save to apply.",
-  "Mỗi loại có tối đa một widget. Có thể ẩn tất cả rồi thêm lại. Bố cục dùng chung giữa thiết bị khi tải lại, không nằm trong backup tài chính.":
-    "Each type appears at most once. You can hide all widgets and add them again. Layouts are shared across devices on refresh and excluded from financial backups.",
-  "Khi một module chưa có sổ.": "When a module has no ledger yet.",
-  "Mở module muốn bắt đầu từ widget hoặc menu.":
-    "Open the module you want to start with from its widget or the menu.",
-  "Ghi nhận dữ liệu thực theo hướng dẫn của module rồi quay lại Tổng quan.":
-    "Record real data using the module’s guide, then return to Overview.",
-  "Mỗi module có trạng thái trống riêng; không cần tạo Chi tiêu trước khi xem các module khác.":
-    "Each module has its own empty state; you do not need a Spending ledger to see other modules.",
+  "Mỗi loại có tối đa một thẻ thông tin. Có thể ẩn tất cả rồi thêm lại. Bố cục dùng chung giữa thiết bị khi tải lại, không nằm trong backup tài chính.":
+    "Each type appears at most once. You can hide all cards and add them again. Layouts are shared across devices on refresh and excluded from financial backups.",
+  "Khi một chức năng chưa có sổ.": "When a section has no ledger yet.",
+  "Mở chức năng muốn bắt đầu từ thẻ thông tin hoặc menu.":
+    "Open the section you want to start with from its card or the menu.",
+  "Ghi nhận dữ liệu thực theo hướng dẫn của chức năng rồi quay lại Tổng quan.":
+    "Record real data using the section’s guide, then return to Overview.",
+  "Mỗi chức năng có trạng thái trống riêng; không cần tạo Chi tiêu trước khi xem các chức năng khác.":
+    "Each section has its own empty state; you do not need a Spending ledger to see other sections.",
   "Số tiền được che trên giao diện và nội dung trợ năng; dữ liệu không bị sửa.":
     "Amounts are hidden in the interface and accessible content; the data is unchanged.",
   "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn và Cần chú ý.":
     "Deposits with remaining principal, already due or maturing within seven days, appear in Maturing deposits and Needs attention.",
-  "Các module là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.":
+  "Các chức năng là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.":
     "Modules are independent ledgers; Overview does not combine them into net worth or calculate spendable funds.",
-  "Lỗi một nguồn không làm mất widget khác. Số liệu lần tải trước được ghi nhãn khi cập nhật thất bại. Bố cục xung đột cần tải bản mới, không tự ghi đè.":
-    "One source failing does not remove other widgets. Previously loaded values are labelled when refresh fails. Conflicting layouts require loading the latest version and are not overwritten automatically.",
-  "Kết quả: Các widget dùng dữ liệu thực đã ghi, không tự tạo giao dịch.":
+  "Lỗi một nguồn không làm mất thẻ thông tin khác. Số liệu lần tải trước được ghi nhãn khi cập nhật thất bại. Bố cục xung đột cần tải bản mới, không tự ghi đè.":
+    "One source failing does not remove other cards. Previously loaded values are labelled when refresh fails. Conflicting layouts require loading the latest version and are not overwritten automatically.",
+  "Kết quả: Các thẻ thông tin dùng dữ liệu thực đã ghi, không tự tạo giao dịch.":
     "Result: Widgets use recorded data and do not create transactions.",
-  "Kết quả: Mỗi loại có tối đa một widget. Có thể ẩn tất cả rồi thêm lại. Bố cục dùng chung giữa thiết bị khi tải lại, không nằm trong backup tài chính.":
-    "Result: Each type appears at most once. Hide all widgets and add them again if needed. Layouts sync on refresh and are excluded from financial backups.",
-  "Kết quả: Mỗi module có trạng thái trống riêng; không cần tạo Chi tiêu trước khi xem các module khác.":
-    "Result: Each module has its own empty state; other modules do not require a Spending ledger.",
+  "Kết quả: Mỗi loại có tối đa một thẻ thông tin. Có thể ẩn tất cả rồi thêm lại. Bố cục dùng chung giữa thiết bị khi tải lại, không nằm trong backup tài chính.":
+    "Result: Each type appears at most once. Hide all cards and add them again if needed. Layouts sync on refresh and are excluded from financial backups.",
+  "Kết quả: Mỗi chức năng có trạng thái trống riêng; không cần tạo Chi tiêu trước khi xem các chức năng khác.":
+    "Result: Each section has its own empty state; other sections do not require a Spending ledger.",
   "Kết quả: Số tiền được che trên giao diện và nội dung trợ năng; dữ liệu không bị sửa.":
     "Result: Amounts are hidden in the interface and accessible content; data is unchanged.",
-  "Tổng quan có 10 widget tùy chỉnh cho năm module; chưa có tổng tài sản ròng toàn hệ thống. Các mục":
-    "Overview offers ten customizable widgets across five modules; there is no system-wide net worth yet. The modules",
-  "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.":
-    "Overview offers ten customizable widgets for Income, Spending, Savings, Investments and Safety funds. Reports remain within each module; there is no system-wide net worth yet.",
-  "Những khoản cần kiểm tra trong các module đang hiển thị.":
-    "Things to check in the modules currently shown.",
+  "Tổng quan có 10 thẻ thông tin tùy chỉnh cho năm chức năng; chưa có tổng tài sản ròng toàn hệ thống. Các mục":
+    "Overview offers ten customizable cards across five sections; there is no system-wide net worth yet. The sections",
+  "Tổng quan có 10 thẻ thông tin tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.":
+    "Overview offers ten customizable cards for Income, Spending, Savings, Investments and Safety funds. Reports remain within each section; there is no system-wide net worth yet.",
+  "Những khoản cần kiểm tra trong các chức năng đang hiển thị.":
+    "Things to check in the sections currently shown.",
   "Tổng thực nhận tháng này và khoản chưa nhập.":
     "Total received this month and missing entries.",
   "Thực chi tháng này và mức tháng.": "This month’s spending and monthly plan.",
@@ -242,25 +320,25 @@ export const overview = {
     "Total savings value and valuation status.",
   "Tổng giá trị và lãi/lỗ chưa chốt.":
     "Total value and unrealized gain or loss.",
-  "Tổng dự phòng và số tháng Emergency.":
+  "Tổng dự phòng và số tháng Quỹ khẩn cấp.":
     "Total reserves and months of emergency coverage.",
   "Đang tải Tổng quan…": "Loading overview…",
-  "Bật widget của một module để xem các khoản cần chú ý.":
-    "Enable a module widget to see items needing attention.",
+  "Bật thẻ thông tin của một chức năng để xem các khoản cần chú ý.":
+    "Enable a section card to see items needing attention.",
   "{0} hũ vượt mức tháng": "{0} jars over the monthly plan",
-  "Năm thẻ số liệu chính, tải cùng bố cục tài khoản; tùy chỉnh 10 loại widget.":
-    "Five key metric cards loaded with your account layout; customize ten widget types.",
-  "Cần chú ý theo module đang hiện; tùy chọn phân bổ, hũ, đáo hạn và lời nhắn":
-    "Attention follows visible modules; optional breakdowns, jars, maturities and daily notes",
-  "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Năm thẻ mặc định giữ số liệu chính và cảnh báo; bạn có thể tùy chỉnh 10 loại widget.":
-    "See Income, Spending, Savings, Investments and Safety funds on one page. Five default cards show key figures and warnings; customize ten widget types.",
-  "Đọc số chính và cảnh báo trong từng thẻ theo kỳ bên dưới tiêu đề. Cần chú ý là widget tùy chọn, chỉ kiểm tra các module đang hiển thị.":
-    "Read each card’s key figures, warnings and period. Needs attention is optional and checks only the modules currently shown.",
-  "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn. Cần chú ý chỉ nhắc khi có widget Tiết kiệm hoặc Sổ sắp đáo hạn đang bật.":
+  "Năm thẻ số liệu chính, tải cùng bố cục tài khoản; tùy chỉnh 10 loại thẻ thông tin.":
+    "Five key metric cards loaded with your account layout; customize ten card types.",
+  "Cần chú ý theo chức năng đang hiện; tùy chọn phân bổ, hũ, đáo hạn và lời nhắn":
+    "Attention follows visible sections; optional breakdowns, jars, maturities and daily notes",
+  "Xem nhanh Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn trong một trang. Năm thẻ mặc định giữ số liệu chính và cảnh báo; bạn có thể tùy chỉnh 10 loại thẻ thông tin.":
+    "See Income, Spending, Savings, Investments and Safety funds on one page. Five default cards show key figures and warnings; customize ten card types.",
+  "Đọc số chính và cảnh báo trong từng thẻ theo kỳ bên dưới tiêu đề. Cần chú ý là thẻ thông tin tùy chọn, chỉ kiểm tra các chức năng đang hiển thị.":
+    "Read each card’s key figures, warnings and period. Needs attention is optional and checks only the sections currently shown.",
+  "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn. Cần chú ý chỉ nhắc khi có thẻ thông tin Tiết kiệm hoặc Sổ sắp đáo hạn đang bật.":
     "Deposits with remaining principal, already due or maturing within seven days, appear in Maturing deposits. Needs attention includes them only when Savings or Maturing deposits is enabled.",
-  "5 thẻ số liệu chính · tùy chỉnh 10 loại widget theo tài khoản.":
-    "5 key metric cards · customize 10 widget types per account.",
-  "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại widget theo tài khoản; các sổ không cộng thành tài sản ròng.":
-    "Five default cards show key figures and warnings. Add, hide and arrange ten widget types per account; independent ledgers are not combined into net worth.",
+  "5 thẻ số liệu chính · tùy chỉnh 10 loại thẻ thông tin theo tài khoản.":
+    "5 key metric cards · customize 10 card types per account.",
+  "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại thẻ thông tin theo tài khoản; các sổ không cộng thành tài sản ròng.":
+    "Five default cards show key figures and warnings. Add, hide and arrange ten card types per account; independent ledgers are not combined into net worth.",
   "Thực chi · Tạm tính": "Spending · Provisional",
 } as const;

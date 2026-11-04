@@ -133,3 +133,21 @@ SQLSTATE 42501 trong transaction reset trả `RESET_PERMISSION_REQUIRED` và th�
 ## V3 và Mục tiêu — 30/10/2026
 
 Xuất V3 gồm 41 bảng. Nhận V1/V2 bằng allowlist riêng, chuẩn hóa Goals thành trống. Không cho thêm bảng V3 vào file tự nhận V1/V2. Restore kiểm nguồn, mirrors/ID/sequence và replay Goals; nhập nguồn trước links. Goals có dữ liệu chặn restore như module khác. Reset sao lưu/fingerprint/xóa cả Goals và tăng generation; command cũ bị chặn. Thiếu migration không xuất backup thiếu dữ liệu. Xem [Goals](goals.md).
+
+## Dialog làm trống hai bước — 04/11/2026
+
+Thanh tiến trình luôn cho biết có hai bước và bước hiện tại. Email đích có khối riêng; phạm vi xóa, số bản ghi và thông tin giữ lại được nhóm rõ. Copy hiện tại bao gồm toàn bộ phân hệ, kể cả Mục tiêu, thay cho câu năm phân hệ cũ. Số bản ghi bao gồm sổ/cấu hình/lịch sử, không phải số giao dịch.
+
+Tạo backup hợp lệ mở bước kiểm tra/xác nhận và chuyển focus tới tiêu đề, không tự mở bàn phím. Liên kết lưu lại JSON, hạn dùng, checkbox đã lưu và ô nhập một dòng có border nằm cùng nhóm. Nút xóa chỉ hiện ở bước 2 và chỉ bật khi người dùng tự đánh dấu đã lưu, nhập đúng cụm xác nhận. Tạo backup mới xóa xác nhận cũ; lỗi server báo hết hạn/dữ liệu thay đổi đưa về bước 1. Mất kết quả mạng giữ operation/request cũ để kiểm tra lại. API, migration và định dạng file giữ nguyên. Xem [đặc tả](settings-reset-dialog-2026-11-04.md).
+
+## Trạng thái từng mục và chi tiết tùy mở — 04/11/2026
+
+Khối tài khoản có dữ liệu hiện tổng số mục có dữ liệu/trống và danh sách thích ứng theo chiều rộng. Mục có dữ liệu mở được để xem số bản ghi/sổ/lịch sử cùng link tới phân hệ; mục trống không mở. Lý do giữ lịch sử được thu gọn riêng; hướng dùng tài khoản khác hoặc sao lưu rồi làm trống vẫn rõ. Hệ thống chưa sẵn sàng được báo độc lập, không cản tải sao lưu. Điều kiện nhập, xác nhận và mọi dữ liệu không đổi. Nút Điều kiện khôi phục cách mô tả 16px. Xem [đặc tả và bằng chứng](settings-restore-layout-2026-11-04.md).
+
+### Cải thiện thao tác — 04/11/2026
+
+Đối chiếu [thiết kế dùng chung](workspace-comfort-2026-11-04.md): đầu trang gọn, bảo vệ nháp và giữ ngữ cảnh xem theo tài khoản trong phiên. Các lựa chọn nghiệp vụ, dữ liệu và lịch sử hiện có được giữ. Phần khôi phục/làm trống nằm sau lựa chọn giao diện trong Cài đặt; không thay điều kiện restore/reset.
+
+### Tối ưu tải dữ liệu — 04/11/2026
+
+Đối chiếu [hợp đồng dùng chung](performance-2026-11-04.md): đọc snapshot/projection, phản hồi view sau commit cho sáu sổ, chi tiết Báo cáo theo metric và foreground chống tải lặp ở Cài đặt. Giữ quy tắc tiền, lịch sử, phiên bản và owner/RLS; không thêm migration hoặc suy ra trạng thái cloud.

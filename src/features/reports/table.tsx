@@ -107,9 +107,9 @@ export function ReportTable({
                             ? t(value)
                             : table.id.startsWith("funds.") && c.key === "name"
                               ? ({
-                                  emergency: "Emergency",
-                                  rainy_day: "Rainy Day",
-                                  sinking: "Sinking",
+                                  emergency: t("Quỹ khẩn cấp"),
+                                  rainy_day: t("Quỹ phát sinh"),
+                                  sinking: t("Quỹ chi dự kiến"),
                                 }[value] ?? value)
                               : value;
                   return (

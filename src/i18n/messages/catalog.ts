@@ -1,10 +1,12 @@
 export const catalog = {
+  "Xây Emergency, Rainy Day và Sinking từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.":
+    "Build Emergency, Rainy Day and Sinking funds from living costs, with illustrations reflecting reserve progress.",
   "Trạng thái từng mục khi khôi phục; mở chi tiết sổ và lịch sử khi cần":
-    "Restore status by module; expand books and history when needed",
+    "Restore status by section; expand books and history when needed",
   "200 lời nhắn Việt/Anh, tối đa 35 từ; đổi khi chuyển trang hoặc tải lại":
     "200 notes in Vietnamese and English, up to 35 words; a fresh one on navigation or reload",
-  "Xem trước kế hoạch và giao dịch, quay lại chỉnh rồi xác nhận lưu":
-    "Preview plans and transactions, go back to edit, then confirm saving",
+  "Xem trước rồi xác nhận lưu; số liệu cập nhật trong kỳ đang xem":
+    "Preview and confirm saving; figures update in the selected period",
   "Ghi giao dịch theo nhóm, xem trước tác động rồi xác nhận lưu":
     "Grouped transaction forms with an impact preview before confirming save",
   "Xóa danh mục khi không còn số thu; ngừng nguồn thu đang có dữ liệu":
@@ -130,7 +132,7 @@ export const catalog = {
     "Filter transactions by date, portfolio/wallet and type; optionally include voided transactions",
   "Quỹ an toàn": "Safety funds",
   "Nền tảng an toàn tài chính": "Your financial safety foundation",
-  "Xây Emergency, Rainy Day và Sinking từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.":
+  "Xây Quỹ khẩn cấp, Quỹ phát sinh và Quỹ chi dự kiến từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.":
     "Build Emergency, Rainy Day and Sinking funds from living costs, with illustrations reflecting reserve progress.",
   "Mức sinh hoạt đã xác nhận từ hũ chi tháng; chọn cập nhật nguồn trước khi xem trước và lưu":
     "Confirmed living costs from monthly jars; choose source updates before previewing and saving",

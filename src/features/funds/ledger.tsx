@@ -1,4 +1,5 @@
 "use client";
+import { useViewState } from "@/components/use-view-state";
 import { AnimatedDetails } from "@/components/animated-details";
 import { useI18n } from "@/i18n/provider";
 
@@ -31,12 +32,32 @@ export function FundLedger({
   const { t: tr, locale, config: localize } = useI18n("funds");
 
   const money = useMoney(),
-    [query, setQuery] = useState(""),
-    [kind, setKind] = useState(""),
-    [fund, setFund] = useState(fundId ?? ""),
-    [location, setLocation] = useState(""),
-    [from, setFrom] = useState(""),
-    [to, setTo] = useState(""),
+    [query, setQuery] = useViewState(
+      `funds-ledger-${fundId ?? "all"}`,
+      "query",
+      "",
+    ),
+    [kind, setKind] = useViewState(
+      `funds-ledger-${fundId ?? "all"}`,
+      "kind",
+      "",
+    ),
+    [fund, setFund] = useViewState(
+      `funds-ledger-${fundId ?? "all"}`,
+      "fund",
+      fundId ?? "",
+    ),
+    [location, setLocation] = useViewState(
+      `funds-ledger-${fundId ?? "all"}`,
+      "location",
+      "",
+    ),
+    [from, setFrom] = useViewState(
+      `funds-ledger-${fundId ?? "all"}`,
+      "from",
+      "",
+    ),
+    [to, setTo] = useViewState(`funds-ledger-${fundId ?? "all"}`, "to", ""),
     [page, setPage] = useState(1);
   const place = (id: string) =>
     view.book?.locations.find((l) => l.id === id)?.name ?? "";
@@ -52,7 +73,7 @@ export function FundLedger({
         (t.kind === "transfer" && t.toLocationId === location)) &&
       (!from || date >= from) &&
       (!to || date <= to) &&
-      `${t.note} ${fundNames[t.fundId]} ${place(t.locationId)} ${t.kind === "transfer" ? fundNames[t.toFundId] + " " + place(t.toLocationId) : ""}`
+      `${t.note} ${tr(fundNames[t.fundId])} ${place(t.locationId)} ${t.kind === "transfer" ? tr(fundNames[t.toFundId]) + " " + place(t.toLocationId) : ""}`
         .toLocaleLowerCase()
         .includes(query.toLocaleLowerCase())
     );
@@ -63,7 +84,7 @@ export function FundLedger({
           .reverse()
           .filter(matches)
       : [],
-    pages = Math.max(1, Math.ceil(items.length / 20)),
+    pages = Math.max(1, Math.ceil(items.length / 10)),
     current = Math.min(page, pages);
   return (
     <section className="fund-ledger">
@@ -86,10 +107,7 @@ export function FundLedger({
             placeholder={tr("Lý do, quỹ hoặc nơi giữ")}
           />
         </label>
-        <AnimatedDetails
-          className="fund-filter-options"
-          open={fundId ? undefined : true}
-        >
+        <AnimatedDetails className="fund-filter-options" open={undefined}>
           <summary>
             {tr("Bộ lọc giao dịch")} ·{" "}
             {
@@ -111,7 +129,7 @@ export function FundLedger({
                 onChange={(e) => setFund(e.target.value)}
               >
                 <option value="">{tr("Tất cả quỹ")}</option>
-                {Object.entries(fundNames).map(([k, v]) => (
+                {Object.entries(localize(fundNames)).map(([k, v]) => (
                   <option key={k} value={k}>
                     {v}
                   </option>
@@ -169,6 +187,29 @@ export function FundLedger({
           </div>
         </AnimatedDetails>
       </div>
+      {[
+        query,
+        kind,
+        fund !== (fundId ?? "") ? "fund" : "",
+        location,
+        from,
+        to,
+      ].some(Boolean) && (
+        <button
+          className="expense-secondary fund-filter-reset"
+          onClick={() => {
+            setQuery("");
+            setKind("");
+            setFund(fundId ?? "");
+            setLocation("");
+            setFrom("");
+            setTo("");
+            setPage(1);
+          }}
+        >
+          {tr("Đặt lại bộ lọc")}
+        </button>
+      )}
       {from && to && from > to ? (
         <p role="alert">{tr("Ngày kết thúc phải từ ngày bắt đầu trở đi.")}</p>
       ) : (
@@ -181,7 +222,7 @@ export function FundLedger({
             </p>
           ) : (
             <div className="fund-transaction-list">
-              {items.slice((current - 1) * 20, current * 20).map((t) => (
+              {items.slice((current - 1) * 10, current * 10).map((t) => (
                 <article
                   key={t.id}
                   className="fund-transaction"
@@ -193,11 +234,11 @@ export function FundLedger({
                       {displayTime(t.occurredAt, locale)} {tr("· Giờ Việt Nam")}
                     </small>
                     <span>
-                      {fundNames[t.fundId]} · {place(t.locationId)}
+                      {tr(fundNames[t.fundId])} · {place(t.locationId)}
                     </span>
                     {t.kind === "transfer" && (
                       <span>
-                        → {fundNames[t.toFundId]} · {place(t.toLocationId)}
+                        → {tr(fundNames[t.toFundId])} · {place(t.toLocationId)}
                       </span>
                     )}
                     <p>{t.note || tr("Không có ghi chú")}</p>
@@ -232,6 +273,12 @@ export function FundLedger({
             aria-label={tr("Phân trang giao dịch")}
           >
             <span>
+              {items.length > 0 && (
+                <>
+                  {(current - 1) * 10 + 1}–
+                  {Math.min(current * 10, items.length)} /{" "}
+                </>
+              )}
               {items.length} {tr("giao dịch · Trang")} {current}/{pages}
             </span>
             <button

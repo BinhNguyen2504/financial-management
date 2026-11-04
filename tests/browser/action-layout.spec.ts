@@ -278,10 +278,10 @@ test("fund setup separates its call to action, priority controls and three-butto
   for (const row of await page.locator(".fund-priorities li").all())
     await separated(row);
   await page
-    .getByRole("button", { name: "Ưu tiên Rainy Day Fund lên", exact: true })
+    .getByRole("button", { name: "Ưu tiên Quỹ phát sinh lên", exact: true })
     .click();
   await expect(page.locator(".fund-priorities li").first()).toContainText(
-    "Rainy Day Fund",
+    "Quỹ phát sinh",
   );
   expect(
     (await (await page.request.get("/api/v1/funds")).json()).book,

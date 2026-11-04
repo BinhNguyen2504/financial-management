@@ -1,4 +1,5 @@
 "use client";
+import { useViewState } from "@/components/use-view-state";
 
 import { useI18n } from "@/i18n/provider";
 import { hiddenColumns } from "@/components/column-table";
@@ -29,13 +30,32 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
   );
   const hidden = hiddenColumns(columnPreference);
   const [view, setView] = useState<ExpenseView | null>(null);
-  const [year, setYear] = useState<number | null>(null);
-  const [month, setMonth] = useState<number | null>(null);
-  const [kind, setKind] = useState("");
-  const [method, setMethod] = useState("");
-  const [group, setGroup] = useState("");
-  const [inactive, setInactive] = useState(false);
-  const [tab, setTab] = useState("month");
+  const [year, setYear] = useViewState<number | null>(
+    "expenses",
+    "year",
+    null,
+    (v) =>
+      v === null ||
+      (typeof v === "number" && Number.isInteger(v) && v >= 2000 && v <= 2099),
+  );
+  const [month, setMonth] = useViewState<number | null>(
+    "expenses",
+    "month",
+    null,
+    (v) =>
+      v === null ||
+      (typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12),
+  );
+  const [kind, setKind] = useViewState("expenses", "kind", "");
+  const [method, setMethod] = useViewState("expenses", "method", "");
+  const [group, setGroup] = useViewState("expenses", "group", "");
+  const [inactive, setInactive] = useViewState("expenses", "inactive", false);
+  const [tab, setTab] = useViewState<string>(
+    "expenses",
+    "tab",
+    "month",
+    (v) => typeof v === "string" && ["month", "reports"].includes(v),
+  );
   const [editor, setEditor] = useState<EditorMode | null>(null);
   const [editorKey, setEditorKey] = useState(0);
   const [detailSelection, setDetail] = useState<ExpenseRow | null>(null);
@@ -119,9 +139,32 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     setEditor(next);
     setEditorKey((k) => k + 1);
   }
-  async function saved() {
+  function acceptView(next: ExpenseView) {
+    requestId.current++;
+    if (
+      calendarYear.current !== null &&
+      calendarYear.current !== next.currentYear &&
+      selectedYearRef.current === calendarYear.current
+    ) {
+      setYear(next.currentYear);
+      setMonth(Number(next.today.slice(5, 7)));
+      setTab("month");
+    }
+    calendarYear.current = next.currentYear;
+    setView(next);
+    setYear((y) => y ?? next.currentYear);
+    setMonth((m) => m ?? Number(next.today.slice(5, 7)));
+    setError("");
+    setNeedsLogin(false);
+    setLoading(false);
+  }
+  async function saved(next?: ExpenseView) {
     setEditor(null);
     setNotice("");
+    if (next) {
+      acceptView(next);
+      return;
+    }
     try {
       await reload();
     } catch {
@@ -174,6 +217,7 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     rows.map((r) => (BigInt(r.funding) + BigInt(r.extra)).toString()),
   );
   return {
+    acceptView,
     tr,
     view,
     setLabelsOpen,

@@ -347,7 +347,7 @@ test("shared report tables and tab keyboard scrolling preserve page and dialog p
   await page.keyboard.press("Escape");
   await page.goto("/funds");
   await page
-    .getByRole("button", { name: "Xem Emergency Fund", exact: true })
+    .getByRole("button", { name: "Xem Quỹ khẩn cấp", exact: true })
     .click();
   const dialog = page.locator(".expense-dialog[open]");
   await expect(dialog.locator(".fund-tabs")).toBeVisible();

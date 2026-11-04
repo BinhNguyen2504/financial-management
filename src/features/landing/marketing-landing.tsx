@@ -6,6 +6,8 @@ import { useI18n } from "@/i18n/provider";
 
 import { ModuleIcon } from "@/components/module-icon";
 import {
+  workspaceComfortSummary,
+  pageHelpSummary,
   languageSummary,
   modules,
   moduleStatusLabels,
@@ -374,7 +376,7 @@ export function MarketingLanding() {
               </div>
               <p>
                 {tr(
-                  "Tổng quan có 10 widget tùy chỉnh cho năm module; chưa có tổng tài sản ròng toàn hệ thống. Các mục",
+                  "Tổng quan có 10 thẻ thông tin tùy chỉnh cho năm chức năng; chưa có tổng tài sản ròng toàn hệ thống. Các mục",
                 )}{" "}
                 {modules
                   .filter((item) => item.status === "planned")
@@ -404,7 +406,9 @@ export function MarketingLanding() {
                   "Đăng nhập bằng mã 8 chữ số gửi qua email. Mã dùng một lần, có hiệu lực 30 phút. Chọn một mục bạn muốn quản lý trước; nút Hướng dẫn cạnh tiêu đề giúp bạn tìm hiểu thuật ngữ và từng thao tác.",
                 )}
               </p>
+              <p>{tr(pageHelpSummary)}</p>
               <p>{tr(publicHomeSummary)}</p>
+              <p>{tr(workspaceComfortSummary)}</p>
             </div>
           </AnimatedDetails>
           <AnimatedDetails>
@@ -428,7 +432,7 @@ export function MarketingLanding() {
             <div className="marketing-answer">
               <p>
                 {tr(
-                  "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu.",
+                  "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu. Sau khi lưu, số liệu cập nhật trong kỳ đang xem.",
                 )}
               </p>
             </div>

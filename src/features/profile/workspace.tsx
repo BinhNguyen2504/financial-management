@@ -1,4 +1,5 @@
 "use client";
+import { PageGuide } from "@/features/help/page-guide";
 import { ProfileForm } from "./profile-form";
 
 import { useI18n } from "@/i18n/provider";
@@ -28,6 +29,7 @@ export function ProfileWorkspace() {
         </div>
         <BackButton />
       </div>
+      <PageGuide pageId="profile" />
       {loading ? (
         <LoadingStatus>{tr("Đang tải thông tin cá nhân…")}</LoadingStatus>
       ) : error ? (

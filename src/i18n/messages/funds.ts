@@ -1,4 +1,10 @@
 export const funds = {
+  "Emergency đủ trang trải": "Emergency coverage",
+  "Số tháng Emergency dùng mức sinh hoạt này.":
+    "Emergency coverage uses these living costs.",
+  "Quỹ khẩn cấp": "Emergency fund",
+  "Quỹ phát sinh": "Rainy day fund",
+  "Quỹ chi dự kiến": "Sinking fund",
   "Dùng cho bảo dưỡng theo lịch hoặc thay thiết bị cần thiết đã dự trù. Các mục tiêu mua sắm và cuộc sống được quản lý ở trang Mục tiêu riêng.":
     "Use for scheduled maintenance or planned essential replacements. Shopping and life goals are managed on the separate Goals page.",
   "Giao dịch": "Transactions",
@@ -45,7 +51,7 @@ export const funds = {
   "Tổng dự phòng": "Total reserves",
   "Tổng mục tiêu": "Total target",
   "Còn thiếu từng quỹ cộng lại": "Sum of individual fund shortfalls",
-  "Emergency đủ trang trải": "Emergency coverage",
+  "Quỹ khẩn cấp đủ trang trải": "Emergency coverage",
   tháng: "months",
   "Nền tảng sinh hoạt": "Living cost foundation",
   "Mức đã xác nhận từ tháng": "Confirmed amount from month",
@@ -59,7 +65,7 @@ export const funds = {
   "Mức sinh hoạt và mục tiêu": "Living costs and targets",
   "/tháng": "/month",
   "· Mức đã xác nhận từ tháng": "· Confirmed amount from month",
-  "Số tháng Emergency dùng mức sinh hoạt này.":
+  "Số tháng Quỹ khẩn cấp dùng mức sinh hoạt này.":
     "Emergency coverage uses these living costs.",
   "Xem các hũ cấu thành": "View contributing jars",
   "Mở Chi tiêu →": "Open Expenses →",

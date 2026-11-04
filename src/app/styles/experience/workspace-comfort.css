@@ -1,0 +1,279 @@
+/* Working screens retain their themes and illustrations while keeping the job in view. */
+.app-shell main > .daily-note,
+.overview-workspace > .daily-note {
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 4px 12px;
+}
+.app-shell main > .daily-note .daily-note-mark,
+.overview-workspace > .daily-note .daily-note-mark {
+  width: 24px;
+  height: 24px;
+}
+.app-shell main > .daily-note .daily-note-message,
+.overview-workspace > .daily-note .daily-note-message {
+  font-size: var(--font-size-18);
+}
+.app-shell .illustrated-heading.illustrated-heading {
+  grid-template-columns: minmax(0, 1fr) 128px;
+  grid-template-areas: "copy art" "actions actions";
+  gap: 12px 20px;
+  margin-bottom: 16px;
+}
+.app-shell .illustrated-heading:not(:has(> .heading-actions)) {
+  grid-template-areas: "copy art";
+}
+.app-shell .illustrated-heading > .heading-copy {
+  align-self: center;
+}
+.app-shell .illustrated-heading > .heading-copy h1 {
+  margin: 0;
+  font-size: var(--text-page-title);
+}
+.app-shell .illustrated-heading .eyebrow {
+  margin: 0 0 4px;
+}
+.app-shell .illustrated-heading > .heading-copy > p:last-child {
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+.app-shell .illustrated-heading > .heading-art {
+  width: 100%;
+  max-width: none;
+  background: none;
+}
+.app-shell .overview-heading {
+  margin-bottom: 16px;
+}
+.app-shell .overview-widget {
+  padding: 18px;
+  gap: 10px;
+}
+.app-shell .overview-widget header p {
+  margin-top: 2px;
+}
+.app-shell .overview-value-main {
+  margin-bottom: 0;
+}
+.app-shell .overview-value-main dd {
+  margin-top: 2px;
+}
+.navigation-group {
+  display: grid;
+  gap: 2px;
+}
+.navigation-group + .navigation-group {
+  margin-top: 8px;
+}
+.navigation-group > a:last-child,
+.navigation-planned > a:last-child {
+  margin-top: 0;
+}
+.navigation-group-label {
+  padding: 4px 12px;
+  color: var(--muted);
+  font-size: var(--font-size-12);
+}
+.navigation-planned {
+  margin-top: 8px;
+}
+.navigation-planned > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  min-height: 44px;
+  color: var(--muted);
+  list-style: none;
+  border-radius: 12px;
+}
+.navigation-planned > summary::-webkit-details-marker {
+  display: none;
+}
+.navigation-planned > summary:hover {
+  background: var(--surface-alt);
+}
+.view-controls,
+.filter-options-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+.action-options {
+  min-width: 0;
+  position: relative;
+}
+.action-options-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--action-gap);
+}
+.action-options-trigger,
+.filter-options-tools {
+  display: none;
+}
+.filter-options-trigger {
+  display: none;
+}
+.filter-options-tools[data-active="true"] {
+  display: flex;
+}
+.reports-explanation > summary {
+  min-height: 44px;
+  padding-block: 10px;
+  cursor: pointer;
+  color: var(--muted);
+}
+.app-shell .reports-period {
+  gap: 4px;
+}
+.app-shell .reports-inline-state,
+.app-shell .reports-metric-warning {
+  color: var(--warning);
+  font-size: var(--font-size-12);
+  margin: 4px 0;
+}
+.app-shell .reports-explanation p {
+  font-size: var(--font-size-14);
+  color: var(--muted);
+}
+.reports-empty-source {
+  display: grid;
+  gap: 4px;
+  font-size: var(--font-size-12);
+}
+.reports-empty-source > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  justify-self: start;
+}
+.app-shell .fund-card .fund-scene {
+  max-height: 156px;
+}
+.app-shell .fund-next {
+  padding: 16px;
+}
+.fund-filter-reset {
+  margin-top: 8px;
+}
+.app-shell .settings-appearance {
+  margin-top: 0;
+}
+.app-shell .settings-reset {
+  margin-top: 24px;
+}
+@media (min-width: 960px) {
+  :root[data-sidebar="collapsed"] .navigation-group-label,
+  :root[data-sidebar="collapsed"] .navigation-planned > summary > span {
+    display: none;
+  }
+  :root[data-sidebar="collapsed"] .navigation-planned > summary {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  :root[data-sidebar="collapsed"] .navigation-group + .navigation-group {
+    margin-top: 4px;
+  }
+}
+@media (max-width: 700px) {
+  .mobile-menu .navigation {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .mobile-menu .navigation-group {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .mobile-menu .navigation-group-label,
+  .mobile-menu .navigation-group > a:only-child {
+    grid-column: 1 / -1;
+  }
+  .app-shell .illustrated-heading.illustrated-heading {
+    grid-template-columns: minmax(0, 1fr) 64px;
+    gap: 8px 12px;
+  }
+  .app-shell .illustrated-heading > .heading-art {
+    align-self: start;
+  }
+  .app-shell .illustrated-heading .help-page-title {
+    gap: 4px 8px;
+  }
+  .app-shell .illustrated-heading .eyebrow {
+    font-size: var(--font-size-12);
+  }
+  .app-shell .illustrated-heading > .heading-copy > p:last-child {
+    font-size: var(--font-size-14);
+  }
+  .app-shell .expense-toolbar,
+  .app-shell .savings-toolbar,
+  .app-shell .investment-toolbar {
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+  .app-shell .savings-main-actions {
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .app-shell .savings-toolbar {
+    margin-bottom: 10px;
+  }
+  .action-options-trigger,
+  .filter-options-tools,
+  .filter-options-trigger {
+    display: flex;
+  }
+  .action-options-body {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 25;
+    width: max-content;
+    max-width: min(290px, calc(100vw - 40px));
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 6px 20px #0002;
+  }
+  .action-options[data-expanded="false"] > .action-options-body,
+  .filter-options[data-expanded="false"] > .filter-options-body {
+    display: none;
+  }
+  .app-shell .reports-workspace,
+  .app-shell .reports-content {
+    gap: 12px;
+  }
+  .app-shell .reports-filters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px;
+  }
+  .app-shell .reports-filters label {
+    min-width: 0;
+    font-size: var(--font-size-14);
+  }
+  .app-shell .reports-filters select {
+    width: 100%;
+    min-width: 0;
+  }
+  .app-shell .fund-workspace {
+    gap: 16px;
+  }
+  .app-shell .fund-card {
+    padding: 16px;
+  }
+  .app-shell .fund-card .fund-scene {
+    max-height: 128px;
+  }
+  .app-shell .fund-health {
+    padding: 16px;
+  }
+  .app-shell .fund-health strong {
+    font-size: var(--font-size-20);
+  }
+}

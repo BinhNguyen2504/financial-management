@@ -1,17 +1,11 @@
+import { timePhase } from "./performance";
+import { readBook } from "./book-projections";
 import { withDataGeneration } from "./data-generation";
 import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
 import type postgres from "postgres";
 import { ExpenseError } from "../domain/expenses/engine";
-import type {
-  ExpenseBook,
-  Jar,
-  MonthInput,
-  Spend,
-  ExpenseYear,
-  Label,
-  Audit,
-} from "../domain/expenses/types";
+import type { ExpenseBook } from "../domain/expenses/types";
 import type {
   ExpenseRepository,
   ExpenseTransaction,
@@ -21,52 +15,18 @@ import type {
 type DB = Pick<postgres.Sql, "unsafe">;
 type Params = (string | number | boolean | null)[];
 const json = (value: unknown) => JSON.stringify(value);
-export function transactionAdapter(db: DB, owner: string): ExpenseTransaction {
+export function transactionAdapter(
+  db: DB,
+  owner: string,
+  readOnly = false,
+): ExpenseTransaction {
   const query = <T extends postgres.Row>(sql: string, params: Params = []) =>
-    db.unsafe<T[]>(sql, params);
+    timePhase("sql", () => db.unsafe<T[]>(sql, params));
   let baseline: ExpenseBook | undefined;
   return {
     async read() {
-      const [header] = await query<{ start: string; version: number }>(
-        "select start_month as start, version from public.expense_books where owner_id=$1",
-        [owner],
-      );
-      if (!header) return null;
-      const jars = await query<Jar>(
-        "select id,kind,start_month as start,opening::text,rules from public.expense_jars where owner_id=$1 order by start_month,id",
-        [owner],
-      );
-      const inputs = await query<MonthInput>(
-        'select jar_id as "jarId",month,target::text,funding::text,extra::text,closing::text from public.expense_month_inputs where owner_id=$1',
-        [owner],
-      );
-      const spends = await query<Spend>(
-        "select id,jar_id as \"jarId\",to_char(date,'YYYY-MM-DD') as date,amount::text,note,deleted from public.expense_spends where owner_id=$1 order by date,id",
-        [owner],
-      );
-      const years = await query<ExpenseYear>(
-        'select year,case when closed_at is null then null else to_char(closed_at at time zone \'UTC\',\'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"\') end as "closedAt",snapshot from public.expense_years where owner_id=$1 order by year',
-        [owner],
-      );
-      const labels = await query<Label>(
-        // Optional presentation columns may not have been migrated yet.
-        `select id,kind,name,to_jsonb(l)->>'brand_key' as "brandKey",to_jsonb(l)->>'icon_key' as "iconKey" from public.expense_labels l where owner_id=$1 order by kind,name`,
-        [owner],
-      );
-      const audit = await query<Audit>(
-        "select version,to_char(at at time zone 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') as at,action,detail from public.expense_audit where owner_id=$1 order by version",
-        [owner],
-      );
-      const book: ExpenseBook = {
-        ...header,
-        jars: [...jars],
-        inputs: [...inputs],
-        spends: [...spends],
-        years: [...years],
-        labels: [...labels],
-        audit: [...audit],
-      };
-      baseline = structuredClone(book);
+      const book = await readBook(db, owner, "expenses");
+      if (book && !readOnly) baseline = structuredClone(book);
       return book;
     },
     async command(id) {
@@ -217,16 +177,22 @@ export function postgresExpenseRepository(
     async transaction<T>(
       owner: string,
       fn: (tx: ExpenseTransaction) => Promise<T>,
+      readOnly = false,
     ): Promise<T> {
       if (!/^[0-9a-f-]{36}$/i.test(owner))
         throw new Error("Invalid authenticated owner");
-      const result = await withOwnerTransaction(sql, owner, async (tx) => {
-        // Serialize all commands for one owner, including first initialization and retries.
-        await lockOwner(tx, [owner]);
-        return withDataGeneration(tx, owner, expectedGeneration, () =>
-          fn(transactionAdapter(tx, owner)),
-        );
-      });
+      const result = await withOwnerTransaction(
+        sql,
+        owner,
+        async (tx) => {
+          // Serialize all commands for one owner, including first initialization and retries.
+          if (!readOnly) await lockOwner(tx, [owner]);
+          return withDataGeneration(tx, owner, expectedGeneration, () =>
+            fn(transactionAdapter(tx, owner, readOnly)),
+          );
+        },
+        readOnly,
+      );
       return result as T;
     },
   };

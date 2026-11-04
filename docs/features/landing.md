@@ -211,3 +211,12 @@ Catalog bổ sung mô tả cột tiền và nút sửa/hủy gọn. Nội dung H
 ## Đối chiếu bộ lọc và select — 02/11/2026
 
 Catalog Đầu tư và Help preview vi/en mô tả lọc theo ngày, danh mục/ví, loại và tùy chọn hiện giao dịch đã hủy trong ứng dụng. Đã rà hai landing; thay đổi dùng nguồn catalog/preview chung, không thêm tuyên bố triển khai. Bộ chọn ngôn ngữ giữ chiều cao gọn 44px và một chevron riêng. Dữ liệu preview tiếp tục cố định, không đọc API tài chính hoặc tạo bộ lọc tài khoản giả. Xem [quy tắc control](select-controls-2026-11-02.md).
+
+## Đồng bộ trạng thái khôi phục — 04/11/2026
+
+Catalog Cài đặt và FAQ hai landing vi/en phản ánh trạng thái từng mục cùng chi tiết dữ liệu tùy mở. Đã rà preview: không có giao diện Cài đặt/khôi phục, nên giữ minh họa hiện tại và dữ liệu cố định, không thêm thao tác giả hay gọi API tài chính. Không thay ranh giới public/Auth hoặc tuyên bố triển khai. Xem [thay đổi Cài đặt](settings-restore-layout-2026-11-04.md).
+
+
+## Nội dung cho người dùng phổ thông — 04/11/2026
+
+Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.

@@ -1,3 +1,4 @@
+import { timePhase, withFinancialTiming } from "@/server/performance";
 import { readGoalView, runGoalCommand } from "@/application/goals";
 import { GoalError } from "@/domain/goals/engine";
 import { commandSchema } from "@/domain/goals/schema";
@@ -27,39 +28,52 @@ function failure(error: unknown) {
   });
 }
 export async function GET(request: Request, context: FinancialRouteContext) {
-  try {
-    const owner = await authenticatedOwner(request);
-    if ((await context.params).path?.length)
-      throw new GoalError("Đường dẫn không tồn tại.", 404);
-    return jsonResponse(
-      await readGoalView(goalRepository(), owner, vietnamClock()),
-      { headers: financialHeaders },
-    );
-  } catch (e) {
-    return failure(e);
-  }
+  return withFinancialTiming(request, async () => {
+    try {
+      const owner = await authenticatedOwner(request);
+      if ((await context.params).path?.length)
+        throw new GoalError("Đường dẫn không tồn tại.", 404);
+      return jsonResponse(
+        await timePhase("work", () =>
+          readGoalView(goalRepository(), owner, vietnamClock()),
+        ),
+        { headers: financialHeaders },
+      );
+    } catch (e) {
+      return failure(e);
+    }
+  });
 }
 export async function POST(request: Request, context: FinancialRouteContext) {
-  try {
-    const owner = await authenticatedOwner(request);
-    checkCommandOrigin(request, GoalError);
-    const path = ((await context.params).path ?? []).join("/");
-    if (!["preview", "commands"].includes(path))
-      throw new GoalError("Đường dẫn không tồn tại.", 404);
-    const command = commandSchema.parse(
-      await readCommandJSON(request, GoalError, false),
-    );
-    return jsonResponse(
-      await runGoalCommand(
-        goalRepository(requestDataGeneration(request)),
-        owner,
-        command,
-        vietnamClock(),
-        path === "preview",
-      ),
-      { headers: financialHeaders },
-    );
-  } catch (e) {
-    return failure(e);
-  }
+  return withFinancialTiming(request, async () => {
+    try {
+      const owner = await authenticatedOwner(request);
+      checkCommandOrigin(request, GoalError);
+      const path = ((await context.params).path ?? []).join("/");
+      if (!["preview", "commands"].includes(path))
+        throw new GoalError("Đường dẫn không tồn tại.", 404);
+      const command = commandSchema.parse(
+        await readCommandJSON(request, GoalError, false),
+      );
+      return jsonResponse(
+        await timePhase("work", () =>
+          runGoalCommand(
+            goalRepository(requestDataGeneration(request)),
+            owner,
+            command,
+            vietnamClock(),
+            path === "preview",
+            {
+              view:
+                path === "commands" &&
+                new URL(request.url).searchParams.get("return") === "view",
+            },
+          ),
+        ),
+        { headers: financialHeaders },
+      );
+    } catch (e) {
+      return failure(e);
+    }
+  });
 }

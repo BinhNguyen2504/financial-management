@@ -123,12 +123,19 @@ export function Modal({
       if (openDialogs.size === 0)
         document.body.style.overflow = previousOverflow;
       // React may remove the dialog before its passive cleanup; restore focus explicitly.
+      const returnTarget = trigger?.isConnected
+        ? trigger.getClientRects().length
+          ? trigger
+          : trigger
+              .closest("[data-focus-return]")
+              ?.querySelector<HTMLElement>("[data-focus-return-target]")
+        : null;
       if (
-        trigger?.isConnected &&
-        trigger !== document.body &&
-        !trigger.classList.contains("skip-link")
+        returnTarget &&
+        returnTarget !== document.body &&
+        !returnTarget.classList.contains("skip-link")
       )
-        trigger.focus({ preventScroll: true });
+        returnTarget.focus({ preventScroll: true });
       else {
         const parent = [...openDialogs].at(-1);
         if (parent)

@@ -49,3 +49,16 @@ Kết quả kiểm chứng tối ưu được ghi riêng trong `docs/07-validati
 ## Lời nhắn theo lượt đọc — 02/11/2026
 
 Một chút bình yên dùng kho 200 cặp Việt/Anh chung toàn ứng dụng, mỗi bản tối đa 35 từ. Chuyển trang/reload đổi câu; đổi ngôn ngữ, theme, refresh số liệu hoặc chỉnh bố cục giữ câu. Nếu layout đang xem (kể cả draft) có peace, chỉ hiện trong widget; nếu không có thì hiện đầu trang. Chờ biết layout trước khi đặt câu, lỗi layout có thể hiện đầu trang và chuyển về widget sau retry mà không đổi câu. Không PUT, không thay mặc định/schema hoặc bỏ widget đã lưu. Preview công khai có một câu minh họa cố định. Xem [quote](quotes.md).
+
+### Cải thiện thao tác — 04/11/2026
+
+Đối chiếu [thiết kế dùng chung](workspace-comfort-2026-11-04.md): đầu trang gọn, bảo vệ nháp và giữ ngữ cảnh xem theo tài khoản trong phiên. Các lựa chọn nghiệp vụ, dữ liệu và lịch sử hiện có được giữ. Phần khôi phục/làm trống nằm sau lựa chọn giao diện trong Cài đặt; không thay điều kiện restore/reset.
+
+### Tối ưu tải dữ liệu — 04/11/2026
+
+Đối chiếu [hợp đồng dùng chung](performance-2026-11-04.md): đọc snapshot/projection, phản hồi view sau commit cho sáu sổ, chi tiết Báo cáo theo metric và foreground chống tải lặp ở Cài đặt. Giữ quy tắc tiền, lịch sử, phiên bản và owner/RLS; không thêm migration hoặc suy ra trạng thái cloud.
+
+
+## Nội dung cho người dùng phổ thông — 04/11/2026
+
+Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.

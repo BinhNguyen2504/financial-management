@@ -72,7 +72,6 @@ test("financial headings balance illustrations, copy and controls across themes 
     // Goals uses a compact working header; covered in goals.spec.ts.
     "transactions",
     "accounts",
-    "reports",
   ]) {
     await page.goto(`/${path}`);
     await page.waitForLoadState("networkidle");
@@ -124,14 +123,13 @@ test("financial headings balance illustrations, copy and controls across themes 
       const drawing = (await art.boundingBox())!;
       const copy = (await header.locator(".heading-copy").boundingBox())!;
       const frame = (await header.boundingBox())!;
-      expect(drawing.width).toBeGreaterThanOrEqual(width <= 700 ? 210 : 238);
+      expect(drawing.width).toBeGreaterThanOrEqual(width <= 700 ? 60 : 120);
+      expect(drawing.width).toBeLessThanOrEqual(width <= 700 ? 68 : 132);
       expect(drawing.x).toBeGreaterThanOrEqual(frame.x - 1);
       expect(drawing.x + drawing.width).toBeLessThanOrEqual(
         frame.x + frame.width + 1,
       );
-      if (width <= 700)
-        expect(copy.y + copy.height).toBeLessThanOrEqual(drawing.y + 1);
-      else expect(copy.x + copy.width).toBeLessThanOrEqual(drawing.x + 1);
+      expect(copy.x + copy.width).toBeLessThanOrEqual(drawing.x + 1);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth + 1,

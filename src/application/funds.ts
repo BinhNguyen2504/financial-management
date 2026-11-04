@@ -1,3 +1,5 @@
+import type { CommandViewOptions } from "./shared/command-view";
+import type { FundView } from "../domain/funds/types";
 import { commandFingerprint } from "./shared/command-fingerprint";
 import { applyAction, FundError, toView } from "../domain/funds/engine";
 import { commandSchema, type FundCommand } from "../domain/funds/schema";
@@ -25,6 +27,7 @@ export interface FundRepository {
   transaction<T>(
     owner: string,
     fn: (tx: FundTransactionRepository) => Promise<T>,
+    readOnly?: boolean,
   ): Promise<T>;
 }
 export async function runFundCommand(
@@ -33,49 +36,68 @@ export async function runFundCommand(
   raw: FundCommand,
   clock: Clock,
   preview = false,
-): Promise<FundCommandResult> {
+  options: CommandViewOptions = {},
+): Promise<FundCommandResult & { view?: FundView }> {
   const command = commandSchema.parse(raw),
     fingerprint = commandFingerprint(command);
-  return repository.transaction(owner, async (tx) => {
-    const stored = await tx.command(command.id);
-    if (stored) {
-      if (stored.fingerprint !== fingerprint)
+  return repository.transaction(
+    owner,
+    async (tx) => {
+      const stored = await tx.command(command.id);
+      if (stored) {
+        if (stored.fingerprint !== fingerprint)
+          throw new FundError(
+            "Mã yêu cầu đã dùng với nội dung khác.",
+            409,
+            "IDEMPOTENCY_CONFLICT",
+          );
+        return options.view && !preview
+          ? {
+              ...stored.result,
+              view: toView(
+                await tx.read(),
+                await tx.source(clock.today.slice(0, 7)),
+                clock,
+              ),
+            }
+          : stored.result;
+      }
+      const before = await tx.read();
+      if ((before?.version ?? 0) !== command.expectedVersion)
         throw new FundError(
-          "Mã yêu cầu đã dùng với nội dung khác.",
+          "Dữ liệu đã đổi ở phiên khác. Tải dữ liệu mới và xem trước lại; nội dung nhập được giữ.",
           409,
-          "IDEMPOTENCY_CONFLICT",
+          "VERSION_CONFLICT",
         );
-      return stored.result;
-    }
-    const before = await tx.read();
-    if ((before?.version ?? 0) !== command.expectedVersion)
-      throw new FundError(
-        "Dữ liệu đã đổi ở phiên khác. Tải dữ liệu mới và xem trước lại; nội dung nhập được giữ.",
-        409,
-        "VERSION_CONFLICT",
-      );
-    const source = await tx.source(clock.today.slice(0, 7)),
-      after = applyAction(before, command.action, source, clock);
-    const result: FundCommandResult = {
-      version: after.version,
-      before: toView(before, source, clock).state,
-      after: toView(after, source, clock).state,
-      beforeConfig: before?.configurations.at(-1) ?? null,
-      afterConfig: after.configurations.at(-1)!,
-    };
-    if (!preview) {
-      await tx.save(after);
-      await tx.remember(command.id, { fingerprint, result });
-    }
-    return result;
-  });
+      const source = await tx.source(clock.today.slice(0, 7)),
+        after = applyAction(before, command.action, source, clock);
+      const result: FundCommandResult = {
+        version: after.version,
+        before: toView(before, source, clock).state,
+        after: toView(after, source, clock).state,
+        beforeConfig: before?.configurations.at(-1) ?? null,
+        afterConfig: after.configurations.at(-1)!,
+      };
+      if (!preview) {
+        await tx.save(after);
+        await tx.remember(command.id, { fingerprint, result });
+      }
+      return options.view && !preview
+        ? { ...result, view: toView(await tx.read(), source, clock) }
+        : result;
+    },
+    preview,
+  );
 }
 export function readFundView(
   repository: FundRepository,
   owner: string,
   clock: Clock,
 ) {
-  return repository.transaction(owner, async (tx) =>
-    toView(await tx.read(), await tx.source(clock.today.slice(0, 7)), clock),
+  return repository.transaction(
+    owner,
+    async (tx) =>
+      toView(await tx.read(), await tx.source(clock.today.slice(0, 7)), clock),
+    true,
   );
 }

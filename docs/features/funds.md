@@ -111,3 +111,16 @@ Vùng nội dung trên 700px có ba cột thông tin, tiền và thao tác 96px;
 ## Nhóm thao tác và khả năng phóng chữ — 02/11/2026
 
 Nút bắt đầu xây quỹ tách khỏi mô tả và ghi chú; lỗi tải/thử lại có khe tối thiểu 16px. Footer cấu hình/giao dịch dùng Modal chung với khe 12px và bố cục mobile ba nút; bước ưu tiên dùng tên co giãn, hai nút 44px và khe 8px. Giữ cột giao dịch 96px = 44 + 8 + 44. Nhãn Help dài xuống dòng ở chữ 200% để giữ trong viewport. Không đổi tính tiền, nguồn sinh hoạt, dữ liệu hay bước xác nhận. Xem [rà soát toàn ứng dụng](action-layout-2026-11-02.md).
+
+### Cải thiện thao tác — 04/11/2026
+
+Đối chiếu [thiết kế dùng chung](workspace-comfort-2026-11-04.md): đầu trang gọn, bảo vệ nháp và giữ ngữ cảnh xem theo tài khoản trong phiên. Các lựa chọn nghiệp vụ, dữ liệu và lịch sử hiện có được giữ. Phần khôi phục/làm trống nằm sau lựa chọn giao diện trong Cài đặt; không thay điều kiện restore/reset.
+
+### Tối ưu tải dữ liệu — 04/11/2026
+
+Đối chiếu [hợp đồng dùng chung](performance-2026-11-04.md): đọc snapshot/projection, phản hồi view sau commit cho sáu sổ, chi tiết Báo cáo theo metric và foreground chống tải lặp ở Cài đặt. Giữ quy tắc tiền, lịch sử, phiên bản và owner/RLS; không thêm migration hoặc suy ra trạng thái cloud.
+
+
+## Nội dung cho người dùng phổ thông — 04/11/2026
+
+Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.

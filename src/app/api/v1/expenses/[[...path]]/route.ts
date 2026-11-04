@@ -1,3 +1,4 @@
+import { timePhase, withFinancialTiming } from "@/server/performance";
 import { requestDataGeneration } from "@/server/data-generation";
 import {
   financialHeaders as headers,
@@ -28,104 +29,117 @@ function failure(error: unknown) {
   });
 }
 export async function GET(request: Request, context: Context) {
-  try {
-    const owner = await authenticatedOwner(request);
-    const path = (await context.params).path ?? [];
-    const clock = vietnamClock();
-    const view = await readExpenseView(expenseRepository(), owner, clock);
-    const url = new URL(request.url);
-    if (!path.length) return jsonResponse(view, { headers });
-    if (path.join("/") === "reports") {
-      const report = buildReport(
-        view.rows,
-        {
-          year: Number(url.searchParams.get("year") ?? view.currentYear),
-          from: Number(url.searchParams.get("from") ?? 1),
-          to: Number(url.searchParams.get("to") ?? 12),
-          kind: url.searchParams.get("kind") || undefined,
-          jarId: url.searchParams.get("jarId") || undefined,
-          method: url.searchParams.get("method") || undefined,
-          group: url.searchParams.get("group") || undefined,
-        },
-        view.currentYear,
+  return withFinancialTiming(request, async () => {
+    try {
+      const owner = await authenticatedOwner(request);
+      const path = (await context.params).path ?? [];
+      const clock = vietnamClock();
+      const view = await timePhase("work", () =>
+        readExpenseView(expenseRepository(), owner, clock),
       );
-      return jsonResponse(report, { headers });
+      const url = new URL(request.url);
+      if (!path.length) return jsonResponse(view, { headers });
+      if (path.join("/") === "reports") {
+        const report = buildReport(
+          view.rows,
+          {
+            year: Number(url.searchParams.get("year") ?? view.currentYear),
+            from: Number(url.searchParams.get("from") ?? 1),
+            to: Number(url.searchParams.get("to") ?? 12),
+            kind: url.searchParams.get("kind") || undefined,
+            jarId: url.searchParams.get("jarId") || undefined,
+            method: url.searchParams.get("method") || undefined,
+            group: url.searchParams.get("group") || undefined,
+          },
+          view.currentYear,
+        );
+        return jsonResponse(report, { headers });
+      }
+      if (path.length === 3 && path[0] === "years" && path[2] === "backup") {
+        const year = Number(path[1]);
+        const period = view.book?.years.find((y) => y.year === year);
+        if (!period || !view.book)
+          throw new ExpenseError("Không tìm thấy năm.", 404);
+        const rows = view.rows.filter(
+          (r) => Number(r.month.slice(0, 4)) === year,
+        );
+        const backup = {
+          schemaVersion: 1,
+          year,
+          currency: "VND",
+          timezone: "Asia/Ho_Chi_Minh",
+          exportedAt: clock.now,
+          closedAt: period.closedAt,
+          status: period.closedAt ? "closed" : "draft",
+          bookVersion: view.book.version,
+          rows,
+          jars: view.book.jars
+            .filter((j) => rows.some((r) => r.jarId === j.id))
+            .map((j) => ({
+              ...j,
+              rules: j.rules.filter((r) => r.month <= `${year}-12`),
+            })),
+          inputs: view.book.inputs.filter(
+            (i) => Number(i.month.slice(0, 4)) === year,
+          ),
+          spends: view.book.spends.filter(
+            (s) => Number(s.date.slice(0, 4)) === year,
+          ),
+          audit: view.book.audit.filter((a) => {
+            const d = a.detail as Record<string, unknown>;
+            return (
+              d.year === year ||
+              (a.action === "deleteSpend" &&
+                view.book!.spends.some(
+                  (s) => s.id === d.id && Number(s.date.slice(0, 4)) === year,
+                )) ||
+              [d.start, d.month, d.date].some(
+                (v) => typeof v === "string" && v.startsWith(String(year)),
+              )
+            );
+          }),
+        };
+        return new NextResponse(JSON.stringify(backup, null, 2), {
+          headers: {
+            ...headers,
+            "Content-Type": "application/json; charset=utf-8",
+            "Content-Disposition": `attachment; filename="expenses-${year}.json"`,
+          },
+        });
+      }
+      throw new ExpenseError("Đường dẫn không tồn tại.", 404);
+    } catch (error) {
+      return failure(error);
     }
-    if (path.length === 3 && path[0] === "years" && path[2] === "backup") {
-      const year = Number(path[1]);
-      const period = view.book?.years.find((y) => y.year === year);
-      if (!period || !view.book)
-        throw new ExpenseError("Không tìm thấy năm.", 404);
-      const rows = view.rows.filter(
-        (r) => Number(r.month.slice(0, 4)) === year,
-      );
-      const backup = {
-        schemaVersion: 1,
-        year,
-        currency: "VND",
-        timezone: "Asia/Ho_Chi_Minh",
-        exportedAt: clock.now,
-        closedAt: period.closedAt,
-        status: period.closedAt ? "closed" : "draft",
-        bookVersion: view.book.version,
-        rows,
-        jars: view.book.jars
-          .filter((j) => rows.some((r) => r.jarId === j.id))
-          .map((j) => ({
-            ...j,
-            rules: j.rules.filter((r) => r.month <= `${year}-12`),
-          })),
-        inputs: view.book.inputs.filter(
-          (i) => Number(i.month.slice(0, 4)) === year,
-        ),
-        spends: view.book.spends.filter(
-          (s) => Number(s.date.slice(0, 4)) === year,
-        ),
-        audit: view.book.audit.filter((a) => {
-          const d = a.detail as Record<string, unknown>;
-          return (
-            d.year === year ||
-            (a.action === "deleteSpend" &&
-              view.book!.spends.some(
-                (s) => s.id === d.id && Number(s.date.slice(0, 4)) === year,
-              )) ||
-            [d.start, d.month, d.date].some(
-              (v) => typeof v === "string" && v.startsWith(String(year)),
-            )
-          );
-        }),
-      };
-      return new NextResponse(JSON.stringify(backup, null, 2), {
-        headers: {
-          ...headers,
-          "Content-Type": "application/json; charset=utf-8",
-          "Content-Disposition": `attachment; filename="expenses-${year}.json"`,
-        },
-      });
-    }
-    throw new ExpenseError("Đường dẫn không tồn tại.", 404);
-  } catch (error) {
-    return failure(error);
-  }
+  });
 }
 export async function POST(request: Request, context: Context) {
-  try {
-    const owner = await authenticatedOwner(request);
-    checkCommandOrigin(request, ExpenseError);
-    const path = ((await context.params).path ?? []).join("/");
-    if (path !== "commands" && path !== "preview")
-      throw new ExpenseError("Đường dẫn không tồn tại.", 404);
-    const parsed = await readCommandJSON(request, ExpenseError);
-    const command = commandSchema.parse(parsed);
-    const result = await runExpenseCommand(
-      expenseRepository(requestDataGeneration(request)),
-      owner,
-      command,
-      vietnamClock(),
-      path === "preview",
-    );
-    return jsonResponse(result, { headers });
-  } catch (error) {
-    return failure(error);
-  }
+  return withFinancialTiming(request, async () => {
+    try {
+      const owner = await authenticatedOwner(request);
+      checkCommandOrigin(request, ExpenseError);
+      const path = ((await context.params).path ?? []).join("/");
+      if (path !== "commands" && path !== "preview")
+        throw new ExpenseError("Đường dẫn không tồn tại.", 404);
+      const parsed = await readCommandJSON(request, ExpenseError);
+      const command = commandSchema.parse(parsed);
+      const result = await timePhase("work", () =>
+        runExpenseCommand(
+          expenseRepository(requestDataGeneration(request)),
+          owner,
+          command,
+          vietnamClock(),
+          path === "preview",
+          {
+            view:
+              path === "commands" &&
+              new URL(request.url).searchParams.get("return") === "view",
+          },
+        ),
+      );
+      return jsonResponse(result, { headers });
+    } catch (error) {
+      return failure(error);
+    }
+  });
 }

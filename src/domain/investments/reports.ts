@@ -38,6 +38,7 @@ export function buildReport(
   input: InvestmentBook | null,
   raw: ReportFilter,
   clock: Clock,
+  options: { months?: boolean } = {},
 ) {
   const filter = reportFilterSchema.parse(raw),
     book = input ?? emptyBook();
@@ -152,7 +153,7 @@ export function buildReport(
   const months = [];
   for (
     let m = filter.from.slice(0, 7);
-    m <= filter.to.slice(0, 7);
+    options.months !== false && m <= filter.to.slice(0, 7);
     m = nextMonth(m)
   ) {
     if (

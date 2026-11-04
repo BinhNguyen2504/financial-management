@@ -145,3 +145,12 @@ Danh sách thương hiệu có 27 lựa chọn (21 ngân hàng, 6 ví), chia nh�
 ## Responsive và nội dung phổ thông — 29/10/2026
 
 Bảng dữ liệu biểu đồ, thông tin hũ, nhóm hũ đã ngừng và khoản trong hũ dùng thành phần mở rộng chung. Giữ trạng thái mở mặc định của thông tin hũ; rút gọn lời nhắc lưu chưa xác nhận mà không đổi retry. Xem [quy tắc và kiểm chứng](responsive-disclosures-2026-10-29.md).
+
+### Tối ưu tải dữ liệu — 04/11/2026
+
+Đối chiếu [hợp đồng dùng chung](performance-2026-11-04.md): đọc snapshot/projection, phản hồi view sau commit cho sáu sổ, chi tiết Báo cáo theo metric và foreground chống tải lặp ở Cài đặt. Giữ quy tắc tiền, lịch sử, phiên bản và owner/RLS; không thêm migration hoặc suy ra trạng thái cloud.
+
+
+## Nội dung cho người dùng phổ thông — 04/11/2026
+
+Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.

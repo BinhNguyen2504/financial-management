@@ -97,7 +97,7 @@ export function FundEditorPreview({
                       ? localize(transactionNamesSource)[old.kind].toLowerCase()
                       : tr("giao dịch"),
                   })
-                : `${localize(transactionNamesSource)[f.kind]} · ${fundNames[f.fundId as FundId]} · ${money(f.amount)}`}
+                : `${localize(transactionNamesSource)[f.kind]} · ${tr(fundNames[f.fundId as FundId])} · ${money(f.amount)}`}
         </p>
         <FundChangeTable
           rows={[
@@ -126,7 +126,7 @@ export function FundEditorPreview({
               <p>
                 {tr("Giao dịch trước:")}{" "}
                 {localize(transactionNamesSource)[old.kind]} ·{" "}
-                {fundNames[old.fundId]} · {money(old.amount)} ·{" "}
+                {tr(fundNames[old.fundId])} · {money(old.amount)} ·{" "}
                 {displayTime(old.occurredAt, locale)}
               </p>
             )}
@@ -136,7 +136,7 @@ export function FundEditorPreview({
                 {formatMonth(preview.result.afterConfig.living.month!, locale)}{" "}
                 {tr("· Ưu tiên:")}{" "}
                 {preview.result.afterConfig.priority
-                  .map((key) => fundNames[key])
+                  .map((key) => tr(fundNames[key]))
                   .join(" → ")}
               </p>
             )}

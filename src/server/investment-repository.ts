@@ -1,3 +1,5 @@
+import { timePhase } from "./performance";
+import { readBook } from "./book-projections";
 import { withDataGeneration } from "./data-generation";
 import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
@@ -11,51 +13,17 @@ import type {
 function adapter(
   db: Pick<postgres.Sql, "unsafe">,
   owner: string,
+  readOnly = false,
 ): InvestmentTransactionRepository {
   const query = <T extends postgres.Row>(
     sql: string,
     args: (string | number | null)[] = [],
-  ) => db.unsafe<T[]>(sql, args);
+  ) => timePhase("sql", () => db.unsafe<T[]>(sql, args));
   let baseline: InvestmentBook | undefined;
   return {
     async read() {
-      const [head] = await query<{ version: number }>(
-        "select version from public.investments_books where owner_id=$1",
-        [owner],
-      );
-      if (!head) return null;
-      async function data<T>(table: string, order: string): Promise<T[]> {
-        const rows = await query<{ data: T }>(
-          `select data from public.${table} where owner_id=$1 order by ${order}`,
-          [owner],
-        );
-        return rows.map((r) => r.data);
-      }
-      const categories = await data<InvestmentBook["categories"][number]>(
-        "investments_categories",
-        "id",
-      );
-      const revisions = await data<InvestmentBook["revisions"][number]>(
-        "investments_transactions",
-        "sequence",
-      );
-      const valuations = await data<InvestmentBook["revisions"][number]>(
-        "investments_valuations",
-        "sequence",
-      );
-      const audit = await query<InvestmentBook["audit"][number]>(
-        `select version,to_char(at at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as at,action from public.investments_audit where owner_id=$1 order by version`,
-        [owner],
-      );
-      const book: InvestmentBook = {
-        ...head,
-        categories,
-        revisions: [...revisions, ...valuations].sort(
-          (a, b) => a.sequence - b.sequence,
-        ),
-        audit: [...audit],
-      };
-      baseline = structuredClone(book);
+      const book = await readBook(db, owner, "investments");
+      if (book && !readOnly) baseline = structuredClone(book);
       return book;
     },
     async command(id) {
@@ -124,15 +92,21 @@ export function postgresInvestmentRepository(
     async transaction<T>(
       owner: string,
       fn: (tx: InvestmentTransactionRepository) => Promise<T>,
+      readOnly = false,
     ): Promise<T> {
       if (!/^[0-9a-f-]{36}$/i.test(owner))
         throw new Error("Invalid authenticated owner");
-      return (await withOwnerTransaction(sql, owner, async (tx) => {
-        await lockOwner(tx, [`investments:${owner}`]);
-        return withDataGeneration(tx, owner, expectedGeneration, () =>
-          fn(adapter(tx, owner)),
-        );
-      })) as T;
+      return (await withOwnerTransaction(
+        sql,
+        owner,
+        async (tx) => {
+          if (!readOnly) await lockOwner(tx, [`investments:${owner}`]);
+          return withDataGeneration(tx, owner, expectedGeneration, () =>
+            fn(adapter(tx, owner, readOnly)),
+          );
+        },
+        readOnly,
+      )) as T;
     },
   };
 }

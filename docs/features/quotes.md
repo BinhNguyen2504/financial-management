@@ -23,3 +23,7 @@ Trang giới thiệu không tham gia lượt đọc. Bên trong phần xem thử
 `src/features/quotes/` chứa catalog, bộ xáo trộn, controller theo phiên, provider và card trình bày dùng chung. `DailyNote` đọc câu từ provider, còn preview truyền nội dung cố định trực tiếp cho card, không import controller. Controller chỉ khởi tạo browser storage khi nhận sự kiện vào trang, không có state chia sẻ giữa request SSR. Theo dõi pathname bằng API Next.js trong bản đã cài; effect lặp và remount card không tiêu thụ thêm câu.
 
 Thêm/sửa nội dung phải giữ ID ổn định, cập nhật phiên bản catalog và chạy kiểm tra đủ hai ngôn ngữ, trùng câu, emoji và 35 từ. Bằng chứng kiểm tra ghi tại [lịch sử kiểm chứng](../07-validation.md); source status không chứng minh triển khai cloud hoặc thiết bị vật lý.
+
+### Cải thiện thao tác — 04/11/2026
+
+Đối chiếu [thiết kế dùng chung](workspace-comfort-2026-11-04.md): đầu trang gọn, bảo vệ nháp và giữ ngữ cảnh xem theo tài khoản trong phiên. Các lựa chọn nghiệp vụ, dữ liệu và lịch sử hiện có được giữ. Phần khôi phục/làm trống nằm sau lựa chọn giao diện trong Cài đặt; không thay điều kiện restore/reset.

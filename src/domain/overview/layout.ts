@@ -18,7 +18,10 @@ export const layoutSchema = z.strictObject({
   widgets: z
     .array(z.enum(widgetIds))
     .max(10)
-    .refine((v) => new Set(v).size === v.length, "Widget không được trùng."),
+    .refine(
+      (v) => new Set(v).size === v.length,
+      "Thẻ thông tin không được trùng.",
+    ),
   jarIds: z
     .array(z.uuid())
     .max(5)
@@ -43,7 +46,7 @@ export const widgetCatalog: Record<
 > = {
   attention: {
     title: "Cần chú ý",
-    description: "Những khoản cần kiểm tra trong các module đang hiển thị.",
+    description: "Những khoản cần kiểm tra trong các chức năng đang hiển thị.",
   },
   income: {
     title: "Thu nhập tháng này",
@@ -67,7 +70,7 @@ export const widgetCatalog: Record<
   },
   funds: {
     title: "Quỹ an toàn",
-    description: "Tổng dự phòng và số tháng Emergency.",
+    description: "Tổng dự phòng và số tháng Quỹ khẩn cấp.",
     href: "/funds",
   },
   allocation: {

@@ -57,7 +57,7 @@ const row = (
   amount: Cell,
   note = "",
 ): Row => ({ id, date, name, kind, amount, note });
-function part(source: SourceId) {
+function part(source: SourceId, details: boolean, selected?: string) {
   const result: Part = {
     metrics: [],
     tables: [],
@@ -65,10 +65,19 @@ function part(source: SourceId) {
     warnings: [],
     unavailable: [],
   };
-  const metric = (id: string, label: string, value: Cell, rows: Row[]) => {
+  const metric = (
+    id: string,
+    label: string,
+    value: Cell,
+    rows: () => Row[],
+  ) => {
     const key = `${source}.${id}`;
     result.metrics.push({ id: key, label, source, value });
-    result.details[key] = rows;
+    if (
+      details &&
+      (!selected || selected === key || selected === "cashflow.difference")
+    )
+      result.details[key] = rows();
   };
   return { result, metric };
 }
@@ -78,8 +87,14 @@ function buildSource(
   input: ReportInput,
   p: Period,
   clock: Clock,
+  options: ReportBuildOptions = {},
 ): Part {
-  const { result, metric } = part(source),
+  const detailOnly = Boolean(options.metric) || options.tables === false;
+  const { result, metric } = part(
+      source,
+      options.details !== false,
+      options.metric,
+    ),
     books = input.books;
   if (source === "income") {
     const book = books.income ?? null;
@@ -102,40 +117,36 @@ function buildSource(
         r.note,
       ),
     );
-    metric("total", "Thu nhập đã ghi nhận", report.total, rows);
-    metric(
-      "fixed",
-      "Thu cố định",
-      report.fixed,
+    metric("total", "Thu nhập đã ghi nhận", report.total, () => rows);
+    metric("fixed", "Thu cố định", report.fixed, () =>
       rows.filter((r) => r.kind === "Cố định"),
     );
-    metric(
-      "oneoff",
-      "Thu phát sinh",
-      report.oneoff,
+    metric("oneoff", "Thu phát sinh", report.oneoff, () =>
       rows.filter((r) => r.kind === "Phát sinh"),
     );
-    result.tables.push({
-      id: "income.months",
-      title: "Thu nhập theo tháng",
-      columns: [
-        text("month", "Tháng"),
-        money("total", "Thu nhập"),
-        text("missing", "Khoản chưa nhập"),
-      ],
-      rows: report.months.map((m) => ({
-        id: m.month,
-        month: m.month,
-        total: m.total,
-        missing: String(m.missing),
-      })),
-    });
-    result.tables.push({
-      id: "income.sources",
-      title: "Nguồn thu",
-      columns: detailColumns,
-      rows,
-    });
+    if (!detailOnly)
+      result.tables.push({
+        id: "income.months",
+        title: "Thu nhập theo tháng",
+        columns: [
+          text("month", "Tháng"),
+          money("total", "Thu nhập"),
+          text("missing", "Khoản chưa nhập"),
+        ],
+        rows: report.months.map((m) => ({
+          id: m.month,
+          month: m.month,
+          total: m.total,
+          missing: String(m.missing),
+        })),
+      });
+    if (!detailOnly)
+      result.tables.push({
+        id: "income.sources",
+        title: "Nguồn thu",
+        columns: detailColumns,
+        rows,
+      });
     if (report.missing)
       result.warnings.push(
         "Thu nhập còn khoản chưa nhập; tổng chỉ gồm số đã ghi nhận.",
@@ -164,7 +175,7 @@ function buildSource(
       "spent",
       "Chi tiêu theo sổ hũ",
       rows.length ? sum(rows.map((r) => r.amount)) : null,
-      rows,
+      () => rows,
     );
     metric(
       "funding",
@@ -176,35 +187,38 @@ function buildSource(
             ),
           )
         : null,
-      selected.map((r) =>
-        row(
-          `${r.jarId}:${r.month}`,
-          r.month,
-          r.name,
-          "Tiền đã bỏ hũ",
-          (BigInt(r.funding) + BigInt(r.extra)).toString(),
+      () =>
+        selected.map((r) =>
+          row(
+            `${r.jarId}:${r.month}`,
+            r.month,
+            r.name,
+            "Tiền đã bỏ hũ",
+            (BigInt(r.funding) + BigInt(r.extra)).toString(),
+          ),
         ),
-      ),
     );
     const group = (
       field: "date" | "jarId" | "group" | "method",
       title: string,
     ) => {
+      if (detailOnly) return;
       const groups = new Map<string, Row[]>();
       for (const r of rows) {
         const key = String(r[field]);
         groups.set(key, [...(groups.get(key) ?? []), r]);
       }
-      result.tables.push({
-        id: `expenses.${field}`,
-        title,
-        columns: [text("name", title), money("spent", "Chi tiêu")],
-        rows: [...groups].map(([name, entries]) => ({
-          id: name,
-          name: field === "jarId" ? entries.at(-1)!.name : name,
-          spent: sum(entries.map((r) => r.amount)),
-        })),
-      });
+      if (!detailOnly)
+        result.tables.push({
+          id: `expenses.${field}`,
+          title,
+          columns: [text("name", title), money("spent", "Chi tiêu")],
+          rows: [...groups].map(([name, entries]) => ({
+            id: name,
+            name: field === "jarId" ? entries.at(-1)!.name : name,
+            spent: sum(entries.map((r) => r.amount)),
+          })),
+        });
     };
     group("date", "Chi tiêu theo tháng");
     group("jarId", "Chi tiêu theo hũ");
@@ -227,6 +241,7 @@ function buildSource(
       books.savings ?? null,
       { from: p.from, to: p.asOf },
       clock,
+      { months: !detailOnly },
     );
     const populated = report.after.positions.length > 0;
     const positions = (opening: boolean) =>
@@ -245,22 +260,19 @@ function buildSource(
       "value",
       "Tiết kiệm cuối kỳ",
       populated ? report.after.total : null,
-      positions(false),
+      () => positions(false),
     );
     metric(
       "opening",
       "Tiết kiệm đầu kỳ",
       populated ? report.before.total : null,
-      positions(true),
+      () => positions(true),
     );
     for (const [id, label, sign] of [
       ["inflow", "Nạp bên ngoài", 1n],
       ["outflow", "Rút bên ngoài", -1n],
     ] as const) {
-      metric(
-        id,
-        label,
-        populated ? report.activity[id] : null,
+      metric(id, label, populated ? report.activity[id] : null, () =>
         effects
           .filter((e) => BigInt(e.external) * sign > 0n)
           .map((e) =>
@@ -275,53 +287,52 @@ function buildSource(
           ),
       );
     }
-    metric(
-      "result",
-      "Kết quả trong kỳ",
-      populated ? report.result : null,
+    metric("result", "Kết quả trong kỳ", populated ? report.result : null, () =>
       report.categories.map((c) =>
         row(c.id, p.asOf, c.name, "Kết quả trong kỳ", c.result),
       ),
     );
-    result.tables.push({
-      id: "savings.months",
-      title: "Tiết kiệm theo tháng",
-      columns: [
-        text("month", "Tháng"),
-        money("value", "Giá trị cuối tháng"),
-        money("inflow", "Nạp bên ngoài"),
-        money("outflow", "Rút bên ngoài"),
-        money("result", "Kết quả trong kỳ"),
-      ],
-      rows: report.months.map((m) => {
-        const exists = books.savings?.categories.some(
-          (c) => c.start.slice(0, 7) <= m.month,
-        );
-        return {
-          id: m.month,
-          month: m.month,
-          value: exists ? m.value : null,
-          inflow: exists ? m.inflow : null,
-          outflow: exists ? m.outflow : null,
-          result: exists ? m.result : null,
-        };
-      }),
-    });
-    result.tables.push({
-      id: "savings.categories",
-      title: "Phân bổ Tiết kiệm",
-      columns: [
-        text("name", "Danh mục"),
-        money("value", "Giá trị cuối kỳ"),
-        text("date", "Ngày định giá"),
-        text("note", "Trạng thái"),
-      ],
-      rows: positions(false).map((r) => ({
-        ...r,
-        value: r.amount,
-        date: report.categories.find((c) => c.id === r.id)?.priceDate ?? null,
-      })),
-    });
+    if (!detailOnly)
+      result.tables.push({
+        id: "savings.months",
+        title: "Tiết kiệm theo tháng",
+        columns: [
+          text("month", "Tháng"),
+          money("value", "Giá trị cuối tháng"),
+          money("inflow", "Nạp bên ngoài"),
+          money("outflow", "Rút bên ngoài"),
+          money("result", "Kết quả trong kỳ"),
+        ],
+        rows: report.months.map((m) => {
+          const exists = books.savings?.categories.some(
+            (c) => c.start.slice(0, 7) <= m.month,
+          );
+          return {
+            id: m.month,
+            month: m.month,
+            value: exists ? m.value : null,
+            inflow: exists ? m.inflow : null,
+            outflow: exists ? m.outflow : null,
+            result: exists ? m.result : null,
+          };
+        }),
+      });
+    if (!detailOnly)
+      result.tables.push({
+        id: "savings.categories",
+        title: "Phân bổ Tiết kiệm",
+        columns: [
+          text("name", "Danh mục"),
+          money("value", "Giá trị cuối kỳ"),
+          text("date", "Ngày định giá"),
+          text("note", "Trạng thái"),
+        ],
+        rows: positions(false).map((r) => ({
+          ...r,
+          value: r.amount,
+          date: report.categories.find((c) => c.id === r.id)?.priceDate ?? null,
+        })),
+      });
     if (report.after.missing.length)
       result.warnings.push(
         "Tiết kiệm thiếu định giá; chưa đủ dữ liệu tính tổng.",
@@ -333,6 +344,7 @@ function buildSource(
       books.investments ?? null,
       { from: p.from, to: p.asOf },
       clock,
+      { months: !detailOnly },
     );
     const assets = report.after.positions.filter(
         (r) => r.kind === "investment",
@@ -353,78 +365,84 @@ function buildSource(
       "value",
       "Đầu tư cuối kỳ",
       populated ? report.after.total : null,
-      positions,
+      () => positions,
     );
     metric(
       "cost",
       "Giá vốn đang giữ",
       populated ? sumMoney(assets.map((r) => r.cost)) : null,
-      assets.map((r) => row(r.id, p.asOf, r.name, "Giá vốn đang giữ", r.cost)),
+      () =>
+        assets.map((r) =>
+          row(r.id, p.asOf, r.name, "Giá vốn đang giữ", r.cost),
+        ),
     );
     metric(
       "assets",
       "Giá trị tài sản đang giữ",
       populated ? sum(assets.map((r) => r.value)) : null,
-      positions.filter((r) => r.kind === "Tài sản đang giữ"),
+      () => positions.filter((r) => r.kind === "Tài sản đang giữ"),
     );
     metric(
       "cash",
       "Tiền chờ đầu tư",
       populated ? sumMoney(wallets.map((r) => r.cash)) : null,
-      positions.filter((r) => r.kind === "Tiền chờ"),
+      () => positions.filter((r) => r.kind === "Tiền chờ"),
     );
     metric(
       "profit",
       "Lãi/lỗ phần đang giữ",
       populated ? sum(assets.map((r) => r.unrealized)) : null,
-      assets.map((r) =>
-        row(r.id, p.asOf, r.name, "Lãi/lỗ phần đang giữ", r.unrealized),
-      ),
+      () =>
+        assets.map((r) =>
+          row(r.id, p.asOf, r.name, "Lãi/lỗ phần đang giữ", r.unrealized),
+        ),
     );
-    result.tables.push({
-      id: "investments.months",
-      title: "Đầu tư theo tháng",
-      columns: [
-        text("month", "Tháng"),
-        money("value", "Tổng giá trị"),
-        money("cost", "Giá vốn đang giữ"),
-        money("assetValue", "Giá trị tài sản đang giữ"),
-        money("cash", "Tiền chờ"),
-        money("profit", "Lãi/lỗ phần đang giữ"),
-      ],
-      rows: report.months.map((m) => ({
-        id: m.month,
-        month: m.month,
-        value: m.value,
-        cost: m.cost,
-        assetValue: m.assetValue,
-        cash: m.cash,
-        profit: m.profit,
-      })),
-    });
-    result.tables.push({
-      id: "investments.portfolios",
-      title: "Danh mục Đầu tư",
-      columns: [
-        text("name", "Danh mục"),
-        money("cost", "Giá vốn đang giữ"),
-        money("value", "Giá trị tài sản đang giữ"),
-        money("cash", "Tiền chờ"),
-        money("total", "Tổng giá trị"),
-        money("profit", "Lãi/lỗ phần đang giữ"),
-        text("date", "Ngày định giá"),
-      ],
-      rows: report.portfolios.map((r) => ({
-        id: r.id,
-        name: r.name,
-        cost: r.cost,
-        value: r.value,
-        cash: r.cash,
-        total: r.total,
-        profit: r.unrealized,
-        date: r.valueDate,
-      })),
-    });
+    if (!detailOnly)
+      result.tables.push({
+        id: "investments.months",
+        title: "Đầu tư theo tháng",
+        columns: [
+          text("month", "Tháng"),
+          money("value", "Tổng giá trị"),
+          money("cost", "Giá vốn đang giữ"),
+          money("assetValue", "Giá trị tài sản đang giữ"),
+          money("cash", "Tiền chờ"),
+          money("profit", "Lãi/lỗ phần đang giữ"),
+        ],
+        rows: report.months.map((m) => ({
+          id: m.month,
+          month: m.month,
+          value: m.value,
+          cost: m.cost,
+          assetValue: m.assetValue,
+          cash: m.cash,
+          profit: m.profit,
+        })),
+      });
+    if (!detailOnly)
+      result.tables.push({
+        id: "investments.portfolios",
+        title: "Danh mục Đầu tư",
+        columns: [
+          text("name", "Danh mục"),
+          money("cost", "Giá vốn đang giữ"),
+          money("value", "Giá trị tài sản đang giữ"),
+          money("cash", "Tiền chờ"),
+          money("total", "Tổng giá trị"),
+          money("profit", "Lãi/lỗ phần đang giữ"),
+          text("date", "Ngày định giá"),
+        ],
+        rows: report.portfolios.map((r) => ({
+          id: r.id,
+          name: r.name,
+          cost: r.cost,
+          value: r.value,
+          cash: r.cash,
+          total: r.total,
+          profit: r.unrealized,
+          date: r.valueDate,
+        })),
+      });
     if (report.after.missing.length)
       result.warnings.push("Đầu tư thiếu định giá; chưa đủ dữ liệu tính tổng.");
     if (assets.some((r) => r.stale))
@@ -445,21 +463,23 @@ function buildSource(
       "value",
       "Quỹ an toàn cuối kỳ",
       populated ? after.total : null,
-      populated
-        ? after.funds.map((f) =>
-            row(f.id, p.asOf, f.id, "Quỹ an toàn", f.balance),
-          )
-        : [],
+      () =>
+        populated
+          ? after.funds.map((f) =>
+              row(f.id, p.asOf, f.id, "Quỹ an toàn", f.balance),
+            )
+          : [],
     );
     metric(
       "opening",
       "Quỹ an toàn đầu kỳ",
       populated ? before.total : null,
-      populated
-        ? before.funds.map((f) =>
-            row(f.id, previousDate(p.from), f.id, "Quỹ an toàn", f.balance),
-          )
-        : [],
+      () =>
+        populated
+          ? before.funds.map((f) =>
+              row(f.id, previousDate(p.from), f.id, "Quỹ an toàn", f.balance),
+            )
+          : [],
     );
     for (const [id, kind, label] of [
       ["inflow", "deposit", "Góp vào quỹ"],
@@ -481,56 +501,58 @@ function buildSource(
         id,
         label,
         populated ? sumMoney(rows.map((r) => r.amount!)) : null,
-        rows,
+        () => rows,
       );
     }
-    result.tables.push({
-      id: "funds.balances",
-      title: "Tiến độ Quỹ an toàn cuối kỳ",
-      columns: [
-        text("name", "Quỹ"),
-        money("opening", "Số dư đầu kỳ"),
-        money("value", "Số dư cuối kỳ"),
-        money("target", "Mục tiêu cuối kỳ"),
-        { key: "percent", label: "Tiến độ %", type: "percent" },
-      ],
-      rows: populated
-        ? after.funds.map((f) => ({
-            id: f.id,
-            name: f.id,
-            opening: before.funds.find((b) => b.id === f.id)!.balance,
-            value: f.balance,
-            target: config ? f.target : null,
-            percent: config ? f.percent : null,
-          }))
-        : [],
-    });
-    result.tables.push({
-      id: "funds.transactions",
-      title: "Giao dịch Quỹ an toàn",
-      columns: detailColumns,
-      rows: transactions.map(({ transaction: t }) =>
-        row(
-          t.id,
-          vietnamClock(new Date(t.occurredAt)).today,
-          t.fundId,
-          {
-            opening: "Số dư ban đầu",
-            deposit: "Góp vào quỹ",
-            withdraw: "Rút khỏi quỹ",
-            transfer: "Chuyển nội bộ",
-          }[t.kind],
-          t.amount,
-          t.kind === "transfer"
-            ? `${t.fundId} → ${t.toFundId}; ${t.note}`
-            : t.note,
+    if (!detailOnly)
+      result.tables.push({
+        id: "funds.balances",
+        title: "Tiến độ Quỹ an toàn cuối kỳ",
+        columns: [
+          text("name", "Quỹ"),
+          money("opening", "Số dư đầu kỳ"),
+          money("value", "Số dư cuối kỳ"),
+          money("target", "Mục tiêu cuối kỳ"),
+          { key: "percent", label: "Tiến độ %", type: "percent" },
+        ],
+        rows: populated
+          ? after.funds.map((f) => ({
+              id: f.id,
+              name: f.id,
+              opening: before.funds.find((b) => b.id === f.id)!.balance,
+              value: f.balance,
+              target: config ? f.target : null,
+              percent: config ? f.percent : null,
+            }))
+          : [],
+      });
+    if (!detailOnly)
+      result.tables.push({
+        id: "funds.transactions",
+        title: "Giao dịch Quỹ an toàn",
+        columns: detailColumns,
+        rows: transactions.map(({ transaction: t }) =>
+          row(
+            t.id,
+            vietnamClock(new Date(t.occurredAt)).today,
+            t.fundId,
+            {
+              opening: "Số dư ban đầu",
+              deposit: "Góp vào quỹ",
+              withdraw: "Rút khỏi quỹ",
+              transfer: "Chuyển nội bộ",
+            }[t.kind],
+            t.amount,
+            t.kind === "transfer"
+              ? `${t.fundId} → ${t.toFundId}; ${t.note}`
+              : t.note,
+          ),
         ),
-      ),
-    });
+      });
     const months: Row[] = [];
     for (
       let month = p.from.slice(0, 7);
-      month <= p.asOf.slice(0, 7);
+      !detailOnly && month <= p.asOf.slice(0, 7);
       month = nextMonth(month)
     ) {
       const end = new Date(
@@ -548,12 +570,13 @@ function buildSource(
         value: exists ? fundsAt(book, end < p.asOf ? end : p.asOf).total : null,
       });
     }
-    result.tables.push({
-      id: "funds.months",
-      title: "Quỹ an toàn theo tháng",
-      columns: [text("month", "Tháng"), money("value", "Số dư cuối tháng")],
-      rows: months,
-    });
+    if (!detailOnly)
+      result.tables.push({
+        id: "funds.months",
+        title: "Quỹ an toàn theo tháng",
+        columns: [text("month", "Tháng"), money("value", "Số dư cuối tháng")],
+        rows: months,
+      });
   } else {
     const sources: GoalSources = {
       versions: { savings: 0, investments: 0, funds: 0 },
@@ -607,31 +630,58 @@ function buildSource(
         mode: g.mode === "linked" ? "Nguồn liên kết" : "Sổ riêng",
       };
     });
-    result.tables.push({
-      id: "goals.current",
-      title: "Mục tiêu hiện tại",
-      columns: [
-        text("name", "Mục tiêu"),
-        money("value", "Đã đạt"),
-        money("target", "Số tiền đích"),
-        money("remaining", "Còn thiếu"),
-        { key: "percent", label: "Tiến độ %", type: "percent" },
-        text("status", "Trạng thái"),
-        text("deadline", "Hạn"),
-        text("mode", "Cách ghi nhận"),
-        text("note", "Ghi chú"),
-      ],
-      rows,
-    });
+    if (!detailOnly)
+      result.tables.push({
+        id: "goals.current",
+        title: "Mục tiêu hiện tại",
+        columns: [
+          text("name", "Mục tiêu"),
+          money("value", "Đã đạt"),
+          money("target", "Số tiền đích"),
+          money("remaining", "Còn thiếu"),
+          { key: "percent", label: "Tiến độ %", type: "percent" },
+          text("status", "Trạng thái"),
+          text("deadline", "Hạn"),
+          text("mode", "Cách ghi nhận"),
+          text("note", "Ghi chú"),
+        ],
+        rows,
+      });
   }
   return result;
+}
+
+export interface ReportBuildOptions {
+  details?: boolean;
+  tables?: boolean;
+  metric?: string;
+}
+
+export function detailSources(query: ReportQuery, metric: string): SourceId[] {
+  if (
+    metric === "cashflow.difference" &&
+    ["summary", "cashflow"].includes(query.tab)
+  )
+    return ["income", "expenses"];
+  const source = metric.split(".")[0] as SourceId;
+  if (!reportSources(query.tab).includes(source) || source === "goals")
+    throw new ReportError(
+      "Không tìm thấy số liệu báo cáo.",
+      404,
+      "REPORT_NOT_FOUND",
+    );
+  return [source];
 }
 
 export function buildReport(
   input: ReportInput,
   query: ReportQuery,
   clock: Clock,
+  options: ReportBuildOptions = {},
 ) {
+  const selectedSources = options.metric
+    ? detailSources(query, options.metric)
+    : null;
   const period = periodFor(query, clock),
     previousPeriod = periodFor(query, clock, true);
   const report: Report = {
@@ -656,6 +706,7 @@ export function buildReport(
     };
     if (
       unavailable.has(source) ||
+      (selectedSources && !selectedSources.includes(source)) ||
       (query.tab === "goals" && source !== "goals")
     )
       continue;
@@ -669,6 +720,7 @@ export function buildReport(
         { ...input, errors: [...unavailable] },
         effective,
         clock,
+        options,
       );
       for (const failed of current.unavailable) {
         unavailable.add(failed);
@@ -679,11 +731,15 @@ export function buildReport(
         };
       }
       const previous =
+        Boolean(options.metric) ||
         source === "goals" ||
         period.future ||
         previousPeriod.from < "2000-01-01"
           ? null
-          : buildSource(source, input, previousPeriod, clock);
+          : buildSource(source, input, previousPeriod, clock, {
+              details: false,
+              tables: false,
+            });
       report.warnings.push(...current.warnings);
       if (previous?.warnings.length)
         report.warnings.push(
@@ -730,13 +786,14 @@ export function buildReport(
       delta: difference(value, previous),
       percent: changePercent(value, previous),
     });
-    details["cashflow.difference"] = [
-      ...(details["income.total"] ?? []),
-      ...(details["expenses.spent"] ?? []).map((r) => ({
-        ...r,
-        amount: r.amount === null ? null : (-BigInt(r.amount)).toString(),
-      })),
-    ];
+    if (options.details !== false)
+      details["cashflow.difference"] = [
+        ...(details["income.total"] ?? []),
+        ...(details["expenses.spent"] ?? []).map((r) => ({
+          ...r,
+          amount: r.amount === null ? null : (-BigInt(r.amount)).toString(),
+        })),
+      ];
   }
   if (query.tab === "summary") {
     report.metrics = report.metrics.filter((m) =>

@@ -14,12 +14,11 @@ export const modules = [
     icon: "overview",
     label: "Bức tranh tài chính",
     description:
-      "Năm thẻ số liệu chính, tải cùng bố cục tài khoản; tùy chỉnh 10 loại widget.",
+      "Xem tiền đã thu, đã chi và các khoản tích lũy trong một trang.",
     scope: [
-      "Thu nhập, Chi tiêu tháng này; Tiết kiệm, Đầu tư và Quỹ an toàn hiện tại",
-      "Cần chú ý theo module đang hiện; tùy chọn phân bổ, hũ, đáo hạn và lời nhắn",
-      "Bố cục widget đồng bộ theo tài khoản; không cộng các sổ thành tài sản ròng",
-      "200 lời nhắn Việt/Anh, tối đa 35 từ; đổi khi chuyển trang hoặc tải lại",
+      "Chọn các thẻ thông tin bạn muốn theo dõi",
+      "Biết khoản nào chưa nhập hoặc cần kiểm tra lại",
+      "Mở từng sổ để cập nhật và xem chi tiết",
     ],
     questions: [],
   },
@@ -30,15 +29,11 @@ export const modules = [
     icon: "income",
     label: "Thực nhận theo tháng",
     description:
-      "Theo dõi thu cố định, khoản phát sinh và báo cáo; nhận biết khoản còn thiếu và nhập ngay theo tháng.",
+      "Theo dõi số tiền thực nhận từ lương và các khoản thu thêm theo tháng.",
     scope: [
-      "Tổng thực nhận mỗi tháng theo danh mục",
-      "Xóa danh mục khi không còn số thu; ngừng nguồn thu đang có dữ liệu",
-      "Khoản thu phát sinh một lần",
-      "Bảng, biểu đồ và xuất bảng dữ liệu",
-      "Chi tiết khoản phát sinh có tìm kiếm và phân trang",
-      "Tab gọn trên mobile; nút chọn cột giữ vị trí khi cuộn bảng",
-      "Tiêu đề có minh họa theo chủ đề, thích ứng màn hình",
+      "Ghi số thực nhận từ nguồn thu đều đặn",
+      "Thêm khoản thu một lần",
+      "Xem báo cáo và xuất bảng dữ liệu",
     ],
     questions: [],
   },
@@ -68,17 +63,11 @@ export const modules = [
     icon: "budgets",
     label: "Hũ chi tiêu theo tháng",
     description:
-      "Quản lý hũ chi tháng và tích lũy, tự tính tiền cần thêm và báo cáo trong năm.",
+      "Chia tiền theo mục đích, theo dõi khoản đã chi và số còn lại trong từng hũ.",
     scope: [
-      "Kế hoạch theo danh mục và tháng hiệu lực",
-      "Thực chi, số còn lại và phần chuyển tiếp kỳ sau",
-      "Phân biệt chi phí, trả nợ và tiền dành để tiết kiệm",
-      "Tổng hợp nhu cầu tiền theo ví/ngân hàng",
-      "Phân loại có logo PNG; xem trước theo tháng và lọc hũ đã ngừng",
-      "90 biểu tượng gợi ý, emoji từ bàn phím và 27 thương hiệu ngân hàng/ví",
-      "Bảng hũ căn giữa nút điều chỉnh và dùng tiền bằng biểu tượng",
-      "Chi tiết hũ theo tab tháng, sử dụng và lịch sử",
-      "Tiêu đề có minh họa hũ chi, nút thao tác ở hàng riêng",
+      "Đặt số tiền dự kiến dành cho từng hũ",
+      "Theo dõi hũ chi tháng và hũ tích lũy",
+      "Kiểm tra hũ vượt mức và tiền cần bổ sung",
     ],
     questions: [
       "Tiền chưa chi có được cộng dồn sang tháng tiếp theo?",
@@ -109,14 +98,11 @@ export const modules = [
     icon: "savings",
     label: "Tích lũy có lịch sử",
     description:
-      "Tiền, sổ tiết kiệm và vàng cùng lịch sử giao dịch, định giá và báo cáo nhiều năm.",
+      "Theo dõi tiền tiết kiệm, sổ tiền gửi và vàng, cùng giá trị và lịch sử của từng khoản.",
     scope: [
-      "Chi tiết danh mục, sổ tiền gửi và đợt vàng có lọc, phân trang",
-      "Bảng danh mục và giao dịch theo cột trên desktop, có nhãn từng trường trên mobile",
-      "Rút, bán, nhận lãi và tái tục có lịch sử",
-      "Tài sản, tỷ trọng, dòng tiền và lãi/lỗ; chú thích biểu đồ khi rê chuột, chạm hoặc dùng Tab",
-      "Chốt tháng, mở lại có lý do và sao lưu",
-      "Minh họa tích góp riêng cho từng chủ đề giao diện",
+      "Ghi góp thêm, rút, nhận lãi và tái tục",
+      "Cập nhật giá trị để đọc lãi/lỗ",
+      "Theo dõi sổ đến hạn và xem báo cáo",
     ],
     questions: [],
   },
@@ -127,16 +113,11 @@ export const modules = [
     icon: "investments",
     label: "Vốn và giá trị hiện tại",
     description:
-      "Theo dõi vốn, tài sản đang giữ và tiền chờ riêng từng danh mục; cập nhật định giá để biết lãi/lỗ.",
+      "Biết tiền đã đầu tư, tài sản đang giữ và tiền chờ trong từng danh mục.",
     scope: [
-      "Mỗi danh mục có ví tiền chờ riêng, theo tổng tiền VND",
-      "Mua/bán cập nhật tài sản và tiền chờ trong một lần lưu",
-      "Lãi/lỗ chỉ tính trên phần đang giữ; bán về ví, rút khi cần",
-      "Định giá theo ngày; báo cáo nhiều năm, xuất bảng dữ liệu và sao lưu",
-      "Ghi giao dịch theo nhóm, xem trước tác động rồi xác nhận lưu",
-      "Chi tiết giao dịch trước/sau, phiên bản sửa và giữ vị trí khi quay lại",
-      "Lọc giao dịch theo ngày, danh mục/ví và loại; tùy chọn hiện cả giao dịch đã hủy",
-      "Minh họa danh mục riêng cho từng chủ đề giao diện",
+      "Ghi mua, bán, nạp và rút tiền",
+      "Cập nhật giá trị tài sản đang giữ",
+      "Xem lãi/lỗ phần đang giữ và lịch sử giao dịch",
     ],
     questions: [],
   },
@@ -147,14 +128,11 @@ export const modules = [
     icon: "funds",
     label: "Nền tảng an toàn tài chính",
     description:
-      "Xây Emergency, Rainy Day và Sinking từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.",
+      "Chuẩn bị tiền cho biến cố lớn, chi phí bất ngờ và khoản chi đã dự kiến.",
     scope: [
-      "Mức sinh hoạt đã xác nhận từ hũ chi tháng; chọn cập nhật nguồn trước khi xem trước và lưu",
-      "Minh họa theo chủ đề phản ánh tiến độ thực tế",
-      "Minh họa bảo vệ ở tiêu đề, độc lập với tiến độ từng quỹ",
-      "Ghi sổ độc lập; thêm, rút và chuyển giữa quỹ/nơi giữ",
-      "Sửa/hủy có lịch sử, nguồn thay đổi được xem trước rồi áp dụng",
-      "Giao dịch căn cột tiền, nút biểu tượng sửa/hủy gọn trên mọi màn hình",
+      "Đặt mục tiêu quỹ theo chi phí sinh hoạt",
+      "Ghi tiền đã dành riêng và nơi giữ tiền",
+      "Biết còn thiếu bao nhiêu và quỹ đủ trang trải mấy tháng",
     ],
     questions: [],
   },
@@ -165,14 +143,11 @@ export const modules = [
     icon: "goals",
     label: "Từ mục tiêu đến kế hoạch",
     description:
-      "Theo dõi mục tiêu cuộc sống và cột mốc tài chính; liên kết nguồn hoặc dùng sổ góp riêng.",
+      "Theo dõi số tiền đã chuẩn bị và phần còn thiếu cho mục tiêu của bạn.",
     scope: [
-      "Mục tiêu tiền, hạn tùy chọn và thứ tự ưu tiên",
-      "Liên kết Tiết kiệm/Đầu tư; Quỹ an toàn chỉ theo dõi cột mốc",
-      "Chia tỷ lệ nguồn cho mục tiêu chi dùng, tối đa 100% mỗi nguồn",
-      "Sổ góp, rút, chuyển riêng; sửa/hủy giữ lịch sử",
-      "Gợi ý mức góp, xác nhận hoàn thành, tạm dừng và lưu trữ",
-      "Xem trước kế hoạch và giao dịch, quay lại chỉnh rồi xác nhận lưu",
+      "Đặt số tiền cần đạt, hạn và thứ tự ưu tiên",
+      "Liên kết khoản đã có hoặc ghi sổ góp riêng",
+      "Theo dõi tiến độ, hoàn thành hoặc tạm dừng",
     ],
     questions: [],
   },
@@ -183,11 +158,11 @@ export const modules = [
     icon: "reports",
     label: "Hiểu biến động tài chính",
     description:
-      "Báo cáo tổng hợp theo tháng, quý, năm; so sánh kỳ trước và xuất CSV.",
+      "Nhìn lại thu chi và biến động từng sổ theo tháng, quý hoặc năm.",
     scope: [
-      "Thu chi theo kỳ và danh mục",
-      "Số cuối kỳ riêng từng sổ; Mục tiêu là tiến độ hiện tại",
-      "Chi tiết chỉ đọc, đối chiếu nguồn và xuất CSV theo tab",
+      "So sánh với kỳ trước",
+      "Mở chi tiết để hiểu số tổng",
+      "Xuất bảng dữ liệu để tự đối chiếu",
     ],
     questions: [],
   },
@@ -198,14 +173,11 @@ export const modules = [
     icon: "settings",
     label: "Không gian của bạn",
     description:
-      "Chọn Tiếng Việt/English và giao diện; sao lưu, xem điều kiện khôi phục, làm trống dữ liệu sau khi lưu bản sao lưu và cài lên màn hình chính.",
+      "Chọn giao diện, ngôn ngữ và quản lý bản sao lưu dữ liệu của bạn.",
     scope: [
-      "Đăng nhập bằng mã 8 chữ số qua email; dữ liệu riêng tư, mặc định tiền VND",
-      "Tiếng Việt/English với định dạng vi-VN/en-GB; cùng tiền VND và giờ Việt Nam",
-      "Năm chủ đề với minh họa riêng; tùy chọn giao diện lưu trên trình duyệt",
-      "Sao lưu toàn bộ dữ liệu; giải thích dữ liệu chặn khôi phục, làm trống có xác nhận và khôi phục vào tài khoản trống; hồ sơ tùy chọn",
-      "Trạng thái từng mục khi khôi phục; mở chi tiết sổ và lịch sử khi cần",
-      "Thêm vào màn hình chính trên thiết bị có hỗ trợ",
+      "Chọn Tiếng Việt hoặc English và năm chủ đề",
+      "Sao lưu và kiểm tra điều kiện khôi phục",
+      "Cài lên màn hình chính trên thiết bị có hỗ trợ",
     ],
     questions: [],
   },
@@ -235,7 +207,7 @@ export const navigationModules = [...modules].sort(
 
 // Shared product capability; does not change the implementation status of any module.
 export const pageHelpSummary =
-  "Nút Hướng dẫn cạnh tiêu đề giúp bạn hiểu các khái niệm và thao tác, ngay cả khi đang nhập liệu.";
+  "Mỗi mục có cách bắt đầu và giải thích số liệu. Nút Hướng dẫn mở các bước chi tiết, ngay cả khi đang nhập liệu.";
 
 // Public home presentation is independent of module implementation status.
 export const publicProductSummary =
@@ -248,4 +220,8 @@ export const languageSummary =
   "Chọn Tiếng Việt hoặc English trên thanh đầu trang hoặc trong Cài đặt; lựa chọn dùng chung cho trang chủ, đăng nhập và ứng dụng, được ghi nhớ trên trình duyệt. Tiền tệ vẫn là VND.";
 
 export const navigationSummary =
-  "Trên máy tính, nút thu gọn menu nằm cạnh logo. Trên điện thoại, chạm bên ngoài menu để đóng.";
+  "Menu chia nhóm chức năng; phần đang phát triển có thể mở khi cần. Trên máy tính, nút thu gọn nằm cạnh logo; trên điện thoại, chạm ngoài để đóng.";
+
+// Working-screen comfort is a shared capability, independent of deployment status.
+export const workspaceComfortSummary =
+  "Trong các sổ, ứng dụng nhớ kỳ xem, tab và bộ lọc theo tài khoản trong phiên trình duyệt. Khi đóng biểu mẫu có thay đổi, chọn Tiếp tục nhập hoặc Bỏ thay đổi.";

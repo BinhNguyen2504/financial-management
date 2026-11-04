@@ -1,4 +1,5 @@
 "use client";
+import { useViewState } from "@/components/use-view-state";
 
 import { useI18n } from "@/i18n/provider";
 
@@ -6,7 +7,11 @@ import { useMoney } from "@/components/privacy";
 import { useToast } from "@/components/toast";
 import { useForegroundRefresh } from "@/components/use-foreground-refresh";
 
-import { buildReport, type ReportFilter } from "@/domain/income/reports";
+import {
+  buildReport,
+  reportFilterSchema,
+  type ReportFilter,
+} from "@/domain/income/reports";
 import type { IncomeView } from "@/domain/income/types";
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -27,18 +32,50 @@ export function useIncomeWorkspace({
   const toast = useToast();
   const money = useMoney();
   const displayMoney = useDisplayMoney();
-  const [year, setYear] = useState(Number(initialToday.slice(0, 4)));
-  const [month, setMonth] = useState(Number(initialToday.slice(5, 7)));
+  const [year, setYear] = useViewState(
+    "income",
+    "year",
+    Number(initialToday.slice(0, 4)),
+    (v) =>
+      typeof v === "number" && Number.isInteger(v) && v >= 2000 && v <= 2099,
+  );
+  const [month, setMonth] = useViewState(
+    "income",
+    "month",
+    Number(initialToday.slice(5, 7)),
+    (v) => typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12,
+  );
   const [view, setView] = useState<IncomeView | null>(null);
   const [loading, setLoading] = useState(configured);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [needsLogin, setNeedsLogin] = useState(false);
-  const [tab, setTab] = useState("month");
-  const [kind, setKind] = useState<ReportFilter["kind"]>("all");
-  const [categoryId, setCategoryId] = useState("");
-  const [from, setFrom] = useState(1);
-  const [to, setTo] = useState(12);
+  const [tab, setTab] = useViewState<string>(
+    "income",
+    "tab",
+    "month",
+    (v) =>
+      typeof v === "string" && ["month", "reports", "categories"].includes(v),
+  );
+  const [kind, setKind] = useViewState<ReportFilter["kind"]>(
+    "income",
+    "kind",
+    "all",
+    (value) => ["all", "fixed", "oneoff"].includes(String(value)),
+  );
+  const [categoryId, setCategoryId] = useViewState("income", "categoryId", "");
+  const [from, setFrom] = useViewState(
+    "income",
+    "from",
+    1,
+    (v) => typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12,
+  );
+  const [to, setTo] = useViewState(
+    "income",
+    "to",
+    12,
+    (v) => typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12,
+  );
   const [editor, setEditor] = useState<EditorMode | null>(null);
   const [editorKey, setEditorKey] = useState(0);
   const [details, setDetails] = useState<{ month?: string } | null>(null);
@@ -106,7 +143,11 @@ export function useIncomeWorkspace({
     kind,
     categoryId: categoryId || undefined,
   };
-  const report = view?.year === year ? buildReport(view, filter) : null;
+  const checkedFilter = reportFilterSchema.safeParse(filter);
+  const report =
+    view?.year === year && checkedFilter.success
+      ? buildReport(view, checkedFilter.data)
+      : null;
   const rows = view?.rows.filter((r) => r.month === selectedMonth) ?? [];
   const fixedRows = rows.filter((r) => r.kind === "fixed");
   const oneOffRows = rows.filter((r) => r.kind === "oneoff");
@@ -122,9 +163,17 @@ export function useIncomeWorkspace({
     setEditorKey((k) => k + 1);
     setNotice("");
   }
-  async function saved() {
+  async function saved(next?: IncomeView) {
     setEditor(null);
     setNotice("");
+    if (next) {
+      requestId.current++;
+      setView(next);
+      setError("");
+      setNeedsLogin(false);
+      setLoading(false);
+      return;
+    }
     try {
       await reload();
     } catch {

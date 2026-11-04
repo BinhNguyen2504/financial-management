@@ -1,4 +1,12 @@
 export const reports = {
+  "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo chung tổng hợp theo kỳ và giữ riêng từng sổ; chưa có tổng tài sản ròng toàn hệ thống.":
+    "Overview offers 10 configurable widgets for Income, Expenses, Savings, Investments and Safety funds. Combined reports cover each period while keeping ledgers separate; system-wide net worth is not available.",
+  "Kết quả: bảng, biểu đồ và CSV dùng cùng dữ liệu báo cáo; chi tiết chỉ đọc, sửa tại module gốc.":
+    "Result: tables, charts and CSV use the same report data; details are read-only, with editing in the source module.",
+  "Xuất CSV": "Export CSV",
+  "Mỗi module là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.":
+    "Each module is an independent ledger; balances and goal progress are not added into net worth.",
+  "Mở module gốc": "Open source module",
   "Tổng giá trị": "Total value",
   "Nạp bên ngoài": "External deposits",
   "Rút bên ngoài": "External withdrawals",
@@ -14,12 +22,12 @@ export const reports = {
   Quỹ: "Fund",
   "Quản lý tài chính cá nhân với Financial Manager: theo dõi thu nhập, hũ chi tiêu, tiết kiệm, đầu tư, quỹ an toàn, mục tiêu và báo cáo theo kỳ. Xem thử giao diện không cần tài khoản.":
     "Manage your personal finances with Financial Manager: track income, spending jars, savings, investments, safety funds, goals and period reports. Try the interface without an account.",
-  "Tổng quan có 10 widget tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo chung tổng hợp theo kỳ và giữ riêng từng sổ; chưa có tổng tài sản ròng toàn hệ thống.":
-    "Overview offers 10 configurable widgets for Income, Expenses, Savings, Investments and Safety funds. Combined reports cover each period while keeping ledgers separate; system-wide net worth is not available.",
+  "Tổng quan có 10 thẻ thông tin tùy chỉnh cho Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn. Báo cáo chung tổng hợp theo kỳ và giữ riêng từng sổ; chưa có tổng tài sản ròng toàn hệ thống.":
+    "Overview offers 10 configurable cards for Income, Expenses, Savings, Investments and Safety funds. Combined reports cover each period while keeping ledgers separate; system-wide net worth is not available.",
   "Chọn kỳ, mở tab cần xem rồi bấm số liệu để đối chiếu nguồn.":
     "Choose a period, open a tab and select a figure to inspect its source.",
-  "Kết quả: bảng, biểu đồ và CSV dùng cùng dữ liệu báo cáo; chi tiết chỉ đọc, sửa tại module gốc.":
-    "Result: tables, charts and CSV use the same report data; details are read-only, with editing in the source module.",
+  "Kết quả: bảng, biểu đồ và CSV dùng cùng dữ liệu báo cáo; chi tiết chỉ đọc, sửa tại chức năng gốc.":
+    "Result: tables, charts and CSV use the same report data; details are read-only, with editing in the source section.",
   "Thu nhập 28.500.000 ₫, Chi tiêu 12.000.000 ₫: chênh lệch theo sổ là 16.500.000 ₫, chưa phải số dư tài khoản.":
     "Income of 28,500,000 VND minus spending of 12,000,000 VND gives a ledger difference of 16,500,000 VND, not an account balance.",
   "Mất kết nối. Hãy thử lại khi có mạng.":
@@ -33,7 +41,7 @@ export const reports = {
   Tháng: "Month",
   Quý: "Quarter",
   Năm: "Year",
-  "Xuất CSV": "Export CSV",
+  "Xuất bảng dữ liệu": "Export data",
   "Cập nhật báo cáo": "Refresh report",
   "Đang tải Báo cáo…": "Loading reports…",
   "Chưa tải được Báo cáo. Hãy thử lại.":
@@ -53,8 +61,8 @@ export const reports = {
   "Tiền đã bỏ hũ": "Jar funding",
   "Thu nhập trừ Chi tiêu theo sổ hũ; chưa phải số dư tài khoản hoặc tiền có thể sử dụng.":
     "Recorded income minus jar-ledger spending; this is not an account balance or available cash.",
-  "Mỗi module là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.":
-    "Each module is an independent ledger; balances and goal progress are not added into net worth.",
+  "Mỗi chức năng là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.":
+    "Each section is an independent ledger; balances and goal progress are not added into net worth.",
   "Tiết kiệm cuối kỳ": "Savings at period end",
   "Tiết kiệm đầu kỳ": "Savings at period start",
   "Đầu tư cuối kỳ": "Investments at period end",
@@ -128,7 +136,7 @@ export const reports = {
   "Định giá cũ": "Older valuation",
   "Định giá": "Valuation",
   "Chuyển nội bộ": "Internal transfer",
-  "Mở module gốc": "Open source module",
+  "Mở chức năng gốc": "Open source section",
   "Cập nhật để xem chi tiết": "Refresh to view details",
   "Trang trước": "Previous page",
   "Trang sau": "Next page",

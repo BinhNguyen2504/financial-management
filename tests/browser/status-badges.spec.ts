@@ -240,7 +240,7 @@ test("status labels stay readable in module reports, planned pages and the publi
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   for (const [route, tab] of [
-    ["income", "Danh mục cố định"],
+    ["income", "Nguồn thu đều đặn"],
     ["income", "Báo cáo"],
     ["budgets", "Báo cáo năm"],
     ["savings", "Báo cáo"],
@@ -347,7 +347,7 @@ test("status placement follows the category, selected period and report date wit
     await page.goto(`/${route}`);
     if (route === "income")
       await page
-        .getByRole("button", { name: "Danh mục cố định", exact: true })
+        .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
         .click();
     if (route === "investments")
       await page.getByRole("tab", { name: "Báo cáo", exact: true }).click();

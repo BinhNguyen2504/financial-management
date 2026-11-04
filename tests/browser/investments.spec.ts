@@ -159,6 +159,8 @@ test("complete aggregate investing flow, reports, downloads and responsive light
     fullPage: true,
   });
   await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
+  const filters = page.getByRole("tabpanel").locator(".filter-options-trigger");
+  if (await filters.isVisible()) await filters.click();
   await page
     .getByRole("combobox", { name: "Loại giao dịch lọc", exact: true })
     .selectOption("sell");
@@ -325,7 +327,7 @@ test("network retry, concurrent version conflict, and lost post-commit response 
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
   await page.route(
-    "**/api/v1/investments/commands",
+    "**/api/v1/investments/commands*",
     async (route) => {
       await route.fetch();
       await route.abort();

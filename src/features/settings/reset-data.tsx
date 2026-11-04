@@ -43,6 +43,7 @@ export function ResetData({
   const active = useRef(true),
     cancel = useRef<HTMLButtonElement>(null);
   const errorRef = useRef<HTMLParagraphElement>(null);
+  const confirmationHeading = useRef<HTMLHeadingElement>(null);
   const busyRef = useRef(false);
   useEffect(() => {
     active.current = true;
@@ -59,6 +60,14 @@ export function ResetData({
   useEffect(() => {
     if (error) errorRef.current?.focus();
   }, [error]);
+  useEffect(() => {
+    if (!prepared) return;
+    confirmationHeading.current?.focus({ preventScroll: true });
+    confirmationHeading.current?.scrollIntoView({
+      block: "start",
+      behavior: "instant",
+    });
+  }, [prepared]);
   function close() {
     if (busyRef.current || uncertain) return;
     setOpen(false);
@@ -262,61 +271,148 @@ export function ResetData({
               >
                 {tr("Hủy")}
               </button>
-              <button
-                className="expense-primary expense-danger"
-                aria-busy={busy}
-                disabled={
-                  busy || !prepared || !saved || confirmation !== "XÓA TOÀN BỘ"
-                }
-                onClick={() => void reset()}
-              >
-                {busy && <LoadingSpinner />}
-                {tr(
-                  uncertain
-                    ? "Kiểm tra kết quả làm trống"
-                    : "Xóa toàn bộ dữ liệu tài chính",
-                )}
-              </button>
+              {!prepared ? (
+                <button
+                  className="expense-primary"
+                  disabled={busy || uncertain}
+                  aria-busy={busy}
+                  onClick={() => void prepare()}
+                >
+                  {busy && <LoadingSpinner />}
+                  {tr("Tải bản sao lưu trước khi xóa")}
+                </button>
+              ) : (
+                <button
+                  className="expense-primary expense-danger"
+                  aria-busy={busy}
+                  disabled={
+                    busy ||
+                    !prepared ||
+                    !saved ||
+                    confirmation !== "XÓA TOÀN BỘ"
+                  }
+                  onClick={() => void reset()}
+                >
+                  {busy && <LoadingSpinner />}
+                  {tr(
+                    uncertain
+                      ? "Kiểm tra kết quả làm trống"
+                      : "Xóa toàn bộ dữ liệu tài chính",
+                  )}
+                </button>
+              )}
             </>
           }
         >
           <div className="settings-reset-body">
-            <p>
-              <strong>{tr("Tài khoản sẽ được làm trống")}: </strong>
-              {account}
-            </p>
-            <p>
-              {tr(
-                "Thao tác này xóa toàn bộ năm, sổ, danh mục, cấu hình, giao dịch, lịch sử và kỳ đã chốt của cả 5 phân hệ. Không thể hoàn tác trực tiếp; muốn lấy lại dữ liệu cần nhập bản sao lưu.",
-              )}
-            </p>
-            <ul>
-              {(prepared?.blockers ?? status?.blockers)?.map((item) => (
-                <li key={item.key}>
-                  {tr(item.label)}: {item.count.toLocaleString(numberLocale)}{" "}
-                  {tr("bản ghi")}
-                </li>
-              ))}
-            </ul>
-            <p>
-              {tr(
-                "Tài khoản đăng nhập, hồ sơ cá nhân, bố cục Tổng quan và tùy chọn giao diện được giữ lại.",
-              )}
-            </p>
-            <h4>{tr("1. Tạo và lưu bản sao lưu hiện tại")}</h4>
-            <button
-              className="expense-secondary"
-              disabled={busy || uncertain}
-              onClick={() => void prepare()}
+            <ol
+              className="settings-reset-progress"
+              aria-label={tr("Các bước làm trống dữ liệu")}
             >
-              {tr(
-                prepared
-                  ? "Tạo bản sao lưu mới"
-                  : "Tải bản sao lưu trước khi xóa",
+              <li
+                aria-current={!prepared ? "step" : undefined}
+                data-complete={!!prepared}
+              >
+                <span className="settings-reset-step-number" aria-hidden="true">
+                  1
+                </span>
+                <span>
+                  {tr("Tạo bản sao lưu")}
+                  <small>
+                    {tr(prepared ? "Đã tạo file" : "Bước hiện tại")}
+                  </small>
+                </span>
+              </li>
+              <li aria-current={prepared ? "step" : undefined}>
+                <span className="settings-reset-step-number" aria-hidden="true">
+                  2
+                </span>
+                <span>
+                  {tr("Kiểm tra và xác nhận")}
+                  <small>
+                    {tr(prepared ? "Bước hiện tại" : "Sau khi tạo bản sao lưu")}
+                  </small>
+                </span>
+              </li>
+            </ol>
+            <div className="settings-reset-account">
+              <p>{tr("Tài khoản sẽ được làm trống")}</p>
+              <strong>{account}</strong>
+            </div>
+            <section
+              className="settings-reset-section"
+              aria-labelledby="reset-scope-heading"
+            >
+              <h3 id="reset-scope-heading">{tr("Dữ liệu sẽ xóa")}</h3>
+              <p>
+                {tr(
+                  "Xóa toàn bộ năm, sổ, danh mục, cấu hình, giao dịch, lịch sử và kỳ đã chốt của tất cả phân hệ, gồm cả Mục tiêu.",
+                )}
+              </p>
+              <dl className="settings-reset-counts">
+                {(prepared?.blockers ?? status?.blockers)?.map((item) => (
+                  <div key={item.key}>
+                    <dt>{tr(item.label)}</dt>
+                    <dd>
+                      {item.count.toLocaleString(numberLocale)} {tr("bản ghi")}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="settings-reset-note">
+                {tr("Gồm sổ, cấu hình và lịch sử; không phải số giao dịch.")}
+              </p>
+              <p className="settings-reset-warning">
+                {tr(
+                  "Không thể hoàn tác trực tiếp. Muốn lấy lại dữ liệu, bạn cần nhập bản sao lưu.",
+                )}
+              </p>
+            </section>
+            <section
+              className="settings-reset-section"
+              aria-labelledby="reset-retained-heading"
+            >
+              <h3 id="reset-retained-heading">
+                {tr("Thông tin được giữ lại")}
+              </h3>
+              <p>
+                {tr(
+                  "Tài khoản đăng nhập, hồ sơ cá nhân, bố cục Tổng quan và tùy chọn giao diện được giữ lại.",
+                )}
+              </p>
+            </section>
+            <section
+              className="settings-reset-section"
+              aria-labelledby="reset-backup-heading"
+            >
+              <h3 id="reset-backup-heading">
+                {tr("1. Tạo bản sao lưu hiện tại")}
+              </h3>
+              <p>
+                {tr("Tải file JSON đầy đủ trước khi tiếp tục xác nhận xóa.")}
+              </p>
+              {prepared && (
+                <button
+                  className="expense-secondary"
+                  disabled={busy || uncertain}
+                  onClick={() => void prepare()}
+                >
+                  {tr("Tạo bản sao lưu mới")}
+                </button>
               )}
-            </button>
+            </section>
             {prepared && (
-              <>
+              <section
+                className="settings-reset-section settings-reset-verification"
+                aria-labelledby="reset-confirm-heading"
+              >
+                <h3
+                  id="reset-confirm-heading"
+                  ref={confirmationHeading}
+                  tabIndex={-1}
+                >
+                  {tr("2. Kiểm tra và xác nhận xóa")}
+                </h3>
                 <p role="status">
                   {tr(
                     "Bản sao lưu đã sẵn sàng. Kiểm tra thư mục tải xuống trước khi xác nhận.",
@@ -344,7 +440,6 @@ export function ResetData({
                   />
                   <span>{tr("Tôi đã lưu bản sao lưu và kiểm tra file.")}</span>
                 </label>
-                <h4>{tr("2. Xác nhận xóa toàn bộ dữ liệu tài chính")}</h4>
                 <label className="settings-reset-confirm">
                   {tr("Nhập XÓA TOÀN BỘ để xác nhận")}
                   <input
@@ -354,7 +449,7 @@ export function ResetData({
                     onChange={(e) => setConfirmation(e.target.value)}
                   />
                 </label>
-              </>
+              </section>
             )}
             {error && (
               <p

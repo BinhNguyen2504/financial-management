@@ -1,3 +1,4 @@
+import { timePhase } from "./performance";
 import type postgres from "postgres";
 import { z } from "zod";
 import {
@@ -15,8 +16,10 @@ export function postgresOverviewRepository(sql: postgres.Sql) {
   ) {
     z.uuid().parse(owner);
     return withOwnerTransaction(sql, owner, async (tx) => {
-      const [schema] = await tx.unsafe<{ ready: boolean }[]>(
-        "select to_regclass('public.overview_layouts') is not null as ready",
+      const [schema] = await timePhase("sql", () =>
+        tx.unsafe<{ ready: boolean }[]>(
+          "select to_regclass('public.overview_layouts') is not null as ready",
+        ),
       );
       if (!schema.ready)
         throw new ExpenseError(
@@ -30,9 +33,11 @@ export function postgresOverviewRepository(sql: postgres.Sql) {
   return {
     read(owner: string): Promise<SavedLayout> {
       return transaction(owner, async (tx) => {
-        const [row] = await tx.unsafe<{ layout: unknown; revision: number }[]>(
-          "select layout,revision from public.overview_layouts where owner_id=$1",
-          [owner],
+        const [row] = await timePhase("sql", () =>
+          tx.unsafe<{ layout: unknown; revision: number }[]>(
+            "select layout,revision from public.overview_layouts where owner_id=$1",
+            [owner],
+          ),
         );
         return row
           ? { ...layoutSchema.parse(row.layout), revision: row.revision }
@@ -43,9 +48,11 @@ export function postgresOverviewRepository(sql: postgres.Sql) {
       const { expectedRevision, ...layout } = saveLayoutSchema.parse(input);
       return transaction(owner, async (tx) => {
         await lockOwner(tx, [`overview:${owner}`]);
-        const [row] = await tx.unsafe<{ revision: number }[]>(
-          "select revision from public.overview_layouts where owner_id=$1",
-          [owner],
+        const [row] = await timePhase("sql", () =>
+          tx.unsafe<{ revision: number }[]>(
+            "select revision from public.overview_layouts where owner_id=$1",
+            [owner],
+          ),
         );
         if ((row?.revision ?? 0) !== expectedRevision)
           throw new ExpenseError(
@@ -54,9 +61,11 @@ export function postgresOverviewRepository(sql: postgres.Sql) {
             "LAYOUT_CONFLICT",
           );
         const revision = expectedRevision + 1;
-        await tx.unsafe(
-          "insert into public.overview_layouts(owner_id,layout,revision) values($1,$2::text::jsonb,$3) on conflict(owner_id) do update set layout=excluded.layout,revision=excluded.revision,updated_at=now()",
-          [owner, JSON.stringify(layout), revision],
+        await timePhase("sql", () =>
+          tx.unsafe(
+            "insert into public.overview_layouts(owner_id,layout,revision) values($1,$2::text::jsonb,$3) on conflict(owner_id) do update set layout=excluded.layout,revision=excluded.revision,updated_at=now()",
+            [owner, JSON.stringify(layout), revision],
+          ),
         );
         return { ...layout, revision };
       });

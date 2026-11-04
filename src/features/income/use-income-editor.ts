@@ -1,4 +1,6 @@
 "use client";
+import type { IncomeView } from "@/domain/income/types";
+import { useDiscardChanges } from "@/components/discard-changes";
 import { buildIncomeAction } from "./editor-action";
 
 import { useI18n } from "@/i18n/provider";
@@ -38,7 +40,7 @@ export function useIncomeEditor({
   version: number;
   dataGeneration?: number;
   onClose(): void;
-  onSaved(): Promise<void>;
+  onSaved(view?: IncomeView): Promise<void>;
   onReload(): Promise<unknown>;
 }) {
   const generation = useRef(dataGeneration).current;
@@ -141,9 +143,13 @@ export function useIncomeEditor({
         });
       } else {
         writing = true;
-        await incomeJSON("/commands", command, generation);
+        const result = await incomeJSON<{ view?: IncomeView }>(
+          `/commands?return=view&year=${month.slice(0, 4)}`,
+          command,
+          generation,
+        );
         toast("success", tr("Đã lưu thay đổi."));
-        await onSaved();
+        await onSaved(result.view);
       }
     } catch (e) {
       const unknownWrite =
@@ -200,6 +206,20 @@ export function useIncomeEditor({
     });
   }
   const formId = useId();
+  const closeDraft = JSON.stringify({
+    name,
+    description,
+    period,
+    amount,
+    note,
+  });
+  const [originalCloseDraft] = useState(closeDraft);
+  const { close, discardConfirmation } = useDiscardChanges(
+    closeDraft !== originalCloseDraft,
+    busy || uncertain,
+    onClose,
+    formId,
+  );
   const reloadAfterConflict = async () => {
     setBusy(true);
     try {
@@ -219,7 +239,8 @@ export function useIncomeEditor({
     tr,
     localizedTitles,
     mode,
-    onClose,
+    onClose: close,
+    discardConfirmation,
     busy,
     uncertain,
     deleting,

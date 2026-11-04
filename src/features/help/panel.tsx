@@ -8,6 +8,7 @@ import { Check, Lightbulb } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import "./help.css";
 import { helpPages as helpPagesSource } from "./registry";
+import { GuideSummary } from "./page-guide";
 import { HelpText } from "./text";
 import type { HelpArticle } from "./types";
 import type { HelpRequest } from "./types";
@@ -83,6 +84,7 @@ export function HelpPanel({
         )}
         {article && (
           <>
+            <GuideSummary pageId={request.pageId} />
             <nav aria-label={tr("Mục lục hướng dẫn")} className="help-toc">
               <p className="help-eyebrow">{tr("NỘI DUNG HƯỚNG DẪN")}</p>
               <ol>

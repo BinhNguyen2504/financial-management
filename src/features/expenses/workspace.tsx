@@ -1,4 +1,9 @@
 "use client";
+import { EmptyState } from "@/components/empty-state";
+import { PageGuide } from "@/features/help/page-guide";
+import { useUser } from "@/features/profile/user-provider";
+import { FilterOptions } from "@/components/filter-options";
+import { ViewControls } from "@/components/view-controls";
 import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
@@ -67,6 +72,10 @@ function JarProgress({ row }: { row: ExpenseRow }) {
 export function ExpenseWorkspace(
   props: Parameters<typeof useExpenseWorkspace>[0],
 ) {
+  const { user } = useUser();
+  return <AccountExpense key={user?.id ?? "guest"} {...props} />;
+}
+function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
   const controller = useExpenseWorkspace(props);
   const {
     tr,
@@ -113,6 +122,7 @@ export function ExpenseWorkspace(
     editorKey,
     setEditor,
     saved,
+    acceptView,
     detail,
     yearRows,
     labelsOpen,
@@ -153,6 +163,7 @@ export function ExpenseWorkspace(
           </div>
         )}
       </div>
+      <PageGuide pageId="budgets" />
       {!configured ? (
         <section className="panel expense-setup">
           <Garden variant="jar" />
@@ -372,92 +383,111 @@ export function ExpenseWorkspace(
                   </div>
                 </AnimatedDetails>
               )}
-              <div className="expense-filters expense-filter-panel">
-                <label>
-                  {tr("Loại hũ")}
-                  <select
-                    value={kind}
-                    onChange={(e) => setKind(e.target.value)}
-                  >
-                    <option value="">{tr("Tất cả")}</option>
-                    <option value="monthly">{tr("Chi trong tháng")}</option>
-                    <option value="accumulation">{tr("Tích lũy")}</option>
-                  </select>
-                </label>
-                <label>
-                  {tr("Phương thức")}
-                  <select
-                    value={method}
-                    onChange={(e) => setMethod(e.target.value)}
-                  >
-                    <option value="">{tr("Tất cả")}</option>
-                    {methods.map((m) => (
-                      <option key={m}>{m}</option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  {tr("Nhóm mục đích")}
-                  <select
-                    value={group}
-                    onChange={(e) => setGroup(e.target.value)}
-                  >
-                    <option value="">{tr("Tất cả")}</option>
-                    {groups.map((g) => (
-                      <option key={g}>{g}</option>
-                    ))}
-                  </select>
-                </label>
-                <label className="expense-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={inactive}
-                    onChange={(e) => setInactive(e.target.checked)}
-                  />{" "}
-                  {tr("Gồm hũ đã ngừng")}
-                </label>
-              </div>
+              <ViewControls
+                past={selectedMonth !== view.today.slice(0, 7)}
+                onCurrent={() => {
+                  setYear(currentYear);
+                  setMonth(Number(view.today.slice(5, 7)));
+                }}
+              />
+              {tab === "month" && (
+                <section
+                  className="expense-metrics"
+                  aria-label={tr("Tổng hợp {0}", {
+                    0: monthName(selectedMonth, locale),
+                  })}
+                >
+                  {[
+                    { name: tr("Mức tháng"), value: total("target") },
+                    {
+                      name: tr("Cần thêm mặc định"),
+                      value: total("required"),
+                    },
+                    {
+                      name: future
+                        ? tr("Dự kiến bỏ hũ")
+                        : tr("Đã ghi nhận bỏ hũ"),
+                      value: funding,
+                    },
+                    {
+                      name: future
+                        ? tr("Thực chi chưa phát sinh")
+                        : selectedMonth === view.today.slice(0, 7)
+                          ? tr("Thực chi · tạm tính")
+                          : tr("Thực chi"),
+                      value: total("spent"),
+                    },
+                    {
+                      name: future ? tr("Số dư dự kiến") : tr("Số còn lại"),
+                      value: total("closing"),
+                    },
+                  ].map((metric) => (
+                    <article className="metric" key={metric.name}>
+                      <h2>{metric.name}</h2>
+                      <p>{money(metric.value)}</p>
+                    </article>
+                  ))}
+                </section>
+              )}
+              <FilterOptions
+                count={[kind, method, group, inactive].filter(Boolean).length}
+                onReset={() => {
+                  setKind("");
+                  setMethod("");
+                  setGroup("");
+                  setInactive(false);
+                }}
+              >
+                <div className="expense-filters expense-filter-panel">
+                  <label>
+                    {tr("Loại hũ")}
+                    <select
+                      value={kind}
+                      onChange={(e) => setKind(e.target.value)}
+                    >
+                      <option value="">{tr("Tất cả")}</option>
+                      <option value="monthly">{tr("Chi trong tháng")}</option>
+                      <option value="accumulation">{tr("Tích lũy")}</option>
+                    </select>
+                  </label>
+                  <label>
+                    {tr("Phương thức")}
+                    <select
+                      value={method}
+                      onChange={(e) => setMethod(e.target.value)}
+                    >
+                      <option value="">{tr("Tất cả")}</option>
+                      {methods.map((m) => (
+                        <option key={m}>{m}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    {tr("Nhóm mục đích")}
+                    <select
+                      value={group}
+                      onChange={(e) => setGroup(e.target.value)}
+                    >
+                      <option value="">{tr("Tất cả")}</option>
+                      {groups.map((g) => (
+                        <option key={g}>{g}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="expense-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={inactive}
+                      onChange={(e) => setInactive(e.target.checked)}
+                    />{" "}
+                    {tr("Gồm hũ đã ngừng")}
+                  </label>
+                </div>
+              </FilterOptions>
               {tab === "reports" ? (
                 <ExpenseReports view={view} filters={{ kind, method, group }} />
               ) : (
                 <>
-                  <section
-                    className="expense-metrics"
-                    aria-label={tr("Tổng hợp {0}", {
-                      0: monthName(selectedMonth, locale),
-                    })}
-                  >
-                    {[
-                      { name: tr("Mức tháng"), value: total("target") },
-                      {
-                        name: tr("Cần thêm mặc định"),
-                        value: total("required"),
-                      },
-                      {
-                        name: future
-                          ? tr("Dự kiến bỏ hũ")
-                          : tr("Đã ghi nhận bỏ hũ"),
-                        value: funding,
-                      },
-                      {
-                        name: future
-                          ? tr("Thực chi chưa phát sinh")
-                          : selectedMonth === view.today.slice(0, 7)
-                            ? tr("Thực chi · tạm tính")
-                            : tr("Thực chi"),
-                        value: total("spent"),
-                      },
-                      {
-                        name: future ? tr("Số dư dự kiến") : tr("Số còn lại"),
-                        value: total("closing"),
-                      },
-                    ].map((metric) => (
-                      <article className="metric" key={metric.name}>
-                        <h2>{metric.name}</h2>
-                        <p>{money(metric.value)}</p>
-                      </article>
-                    ))}
-                  </section>
                   <div className="expense-section-heading">
                     <h2>{monthName(selectedMonth, locale)}</h2>
                     <div className="expense-section-tools">
@@ -694,21 +724,42 @@ export function ExpenseWorkspace(
                     </>
                   ) : (
                     <section className="panel expense-empty">
-                      <Garden variant="sprout" />
-                      <h3>{tr("Chưa có hũ trong tháng hoặc bộ lọc này")}</h3>
-                      <p>
-                        {tr(
-                          "Thêm một hũ chi tiêu hoặc thay đổi bộ lọc để xem các khoản đã tạo.",
+                      <EmptyState
+                        title={tr(
+                          kind || method || group || inactive
+                            ? "Không có hũ phù hợp bộ lọc"
+                            : "Chưa có hũ trong tháng này",
                         )}
-                      </p>
-                      {!readonly && (
-                        <button
-                          className="expense-primary"
-                          onClick={() => openEditor({ mode: "create" })}
-                        >
-                          <Plus size={17} /> {tr("Thêm hũ chi tiêu")}
-                        </button>
-                      )}
+                        description={tr(
+                          kind || method || group || inactive
+                            ? "Bỏ điều kiện lọc để xem lại các hũ trong tháng đang chọn."
+                            : "Tạo hũ đầu tiên theo mục đích như sinh hoạt. Nếu đã tạo hũ ở kỳ khác, kiểm tra lại tháng đang xem.",
+                        )}
+                      >
+                        {kind || method || group || inactive ? (
+                          <button
+                            className="expense-secondary"
+                            onClick={() => {
+                              setKind("");
+                              setMethod("");
+                              setGroup("");
+                              setInactive(false);
+                            }}
+                          >
+                            {tr("Đặt lại bộ lọc")}
+                          </button>
+                        ) : (
+                          !readonly && (
+                            <button
+                              className="expense-primary"
+                              onClick={() => openEditor({ mode: "create" })}
+                            >
+                              <Plus size={17} aria-hidden="true" />
+                              {tr("Thêm hũ chi tiêu")}
+                            </button>
+                          )
+                        )}
+                      </EmptyState>
                     </section>
                   )}
                 </>
@@ -725,6 +776,7 @@ export function ExpenseWorkspace(
           month={selectedMonth}
           onClose={() => setEditor(null)}
           onSaved={saved}
+          onView={acceptView}
           onReload={reload}
         />
       )}

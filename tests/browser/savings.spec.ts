@@ -1,3 +1,4 @@
+import { workspaceAction } from "./helpers/workspace-actions";
 import { selectMonthYear } from "./helpers/month-year";
 import { expect, test, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
@@ -78,7 +79,7 @@ test("savings ledgers keep fields, filters, privacy and actions usable across wi
     expect(response.ok(), await response.text()).toBe(true);
   }
   await selectMonthYear(page, "Tháng đang xem", month);
-  await page.getByRole("button", { name: "Tải lại", exact: true }).click();
+  await (await workspaceAction(page, "Tải lại")).click();
   await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
   const monthlyTable = page.getByRole("table", {
     name: `Giao dịch tháng ${month}`,
@@ -609,9 +610,7 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
     await page.request.get("/api/v1/savings/backup")
   ).json();
   expect(backup.book.revisions).toHaveLength(2);
-  await page
-    .getByRole("button", { name: "Cập nhật giá vàng", exact: true })
-    .click();
+  await (await workspaceAction(page, "Cập nhật giá vàng")).click();
   await page.getByLabel("Ngày giá", { exact: true }).fill(day);
   await page
     .getByLabel("Giá bán lại dự kiến (VND/chỉ)", { exact: true })
@@ -708,11 +707,11 @@ test("deposits, atomic rollover, monthly locks, archive and historical reporting
   });
   expect(locked.status()).toBe(409);
   await selectMonthYear(page, "Tháng đang xem", month);
-  await page.getByRole("button", { name: "Tải lại", exact: true }).click();
+  await (await workspaceAction(page, "Tải lại")).click();
   await expect(
     page.getByRole("button", { name: "Mở lại tháng", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Mở lại tháng", exact: true }).click();
+  await (await workspaceAction(page, "Mở lại tháng")).click();
   await page.getByLabel("Lý do thay đổi").fill("Đối soát lại");
   await save(page);
   await page.getByRole("tab", { name: "Danh mục", exact: true }).click();
@@ -821,7 +820,7 @@ test("lost commit response retries once; empty categories archive and restore wi
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
   let lost = false;
-  await page.route("**/api/v1/savings/commands", async (route) => {
+  await page.route("**/api/v1/savings/commands*", async (route) => {
     const response = await route.fetch();
     if (!lost) {
       lost = true;
@@ -834,7 +833,7 @@ test("lost commit response retries once; empty categories archive and restore wi
   ).toContainText("Mất kết nối");
   await page.getByRole("button", { name: "Xác nhận lưu", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
-  await page.unroute("**/api/v1/savings/commands");
+  await page.unroute("**/api/v1/savings/commands*");
   let v = await view(page);
   expect(v.state.total).toBe("100");
   expect(v.book!.revisions).toHaveLength(1);
@@ -852,7 +851,7 @@ test("lost commit response retries once; empty categories archive and restore wi
       })
     ).ok(),
   ).toBe(true);
-  await page.getByRole("button", { name: "Tải lại", exact: true }).click();
+  await (await workspaceAction(page, "Tải lại")).click();
   await page.getByRole("tab", { name: "Danh mục", exact: true }).click();
   await page
     .getByRole("button", { name: "Lưu trữ Ví gốc", exact: true })

@@ -201,3 +201,12 @@ Lần đầu Tổng quan hiện một trạng thái tải chung có thông báo 
 Footer Modal tự nhóm nút cho toàn ứng dụng, bao gồm Mục tiêu truyền fragment; bổ sung spacing cho trạng thái trống và lỗi/thử lại ở các module liên quan. Cặp icon trong cột cố định giữ 8px, nhóm thường 12px; nội dung/nút 16px. Đối chiếu ảnh và số đo cùng hành vi click, Tab, bản nháp và dialog lồng nhau theo [quy tắc mới](action-layout-2026-11-02.md); giữ các hợp đồng dữ liệu/phản hồi ở trên.
 
 Typography của ô nhập có selector đủ ưu tiên trước shorthand từng module; sửa trường hợp ô ngày Đầu tư về 14px. Hồi quy `usability.spec.ts` tiếp tục giữ ngưỡng 16px cho mọi trang, không giảm chuẩn kiểm thử.
+
+## Rà khoảng cách theo cả hai hướng — 04/11/2026
+
+Không chỉ kiểm mô tả → nút hoặc footer: kiểm cả nút → mô tả, đặc biệt tiêu đề → Help → đoạn văn, sau reset margin. Cài đặt được tái hiện 0px, sửa bằng layout của khối chứa với gap 16px và đo lại vi/en tại 320–1440px, chữ 200%. Trạng thái dài ưu tiên thông tin giúp quyết định; cho mở số liệu chẩn đoán khi cần, không thu gọn điều kiện chặn hoặc lỗi hệ thống. Xem [bài học và kiểm chứng](settings-restore-layout-2026-11-04.md).
+
+
+## Nội dung cho người dùng phổ thông — 04/11/2026
+
+Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.

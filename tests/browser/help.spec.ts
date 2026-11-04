@@ -192,12 +192,12 @@ test("help remains available when finance fails, closes on back navigation and r
   if (await page.locator(".sidebar").isVisible()) {
     await page.locator('.sidebar a[href="/income"]').click();
   } else {
-    await page.locator(".mobile-menu summary").click();
+    await page.locator(".mobile-menu > summary").click();
     await page.locator('.mobile-menu a[href="/income"]').click();
   }
   await expect(page).toHaveURL(/\/income$/);
   await page
-    .getByRole("button", { name: "Giải thích: Danh mục cố định là gì?" })
+    .getByRole("button", { name: "Giải thích: Nguồn thu đều đặn là gì?" })
     .click();
   await expect(help(page).locator('[data-help-id="fixed"]')).toBeFocused();
   await page.goBack();
@@ -217,7 +217,7 @@ test("help remains available when finance fails, closes on back navigation and r
   await page.goto("/income");
   await page.getByRole("button", { name: "Hướng dẫn", exact: true }).click();
   await expect(help(page).locator('[data-help-id="fixed"]')).toContainText(
-    "Danh mục cố định",
+    "Nguồn thu đều đặn",
   );
 });
 

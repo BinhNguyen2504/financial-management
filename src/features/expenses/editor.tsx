@@ -30,6 +30,7 @@ function ExpenseEditorForm(props: Parameters<typeof useExpenseEditor>[0]) {
     localizedTitles,
     editor,
     onClose,
+    discardConfirmation,
     busy,
     uncertain,
     preview,
@@ -153,6 +154,7 @@ function ExpenseEditorForm(props: Parameters<typeof useExpenseEditor>[0]) {
           </form>
         </ExpenseErrors.Provider>
       </ExpenseModal>
+      {discardConfirmation}
       {classifying && (
         <ExpenseEditor
           editor={{ mode: "label" }}
@@ -161,6 +163,7 @@ function ExpenseEditorForm(props: Parameters<typeof useExpenseEditor>[0]) {
           onClose={() => setClassifying(false)}
           onReload={onReload}
           onSaved={classificationSaved}
+          onView={props.onView}
         />
       )}
     </>

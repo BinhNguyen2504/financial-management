@@ -10,7 +10,7 @@ export type Props = {
   mode: EditorMode;
   view: FundView;
   refresh: () => Promise<FundView>;
-  onSaved: () => void;
+  onSaved: (view?: FundView) => void;
   onClose: () => void;
   onAuthLost: () => void;
 };

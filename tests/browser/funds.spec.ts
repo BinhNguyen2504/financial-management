@@ -190,6 +190,7 @@ for (const locale of ["vi", "en"] as const) {
         name: english ? "Record transaction" : "Ghi giao dịch",
         exact: true,
       })
+      .first()
       .click();
     const dialog = page.getByRole("dialog");
     const amount = dialog.getByLabel(
@@ -340,7 +341,9 @@ for (const locale of ["vi", "en"] as const) {
       element.style.removeProperty("width");
     });
 
-    for (const fund of ["Emergency Fund", "Rainy Day Fund", "Sinking Fund"]) {
+    for (const fund of english
+      ? ["Emergency fund", "Rainy day fund", "Sinking fund"]
+      : ["Quỹ khẩn cấp", "Quỹ phát sinh", "Quỹ chi dự kiến"]) {
       await page
         .getByRole("button", {
           name: new RegExp(fund),
@@ -432,16 +435,18 @@ test("onboarding links living expense, requires user x, previews without writing
   await page.getByRole("button", { name: "Bắt đầu xây quỹ" }).click();
   await page.getByLabel(/Sinh hoạt thiết yếu/).check();
   await page.getByRole("button", { name: "Tiếp tục", exact: true }).click();
-  const emergency = page.getByLabel("Emergency Fund — hệ số x", {
+  const emergency = page.getByLabel("Quỹ khẩn cấp — hệ số x", {
     exact: true,
   });
   await expect(emergency).toHaveValue("");
   await emergency.fill("6");
-  await page.getByLabel("Rainy Day Fund — hệ số x", { exact: true }).fill("1");
-  await page.getByLabel("Sinking Fund — hệ số x", { exact: true }).fill("2,5");
+  await page.getByLabel("Quỹ phát sinh — hệ số x", { exact: true }).fill("1");
+  await page
+    .getByLabel("Quỹ chi dự kiến — hệ số x", { exact: true })
+    .fill("2,5");
   await page.getByRole("button", { name: "Tiếp tục", exact: true }).click();
   await page
-    .getByRole("button", { name: "Ưu tiên Rainy Day Fund lên", exact: true })
+    .getByRole("button", { name: "Ưu tiên Quỹ phát sinh lên", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
@@ -461,7 +466,7 @@ test("onboarding links living expense, requires user x, previews without writing
   await expect(page.locator('[data-toast-kind="success"]')).toContainText(
     "Đã lưu thay đổi",
   );
-  await expect(page.locator(".fund-next")).toContainText("Rainy Day Fund");
+  await expect(page.locator(".fund-next")).toContainText("Quỹ phát sinh");
   expect((await view(page)).book?.configurations[0].priority[0]).toBe(
     "rainy_day",
   );
@@ -471,7 +476,7 @@ test("nested transactions, atomic transfers, corrections and filters retain pare
 }) => {
   const s = await setup(page);
   await page
-    .getByRole("button", { name: "Xem Emergency Fund", exact: true })
+    .getByRole("button", { name: "Xem Quỹ khẩn cấp", exact: true })
     .click();
   await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
   const parent = page.locator("dialog").first();
@@ -602,7 +607,7 @@ test("version conflicts preserve drafts and lost save responses retry once", asy
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
   await page.route(
-    "**/api/v1/funds/commands",
+    "**/api/v1/funds/commands*",
     async (route) => {
       await route.fetch();
       await route.abort();
@@ -690,7 +695,7 @@ for (const progressTheme of ["gold", "fire", "earth"] as const)
       .getByRole("button", { name: "Hiện số tiền", exact: true })
       .click();
     await page
-      .getByRole("button", { name: "Xem Emergency Fund", exact: true })
+      .getByRole("button", { name: "Xem Quỹ khẩn cấp", exact: true })
       .click();
     await page.getByRole("tab", { name: "Hướng dẫn", exact: true }).focus();
     await page.keyboard.press("End");

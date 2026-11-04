@@ -101,7 +101,7 @@ test("mobile navigation dismisses outside, on focus departure, Escape and deskto
 }) => {
   await login(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  const trigger = page.locator(".mobile-menu summary");
+  const trigger = page.locator(".mobile-menu > summary");
   const menu = page.locator(".mobile-menu");
   await trigger.click();
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
@@ -131,6 +131,7 @@ test("mobile navigation dismisses outside, on focus departure, Escape and deskto
   await expect(menu).not.toHaveAttribute("open", "");
   await page.setViewportSize({ width: 844, height: 390 });
   await trigger.click();
+  await menu.locator(".navigation-planned > summary").click();
   const lastLink = menu.locator("a").last();
   await lastLink.focus();
   await reachableControl(lastLink);

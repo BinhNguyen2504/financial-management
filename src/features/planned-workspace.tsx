@@ -8,8 +8,9 @@ import {
   moduleStatusLabels as moduleStatusLabelsSource,
   type Module,
 } from "@/features/catalog";
+import { PageGuide } from "@/features/help/page-guide";
 import { HelpPageTitle } from "@/features/help/provider";
-import { ArrowLeft, Check, CircleHelp } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import Link from "next/link";
 export function PlannedWorkspace({ item: sourceItem }: { item: Module }) {
   const { t: tr, config: localize } = useI18n("catalog");
@@ -48,6 +49,7 @@ export function PlannedWorkspace({ item: sourceItem }: { item: Module }) {
           <Garden variant={scenes[slug] ?? "balance"} />
         </div>
       </div>
+      <PageGuide pageId={item.slug} />
       <div className="spec-grid">
         <section className="panel">
           <div className="status-heading">
@@ -66,18 +68,19 @@ export function PlannedWorkspace({ item: sourceItem }: { item: Module }) {
           </ul>
         </section>
         <section className="panel question-panel">
-          <CircleHelp size={23} aria-hidden="true" />
-          <h2>{tr("Cần làm rõ cùng bạn")}</h2>
-          <ul>
-            {item.questions.map((question) => (
-              <li key={question}>{question}</li>
-            ))}
-          </ul>
+          <h2>{tr("Bạn có thể bắt đầu từ đây")}</h2>
           <p>
             {tr(
               "Mảnh ghép này đang được xây dựng. Trong lúc chờ, bạn có thể chăm sóc các hũ và theo dõi tháng của mình trong Chi tiêu.",
             )}
           </p>
+          <Link className="text-link" href="/income">
+            {tr("Thu nhập")}
+          </Link>
+          {" · "}
+          <Link className="text-link" href="/budgets">
+            {tr("Chi tiêu")}
+          </Link>
         </section>
       </div>
     </>

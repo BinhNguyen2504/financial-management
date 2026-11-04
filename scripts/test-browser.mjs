@@ -23,6 +23,8 @@ const db = postgres(process.env.TEST_DATABASE_ADMIN_URL, { max: 1 });
 const identities = new Map();
 const sessions = new Map();
 const authOutages = new Set();
+const userReads = new Map();
+const refreshes = new Map();
 const challenges = new Map();
 const confirmationCodes = new Map();
 const emailCodes = new Map();
@@ -71,6 +73,16 @@ const auth = http.createServer(async (request, response) => {
     const body = text ? JSON.parse(text) : {};
     const path = request.url.split("?")[0];
     // Controls belong exclusively to this isolated local test server.
+    if (path === "/__test__/request-counts") {
+      if (body.reset) {
+        userReads.delete(body.email);
+        refreshes.delete(body.email);
+      }
+      return send(200, {
+        user: userReads.get(body.email) ?? 0,
+        refresh: refreshes.get(body.email) ?? 0,
+      });
+    }
     if (path === "/__test__/auth-state") {
       if (body.unavailable) authOutages.add(body.email);
       else authOutages.delete(body.email);
@@ -145,6 +157,11 @@ const auth = http.createServer(async (request, response) => {
       const value = sessions.get(
         request.headers.authorization?.replace(/^Bearer /i, ""),
       );
+      if (value && request.method === "GET")
+        userReads.set(
+          value.user.email,
+          (userReads.get(value.user.email) ?? 0) + 1,
+        );
       if (!value || value.expires_at <= Date.now() / 1000)
         return send(401, { message: "Invalid token" });
       if (authOutages.has(value.user.email))
@@ -170,6 +187,8 @@ const auth = http.createServer(async (request, response) => {
         return send(200, session(user));
       }
       const old = sessions.get(body.refresh_token);
+      if (old)
+        refreshes.set(old.user.email, (refreshes.get(old.user.email) ?? 0) + 1);
       return old
         ? send(200, session(old.user))
         : send(401, { message: "Invalid refresh" });

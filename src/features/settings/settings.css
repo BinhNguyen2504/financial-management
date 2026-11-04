@@ -456,12 +456,117 @@
 }
 .settings-reset-body {
   display: grid;
-  gap: 1rem;
+  gap: 24px;
+  min-width: 0;
   overflow-wrap: anywhere;
 }
+.dialog-body:has(> .settings-reset-body) {
+  scroll-padding-block: 128px 8px;
+}
 .settings-reset-body p,
-.settings-reset-body h4 {
+.settings-reset-body h3 {
   margin: 0;
+}
+.settings-reset-progress {
+  position: sticky;
+  top: -24px;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: -24px 0 0;
+  padding: 24px 0 16px;
+  list-style: none;
+  background: var(--surface);
+}
+.settings-reset-body .settings-reset-progress > li {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  margin: 0;
+  padding-top: 12px;
+  border-top: 3px solid var(--border);
+  font-size: var(--font-size-14);
+}
+.settings-reset-progress li[aria-current="step"],
+.settings-reset-progress li[data-complete="true"] {
+  border-color: var(--text);
+}
+.settings-reset-step-number {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  font-weight: var(--weight-strong);
+}
+.settings-reset-progress [aria-current="step"] .settings-reset-step-number {
+  color: var(--surface);
+  background: var(--text);
+}
+.settings-reset-progress small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: var(--font-size-12);
+}
+.settings-reset-account {
+  display: grid;
+  gap: 6px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: var(--surface-alt);
+}
+.settings-reset-account p,
+.settings-reset-note {
+  color: var(--muted);
+  font-size: var(--font-size-14);
+}
+.settings-reset-account strong {
+  font-size: var(--font-size-18);
+  font-weight: var(--weight-strong);
+}
+.settings-reset-section {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.settings-reset-counts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 24px;
+  margin: 0;
+}
+.settings-reset-counts > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding-block: 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--font-size-14);
+}
+.settings-reset-counts dd {
+  flex-shrink: 0;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-strong);
+}
+.settings-reset-warning {
+  color: var(--danger);
+  font-weight: var(--weight-strong);
+}
+.settings-reset-verification {
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.settings-reset-body :is(h3, input, .form-error) {
+  scroll-margin-block: 0 8px;
+}
+.settings-reset-verification .backup-profile-option {
+  margin: 4px 0;
+  align-items: center;
 }
 .settings-reset-body button,
 .settings-reset-body a {
@@ -474,9 +579,45 @@
 }
 .settings-reset-confirm input {
   min-height: 44px;
+  min-width: 0;
   max-width: 100%;
   width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--muted);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
   font-size: 16px;
+}
+.settings-reset-confirm input:disabled {
+  background: var(--surface-alt);
+  cursor: not-allowed;
+}
+.settings-reset-confirm input:focus-visible {
+  border-color: var(--text);
+  outline: 3px solid var(--text);
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .settings-reset-progress {
+    top: -16px;
+    margin-top: -16px;
+    padding-top: 16px;
+    gap: 10px;
+  }
+  .settings-reset-body .settings-reset-progress > li {
+    gap: 6px;
+  }
+  .settings-reset-counts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-height: 500px) {
+  .dialog-body:has(> .settings-reset-body) {
+    scroll-padding-top: 96px;
+  }
 }
 @media (max-width: 1000px) {
   .settings-data-grid {

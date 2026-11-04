@@ -3,6 +3,7 @@
 import { useI18n } from "@/i18n/provider";
 
 import { useToast } from "@/components/toast";
+import { useForegroundRefresh } from "@/components/use-foreground-refresh";
 
 import {
   BackupError,
@@ -15,7 +16,7 @@ import { profileSchema } from "@/features/profile/fields";
 import { useUser } from "@/features/profile/user-provider";
 import { browserAuth } from "@/lib/supabase/browser";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { dataRequest, DataRequestError, type DataStatus } from "./api";
 
 import "./settings.css";
@@ -64,33 +65,40 @@ export function useSettingsWorkspace() {
   const statusRequest = useRef(0);
   const fileInput = useRef<HTMLInputElement>(null);
   const result = useRef<HTMLDivElement>(null);
-  async function reloadStatus() {
-    const sequence = ++statusRequest.current,
-      requestedOwner = owner.current;
-    setChecking(true);
-    setStatusError("");
-    try {
-      const next: DataStatus = await (await dataRequest("/status")).json();
-      if (
-        sequence === statusRequest.current &&
-        owner.current === requestedOwner
-      )
-        setStatus(next);
-    } catch (e) {
-      if (
-        sequence === statusRequest.current &&
-        owner.current === requestedOwner
-      ) {
-        setStatus(null);
-        setStatusError(message(e));
+  const refreshStatus = useForegroundRefresh(
+    useCallback(async () => {
+      const sequence = ++statusRequest.current,
+        requestedOwner = owner.current;
+      setChecking(true);
+      setStatusError("");
+      try {
+        const next: DataStatus = await (await dataRequest("/status")).json();
+        if (
+          sequence === statusRequest.current &&
+          owner.current === requestedOwner
+        )
+          setStatus(next);
+      } catch (e) {
+        if (
+          sequence === statusRequest.current &&
+          owner.current === requestedOwner
+        ) {
+          setStatus(null);
+          setStatusError(message(e));
+        }
+        throw e;
+      } finally {
+        if (
+          sequence === statusRequest.current &&
+          owner.current === requestedOwner
+        )
+          setChecking(false);
       }
-    } finally {
-      if (
-        sequence === statusRequest.current &&
-        owner.current === requestedOwner
-      )
-        setChecking(false);
-    }
+    }, []),
+    Boolean(user),
+  );
+  function reloadStatus() {
+    return refreshStatus().catch(() => {});
   }
   useEffect(() => {
     owner.current = user?.id;
@@ -125,22 +133,6 @@ export function useSettingsWorkspace() {
     },
     [prepared],
   );
-  useEffect(() => {
-    function foreground() {
-      if (
-        document.visibilityState === "visible" &&
-        owner.current &&
-        !inFlight.current
-      )
-        void reloadStatus();
-    }
-    window.addEventListener("focus", foreground);
-    document.addEventListener("visibilitychange", foreground);
-    return () => {
-      window.removeEventListener("focus", foreground);
-      document.removeEventListener("visibilitychange", foreground);
-    };
-  }, []);
   useEffect(() => {
     if (complete && importNotice) result.current?.focus();
   }, [complete, importNotice]);

@@ -1,3 +1,4 @@
+import { withFinancialTiming } from "@/server/performance";
 import { authenticatedOwner } from "@/server/auth";
 import { overviewRepository } from "@/server/database";
 import {
@@ -18,14 +19,16 @@ function failure(error: unknown) {
   });
 }
 export async function GET(request: Request) {
-  try {
-    return jsonResponse(
-      await overviewRepository().read(await authenticatedOwner(request)),
-      { headers: financialHeaders },
-    );
-  } catch (e) {
-    return failure(e);
-  }
+  return withFinancialTiming(request, async () => {
+    try {
+      return jsonResponse(
+        await overviewRepository().read(await authenticatedOwner(request)),
+        { headers: financialHeaders },
+      );
+    } catch (e) {
+      return failure(e);
+    }
+  });
 }
 export async function PUT(request: Request) {
   try {

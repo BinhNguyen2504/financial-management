@@ -118,7 +118,7 @@ export function FundLocations({
           <dl className="fund-amount-rows">
             {(fundId ? [fundId] : fundIds).map((k) => (
               <div key={k}>
-                <dt>{fundNames[k]}</dt>
+                <dt>{tr(fundNames[k])}</dt>
                 <dd>
                   {money(view.state.balances[positionKey(k, l.id)] ?? "0")}
                 </dd>
@@ -170,7 +170,7 @@ export function FundDetails({
   }
   return (
     <ExpenseModal
-      title={fundNames[fund]}
+      title={tr(fundNames[fund])}
       onClose={onClose}
       size="detail"
       footer={

@@ -1,3 +1,4 @@
+import { timePhase } from "./performance";
 import { setTransactionOwner, lockOwner } from "./owner-transaction";
 import { dataGeneration, withDataGeneration } from "./data-generation";
 import { restoreBlockers, restoreReasons } from "../domain/backup/status";
@@ -50,9 +51,11 @@ export function checkBackupSize(backup: FullBackup) {
 }
 async function schemaReady(db: DB) {
   const names = [...backupTables];
-  const rows = await db.unsafe<{ name: string; present: boolean }[]>(
-    "select name,to_regclass('public.'||name) is not null as present from unnest($1::text[]) as name",
-    [names],
+  const rows = await timePhase("sql", () =>
+    db.unsafe<{ name: string; present: boolean }[]>(
+      "select name,to_regclass('public.'||name) is not null as present from unnest($1::text[]) as name",
+      [names],
+    ),
   );
   if (rows.some((r) => !r.present))
     throw new BackupError(
@@ -62,14 +65,18 @@ async function schemaReady(db: DB) {
     );
 }
 async function importReady(db: DB): Promise<boolean> {
-  const [row] = await db.unsafe<{ ready: boolean }[]>(
-    "select to_regclass('public.data_imports') is not null as ready",
+  const [row] = await timePhase("sql", () =>
+    db.unsafe<{ ready: boolean }[]>(
+      "select to_regclass('public.data_imports') is not null as ready",
+    ),
   );
   return row.ready;
 }
 async function resetReady(db: DB) {
-  const [row] = await db.unsafe<{ ready: boolean }[]>(
-    "select to_regprocedure('public.reset_financial_data(uuid,uuid)') is not null and to_regclass('public.data_resets') is not null and to_regclass('public.data_generations') is not null as ready",
+  const [row] = await timePhase("sql", () =>
+    db.unsafe<{ ready: boolean }[]>(
+      "select to_regprocedure('public.reset_financial_data(uuid,uuid)') is not null and to_regclass('public.data_resets') is not null and to_regclass('public.data_generations') is not null as ready",
+    ),
   );
   return row.ready;
 }
@@ -93,14 +100,16 @@ function makeBackup(tables: BackupTables, profile: FullBackup["profile"]) {
   return backup;
 }
 async function counts(db: DB, owner: string) {
-  const rows = await db.unsafe<{ name: BackupTable; count: number }[]>(
-    backupTables
-      .map(
-        (t) =>
-          `select '${t}' as name,count(*)::integer as count from public.${t} where owner_id=$1`,
-      )
-      .join(" union all "),
-    [owner],
+  const rows = await timePhase("sql", () =>
+    db.unsafe<{ name: BackupTable; count: number }[]>(
+      backupTables
+        .map(
+          (t) =>
+            `select '${t}' as name,count(*)::integer as count from public.${t} where owner_id=$1`,
+        )
+        .join(" union all "),
+      [owner],
+    ),
   );
   return Object.fromEntries(rows.map((r) => [r.name, r.count]));
 }
@@ -125,9 +134,11 @@ async function readTables(db: DB, owner: string): Promise<BackupTables> {
       .join(",");
     const order = primaryColumns(table);
     result[table] = [
-      ...(await db.unsafe(
-        `select ${projection} from public.${table} where owner_id=$1${order.length ? ` order by ${order.join(",")}` : ""}`,
-        [owner],
+      ...(await timePhase("sql", () =>
+        db.unsafe(
+          `select ${projection} from public.${table} where owner_id=$1${order.length ? ` order by ${order.join(",")}` : ""}`,
+          [owner],
+        ),
       )),
     ];
   }
@@ -217,9 +228,11 @@ export function postgresDataRepository(sql: postgres.Sql) {
         const backup = makeBackup(await readTables(db, owner), profile);
         const operationId = randomUUID();
         const generation = await dataGeneration(db, owner);
-        const [operation] = await db.unsafe<{ expires_at: string }[]>(
-          "insert into public.data_resets(owner_id,id,generation,fingerprint) values($1,$2,$3,public.financial_data_fingerprint()) returning expires_at::text",
-          [owner, operationId, generation],
+        const [operation] = await timePhase("sql", () =>
+          db.unsafe<{ expires_at: string }[]>(
+            "insert into public.data_resets(owner_id,id,generation,fingerprint) values($1,$2,$3,public.financial_data_fingerprint()) returning expires_at::text",
+            [owner, operationId, generation],
+          ),
         );
         return {
           backup,
@@ -240,18 +253,20 @@ export function postgresDataRepository(sql: postgres.Sql) {
             "RESET_NOT_READY",
           );
         try {
-          const [row] = await db.unsafe<
-            {
-              result: {
-                empty: boolean;
-                dataGeneration: number;
-                operationId: string;
-              };
-            }[]
-          >("select public.reset_financial_data($1,$2) as result", [
-            operationId,
-            requestId,
-          ]);
+          const [row] = await timePhase("sql", () =>
+            db.unsafe<
+              {
+                result: {
+                  empty: boolean;
+                  dataGeneration: number;
+                  operationId: string;
+                };
+              }[]
+            >("select public.reset_financial_data($1,$2) as result", [
+              operationId,
+              requestId,
+            ]),
+          );
           return row.result;
         } catch (error) {
           if (
@@ -308,11 +323,16 @@ export function postgresDataRepository(sql: postgres.Sql) {
           expectedGeneration,
           async () => undefined,
         );
-        const [receipt] = await db.unsafe<
-          { fingerprint: string; result: ReturnType<typeof summarizeBackup> }[]
-        >(
-          "select fingerprint,result,to_jsonb(data_imports)->>'generation' as generation from public.data_imports where owner_id=$1 and id=$2",
-          [owner, requestId],
+        const [receipt] = await timePhase("sql", () =>
+          db.unsafe<
+            {
+              fingerprint: string;
+              result: ReturnType<typeof summarizeBackup>;
+            }[]
+          >(
+            "select fingerprint,result,to_jsonb(data_imports)->>'generation' as generation from public.data_imports where owner_id=$1 and id=$2",
+            [owner, requestId],
+          ),
         );
         if (receipt) {
           if (
@@ -338,10 +358,12 @@ export function postgresDataRepository(sql: postgres.Sql) {
             409,
             "ACCOUNT_NOT_EMPTY",
           );
-        const labelColumns = await db.unsafe<{ column_name: string }[]>(
-          `select column_name from information_schema.columns
+        const labelColumns = await timePhase("sql", () =>
+          db.unsafe<{ column_name: string }[]>(
+            `select column_name from information_schema.columns
           where table_schema='public' and table_name='expense_labels'
           and column_name in ('brand_key','icon_key')`,
+          ),
         );
         const missingVisuals = labelVisualColumns.filter(
           (column) => !labelColumns.some((row) => row.column_name === column),
@@ -365,9 +387,11 @@ export function postgresDataRepository(sql: postgres.Sql) {
           );
           // PostgreSQL checks self-referencing FKs after the entire INSERT statement.
           // Only allowlisted columns are read; owner is exclusively server supplied.
-          await db.unsafe(
-            `insert into public.${table}(owner_id,${columns.join(",")}) select $1::uuid,${columns.map((c) => `r.${c}`).join(",")} from jsonb_populate_recordset(null::public.${table},$2::text::jsonb) r`,
-            [owner, JSON.stringify(backup.tables[table])],
+          await timePhase("sql", () =>
+            db.unsafe(
+              `insert into public.${table}(owner_id,${columns.join(",")}) select $1::uuid,${columns.map((c) => `r.${c}`).join(",")} from jsonb_populate_recordset(null::public.${table},$2::text::jsonb) r`,
+              [owner, JSON.stringify(backup.tables[table])],
+            ),
           );
         }
         const readBack = await readTables(db, owner);
@@ -382,20 +406,24 @@ export function postgresDataRepository(sql: postgres.Sql) {
           );
         const result = summarizeBackup(backup);
         if (expectedGeneration > 0 || (await resetReady(db)))
-          await db.unsafe(
-            "insert into public.data_imports(owner_id,id,fingerprint,result,generation) values($1,$2,$3,$4::text::jsonb,$5)",
-            [
-              owner,
-              requestId,
-              fingerprint,
-              JSON.stringify(result),
-              expectedGeneration,
-            ],
+          await timePhase("sql", () =>
+            db.unsafe(
+              "insert into public.data_imports(owner_id,id,fingerprint,result,generation) values($1,$2,$3,$4::text::jsonb,$5)",
+              [
+                owner,
+                requestId,
+                fingerprint,
+                JSON.stringify(result),
+                expectedGeneration,
+              ],
+            ),
           );
         else
-          await db.unsafe(
-            "insert into public.data_imports(owner_id,id,fingerprint,result) values($1,$2,$3,$4::text::jsonb)",
-            [owner, requestId, fingerprint, JSON.stringify(result)],
+          await timePhase("sql", () =>
+            db.unsafe(
+              "insert into public.data_imports(owner_id,id,fingerprint,result) values($1,$2,$3,$4::text::jsonb)",
+              [owner, requestId, fingerprint, JSON.stringify(result)],
+            ),
           );
         return result;
       });

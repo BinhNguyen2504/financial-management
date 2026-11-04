@@ -1,3 +1,4 @@
+import { workspaceAction } from "./helpers/workspace-actions";
 import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { readFile, mkdir } from "node:fs/promises";
@@ -84,7 +85,7 @@ test("reports reconcile active-tab CSV and source detail, retain periods and sho
     page.getByText("Kỳ này chưa kết thúc", { exact: false }).first(),
   ).toBeVisible();
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Xuất CSV", exact: true }).click();
+  await (await workspaceAction(page, "Xuất bảng dữ liệu")).click();
   const file = await download;
   expect(await readFile((await file.path())!, "utf8")).toBe(reportCSV(report));
   const details = page.waitForResponse(
@@ -235,15 +236,11 @@ test("details detect source changes and the interface recovers from failures wit
   await expect(
     page.getByText("Chưa tải được Báo cáo. Hãy thử lại."),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Xuất CSV", exact: true }),
-  ).toBeDisabled();
+  await expect(await workspaceAction(page, "Xuất bảng dữ liệu")).toBeDisabled();
   await page.unroute("**/api/v1/reports?**");
   await page.getByRole("button", { name: "Thử tải lại", exact: true }).click();
   await ready(page);
-  await expect(
-    page.getByRole("button", { name: "Xuất CSV", exact: true }),
-  ).toBeEnabled();
+  await expect(await workspaceAction(page, "Xuất bảng dữ liệu")).toBeEnabled();
   await page.route("**/api/v1/reports?**", async (route) => {
     if (new URL(route.request().url()).searchParams.get("tab") === "savings")
       await new Promise((resolve) => setTimeout(resolve, 350));
@@ -279,9 +276,7 @@ test("reports translate, fit five themes, and retain the app shell at three widt
     page.getByRole("heading", { name: "Reports", exact: true }),
   ).toBeVisible();
   await ready(page);
-  await expect(
-    page.getByRole("button", { name: "Export CSV", exact: true }),
-  ).toBeVisible();
+  await expect(await workspaceAction(page, "Export CSV")).toBeVisible();
   const initial = page.viewportSize()!;
   for (const [index, theme] of [
     "garden",

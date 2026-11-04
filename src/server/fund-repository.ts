@@ -1,11 +1,12 @@
+import { timePhase } from "./performance";
+import { readBook, readLivingSource } from "./book-projections";
 import { withDataGeneration } from "./data-generation";
 import { withOwnerTransaction, lockOwner } from "./owner-transaction";
 import { changedRecords } from "./changed-records";
 import type postgres from "postgres";
 import { z } from "zod";
 import type { FundBook } from "../domain/funds/types";
-import { FundError, livingSource } from "../domain/funds/engine";
-import { transactionAdapter as expenseAdapter } from "./expense-repository";
+import { FundError } from "../domain/funds/engine";
 import type {
   FundRepository,
   FundStoredCommand,
@@ -14,61 +15,21 @@ import type {
 function adapter(
   db: Pick<postgres.Sql, "unsafe">,
   owner: string,
+  readOnly = false,
 ): FundTransactionRepository {
   const query = <T extends postgres.Row>(
     sql: string,
     args: (string | number | null)[] = [],
-  ) => db.unsafe<T[]>(sql, args);
+  ) => timePhase("sql", () => db.unsafe<T[]>(sql, args));
   let baseline: FundBook | undefined;
   return {
     async read() {
-      const [head] = await query<{ version: number }>(
-        "select version from public.funds_books where owner_id=$1",
-        [owner],
-      );
-      if (!head) return null;
-      const data = async <T>(table: string, order: string) =>
-        (
-          await query<{ data: T }>(
-            `select data from public.${table} where owner_id=$1 order by ${order}`,
-            [owner],
-          )
-        ).map((r) => r.data);
-      const funds = (
-        await query<{ id: FundBook["funds"][number] }>(
-          "select id from public.funds_definitions where owner_id=$1 order by id",
-          [owner],
-        )
-      ).map((r) => r.id);
-      const configurations = await data<FundBook["configurations"][number]>(
-        "funds_configurations",
-        "sequence",
-      );
-      const locations = await data<FundBook["locations"][number]>(
-        "funds_locations",
-        "id",
-      );
-      const revisions = await data<FundBook["revisions"][number]>(
-        "funds_transactions",
-        "sequence",
-      );
-      const audit = await query<FundBook["audit"][number]>(
-        `select version,to_char(at at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as at,action from public.funds_audit where owner_id=$1 order by version`,
-        [owner],
-      );
-      const book: FundBook = {
-        ...head,
-        funds,
-        configurations,
-        locations,
-        revisions,
-        audit: [...audit],
-      };
-      baseline = structuredClone(book);
+      const book = await readBook(db, owner, "funds");
+      if (book && !readOnly) baseline = structuredClone(book);
       return book;
     },
     async source(month) {
-      return livingSource(await expenseAdapter(db, owner).read(), month);
+      return readLivingSource(db, owner, month);
     },
     async command(id) {
       return (
@@ -157,24 +118,30 @@ export function postgresFundRepository(
     async transaction<T>(
       owner: string,
       fn: (tx: FundTransactionRepository) => Promise<T>,
+      readOnly = false,
     ): Promise<T> {
       z.uuid().parse(owner);
-      return (await withOwnerTransaction(sql, owner, async (tx) => {
-        const [ready] = await tx.unsafe<{ ready: boolean }[]>(
-          "select to_regclass('public.funds_books') is not null as ready",
-        );
-        if (!ready.ready)
-          throw new FundError(
-            "Quỹ an toàn chưa được bật trên hệ thống. Cần áp dụng migration Fund theo hướng dẫn triển khai.",
-            503,
-            "FUNDS_MIGRATION_REQUIRED",
+      return (await withOwnerTransaction(
+        sql,
+        owner,
+        async (tx) => {
+          const [ready] = await tx.unsafe<{ ready: boolean }[]>(
+            "select to_regclass('public.funds_books') is not null as ready",
           );
-        // Match restore's global lock order: Expenses first, then Fund.
-        await lockOwner(tx, [owner, `funds:${owner}`]);
-        return withDataGeneration(tx, owner, expectedGeneration, () =>
-          fn(adapter(tx, owner)),
-        );
-      })) as T;
+          if (!ready.ready)
+            throw new FundError(
+              "Quỹ an toàn chưa được bật trên hệ thống. Cần áp dụng migration Fund theo hướng dẫn triển khai.",
+              503,
+              "FUNDS_MIGRATION_REQUIRED",
+            );
+          // Match restore's global lock order: Expenses first, then Fund.
+          if (!readOnly) await lockOwner(tx, [owner, `funds:${owner}`]);
+          return withDataGeneration(tx, owner, expectedGeneration, () =>
+            fn(adapter(tx, owner, readOnly)),
+          );
+        },
+        readOnly,
+      )) as T;
     },
   };
 }

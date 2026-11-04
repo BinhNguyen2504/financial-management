@@ -1,3 +1,4 @@
+import { pageGuidance } from "../src/features/help/guidance";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import ts from "typescript";
@@ -231,4 +232,17 @@ describe("product messages and contextual content", () => {
     }
     expect(en).not.toContain("Tổng đã ghi nhận");
   });
+});
+
+it("translates every getting-started and reading guide without changing customer text", () => {
+  for (const guide of Object.values(pageGuidance)) {
+    for (const text of Object.values(guide)) {
+      expect(translate("en", text)).not.toBe(text);
+      expect(translate("en", text)).not.toMatch(/[ĂăÂâĐđÊêÔôƠơƯư]/u);
+      expect(translate("vi", text)).toBe(text);
+    }
+  }
+  expect(translate("en", "Quỹ khẩn cấp")).toBe("Emergency fund");
+  expect(translate("en", "Quỹ phát sinh")).toBe("Rainy day fund");
+  expect(translate("en", "Quỹ chi dự kiến")).toBe("Sinking fund");
 });

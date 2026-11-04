@@ -204,7 +204,7 @@ test("income missing cells, zero, unchanged drafts, stopped categories and chart
   await expect(page.getByRole("tooltip")).not.toContainText("777");
   await page.locator(".privacy-toggle").click();
   await page
-    .getByRole("button", { name: "Danh mục cố định", exact: true })
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Sửa danh mục Lương phản hồi", exact: true })

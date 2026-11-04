@@ -1,5 +1,11 @@
 // Public product copy and fixed illustrative data only; never account data.
 export const landing = {
+  "Danh mục cố định là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.":
+    "A fixed category is a recurring income source, not necessarily a fixed amount. Additional income is a one-off entry. Not entered is different from a recorded zero. Delete a category when no receipts remain in any month; otherwise use Stop.",
+  "Emergency Fund đã chuẩn bị 50% mục tiêu":
+    "Emergency Fund has reached 50% of its target",
+  "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Xem trước thay đổi, quay lại điều chỉnh rồi xác nhận lưu trong ứng dụng. Số liệu cập nhật trong kỳ đang xem.":
+    "Goals use linked sources or a separate ledger, with contribution plans and history. Preview changes, edit if needed, then confirm saving in the app. Figures update in the selected period.",
   "Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu đã có trong bản hiện tại.":
     "Income, Expenses, Savings, Investments, Safety funds and Goals are available in the current version.",
   "Chưa. Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu đã có trong phiên bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản phẩm.":
@@ -96,11 +102,11 @@ export const landing = {
   "Tôi có thể tự giữ bản sao dữ liệu không?":
     "Can I keep my own copy of my data?",
   "Có. Trong Cài đặt, tải bản sao lưu và khôi phục vào tài khoản trống. Xem trạng thái từng mục và mở chi tiết dữ liệu khi cần; bạn có thể làm trống tài khoản sau khi tải bản sao lưu và xác nhận xóa. File không có mật khẩu; hãy giữ ở nơi an toàn.":
-    "Yes. In Settings, download a backup and restore into an empty account. Review each module’s status and expand its details when needed; you can clear your account after downloading a backup and confirming deletion. The file has no password; keep it somewhere safe.",
+    "Yes. In Settings, download a backup and restore into an empty account. Review each section’s status and expand its details when needed; you can clear your account after downloading a backup and confirming deletion. The file has no password; keep it somewhere safe.",
   "Có thể dùng tiếng Anh không?": "Can I use English?",
   "Có dùng được trên điện thoại không?": "Does it work on a phone?",
-  "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu.":
-    "Use the app on your phone or computer, or add it to your home screen if your browser supports it. An internet connection is needed to enter and save data.",
+  "Bạn có thể dùng trên điện thoại và máy tính, hoặc thêm ứng dụng vào màn hình chính nếu trình duyệt hỗ trợ. Cần có mạng để nhập và lưu dữ liệu. Sau khi lưu, số liệu cập nhật trong kỳ đang xem.":
+    "Use the app on your phone or computer, or add it to your home screen if your browser supports it. An internet connection is needed to enter and save data. After saving, figures update in the selected period.",
   "Các con số trên trang này là của ai?":
     "Whose numbers are shown on this page?",
   "Đây là dữ liệu minh họa cố định. Bản xem thử không đọc tài chính của bạn và không lưu thao tác vào tài khoản.":
@@ -112,7 +118,7 @@ export const landing = {
     "One income entry. One spending jar. One step forward.",
   "Chia trước, chi sau. Hũ là phần tiền dành cho một mục đích; ngân hàng, ví hay tiền mặt là nơi bạn quy ước để chi. Đối chiếu số còn lại để biết tháng này thừa thiếu ra sao.":
     "Allocate first, spend later. A jar is money set aside for a purpose; a bank, wallet or cash is where you plan to spend from. Check the remaining balance to understand this month's surplus or shortfall.",
-  "Danh mục cố định là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.":
+  "Nguồn thu đều đặn là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.":
     "A fixed category is a recurring income source, not necessarily a fixed amount. Additional income is a one-off entry. Not entered is different from a recorded zero. Delete a category when no receipts remain in any month; otherwise use Stop.",
   "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.":
     "Separate opening assets, new contributions and gains/losses. Moving savings between holdings changes where they are held, without increasing total assets.",
@@ -178,13 +184,13 @@ export const landing = {
   "Ẩn số tiền minh họa": "Hide illustrative amounts",
   "Riêng tư": "Privacy",
   "Hướng dẫn ·": "Help ·",
-  "Trong ứng dụng, nút Hướng dẫn giúp bạn tìm hiểu từng mục khi cần.":
-    "In the app, use Help whenever you want to learn more about a section.",
+  "Mỗi mục có cách bắt đầu và giải thích số liệu. Mở Hướng dẫn khi cần các bước chi tiết.":
+    "Each section explains how to start and read its figures. Open Help for detailed steps.",
   "Tháng 06 · Dữ liệu mẫu": "June · Sample data",
   "Theo nhịp của bạn": "At your own pace",
   "Hoàn thành {0}%": "{0}% complete",
   "EMERGENCY · TIẾN ĐỘ DỰ PHÒNG": "EMERGENCY · RESERVE PROGRESS",
-  "Emergency Fund đã chuẩn bị 50% mục tiêu":
+  "Quỹ khẩn cấp đã chuẩn bị 50% mục tiêu":
     "Emergency Fund has reached 50% of its target",
   "Đã chuẩn bị 50% · Mức sinh hoạt": "50% funded · Living costs",
   "Minh họa mức thực chi khác nhau qua sáu tháng":
@@ -255,7 +261,7 @@ export const landing = {
   "Ứng dụng vẫn đang phát triển. Cùng nhìn lại những gì đã có trong phiên bản hiện tại và những phần đang tiếp tục được xây dựng.":
     "The app is still in development. See what is available in the current version and what is still being built.",
   "Tổng quan hiện tập trung vào các hũ chi tiêu. Báo cáo nằm trong từng mục; chưa có tổng tài sản ròng toàn hệ thống.":
-    "Overview currently focuses on spending jars. Reports are within individual modules; application-wide net worth is not available.",
+    "Overview currently focuses on spending jars. Reports are within individual sections; application-wide net worth is not available.",
   "Đây là định hướng phát triển, chưa phải tính năng sẵn sàng sử dụng. Kết nối ngân hàng và nhập liệu ngoại tuyến hiện chưa có.":
     "These are development plans, not features ready to use. Bank connections and offline data entry are not currently available.",
   "Một vài điều bạn có thể muốn biết": "A few things you may want to know",
@@ -274,7 +280,7 @@ export const landing = {
   "Nếu mất tài khoản, tôi có thể lấy lại dữ liệu không?":
     "Can I recover my data if I lose my account?",
   "Trong Cài đặt, bạn có thể tải bản sao lưu toàn bộ dữ liệu và khôi phục vào tài khoản trống. Nếu tài khoản có dữ liệu, bạn có thể xem trạng thái từng mục và mở chi tiết khi cần. Bạn có thể làm trống tài khoản hiện tại sau khi tải bản sao lưu, xác nhận đã lưu và xác nhận xóa toàn bộ. File không mật khẩu; hãy giữ ở nơi an toàn. Hồ sơ cá nhân được khôi phục nếu bạn chọn.":
-    "In Settings, download a full backup and restore into an empty account. If the account has data, review each module’s status and expand its details when needed. You can clear this account after downloading a backup, confirming it is saved and confirming deletion of all financial data. The file has no password; keep it somewhere safe. Profile restoration is optional.",
+    "In Settings, download a full backup and restore into an empty account. If the account has data, review each section’s status and expand its details when needed. You can clear this account after downloading a backup, confirming it is saved and confirming deletion of all financial data. The file has no password; keep it somewhere safe. Profile restoration is optional.",
   "Ứng dụng đã hoàn thiện chưa?": "Is the app finished?",
   "Chưa. Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và Quỹ an toàn đã có trong phiên bản hiện tại; các phần còn lại tiếp tục được xây dựng. Trang giới thiệu sẽ được rà soát và cập nhật cùng những thay đổi của sản phẩm.":
     "Not yet. Income, Expenses, Savings, Investments and Safety funds are available in the current version; other parts are still being built. The introduction is reviewed and updated alongside product changes.",

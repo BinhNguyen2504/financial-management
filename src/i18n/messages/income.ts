@@ -1,4 +1,9 @@
 export const income = {
+  "Danh mục cố định": "Regular categories",
+  "Danh mục cố định ·": "Regular categories ·",
+  "Danh mục cố định là gì?": "What is a regular category?",
+  "Chưa có danh mục cố định.": "No regular categories yet.",
+  "Thêm danh mục cố định": "Add regular category",
   "{0} khoản cần bổ sung": "{0} entries to complete",
   "{0} chưa nhập": "{0} not entered",
 
@@ -85,7 +90,7 @@ export const income = {
   "Khu vực thu nhập": "Income sections",
   "Nhập thu nhập": "Enter income",
   "Báo cáo": "Reports",
-  "Danh mục cố định": "Regular categories",
+  "Nguồn thu đều đặn": "Regular categories",
   "Tóm tắt thu nhập tháng": "Monthly income summary",
   "Tổng đã ghi nhận ·": "Recorded total ·",
   "Tháng tương lai: chỉ xem danh mục, chưa ghi thực nhận.":
@@ -97,8 +102,8 @@ export const income = {
     "Income entries do not automatically increase account balances or fund jars.",
   "Chưa nhập nghĩa là chưa ghi nhận thu nhập. Nhập 0 ₫ để xác nhận tháng này không có thu nhập từ danh mục này.":
     "Not entered means no receipt has been recorded. Enter 0 ₫ to confirm no income from this category this month.",
-  "Danh mục cố định ·": "Regular categories ·",
-  "Danh mục cố định là gì?": "What is a regular category?",
+  "Nguồn thu đều đặn ·": "Regular categories ·",
+  "Nguồn thu đều đặn là gì?": "What is a regular category?",
   "Thêm danh mục": "Add category",
   "Chưa có danh mục hoạt động trong tháng này. Thêm danh mục để nhập thu nhập định kỳ.":
     "No active categories this month. Add a category to record regular income.",
@@ -114,7 +119,7 @@ export const income = {
   "Cấu hình tại": "Configuration at",
   ". Danh mục tự tiếp tục qua năm mới; tiền mỗi tháng nhập riêng.":
     ". Categories continue into the next year; amounts are entered separately each month.",
-  "Chưa có danh mục cố định.": "No regular categories yet.",
+  "Chưa có nguồn thu đều đặn.": "No regular categories yet.",
   Từ: "From",
   "Chưa bắt đầu": "Not started",
   "Đang hoạt động": "Active",
@@ -144,7 +149,7 @@ export const income = {
   "Máy chủ chưa phản hồi dữ liệu hợp lệ. Vui lòng thử lại.":
     "The server did not return valid data. Try again.",
   "Không thể tải dữ liệu.": "Could not load data.",
-  "Thêm danh mục cố định": "Add regular category",
+  "Thêm nguồn thu đều đặn": "Add regular category",
   "Sửa danh mục": "Edit category",
   "Ngừng danh mục": "Stop category",
   "Xóa danh mục": "Delete category",

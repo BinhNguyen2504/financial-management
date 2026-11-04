@@ -1,4 +1,5 @@
 "use client";
+import { useViewState } from "@/components/use-view-state";
 
 import { useI18n } from "@/i18n/provider";
 
@@ -11,7 +12,7 @@ import type {
   InvestmentView,
 } from "@/domain/investments/types";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { downloadInvestment, InvestmentAPIError, investmentsJSON } from "./api";
 
 import { type EditorMode } from "./editor-config";
@@ -34,9 +35,16 @@ export function useInvestmentWorkspace({
   const toast = useToast();
   const money = useMoney(),
     hidden = useMoneyHidden(),
-    [date, setDate] = useState(initialToday),
+    [date, setDate] = useViewState("investments", "date", initialToday),
     [view, setView] = useState<InvestmentView | null>(null),
-    [tab, setTab] = useState("portfolio"),
+    [tab, setTab] = useViewState<string>(
+      "investments",
+      "tab",
+      "portfolio",
+      (v) =>
+        typeof v === "string" &&
+        ["portfolio", "transactions", "reports", "manage"].includes(v),
+    ),
     [error, setError] = useState(""),
     [status, setStatus] = useState(0),
     [loading, setLoading] = useState(true),
@@ -44,15 +52,31 @@ export function useInvestmentWorkspace({
   const [editor, setEditor] = useState<EditorMode | null>(null),
     [details, setDetails] = useState<string | null>(null),
     [transaction, setTransaction] = useState<string | null>(null);
-  const [filter, setFilter] = useState<ReportFilter>({
-      from: `${initialToday.slice(0, 4)}-01-01`,
-      to: initialToday,
-    }),
-    [activityCategory, setActivityCategory] = useState(""),
-    [activityKind, setActivityKind] = useState(""),
-    [from, setFrom] = useState(""),
-    [to, setTo] = useState(initialToday),
-    [includeCancelled, setIncludeCancelled] = useState(false);
+  const [filter, setFilter] = useViewState<ReportFilter>(
+      "investments",
+      "reportFilter",
+      {
+        from: `${initialToday.slice(0, 4)}-01-01`,
+        to: initialToday,
+      },
+    ),
+    [activityCategory, setActivityCategory] = useViewState(
+      "investments",
+      "activityCategory",
+      "",
+    ),
+    [activityKind, setActivityKind] = useViewState(
+      "investments",
+      "activityKind",
+      "",
+    ),
+    [from, setFrom] = useViewState("investments", "from", ""),
+    [to, setTo] = useViewState("investments", "to", initialToday),
+    [includeCancelled, setIncludeCancelled] = useViewState(
+      "investments",
+      "includeCancelled",
+      false,
+    );
   const request = useRef(0);
   const load = useCallback(async () => {
     const n = ++request.current;
@@ -97,9 +121,9 @@ export function useInvestmentWorkspace({
   const unrealized = investments.some((p) => p.unrealized === null)
     ? null
     : sum(investments.map((p) => p.unrealized));
-  const report = (() => {
+  const report = useMemo(() => {
     try {
-      return view
+      return view && tab === "reports"
         ? buildReport(view.book, filter, {
             today: view.today,
             now: `${view.today}T00:00:00Z`,
@@ -108,8 +132,12 @@ export function useInvestmentWorkspace({
     } catch {
       return null;
     }
-  })();
-  const live = book ? activeTransactions(book) : [];
+  }, [view, filter, tab]);
+  const live = useMemo(() => (book ? activeTransactions(book) : []), [book]);
+  const sequences = useMemo(
+    () => new Map(book?.revisions.map((r) => [r.id, r.sequence])),
+    [book],
+  );
   const rows: { t: InvestmentTransaction; cancelled: boolean }[] = live.map(
     (r) => ({ t: r.transaction, cancelled: false }),
   );
@@ -134,8 +162,7 @@ export function useInvestmentWorkspace({
     .sort(
       (a, b) =>
         b.t.date.localeCompare(a.t.date) ||
-        (book?.revisions.find((r) => r.id === b.t.id)?.sequence ?? 0) -
-          (book?.revisions.find((r) => r.id === a.t.id)?.sequence ?? 0),
+        (sequences.get(b.t.id) ?? 0) - (sequences.get(a.t.id) ?? 0),
     );
   const selected = state?.positions.find((p) => p.id === details);
   async function download(path: string, filename: string) {
@@ -145,9 +172,17 @@ export function useInvestmentWorkspace({
       setError(e instanceof Error ? e.message : tr("Không thể xuất dữ liệu."));
     }
   }
-  function saved() {
+  function saved(next?: InvestmentView) {
     setEditor(null);
     setNotice("");
+    if (next) {
+      request.current++;
+      setView(next);
+      setError("");
+      setStatus(0);
+      setLoading(false);
+      return;
+    }
     void load().catch(() =>
       toast("warning", tr("Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.")),
     );

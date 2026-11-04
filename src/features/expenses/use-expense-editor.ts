@@ -1,4 +1,5 @@
 "use client";
+import { useDiscardChanges } from "@/components/discard-changes";
 import { generationOf, generationHeaders } from "@/lib/data-generation";
 import { buildExpenseAction } from "./editor-action";
 
@@ -31,13 +32,15 @@ export function useExpenseEditor({
   onClose,
   onSaved,
   onReload,
+  onView,
 }: {
   editor: EditorMode;
   view: ExpenseView;
   month: string;
   onClose: () => void;
-  onSaved: () => Promise<void>;
+  onSaved: (view?: ExpenseView) => Promise<void>;
   onReload: () => Promise<ExpenseView>;
+  onView?: (view: ExpenseView) => void;
 }) {
   const { t: tr, locale, config: localize } = useI18n("expenses");
   const localizedTitles = localize(titles);
@@ -200,13 +203,16 @@ export function useExpenseEditor({
     setBusy(true);
     setError("");
     try {
-      await apiJSON<CommandResult>("/commands", {
-        method: "POST",
-        headers: generationHeaders(generation),
-        body: JSON.stringify(command.current),
-      });
+      const result = await apiJSON<CommandResult & { view?: ExpenseView }>(
+        "/commands?return=view",
+        {
+          method: "POST",
+          headers: generationHeaders(generation),
+          body: JSON.stringify(command.current),
+        },
+      );
       toast("success", tr("Đã lưu thay đổi."));
-      await onSaved();
+      await onSaved(result.view);
     } catch (e) {
       const unknownWrite =
         !(e instanceof RequestError) ||
@@ -259,10 +265,11 @@ export function useExpenseEditor({
     setPreview(null);
     command.current = null;
   };
-  const classificationSaved = async () => {
+  const classificationSaved = async (response?: ExpenseView) => {
     let next: ExpenseView;
     try {
-      next = await onReload();
+      next = response ?? (await onReload());
+      if (response) onView?.(response);
     } catch {
       toast("warning", tr("Đã lưu phân loại nhưng chưa tải lại được dữ liệu."));
       setClassifying(false);
@@ -285,10 +292,17 @@ export function useExpenseEditor({
     setPreview(null);
     command.current = null;
   };
+  const { close, discardConfirmation } = useDiscardChanges(
+    draft !== initialDraft,
+    busy || uncertain,
+    onClose,
+    formId,
+  );
   return {
     localizedTitles,
     editor,
-    onClose,
+    onClose: close,
+    discardConfirmation,
     busy,
     uncertain,
     preview,

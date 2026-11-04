@@ -1,8 +1,8 @@
 import { goals } from "./goals";
 import { reports } from "./reports";
 export const help = {
-  "Một chút bình yên có 200 lời nhắn Việt/Anh, mỗi câu tối đa 35 từ. Câu đổi khi chuyển trang hoặc tải lại; đổi ngôn ngữ chỉ đổi bản dịch. Bật widget để đặt lời nhắn trong lưới Tổng quan, tắt widget để hiện ở đầu trang. Lượt đọc lưu theo tab, ngoài backup tài chính.":
-    "A moment of calm offers 200 notes in Vietnamese and English, each up to 35 words. A new note appears on page navigation or reload; changing language only changes its translation. Enable the widget to place it in the Overview grid, or disable it to show it at the top. Reading progress stays in this tab, outside financial backups.",
+  "Một chút bình yên có 200 lời nhắn Việt/Anh, mỗi câu tối đa 35 từ. Câu đổi khi chuyển trang hoặc tải lại; đổi ngôn ngữ chỉ đổi bản dịch. Bật thẻ thông tin để đặt lời nhắn trong lưới Tổng quan, tắt thẻ thông tin để hiện ở đầu trang. Lượt đọc lưu theo tab, ngoài backup tài chính.":
+    "A moment of calm offers 200 notes in Vietnamese and English, each up to 35 words. A new note appears on page navigation or reload; changing language only changes its translation. Enable the card to place it in the Overview grid, or disable it to show it at the top. Reading progress stays in this tab, outside financial backups.",
   ...reports,
   "Theo dõi phần tài sản đang giữ và tiền chờ của từng danh mục. Giá trị tài sản luôn đi kèm ngày định giá.":
     "Track current holdings and each portfolio’s available cash. Asset values always include their valuation date.",
@@ -231,7 +231,7 @@ export const help = {
     "For tracking actual income by month and source, and spotting missing entries. Track repeating sources separately from one-off receipts.",
   "Ghi ==tiền đã thực nhận==, không coi khoản dự kiến là tiền đã có. Trước khi đánh giá thu nhập tăng hay giảm, kiểm tra kỳ đó đã nhập đủ chưa.":
     "Record ==money actually received==; expected income is not money already available. Before comparing income, check whether the period is complete.",
-  "Danh mục cố định": "Regular category",
+  "Nguồn thu đều đặn": "Regular category",
   "Nguồn thu dùng lại qua các tháng từ tháng bắt đầu đến khi ngừng, ví dụ Lương. **Cố định là nguồn lặp lại, không phải số tiền bất biến**; app không tự ghi tiền cho bạn.":
     "An income source reused from its start month until stopped, such as Salary. **Regular means a repeating source, not an unchanging amount**; the app does not enter money for you.",
   "Thu phát sinh": "One-off income",
@@ -250,7 +250,7 @@ export const help = {
   "Tạo nguồn thu lặp lại": "Create a repeating income source",
   "Khi bắt đầu theo dõi một nguồn thu đều đặn.":
     "When starting to track a regular source.",
-  "Vào phần Danh mục cố định, chọn Thêm danh mục.":
+  "Vào phần Nguồn thu đều đặn, chọn Thêm danh mục.":
     "Open Regular categories and choose Add category.",
   "Nhập tên, mô tả nếu cần và tháng bắt đầu.":
     "Enter a name, optional description and start month.",
@@ -310,10 +310,10 @@ export const help = {
   "So sánh Bảng và Biểu đồ, kiểm tra Tổng đã ghi nhận cùng cảnh báo chưa nhập.":
     "Compare Table and Chart, checking Recorded total and missing-entry warnings.",
   "Xuất bảng dữ liệu theo bộ lọc đang chọn khi cần đối chiếu bên ngoài.":
-    "Export CSV under the current filters for external reconciliation.",
+    "Export data under the current filters for external reconciliation.",
   "Kết quả: bảng, biểu đồ và file cùng phạm vi lọc. File xuất có số tiền đầy đủ, kể cả khi giao diện đang ẩn tiền.":
     "Result: table, chart and file share filters. CSV contains full amounts even when the screen hides them.",
-  "Nguồn Lương nhận ==20.000.000 ₫== tháng này và ==22.000.000 ₫== tháng sau vẫn là một danh mục cố định. Thưởng dự án ==3.000.000 ₫== chỉ một lần có thể ghi vào Thu phát sinh.":
+  "Nguồn Lương nhận ==20.000.000 ₫== tháng này và ==22.000.000 ₫== tháng sau vẫn là một nguồn thu đều đặn. Thưởng dự án ==3.000.000 ₫== chỉ một lần có thể ghi vào Thu phát sinh.":
     "Salary of ==20,000,000 ₫== this month and ==22,000,000 ₫== next month is still one regular category. A ==3,000,000 ₫== project bonus received once can be One-off income.",
   "Đã nhập Lương ==10.000.000 ₫==, sau đó nhận thêm ==5.000.000 ₫==: sửa số thực nhận tháng thành ==15.000.000 ₫==, không nhập ==5.000.000 ₫== để mong app cộng dồn.":
     "If Salary was ==10,000,000 ₫== then another ==5,000,000 ₫== arrived, edit the month to ==15,000,000 ₫==; entering ==5,000,000 ₫== will not add to it.",
@@ -423,7 +423,7 @@ export const help = {
   "Đọc tài sản, vốn nạp ròng, kết quả kỳ và lãi/lỗ; dùng Bảng hoặc chú thích biểu đồ để kiểm tra số.":
     "Read assets, net capital, period results and profit/loss; use Table or chart tooltips to check figures.",
   "Xuất bảng dữ liệu theo phạm vi báo cáo; dùng Cài đặt cho sao lưu/khôi phục toàn tài khoản.":
-    "Export CSV for the report scope; use Settings for whole-account backup/restore.",
+    "Export data for the report scope; use Settings for whole-account backup/restore.",
   "Kết quả: báo cáo có thể đi qua nhiều năm. Thiếu giá không được coi là giá trị bằng 0; file xuất có dữ liệu đầy đủ.":
     "Result: reports can span years. Missing prices are not treated as zero; exports contain full data.",
   "Chuyển ==5.000.000 ₫== từ ví Tiết kiệm sang mở sổ chỉ đổi hình thức giữ tiền. Tổng tài sản không tăng thêm ==5.000.000 ₫== vì thao tác chuyển.":
@@ -433,7 +433,7 @@ export const help = {
   "Tài sản trong Tiết kiệm chưa phải tài sản ròng toàn ứng dụng. Không ghi lại cùng lượng vàng ở Đầu tư chỉ để tổng hợp.":
     "Savings assets are not application-wide net worth. Do not duplicate the same gold in Investments just to summarise it.",
   "Không ghi chuyển nội bộ thêm lần nữa thành thu nhập hoặc chi tiêu. Chọn Bên ngoài không tự tạo bản ghi ở mục khác.":
-    "Do not record internal transfers again as income or spending. Choosing External does not create entries in another module.",
+    "Do not record internal transfers again as income or spending. Choosing External does not create entries in another section.",
   "Dành cho người muốn theo dõi vốn và giá trị đầu tư theo tổng danh mục, cùng nhiều ví tiền chờ bằng VND. Hiện không quản lý từng mã, khối lượng hoặc lô chứng khoán.":
     "For tracking capital and value at portfolio level, with multiple VND cash wallets. Individual securities, quantities and security lots are not currently managed.",
   "Tách tiền góp khỏi kết quả đầu tư; tách tài sản đang đầu tư khỏi tiền đang chờ. Giá trị phải đi kèm ngày cập nhật để tránh hiểu một số cũ là số hiện tại.":
@@ -555,7 +555,7 @@ export const help = {
   "Khi lần đầu tạo Quỹ an toàn.": "When first creating Safety funds.",
   "Mở thiết lập, chọn các hũ chi tháng phục vụ nhu cầu sinh hoạt.":
     "Open setup and choose monthly jars covering living needs.",
-  "Nhập hệ số cho Emergency, Rainy Day và Sinking; dùng nút lên/xuống để xếp ưu tiên.":
+  "Nhập hệ số cho Quỹ khẩn cấp, Quỹ phát sinh và Quỹ chi dự kiến; dùng nút lên/xuống để xếp ưu tiên.":
     "Enter Emergency, Rainy Day and Sinking multipliers; use up/down controls for priority.",
   "Xem trước nguồn, mức sinh hoạt và mục tiêu rồi xác nhận.":
     "Preview sources, living costs and targets, then confirm.",
@@ -612,7 +612,7 @@ export const help = {
     "Result: track usage purposes and what needs replenishing towards your chosen target.",
   "Mức sinh hoạt minh họa ==6.000.000 ₫==, hệ số tự chọn 3 → mục tiêu ==18.000.000 ₫==. Đang có ==9.000.000 ₫== → tiến độ 50%. Đây chỉ là ví dụ phép tính, không phải mức dự phòng bắt buộc.":
     "Illustrative living costs of ==6,000,000 ₫== with a chosen multiplier of 3 → ==18,000,000 ₫== target. Holding ==9,000,000 ₫== → 50% progress. This illustrates arithmetic, not a mandatory reserve level.",
-  "Chuyển ==1.000.000 ₫== từ Rainy Day sang Emergency làm thay số dư từng quỹ, tổng dự phòng không đổi.":
+  "Chuyển ==1.000.000 ₫== từ Quỹ phát sinh sang Quỹ khẩn cấp làm thay số dư từng quỹ, tổng dự phòng không đổi.":
     "Moving ==1,000,000 ₫== from Rainy Day to Emergency changes individual balances while total reserves stay the same.",
   "Đổi hũ Chi tiêu chưa tự đổi mục tiêu Quỹ an toàn; cần xác nhận nguồn mới.":
     "Changing Expenses jars does not update Safety fund targets automatically; confirm new sources.",
@@ -629,8 +629,11 @@ export const help = {
     "A whole-account copy of business data and history, with supported profile fields. The file is unencrypted and **always contains full amounts even when amounts are hidden**.",
   "Khôi phục vào tài khoản trống": "Restore to an empty account",
   "Nhập bản sao hợp lệ vào **tài khoản trống dữ liệu tài chính**. Trong Cài đặt, xem mục nào có dữ liệu hoặc trống; mở từng mục để xem sổ và lịch sử. Xóa/hủy từng giao dịch vẫn giữ sổ và lịch sử. Có thể dùng tài khoản trống khác hoặc chọn Làm trống dữ liệu tài chính sau khi lưu bản sao lưu và xác nhận xóa toàn bộ.":
-    "Import a valid backup into an **account with no financial data**. In Settings, see which modules have data or are empty, then expand a module to review its books and history. Deleting or cancelling individual transactions retains books and history. Use another empty account or choose Clear financial data after saving a backup and confirming deletion of all financial data.",
+    "Import a valid backup into an **account with no financial data**. In Settings, see which sections have data or are empty, then expand a section to review its books and history. Deleting or cancelling individual transactions retains books and history. Use another empty account or choose Clear financial data after saving a backup and confirming deletion of all financial data.",
   "Khôi phục hồ sơ tùy chọn": "Optional profile restore",
+  "Làm trống dữ liệu tài chính": "Clear financial data",
+  "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** trước khi xóa. Tạo file không có nghĩa là bạn đã lưu file.":
+    "The dialog has two steps: create a backup, then review and confirm. Check the account email, save the JSON file and confirm you have checked it; type **XÓA TOÀN BỘ** exactly before deleting. Creating a file does not mean you have saved it.",
   "Có thể nhập lại họ tên, ngày sinh và giới tính nếu chọn. Mặc định tắt; không thay email, token hoặc tài khoản đăng nhập.":
     "Optionally import full name, date of birth and gender. Off by default; email, tokens and sign-in identity do not change.",
   "Giao diện và tùy chọn trên trình duyệt":
@@ -746,7 +749,7 @@ export const help = {
   "Giao dịch của Tiết kiệm, Đầu tư và Quỹ an toàn được ghi trong từng trang tương ứng.":
     "Savings, Investments and Safety fund transactions are recorded on their own pages.",
   "Kết quả: sử dụng được sổ hiện có; dữ liệu giữa các mục không tự liên kết thành ledger chung.":
-    "Result: use existing ledgers; modules do not automatically combine into a shared ledger.",
+    "Result: use existing ledgers; sections do not automatically combine into a shared ledger.",
   "Muốn ghi lương đã nhận: dùng Thu nhập. Muốn đối chiếu còn bao nhiêu tiền trong hũ Sinh hoạt: dùng Chi tiêu.":
     "To record received salary, use Income. To reconcile remaining Living costs jar money, use Expenses.",
   "Các mục mô tả trên trang là dự kiến; chưa có nhập giao dịch chung, mẫu định kỳ hoặc nhập bảng dữ liệu chung để thao tác.":
@@ -757,7 +760,7 @@ export const help = {
     "Separate ==spending purpose from holding location==. A bank name alone does not say what the money is for.",
   "Tài khoản và nơi giữ": "Accounts and holding locations",
   "Tiền mặt, ví điện tử hoặc ngân hàng là các nơi giữ tiền. Phương thức trong Chi tiêu hiện chỉ là phân loại; ví trong từng mục là sổ độc lập.":
-    "Cash, e-wallets and banks hold money. Expenses holding methods are categories; wallets inside each module are independent ledgers.",
+    "Cash, e-wallets and banks hold money. Expenses holding methods are categories; wallets inside each section are independent ledgers.",
   "Theo dõi nơi giữ bằng chức năng hiện có":
     "Track holding locations with available features",
   "Khi muốn tổ chức dữ liệu theo nơi tiền đang nằm.":
@@ -765,11 +768,11 @@ export const help = {
   "Trong Chi tiêu, dùng Phương thức để phân loại hũ theo nơi chi.":
     "In Expenses, use Holding method to categorise jars by spending location.",
   "Trong Tiết kiệm/Đầu tư, dùng ví của mục đó; trong Quỹ an toàn, dùng Nơi giữ tiền.":
-    "In Savings/Investments use that module's wallets; in Safety funds use Holding locations.",
+    "In Savings/Investments use that section's wallets; in Safety funds use Holding locations.",
   "Đối chiếu với app ngân hàng và ghi điều chỉnh phù hợp trong từng sổ.":
     "Reconcile with your banking app and record suitable adjustments in each ledger.",
   "Kết quả: nhìn rõ nơi giữ trong phạm vi từng mục, chưa có số dư tài khoản chung tự đồng bộ.":
-    "Result: clear locations within each module; no automatically synced shared account balance yet.",
+    "Result: clear locations within each section; no automatically synced shared account balance yet.",
   "Tên Ngân hàng A trong Phương thức của hũ giúp biết nơi dùng để chi. Nó chưa phải tài khoản ngân hàng được kết nối hay số dư tự cập nhật.":
     "Bank A as a jar's holding method identifies where you spend. It is not a connected bank account or automatically updated balance.",
   "Không cộng máy móc các sổ nếu bạn đã ghi cùng một khoản tiền ở nhiều nơi. Chưa có kết nối ngân hàng hoặc đối soát tự động toàn ứng dụng.":
@@ -797,10 +800,10 @@ export const help = {
   "Mô tả về tiến độ liên kết và ước tính mức góp trên trang là định hướng, không phải tính năng đã chạy.":
     "Descriptions of linked progress and contribution estimates are direction, not working features.",
   "Trang Báo cáo chung **đang phát triển**. Hiện báo cáo được cung cấp riêng trong các mục đã triển khai.":
-    "The shared Reports page is **in development**. Reports currently exist separately in implemented modules.",
+    "The shared Reports page is **in development**. Reports currently exist separately in implemented sections.",
   "Đọc con số cùng kỳ, phạm vi và nguồn dữ liệu. ==Tổng số dư khác tổng dòng tiền, tiền góp khác lợi nhuận==; chỉ so sánh khi hiểu đang đo gì.":
     "Read each figure with its period, scope and source. ==Balances differ from cash flow, contributions differ from profit==; compare only when you understand the measure.",
-  "Báo cáo theo từng mục": "Reports by module",
+  "Báo cáo theo từng mục": "Reports by section",
   "Tổng hợp từ sổ của từng trang theo bộ lọc riêng. Không phải báo cáo tài sản ròng hợp nhất của toàn ứng dụng.":
     "Summaries from each page's ledger under its own filters. They are not consolidated application-wide net worth reports.",
   "Số dư và dòng tiền": "Balances and cash flow",
@@ -813,7 +816,7 @@ export const help = {
   "Chọn kỳ và bộ lọc phù hợp; đọc bảng, biểu đồ và nhãn thiếu dữ liệu/tạm tính.":
     "Choose suitable periods and filters; read tables, charts and missing/provisional labels.",
   "Xuất bảng dữ liệu ở các mục có nút xuất; dùng Cài đặt cho bản sao lưu toàn bộ dữ liệu.":
-    "Export CSV in modules with an export button; use Settings for whole-account backup.",
+    "Export data in sections with an export button; use Settings for whole-account backup.",
   "Kết quả: có báo cáo trong phạm vi sổ đang xem. Chi tiêu hiện báo cáo tương tác trong năm hiện tại; không suy thành báo cáo chung.":
     "Result: reports within the selected ledger. Expenses interactive reports cover the current year; do not infer a shared report.",
   "Tài sản cuối tháng 1 là ==10.000.000 ₫== và cuối tháng 2 là ==12.000.000 ₫==: tài sản ở cuối tháng 2 là ==12.000.000 ₫==, không phải ==22.000.000 ₫==.":

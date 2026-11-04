@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useI18n } from "@/i18n/provider";
 import { formatDate, formatMonth } from "@/i18n/format";
 import { useMoney } from "@/components/privacy";
+import { EmptyState } from "@/components/empty-state";
 import { DailyNote } from "@/components/daily-note";
 import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import { widgetCatalog, type WidgetId } from "@/domain/overview/layout";
@@ -65,10 +66,41 @@ export function OverviewWidget({
       <dd>{amount(v)}</dd>
     </div>
   );
+  const nextSteps: Partial<
+    Record<WidgetId, { empty: string; action: string }>
+  > = {
+    income: {
+      empty:
+        "Chưa ghi nhận thu nhập. Bắt đầu bằng nguồn thu như lương hoặc một khoản thu thêm.",
+      action: "Mở Thu nhập để ghi nhận",
+    },
+    expenses: {
+      empty:
+        "Chưa có số liệu chi tiêu. Tạo hũ cho một mục đích như sinh hoạt rồi đặt số tiền dự kiến.",
+      action: "Mở Chi tiêu để kiểm tra hũ",
+    },
+    savings: {
+      empty:
+        "Chưa có khoản tiết kiệm. Thêm tiền tiết kiệm, sổ tiền gửi hoặc vàng bạn đang có.",
+      action: "Mở Tiết kiệm để cập nhật",
+    },
+    investments: {
+      empty:
+        "Chưa có danh mục đầu tư. Tạo danh mục rồi ghi tiền chờ hoặc tài sản đang giữ.",
+      action: "Mở Đầu tư để cập nhật",
+    },
+    funds: {
+      empty:
+        "Chưa thiết lập quỹ. Chọn chi phí sinh hoạt và đặt mức dự phòng phù hợp với bạn.",
+      action: "Mở Quỹ an toàn để chuẩn bị",
+    },
+  };
+  const nextStep = nextSteps[id];
   const empty = (
-    <p className="overview-empty">
-      {t("Chưa có dữ liệu. Mở module để bắt đầu ghi nhận.")}
-    </p>
+    <EmptyState
+      title={t("Chưa có dữ liệu")}
+      description={t(nextStep?.empty ?? "Chưa có dữ liệu")}
+    />
   );
   let content: ReactNode = null;
   if (id === "peace") content = <DailyNote showLabel={false} />;
@@ -178,7 +210,7 @@ export function OverviewWidget({
         <>
           <dl>{metric("Tổng dự phòng", v.total, true)}</dl>
           <p className="expense-muted">
-            {t("Emergency đủ trang trải {0} tháng", {
+            {t("Quỹ khẩn cấp đủ trang trải {0} tháng", {
               0: new Intl.NumberFormat(numberLocale, {
                 maximumFractionDigits: 2,
               }).format(Number(v.emergencyMonths)),
@@ -377,13 +409,17 @@ export function OverviewWidget({
     content = (
       <>
         {!needed.length && (
-          <p>{t("Bật widget của một module để xem các khoản cần chú ý.")}</p>
+          <p>
+            {t(
+              "Bật thẻ thông tin của một chức năng để xem các khoản cần chú ý.",
+            )}
+          </p>
         )}
         {!!needed.length && !items.length && !pending && (
           <p>
             {t(
               failed
-                ? "Chưa kiểm tra đủ các module."
+                ? "Chưa kiểm tra đủ các chức năng."
                 : "Chưa có khoản cần chú ý từ dữ liệu đã ghi.",
             )}
           </p>
@@ -434,13 +470,6 @@ export function OverviewWidget({
             </p>
           )}
         </div>
-        {catalog.href && (
-          <Link className="text-link" href={catalog.href}>
-            {t("Mở module")}
-            <span className="sr-only"> · {t(catalog.title)}</span>
-            <span aria-hidden="true"> →</span>
-          </Link>
-        )}
       </header>
       {failed && (
         <div className="overview-source-error" role="status">
@@ -448,7 +477,7 @@ export function OverviewWidget({
             {t(
               staleSources.size && needed.some((s) => staleSources.has(s))
                 ? "Chưa cập nhật được. Đang hiển thị số liệu lần tải trước."
-                : "Chưa tải được nguồn dữ liệu của widget.",
+                : "Chưa tải được nguồn dữ liệu của thẻ thông tin.",
             )}
           </p>
           <button
@@ -463,9 +492,16 @@ export function OverviewWidget({
         </div>
       )}
       {pending && loading && (
-        <LoadingStatus>{t("Đang tải widget…")}</LoadingStatus>
+        <LoadingStatus>{t("Đang tải thẻ thông tin…")}</LoadingStatus>
       )}
       {content}
+      {catalog.href && (
+        <Link className="text-link overview-next-step" href={catalog.href}>
+          {t(nextStep?.action ?? "Xem chi tiết")}
+          <span className="sr-only"> · {t(catalog.title)}</span>
+          <span aria-hidden="true"> →</span>
+        </Link>
+      )}
     </section>
   );
 }

@@ -22,6 +22,11 @@ async function quoteId(page: Page) {
 async function navigate(page: Page, path: string) {
   const menu = page.getByLabel("Menu chức năng", { exact: true });
   if (await menu.isVisible()) await menu.click();
+  if (path === "/transactions" || path === "/accounts") {
+    const planned = page.locator(".navigation-planned:visible").first();
+    if ((await planned.getAttribute("open")) === null)
+      await planned.locator("summary").click();
+  }
   await page
     .locator(
       `.navigation a[href="${path}"]:visible, .mobile-nav a[href="${path}"]:visible`,

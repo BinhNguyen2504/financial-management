@@ -1,0 +1,75 @@
+/* Keep guidance close at hand without competing with financial figures. */
+.page-guide {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.page-guide > summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 10px 0;
+  width: fit-content;
+  color: var(--text);
+}
+.page-guide-copy {
+  display: grid;
+  gap: 14px;
+  margin: 8px 0 18px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  line-height: 1.65;
+}
+.page-guide-copy dt {
+  font-weight: 700;
+  color: var(--text);
+}
+.page-guide-copy dd {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+.friendly-empty {
+  display: grid;
+  gap: 10px;
+  padding: 12px 0;
+  line-height: 1.6;
+}
+.friendly-empty h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.friendly-empty p {
+  margin: 0;
+  color: var(--muted);
+  max-width: 65ch;
+}
+.overview-next-step {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+@media (min-width: 900px) {
+  .page-guide-copy {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .help-content .page-guide-copy {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .overview-heading {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .overview-widget {
+    padding: 18px;
+    gap: 12px;
+  }
+  .page-guide {
+    margin-bottom: 12px;
+  }
+}

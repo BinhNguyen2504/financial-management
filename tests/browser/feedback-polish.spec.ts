@@ -91,7 +91,7 @@ test("thin menu scrollbars retain keyboard access in expanded, collapsed and mob
       });
     }
     await page.setViewportSize({ width: 375, height: 400 });
-    await page.locator(".mobile-menu summary").click();
+    await page.locator(".mobile-menu > summary").click();
     const nav = page.locator(".mobile-menu .navigation");
     await nav.locator("a").last().focus();
     await expect(nav.locator("a").last()).toBeInViewport();
@@ -99,7 +99,7 @@ test("thin menu scrollbars retain keyboard access in expanded, collapsed and mob
     await page.screenshot({
       path: info.outputPath(`menu-mobile-${theme}.png`),
     });
-    await page.locator(".mobile-menu summary").click();
+    await page.locator(".mobile-menu > summary").click();
   }
 });
 
@@ -144,7 +144,7 @@ test("API errors, uncertain results and successful retries have distinct readabl
   await dialog.getByLabel("Tên", { exact: true }).fill("Bản nháp thông báo");
   await dialog.getByLabel("Số tiền thực nhận (VND)").fill("123000");
   const save = dialog.getByRole("button", { name: "Lưu", exact: true });
-  await page.route("**/api/v1/income/commands", (route) =>
+  await page.route("**/api/v1/income/commands*", (route) =>
     route.fulfill({
       status: 400,
       json: {
@@ -188,8 +188,8 @@ test("API errors, uncertain results and successful retries have distinct readabl
     expect((await close.boundingBox())!.width).toBeGreaterThanOrEqual(44);
   }
   await toast.getByRole("button").click();
-  await page.unroute("**/api/v1/income/commands");
-  await page.route("**/api/v1/income/commands", (route) => route.abort());
+  await page.unroute("**/api/v1/income/commands*");
+  await page.route("**/api/v1/income/commands*", (route) => route.abort());
   await save.click();
   await expect(toast).toHaveAttribute("data-toast-kind", "warning");
   await expect(toast.locator(".app-toast-title")).toHaveText("Cần kiểm tra");
@@ -198,7 +198,7 @@ test("API errors, uncertain results and successful retries have distinct readabl
   );
   await page.screenshot({ path: info.outputPath("toast-warning.png") });
   await toast.getByRole("button").click();
-  await page.unroute("**/api/v1/income/commands");
+  await page.unroute("**/api/v1/income/commands*");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await save.click();
   await expect(dialog).toBeHidden();

@@ -373,7 +373,9 @@ test("overview distinguishes auth, missing data and retry; privacy works with bl
   await expect(
     page
       .locator('[data-widget="expenses"]')
-      .getByText("Chưa có dữ liệu. Mở module để bắt đầu ghi nhận."),
+      .getByText(
+        "Chưa có dữ liệu. Chọn liên kết phía trên để bắt đầu ghi nhận.",
+      ),
   ).toBeVisible();
   await page.unroute(/\/api\/v1\/overview(?:\?.*)?$/);
   await page.addInitScript(() => {

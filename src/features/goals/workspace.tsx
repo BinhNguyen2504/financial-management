@@ -1,4 +1,7 @@
 "use client";
+import { EmptyState } from "@/components/empty-state";
+import { PageGuide } from "@/features/help/page-guide";
+import { useViewState } from "@/components/use-view-state";
 import { useState } from "react";
 import { ArrowDown, ArrowUp, Plus } from "lucide-react";
 import { useMoney } from "@/components/privacy";
@@ -26,14 +29,28 @@ function Workspace({
 }: {
   controller: ReturnType<typeof useGoals>;
 }) {
-  const { view, error, reload, authLost } = controller,
+  const { view, error, reload, authLost, acceptView } = controller,
     { t: tr, locale } = useI18n("goals"),
     money = useMoney(),
     toast = useToast();
   const [editor, setEditor] = useState<GoalAction | null>(null),
     [detail, setDetail] = useState<string | null>(null),
-    [query, setQuery] = useState(""),
-    [filter, setFilter] = useState("following");
+    [query, setQuery] = useViewState("goals", "query", ""),
+    [filter, setFilter] = useViewState(
+      "goals",
+      "filter",
+      "following",
+      (v) =>
+        typeof v === "string" &&
+        [
+          "following",
+          "all",
+          "active",
+          "paused",
+          "completed",
+          "archived",
+        ].includes(v),
+    );
   const all = [...(view?.book?.goals ?? [])].sort((a, b) => a.rank - b.rank),
     goals = all.filter(
       (g) =>
@@ -53,9 +70,13 @@ function Workspace({
     [ids[i], ids[j]] = [ids[j], ids[i]];
     setEditor({ type: "reorder", ids });
   };
-  function saved() {
+  function saved(next?: NonNullable<typeof view>) {
     setEditor(null);
     toast("success", tr("Đã lưu thay đổi"));
+    if (next) {
+      acceptView(next);
+      return;
+    }
     void reload().catch(() =>
       toast("warning", tr("Đã lưu thay đổi nhưng chưa tải lại được dữ liệu.")),
     );
@@ -68,7 +89,7 @@ function Workspace({
       <header className="goal-heading">
         <div>
           <HelpPageTitle>{tr("Mục tiêu")}</HelpPageTitle>
-          <p>{tr("Điều muốn đạt, từng bước chuẩn bị.")}</p>
+          <p>{tr("Biết bạn đã chuẩn bị được bao nhiêu cho điều muốn đạt.")}</p>
         </div>
         <button
           className="expense-primary"
@@ -79,6 +100,7 @@ function Workspace({
           {tr("Tạo mục tiêu")}
         </button>
       </header>
+      <PageGuide pageId="goals" />
       {error && (
         <div role="alert" className="expense-error expense-feedback">
           <p>{tr(error)}</p>
@@ -97,18 +119,19 @@ function Workspace({
         <>
           {!all.length ? (
             <section className="goal-empty panel action-message">
-              <h2>{tr("Bắt đầu từ điều bạn muốn đạt.")}</h2>
-              <p>
-                {tr(
+              <EmptyState
+                title={tr("Bắt đầu từ điều bạn muốn đạt.")}
+                description={tr(
                   "Liên kết tiền đã có hoặc ghi từng khoản góp trong sổ riêng. Chọn hạn và mức góp phù hợp với bạn.",
                 )}
-              </p>
-              <button
-                className="expense-primary"
-                onClick={() => setEditor(newGoal())}
               >
-                {tr("Tạo mục tiêu đầu tiên")}
-              </button>
+                <button
+                  className="expense-primary"
+                  onClick={() => setEditor(newGoal())}
+                >
+                  {tr("Tạo mục tiêu đầu tiên")}
+                </button>
+              </EmptyState>
             </section>
           ) : (
             <>
@@ -145,6 +168,17 @@ function Workspace({
                   {tr("Tải lại")}
                 </button>
               </div>
+              {(query || filter !== "following") && (
+                <button
+                  className="expense-secondary"
+                  onClick={() => {
+                    setQuery("");
+                    setFilter("following");
+                  }}
+                >
+                  {tr("Đặt lại bộ lọc")}
+                </button>
+              )}
               <div className="goal-grid">
                 {goals.map((g) => {
                   const s = view.states.find((s) => s.id === g.id)!;
@@ -261,7 +295,7 @@ function Workspace({
           )}
           <p className="goal-note">
             {tr(
-              "Các cột mốc có thể trùng nguồn; không cộng tiến độ thành tổng tài sản. Sổ riêng độc lập với các module khác.",
+              "Các cột mốc có thể trùng nguồn; không cộng tiến độ thành tổng tài sản. Sổ riêng độc lập với các chức năng khác.",
             )}
           </p>
         </>

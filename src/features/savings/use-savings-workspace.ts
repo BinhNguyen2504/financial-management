@@ -1,4 +1,5 @@
 "use client";
+import { useViewState } from "@/components/use-view-state";
 
 import { useI18n } from "@/i18n/provider";
 
@@ -9,7 +10,7 @@ import { buildReport, type ReportFilter } from "@/domain/savings/reports";
 
 import type { SavingsView } from "@/domain/savings/types";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SavingsAPIError, downloadSavings, savingsJSON } from "./api";
 
 import { type EditorMode } from "./editor-config";
@@ -25,20 +26,43 @@ export function useSavingsWorkspace({
   const toast = useToast();
   const money = useMoney(),
     hidden = useMoneyHidden();
-  const [month, setMonth] = useState(initialToday.slice(0, 7)),
+  const [month, setMonth] = useViewState(
+      "savings",
+      "month",
+      initialToday.slice(0, 7),
+    ),
     [view, setView] = useState<SavingsView | null>(null),
-    [tab, setTab] = useState("overview"),
+    [tab, setTab] = useViewState<string>(
+      "savings",
+      "tab",
+      "overview",
+      (v) =>
+        typeof v === "string" &&
+        ["overview", "transactions", "reports", "categories"].includes(v),
+    ),
     [error, setError] = useState(""),
     [status, setStatus] = useState(0),
     [loading, setLoading] = useState(true);
   const [editor, setEditor] = useState<EditorMode | null>(null),
     [details, setDetails] = useState<string | null>(null);
-  const [filter, setFilter] = useState<ReportFilter>({
-    from: `${initialToday.slice(0, 4)}-01-01`,
-    to: initialToday,
-  });
-  const [activityCategory, setActivityCategory] = useState(""),
-    [activityKind, setActivityKind] = useState("");
+  const [filter, setFilter] = useViewState<ReportFilter>(
+    "savings",
+    "reportFilter",
+    {
+      from: `${initialToday.slice(0, 4)}-01-01`,
+      to: initialToday,
+    },
+  );
+  const [activityCategory, setActivityCategory] = useViewState(
+      "savings",
+      "activityCategory",
+      "",
+    ),
+    [activityKind, setActivityKind] = useViewState(
+      "savings",
+      "activityKind",
+      "",
+    );
   const request = useRef(0);
   const load = useCallback(async () => {
     const n = ++request.current;
@@ -67,10 +91,17 @@ export function useSavingsWorkspace({
     if (configured) void load().catch(() => {});
     else setLoading(false);
   }, [configured, load]);
+  function acceptView(next: SavingsView) {
+    request.current++;
+    setView(next);
+    setError("");
+    setStatus(0);
+    setLoading(false);
+  }
   const today = view?.today ?? initialToday;
   const categories = view?.book?.categories ?? [];
-  const report = (() => {
-    if (!view) return null;
+  const report = useMemo(() => {
+    if (!view || tab !== "reports") return null;
     try {
       return buildReport(view.book, filter, {
         today,
@@ -79,24 +110,37 @@ export function useSavingsWorkspace({
     } catch {
       return null;
     }
-  })();
-  const monthly = view
-    ? buildReport(
-        view.book,
-        { from: `${month}-01`, to: endOfMonth(month) },
-        { today, now: `${today}T00:00:00Z` },
-      )
-    : null;
-  const overviewReport = view
-    ? buildReport(
-        view.book,
-        { from: `${month.slice(0, 4)}-01-01`, to: endOfMonth(month) },
-        { today, now: `${today}T00:00:00Z` },
-      )
-    : null;
-  const transactions = view?.book
-    ? activeTransactions(view.book).map((r) => r.transaction)
-    : [];
+  }, [view, filter, today, tab]);
+  const monthly = useMemo(
+    () =>
+      view && tab === "overview"
+        ? buildReport(
+            view.book,
+            { from: `${month}-01`, to: endOfMonth(month) },
+            { today, now: `${today}T00:00:00Z` },
+          )
+        : null,
+    [view, month, today, tab],
+  );
+  const overviewReport = useMemo(
+    () =>
+      view && tab === "overview"
+        ? buildReport(
+            view.book,
+            { from: `${month.slice(0, 4)}-01-01`, to: endOfMonth(month) },
+            { today, now: `${today}T00:00:00Z` },
+          )
+        : null,
+    [view, month, today, tab],
+  );
+  const transactionBook = view?.book;
+  const transactions = useMemo(
+    () =>
+      transactionBook
+        ? activeTransactions(transactionBook).map((r) => r.transaction)
+        : [],
+    [transactionBook],
+  );
   const selected = details
     ? view?.state.positions.find((p) => p.id === details)
     : undefined;
@@ -132,6 +176,7 @@ export function useSavingsWorkspace({
     error,
     status,
     load,
+    acceptView,
     loading,
     view,
     month,

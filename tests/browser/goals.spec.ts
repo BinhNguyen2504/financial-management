@@ -217,7 +217,7 @@ test("handles a lost save response by retrying the same command once", async ({
     .getByRole("button", { name: "Xem trước thay đổi", exact: true })
     .click();
   let dropped = false;
-  await page.route("**/api/v1/goals/commands", async (route) => {
+  await page.route("**/api/v1/goals/commands*", async (route) => {
     if (!dropped) {
       dropped = true;
       await route.fetch();
