@@ -30,6 +30,7 @@ import { fieldErrorsFromIssues } from "@/lib/field-errors";
 import { comparable, normalizedMoneyFields } from "@/lib/form-values";
 
 import { useId, useRef, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
 import { SavingsAPIError, savingsJSON } from "./api";
 import {
@@ -53,6 +54,7 @@ export function useSavingsEditor({
   onSaved(view?: SavingsView): Promise<void>;
   onReload(): Promise<unknown>;
 }) {
+  const router = useRouter();
   const generation = useRef(generationOf(view)).current;
   const { t: tr, locale, config: localize } = useI18n("savings");
   const localizedTitles = localize(titles);
@@ -298,7 +300,7 @@ export function useSavingsEditor({
       }
     } catch (e) {
       if (e instanceof SavingsAPIError && e.status === 401) {
-        window.location.assign("/login?next=%2Fsavings");
+        router.replace("/login?next=%2Fsavings");
         return;
       }
       const unknownWrite =

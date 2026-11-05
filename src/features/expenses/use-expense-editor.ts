@@ -21,6 +21,7 @@ import { fieldErrorsFromIssues } from "@/lib/field-errors";
 import { comparable, normalizeInteger } from "@/lib/form-values";
 
 import { useId, useRef, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
 import { apiJSON, RequestError } from "./api";
 
@@ -42,6 +43,7 @@ export function useExpenseEditor({
   onReload: () => Promise<ExpenseView>;
   onView?: (view: ExpenseView) => void;
 }) {
+  const router = useRouter();
   const { t: tr, locale, config: localize } = useI18n("expenses");
   const localizedTitles = localize(titles);
   const toast = useToast();
@@ -215,7 +217,7 @@ export function useExpenseEditor({
       await onSaved(result.view);
     } catch (e) {
       if (e instanceof RequestError && e.status === 401) {
-        window.location.assign("/login?next=%2Fbudgets");
+        router.replace("/login?next=%2Fbudgets");
         return;
       }
       // This repository error is raised before any writes. A 503 here is a

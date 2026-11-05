@@ -25,6 +25,7 @@ import type { InvestmentView } from "@/domain/investments/types";
 import { comparable, normalizedMoneyFields } from "@/lib/form-values";
 
 import { useId, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
 import { userFacingError } from "@/i18n/user-facing-errors";
 import { investmentFieldErrors } from "./editor-errors";
@@ -43,6 +44,7 @@ export function useInvestmentEditor({
   onSaved: (view?: InvestmentView) => void;
   onClose: () => void;
 }) {
+  const router = useRouter();
   const { t: tr, config: localize } = useI18n("investments");
   const localizedTransactionNames = localize(transactionNames);
   const toast = useToast();
@@ -217,7 +219,7 @@ export function useInvestmentEditor({
       }
     } catch (e) {
       if (e instanceof InvestmentAPIError && e.status === 401) {
-        window.location.assign("/login?next=%2Finvestments");
+        router.replace("/login?next=%2Finvestments");
         return;
       }
       const unknownWrite =
