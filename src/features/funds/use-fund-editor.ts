@@ -302,6 +302,7 @@ export function useFundEditor({
     setBusy(true);
     try {
       setView(await refresh());
+      setUncertain(false);
       invalidate();
     } catch (e) {
       if (e instanceof FundAPIError && e.status === 401) onAuthLost();

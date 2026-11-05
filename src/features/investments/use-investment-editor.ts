@@ -216,6 +216,10 @@ export function useInvestmentEditor({
         onSaved(result.view);
       }
     } catch (e) {
+      if (e instanceof InvestmentAPIError && e.status === 401) {
+        window.location.assign("/login?next=%2Finvestments");
+        return;
+      }
       const unknownWrite =
         writing &&
         (!(e instanceof InvestmentAPIError) ||
@@ -288,6 +292,7 @@ export function useInvestmentEditor({
     setBusy(true);
     try {
       setView(await refresh());
+      setUncertain(false);
       pending.current = null;
       setPreview(null);
       setConflict(false);

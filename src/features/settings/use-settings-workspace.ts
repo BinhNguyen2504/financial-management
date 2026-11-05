@@ -278,7 +278,7 @@ export function useSettingsWorkspace() {
       if (user?.id !== destination || owner.current !== destination)
         throw new Error(tr("Phiên đăng nhập đã thay đổi. Hãy tải lại trang."));
       writing = true;
-      await dataRequest("/import", {
+      const response = await dataRequest("/import", {
         method: "POST",
         body: JSON.stringify({
           requestId: requestId.current,
@@ -287,6 +287,39 @@ export function useSettingsWorkspace() {
           dataGeneration: summary.status.dataGeneration,
         }),
       });
+      const acknowledgement: unknown = await response.json().catch(() => null);
+      const acknowledgedCounts =
+        acknowledgement &&
+        typeof acknowledgement === "object" &&
+        "counts" in acknowledgement
+          ? (acknowledgement.counts as Record<string, unknown>)
+          : null;
+      const countTotal = (counts: Record<string, unknown> | null) => {
+        if (!counts) return null;
+        const values = Object.values(counts).map((value) => {
+          if (!value || typeof value !== "object" || !("rows" in value))
+            return null;
+          const rows = value.rows;
+          return Number.isSafeInteger(rows) && Number(rows) >= 0
+            ? Number(rows)
+            : null;
+        });
+        return values.some((value) => value === null)
+          ? null
+          : values.reduce<number>((total, value) => total + Number(value), 0);
+      };
+      if (
+        !acknowledgedCounts ||
+        countTotal(acknowledgedCounts) === null ||
+        countTotal(acknowledgedCounts) !== countTotal(summary.counts)
+      )
+        throw new DataRequestError(
+          tr(
+            "Chưa xác nhận kết quả khôi phục. Bản xem trước được giữ; bấm khôi phục lại để kiểm tra.",
+          ),
+          502,
+          "INVALID_RESPONSE",
+        );
       if (owner.current !== destination) return;
       imported = true;
       setImportUncertain(false);

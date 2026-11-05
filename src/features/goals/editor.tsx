@@ -60,6 +60,7 @@ function Editor({
     setError("");
   }
   function close() {
+    if (busy || uncertain) return;
     if (
       dirty ||
       preview ||
@@ -128,11 +129,16 @@ function Editor({
       if (e instanceof GoalAPIError) {
         setFields(e.fieldErrors ?? {});
         if (e.status === 409) {
+          if (save) setUncertain(false);
           setPreview(null);
           setCommand(null);
           setNeedsReload(true);
         }
-        if (save && (e.status === 0 || e.status >= 500)) setUncertain(true);
+        if (
+          save &&
+          (e.status === 0 || e.status >= 500 || e.code === "INVALID_RESPONSE")
+        )
+          setUncertain(true);
       }
       requestAnimationFrame(() => {
         errorRef.current?.focus({ preventScroll: true });
@@ -170,7 +176,11 @@ function Editor({
       currentOrder.some((id) => !action.ids.includes(id)));
   const footer = (
     <>
-      <button className="expense-secondary" onClick={close} disabled={busy}>
+      <button
+        className="expense-secondary"
+        onClick={close}
+        disabled={busy || uncertain}
+      >
         {tr("Hủy")}
       </button>
       {preview ? (

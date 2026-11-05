@@ -214,6 +214,10 @@ export function useExpenseEditor({
       toast("success", tr("Đã lưu thay đổi."));
       await onSaved(result.view);
     } catch (e) {
+      if (e instanceof RequestError && e.status === 401) {
+        window.location.assign("/login?next=%2Fbudgets");
+        return;
+      }
       // This repository error is raised before any writes. A 503 here is a
       // definite rejection, so the draft can be edited or discarded safely.
       if (
@@ -253,6 +257,7 @@ export function useExpenseEditor({
     try {
       const next = await onReload();
       setVersion(next.book?.version ?? 0);
+      setUncertain(false);
       setPreview(null);
       command.current = null;
       setConflict(false);

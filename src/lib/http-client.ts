@@ -38,6 +38,17 @@ export async function requestJSON<T>(
       failure.omitInvalidResponseStatus ? undefined : response.status,
     );
   }
+  if (
+    !value ||
+    typeof value !== "object" ||
+    Array.isArray(value) ||
+    !Object.keys(value).length
+  )
+    throw failure.error(
+      userFacingError(failure.invalidResponse, "INVALID_RESPONSE"),
+      "INVALID_RESPONSE",
+      response.status,
+    );
   if (!response.ok) {
     const fields = responseFieldErrors(value);
     throw failure.error(

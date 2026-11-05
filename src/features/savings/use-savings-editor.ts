@@ -297,6 +297,10 @@ export function useSavingsEditor({
         await onSaved(result.view);
       }
     } catch (e) {
+      if (e instanceof SavingsAPIError && e.status === 401) {
+        window.location.assign("/login?next=%2Fsavings");
+        return;
+      }
       const unknownWrite =
         writing &&
         (!(e instanceof SavingsAPIError) ||
@@ -349,6 +353,7 @@ export function useSavingsEditor({
     setBusy(true);
     try {
       await onReload();
+      setUncertain(false);
       pending.current = null;
       setPreview(null);
       setConflict(false);

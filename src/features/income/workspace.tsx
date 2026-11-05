@@ -86,6 +86,7 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
     editorKey,
     setEditor,
     saved,
+    authLost,
     details,
   } = controller;
   function oneOffList(list: IncomeRow[]) {
@@ -697,6 +698,7 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
           onClose={() => setEditor(null)}
           onSaved={saved}
           onReload={reload}
+          onAuthLost={authLost}
         />
       )}
       {details && report && (

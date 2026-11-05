@@ -33,6 +33,7 @@ export function useIncomeEditor({
   onClose,
   onSaved,
   onReload,
+  onAuthLost,
 }: {
   mode: EditorMode;
   month: string;
@@ -42,6 +43,7 @@ export function useIncomeEditor({
   onClose(): void;
   onSaved(view?: IncomeView): Promise<void>;
   onReload(): Promise<unknown>;
+  onAuthLost(): void;
 }) {
   const generation = useRef(dataGeneration).current;
   const { t: tr, locale, config: localize } = useI18n("income");
@@ -157,6 +159,10 @@ export function useIncomeEditor({
         (!(e instanceof IncomeAPIError) ||
           ![400, 401, 403, 409, 415, 422].includes(e.status));
       if (unknownWrite) setUncertain(true);
+      if (e instanceof IncomeAPIError && e.status === 401) {
+        onAuthLost();
+        return;
+      }
       if (e instanceof ZodError) {
         setFieldErrors(fieldErrorsFromIssues(e.issues));
         setError(tr("Kiểm tra các trường được đánh dấu bên dưới."));
@@ -224,6 +230,7 @@ export function useIncomeEditor({
     setBusy(true);
     try {
       await onReload();
+      setUncertain(false);
       setConflict(false);
       setPreview(null);
       pending.current = null;

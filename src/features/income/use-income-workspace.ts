@@ -80,6 +80,14 @@ export function useIncomeWorkspace({
   const [editorKey, setEditorKey] = useState(0);
   const [details, setDetails] = useState<{ month?: string } | null>(null);
   const requestId = useRef(0);
+  const authLost = useCallback(() => {
+    requestId.current++;
+    setView(null);
+    setEditor(null);
+    setDetails(null);
+    setNeedsLogin(true);
+    setError("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+  }, []);
   const reload = useForegroundRefresh(
     useCallback(async () => {
       const id = ++requestId.current;
@@ -254,6 +262,7 @@ export function useIncomeWorkspace({
     setDetails,
     editor,
     editorKey,
+    authLost,
     setEditor,
     saved,
     details,
