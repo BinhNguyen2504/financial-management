@@ -163,6 +163,6 @@ export const reports = {
     "Combined reports, comparisons and source reconciliation.",
   "Thu–chi minh họa; số dư các sổ giữ riêng.":
     "Illustrative income and spending; ledger balances stay separate.",
-  "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.":
-    "Combined reports use months, quarters or years, with source details and CSV export per tab. The current period is compared with the full previous period and labelled unfinished. Goals always show current progress.",
+  "Báo cáo chung dùng kỳ tháng, quý hoặc năm; mỗi bảng tách riêng từng nội dung, có chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.":
+    "Combined reports use months, quarters or years, with separate tables for each topic, source details and CSV export per tab. The current period is compared with the full previous period and labelled unfinished. Goals always show current progress.",
 } as const;

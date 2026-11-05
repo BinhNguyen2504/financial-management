@@ -163,6 +163,7 @@ export const modules = [
       "Nhìn lại thu chi và biến động từng sổ theo tháng, quý hoặc năm.",
     scope: [
       "So sánh với kỳ trước",
+      "Bảng số liệu tách rõ từng nội dung",
       "Mở chi tiết để hiểu số tổng",
       "Xuất bảng dữ liệu để tự đối chiếu",
     ],

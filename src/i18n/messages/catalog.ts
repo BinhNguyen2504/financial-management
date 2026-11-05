@@ -162,6 +162,7 @@ export const catalog = {
     "Should investment goals track contributed capital or market value?",
   "Có cần mức ưu tiên giữa các mục tiêu?": "Do goals need priorities?",
   "Báo cáo": "Reports",
+  "Bảng số liệu tách rõ từng nội dung": "Separate tables for each topic",
   "Hiểu biến động tài chính": "Understand financial changes",
   "Biểu đồ và bảng số liệu cùng sử dụng một nguồn dữ liệu đã đối soát.":
     "Charts and tables based on the same reconciled data.",

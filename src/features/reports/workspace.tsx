@@ -461,7 +461,7 @@ function AccountReports({ configured }: { configured: boolean }) {
             </p>
           )}
           <ReportChart key={key} report={report} />
-          <div className="panel reports-tables">
+          <div className="reports-tables">
             {report.tables.map((table) => (
               <div key={table.id}>
                 {table.id === "goals.current" && (

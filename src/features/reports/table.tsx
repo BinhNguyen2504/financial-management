@@ -40,8 +40,14 @@ export function ReportTable({
     ? rows.slice((current - 1) * 20, current * 20)
     : rows;
   return (
-    <section className="reports-table-section" aria-label={t(table.title)}>
-      <h3>{t(table.title)}</h3>
+    <section
+      className="panel reports-table-section"
+      aria-label={t(table.title)}
+    >
+      <header className="reports-table-heading">
+        <h3>{t(table.title)}</h3>
+        <span aria-hidden="true">VND</span>
+      </header>
       {!rows.length ? (
         <p className="expense-muted">{t("Chưa có dữ liệu trong kỳ.")}</p>
       ) : (
@@ -52,14 +58,18 @@ export function ReportTable({
               table.columns.length > 3 ? table.columns.length * 135 : undefined,
           }}
         >
-          <caption>{t(table.title)} · VND</caption>
+          <caption className="reports-table-caption">
+            {t(table.title)} · VND
+          </caption>
           <thead>
             <tr>
               {table.columns.map((c) => (
                 <th
                   key={c.key}
                   scope="col"
-                  className={c.type !== "text" ? "reports-number" : undefined}
+                  className={
+                    c.type !== "text" ? "reports-number is-numeric" : undefined
+                  }
                   aria-sort={
                     sort.key === c.key
                       ? sort.direction === 1
@@ -117,7 +127,7 @@ export function ReportTable({
                       key={c.key}
                       className={
                         c.type !== "text"
-                          ? "reports-number"
+                          ? "reports-number is-numeric"
                           : ["month", "date", "deadline"].includes(c.key)
                             ? "reports-date"
                             : undefined

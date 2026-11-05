@@ -414,6 +414,24 @@
   font-size: var(--font-size-12);
   color: var(--muted);
 }
+.preview-report-table {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.preview-report-table .preview-table-heading {
+  background: var(--surface-alt);
+  color: var(--text);
+  font-weight: 700;
+  padding: 12px;
+  border-bottom-width: 2px;
+}
+.preview-report-table .preview-row {
+  padding-inline: 12px;
+}
+.preview-report-table .preview-row:last-child {
+  border-bottom: 0;
+}
 .preview-row {
   display: flex;
   align-items: center;

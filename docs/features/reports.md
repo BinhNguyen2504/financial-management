@@ -36,6 +36,10 @@ CSV UTF-8 BOM/CRLF, VND nguyên dạng chuỗi, metadata kỳ hiện tại/kỳ 
 
 Dùng shell/font/token/theme sẵn có, hướng Achromatic ledger; biểu đồ SVG theo số liệu thật, không nối qua điểm thiếu, bảng thay thế, tooltip hỗ trợ chuột/chạm/Tab. Help vi/en, catalog, README, kiến trúc, UX và preview landing cập nhật cùng tính năng. Preview dùng 28.500.000 thu, 12.000.000 chi, chênh lệch tính từ hai số này; không đọc API tài chính.
 
+### Phân tách bảng — 05/11/2026
+
+Mỗi bảng trong mọi tab có card riêng với viền và khoảng cách 24px. Tên bảng và đơn vị VND nằm cùng hàng; caption giữ cho công nghệ hỗ trợ, không lặp tên giữa card. Header dùng nền `surface-alt`, chữ đậm và đường phân cách rõ hơn hàng dữ liệu; số căn phải với chữ số tabular. Áp dụng cả bảng đối chiếu trong dialog, giữ sắp xếp, phân trang, lựa chọn cột và cuộn ngang bên trong bảng trên màn hình nhỏ. Landing dùng cùng cách phân biệt header với dữ liệu minh họa cố định; catalog, nội dung giới thiệu và README đã đồng bộ. Không đổi phép tính, API, dữ liệu hoặc schema.
+
 ### Cải thiện thao tác — 04/11/2026
 
 Đối chiếu [thiết kế dùng chung](workspace-comfort-2026-11-04.md): đầu trang gọn, bảo vệ nháp và giữ ngữ cảnh xem theo tài khoản trong phiên. Các lựa chọn nghiệp vụ, dữ liệu và lịch sử hiện có được giữ. Phần khôi phục/làm trống nằm sau lựa chọn giao diện trong Cài đặt; không thay điều kiện restore/reset.

@@ -327,6 +327,8 @@ Bộ lọc tháng/quý/năm dùng chung cho sáu tab Tổng hợp, Thu–chi, Ti
 
 Bấm chỉ số mở dialog đối chiếu chỉ đọc, phân trang 20 dòng; sửa tại module gốc. Kỳ đang diễn ra so với cả kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn hiện ngày cập nhật và không tham gia so sánh kỳ cũ. Biểu đồ có bảng thay thế, tooltip chuột/chạm/Tab và chế độ che tiền. CSV xuất dữ liệu đầy đủ theo tab, độc lập phân trang và vẫn chứa số đầy đủ như các CSV hiện có. Landing chỉ dùng dữ liệu minh họa cố định.
 
+Tinh chỉnh 05/11/2026: từng bảng có card riêng, cách nhau 24px thay cho một card bao tất cả. Tên bảng và đơn vị ở đầu card; header nền `surface-alt`, chữ đậm, viền phân cách 2px, số căn phải. Cuộn ngang giới hạn trong bảng; cùng quy tắc cho dialog chi tiết và header bảng preview Báo cáo. Đây là điều chỉnh phân cấp thị giác, giữ hệ màu/chữ hiện có và nghiệp vụ.
+
 ## Lời nhắn có nhịp riêng — 02/11/2026
 
 Một chút bình yên là điểm nghỉ ngắn trước nội dung làm việc: câu serif nghiêng 18–24px, nhãn nhỏ và dấu ngoặc kép SVG, nền tint phẳng cùng theme, không emoji. Không cắt câu, không tự xoay theo giờ, không chiếm focus. Chuyển trang/reload đổi câu; thao tác trong trang giữ câu để tránh phân tâm. Việt/Anh cùng ID; tất cả theme dùng chung kho. Tổng quan giữ vị trí widget nếu đang bật, nếu không hiển thị đầu trang; luôn chỉ một câu. Preview công khai giữ câu cố định. Xem [quote](features/quotes.md).

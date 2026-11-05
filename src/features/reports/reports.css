@@ -135,8 +135,7 @@
   text-decoration: underline;
   text-underline-offset: 5px;
 }
-.reports-chart,
-.reports-tables {
+.reports-chart {
   padding: 24px;
 }
 .reports-chart h2 {
@@ -206,22 +205,50 @@
 }
 .reports-tables {
   display: grid;
-  gap: 32px;
+  gap: 24px;
 }
 .reports-tables > div {
   min-width: 0;
 }
-.reports-table-section {
+.panel.reports-table-section {
   min-width: 0;
+  padding: 20px;
+  box-shadow: none;
 }
-.reports-table-section h3 {
+.reports-table-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.reports-table-heading h3 {
   font-size: 18px;
-  margin: 0 0 16px;
+  font-weight: 700;
+  margin: 0;
+}
+.reports-table-heading > span {
+  color: var(--muted);
+  font-size: 13px;
+  flex: none;
+}
+.reports-table-section .column-table-scroll {
+  border: 1px solid var(--border);
+  border-radius: 12px;
 }
 .reports-table-section table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+}
+.reports-table-caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .reports-table-section th,
 .reports-table-section td {
@@ -230,6 +257,19 @@
   text-align: start;
   max-width: 360px;
   overflow-wrap: anywhere;
+}
+.reports-table-section .column-table thead th {
+  background: var(--surface-alt);
+  color: var(--text);
+  font-weight: 700;
+  border-bottom: 2px solid var(--border);
+  padding-block: 4px;
+}
+.reports-table-section tbody tr:last-child td {
+  border-bottom: 0;
+}
+.reports-table-section tbody tr:hover {
+  background: color-mix(in srgb, var(--surface-alt) 50%, var(--surface));
 }
 .reports-table-section th button {
   white-space: nowrap;
@@ -240,6 +280,12 @@
   cursor: pointer;
   min-height: 44px;
   text-align: inherit;
+  padding: 8px 0;
+}
+.reports-table-section th button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 .reports-table-section .reports-date {
   white-space: nowrap;
@@ -267,7 +313,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
   .reports-chart,
-  .reports-tables {
+  .panel.reports-table-section {
     padding: 16px;
   }
   .reports-heading .expense-actions {

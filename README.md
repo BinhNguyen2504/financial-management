@@ -20,7 +20,7 @@ Tinh chỉnh 02/11/2026: [bố cục thao tác toàn ứng dụng](docs/features
 
 **Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, báo cáo bảng/biểu đồ và xuất CSV. Cho xóa danh mục khi không còn số thu ở bất kỳ tháng/năm nào; bản ghi 0 đồng vẫn chặn xóa. Xem [đặc tả Thu nhập](docs/features/income.md).
 
-**Báo cáo:** `/reports` tổng hợp Thu–chi, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu. Chọn tháng/quý/năm, so kỳ trước đầy đủ, mở chi tiết chỉ đọc và xuất CSV theo tab. Kỳ hiện tại có nhãn chưa kết thúc; Mục tiêu luôn là tiến độ hiện tại. Các sổ độc lập không cộng thành tài sản ròng. Xem [đặc tả Báo cáo](docs/features/reports.md). Trạng thái source không chứng minh triển khai cloud.
+**Báo cáo:** `/reports` tổng hợp Thu–chi, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu. Chọn tháng/quý/năm, so kỳ trước đầy đủ, mở chi tiết chỉ đọc và xuất CSV theo tab. Mỗi bảng nằm trong một card riêng, hàng tiêu đề có nền và chữ đậm để phân biệt với dữ liệu. Kỳ hiện tại có nhãn chưa kết thúc; Mục tiêu luôn là tiến độ hiện tại. Các sổ độc lập không cộng thành tài sản ròng. Xem [đặc tả Báo cáo](docs/features/reports.md). Trạng thái source không chứng minh triển khai cloud.
 
 **Ví tiền chờ (05/11/2026):** nút thêm ví nằm cạnh tiêu đề; Nạp/Rút/Chuyển dùng icon có tooltip, các thao tác mở đầu/sửa/lưu trữ nằm trong “Thêm thao tác”. Xem [đặc tả](docs/features/investments.md).
 

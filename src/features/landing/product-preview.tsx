@@ -33,7 +33,7 @@ const tabs = navigationModules.filter((item) =>
 );
 const helpPreview = {
   reports:
-    "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
+    "Báo cáo chung dùng kỳ tháng, quý hoặc năm; mỗi bảng tách riêng từng nội dung, có chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
   goals:
     "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Mỗi danh mục Đầu tư là một nguồn gồm tài sản và toàn bộ tiền chờ. Xem trước rồi xác nhận lưu.",
   overview:
@@ -539,7 +539,9 @@ export function ProductPreview({
                         </div>
                       </div>
                       <div className="preview-detail-grid">
-                        <div className="preview-rows">
+                        <div
+                          className={`preview-rows${active === "reports" ? " preview-report-table" : ""}`}
+                        >
                           <div className="preview-table-heading">
                             <span>{tr(selected.columns[0])}</span>
                             <span>{tr(selected.columns[1])}</span>
