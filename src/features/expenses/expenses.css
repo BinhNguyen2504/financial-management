@@ -441,6 +441,12 @@
 .expense-empty > svg {
   color: var(--primary);
 }
+.expense-empty > .friendly-empty {
+  justify-items: center;
+}
+.expense-empty > .friendly-empty > .expense-actions {
+  justify-content: center;
+}
 .expense-empty p {
   color: var(--muted);
   font-size: var(--font-size-14);

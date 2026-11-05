@@ -167,3 +167,7 @@ Sau đầy đủ migration hiện có và 202610300001_reset_owner_claims.sql, �
 ## Đo tải dữ liệu — 04/11/2026
 
 Các thay đổi [tối ưu tải](features/performance-2026-11-04.md) không cần migration/package. Khi cần chẩn đoán, bật `FINANCIAL_TIMING=1` ở môi trường được kiểm tra, đọc Server-Timing/X-DB-Statements và log duration/count, sau đó tắt. Đo cold/warm, Auth, connection, SQL và request tổng; xác minh region hosting gần DB trước khi đổi cấu hình. Chưa deploy hoặc xác minh hiệu năng online trong đợt này.
+
+### Bổ sung schema phân loại trên website — 05/11/2026
+
+[SQL kiểm tra/bổ sung/xác minh](operations/label-visuals-repair.sql) hỗ trợ migration `202610190002_label_visuals.sql` chưa áp hoặc đã áp một phần. Chủ website chạy bằng quyền admin trên đúng project Supabase; DO block nguyên tử, không seed/reset hoặc nâng quyền runtime. Không tự chạy lại migration gốc khi constraint đã tồn tại. [Quy trình và đọc kết quả](features/feedback-2026-11-05.md#cập-nhật-database-website-bằng-sql-editor). Chưa áp cloud hoặc deploy trong đợt sửa này.

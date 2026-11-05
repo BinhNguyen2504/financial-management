@@ -3,6 +3,7 @@ import type { InvestmentBook } from "../investments/types";
 import type { FundBook } from "../funds/types";
 import { replay as savingsReplay } from "../savings/engine";
 import { replay as investmentReplay } from "../investments/engine";
+import { portfolioPositions } from "../investments/portfolios";
 import { replay as fundReplay } from "../funds/engine";
 import type { GoalSources } from "./schema";
 
@@ -15,6 +16,7 @@ export function goalSources(
   today: string,
 ): GoalSources {
   const items: GoalSources["items"] = [];
+  const legacyItems: GoalSources["items"] = [];
   if (books.savings)
     for (const p of savingsReplay(books.savings, today).positions)
       items.push({
@@ -27,9 +29,23 @@ export function goalSources(
         valueDate: p.priceDate,
         stale: p.stale,
       });
-  if (books.investments)
-    for (const p of investmentReplay(books.investments, today).positions)
+  if (books.investments) {
+    const state = investmentReplay(books.investments, today);
+    for (const p of portfolioPositions(books.investments, state))
       items.push({
+        kind: "investments",
+        sourceId: p.id,
+        name: p.name,
+        active: p.active,
+        capital: (BigInt(p.cost) + BigInt(p.cash)).toString(),
+        value: p.total,
+        valueDate: p.valueDate,
+        stale: p.stale,
+        scope: "portfolio",
+        componentIds: [p.id, ...p.wallets.map((w) => w.id)],
+      });
+    for (const p of state.positions)
+      legacyItems.push({
         kind: "investments",
         sourceId: p.id,
         name: p.name,
@@ -39,6 +55,7 @@ export function goalSources(
         valueDate: p.valueDate,
         stale: p.stale,
       });
+  }
   if (books.funds)
     for (const p of fundReplay(books.funds).funds)
       items.push({
@@ -62,5 +79,6 @@ export function goalSources(
       funds: books.funds?.version ?? 0,
     },
     items,
+    ...(legacyItems.length ? { legacyItems } : {}),
   };
 }

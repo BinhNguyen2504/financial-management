@@ -1,7 +1,7 @@
 // Public product copy and fixed illustrative data only; never account data.
 export const landing = {
-  "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Sắp xếp ưu tiên trong một danh sách; xem trước rồi xác nhận lưu. Trong sổ giao dịch, dùng biểu tượng bút để sửa và thùng rác để hủy.":
-    "Goals use linked sources or a separate ledger, with a contribution plan and history. Arrange priorities in one list; preview, then confirm saving. Use the pencil to correct and the bin to cancel transactions.",
+  "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Mỗi danh mục Đầu tư là một nguồn gồm tài sản và toàn bộ tiền chờ. Xem trước rồi xác nhận lưu.":
+    "Goals use linked sources or a separate ledger, with a contribution plan and history. Each investment portfolio is one source including its assets and all owned cash. Preview, then confirm saving.",
   "Kế hoạch góp": "Contribution plan",
   "Khám phá từng sổ với dữ liệu minh họa. Từ Tổng quan, chọn Mở để xem chi tiết hoặc thử che số tiền.":
     "Explore each ledger with sample data. From Overview, choose Open for details or try hiding amounts.",
@@ -129,8 +129,8 @@ export const landing = {
     "Allocate first, spend later. A jar is money set aside for a purpose; a bank, wallet or cash is where you plan to spend from. Check the remaining balance to understand this month's surplus or shortfall.",
   "Nguồn thu đều đặn là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.":
     "A fixed category is a recurring income source, not necessarily a fixed amount. Additional income is a one-off entry. Not entered is different from a recorded zero. Delete a category when no receipts remain in any month; otherwise use Stop.",
-  "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.":
-    "Separate opening assets, new contributions and gains/losses. Moving savings between holdings changes where they are held, without increasing total assets.",
+  "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản. Với vàng mở đầu, ghi tổng giá vốn và giá bán lại dự kiến cho một đơn vị đã chọn.":
+    "Separate opening assets, new contributions and gains/losses. Moving savings between holdings changes where they are held, without increasing total assets. For opening gold, record total cost basis and estimated resale price per selected unit.",
   "Tách vốn, tiền chờ và kết quả đầu tư. Định giá có ngày giúp đọc đúng giá trị tài sản; cập nhật định giá không thay đổi tiền trong ví. Xem trước tác động trước khi lưu giao dịch.":
     "Separate capital, available cash and investment results. Dated valuations help you read asset values correctly; updating a valuation does not change wallet cash. Preview the impact before saving a transaction.",
   "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt đã xác nhận và hệ số bạn chọn. Cập nhật nguồn từ Chi tiêu cần xem trước và xác nhận; đổi mục tiêu không tự thêm tiền vào quỹ. Trong sổ giao dịch, dùng biểu tượng bút để sửa và thùng rác để hủy, có lưu lịch sử.":
@@ -171,6 +171,8 @@ export const landing = {
   "TÀI SẢN ĐẦU TƯ CUỐI THÁNG": "INVESTMENT ASSETS AT MONTH END",
   "Đọc rõ từng danh mục, đối chiếu giao dịch theo tháng và kỳ báo cáo.":
     "Read each portfolio clearly and review transactions by month and reporting period.",
+  "Đối chiếu giao dịch theo tháng, kỳ báo cáo và lịch sử thay đổi theo dòng thời gian.":
+    "Review transactions by month, reporting period and a timeline of changes.",
   "Danh mục đang theo dõi": "Portfolios tracked",
   "2 danh mục": "2 portfolios",
   "Tiền tích lũy": "Accumulated cash",

@@ -11,7 +11,7 @@ import type {
 } from "@/domain/savings/types";
 import { formatDate, formatMonth } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
-import { Pencil, Trash2 } from "lucide-react";
+import { Archive, ArchiveRestore, Pencil, Trash2 } from "lucide-react";
 import { kindNames, transactionNames, type EditorMode } from "./editor-config";
 
 export function SavingsCategoryTable({
@@ -120,8 +120,9 @@ export function SavingsCategoryTable({
                     </button>
                     <button
                       type="button"
-                      className="expense-secondary"
+                      className="expense-secondary icon-action"
                       aria-label={`${r.active ? tr("Lưu trữ") : tr("Khôi phục")} ${r.name}`}
+                      title={r.active ? tr("Lưu trữ") : tr("Khôi phục")}
                       onClick={() =>
                         onEdit({
                           type: r.active ? "archive" : "restore",
@@ -129,7 +130,11 @@ export function SavingsCategoryTable({
                         })
                       }
                     >
-                      {r.active ? tr("Lưu trữ") : tr("Khôi phục")}
+                      {r.active ? (
+                        <Archive size={18} aria-hidden="true" />
+                      ) : (
+                        <ArchiveRestore size={18} aria-hidden="true" />
+                      )}
                     </button>
                   </div>
                 </td>

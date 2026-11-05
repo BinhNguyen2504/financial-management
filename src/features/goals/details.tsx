@@ -18,6 +18,7 @@ import {
   type GoalView,
 } from "@/domain/goals/engine";
 import type { Goal, GoalAction } from "@/domain/goals/schema";
+import { linkedSource } from "@/domain/goals/source-links";
 import {
   kindNames,
   sourceNames,
@@ -122,9 +123,7 @@ export function GoalDetails({
                       )}
                     </h3>
                     {goal.links.map((l) => {
-                      const s = view.sources.items.find(
-                        (s) => sourceKey(l) === sourceKey(s),
-                      );
+                      const s = linkedSource(view.sources, l);
                       return (
                         <div className="goal-source" key={sourceKey(l)}>
                           <div className="goal-source-name">
@@ -349,7 +348,7 @@ export function GoalDetails({
                             {a.action.goal.links
                               .map(
                                 (l) =>
-                                  `${a.sources.items.find((s) => sourceKey(s) === sourceKey(l))?.name ?? tr(sourceNames[l.kind])} ${formatDecimal(String(l.share / 100), locale)}%`,
+                                  `${linkedSource(a.sources, l)?.name ?? tr(sourceNames[l.kind])} ${formatDecimal(String(l.share / 100), locale)}%`,
                               )
                               .join(", ") || "—"}
                           </dd>

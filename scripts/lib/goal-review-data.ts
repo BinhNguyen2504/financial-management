@@ -111,7 +111,12 @@ export function buildGoalReviewData(input: {
   const links = (kind: "funds" | "investments") =>
     active
       .filter((s) => s.kind === kind)
-      .map((s) => ({ kind: s.kind, sourceId: s.sourceId, share: 10000 }));
+      .map((s) => ({
+        kind: s.kind,
+        sourceId: s.sourceId,
+        ...(s.scope ? { scope: s.scope } : {}),
+        share: 10000,
+      }));
   for (const [key, name, target, kind] of [
     ["safety", "An toàn tài chính", "85000000", "funds"],
     ["investment", "Danh mục đầu tư 500 triệu", "500000000", "investments"],

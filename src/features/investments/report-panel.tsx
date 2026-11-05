@@ -91,93 +91,97 @@ export function InvestmentReports({
         className="panel investment-filters"
         aria-label={tr("Bộ lọc báo cáo")}
       >
-        <label>
-          {tr("Kỳ báo cáo")}
-          <select
-            value={period}
-            onChange={(e) => range(e.target.value, anchor)}
-          >
-            <option value="custom">{tr("Khoảng ngày")}</option>
-            <option value="month">{tr("Tháng")}</option>
-            <option value="quarter">{tr("Quý")}</option>
-            <option value="year">{tr("Năm")}</option>
-          </select>
-        </label>
-        {period !== "custom" && (
-          <MonthYearSelect
-            label={tr("Tháng tham chiếu")}
-            value={anchor}
-            max={today.slice(0, 7)}
-            onChange={(value) => range(period, value)}
-          />
-        )}
-        <label>
-          {tr("Từ ngày")}
-          <input
-            type="date"
-            value={filter.from}
-            max={today}
-            onChange={(e) => {
-              setPeriod("custom");
-              onFilter({ ...filter, from: e.target.value });
-            }}
-          />
-        </label>
-        <label>
-          {tr("Đến ngày")}
-          <input
-            type="date"
-            value={filter.to}
-            onChange={(e) => {
-              setPeriod("custom");
-              onFilter({ ...filter, to: e.target.value });
-            }}
-          />
-        </label>
-        <label>
-          {tr("Danh mục / ví báo cáo")}
-          <select
-            value={filter.categoryId ?? ""}
-            onChange={(e) =>
-              onFilter({ ...filter, categoryId: e.target.value || undefined })
-            }
-          >
-            <option value="">{tr("Tất cả danh mục")}</option>
-            {categories
-              .filter((c) => c.kind === "investment")
-              .map((c) => (
-                <option key={c.id} value={c.id}>
-                  {ruleAt(c, today)?.name ?? c.rules[0].name}
+        <div className="investment-filter-fields">
+          <label>
+            {tr("Kỳ báo cáo")}
+            <select
+              value={period}
+              onChange={(e) => range(e.target.value, anchor)}
+            >
+              <option value="custom">{tr("Khoảng ngày")}</option>
+              <option value="month">{tr("Tháng")}</option>
+              <option value="quarter">{tr("Quý")}</option>
+              <option value="year">{tr("Năm")}</option>
+            </select>
+          </label>
+          {period !== "custom" && (
+            <MonthYearSelect
+              label={tr("Tháng tham chiếu")}
+              value={anchor}
+              max={today.slice(0, 7)}
+              onChange={(value) => range(period, value)}
+            />
+          )}
+          <label>
+            {tr("Từ ngày")}
+            <input
+              type="date"
+              value={filter.from}
+              max={today}
+              onChange={(e) => {
+                setPeriod("custom");
+                onFilter({ ...filter, from: e.target.value });
+              }}
+            />
+          </label>
+          <label>
+            {tr("Đến ngày")}
+            <input
+              type="date"
+              value={filter.to}
+              onChange={(e) => {
+                setPeriod("custom");
+                onFilter({ ...filter, to: e.target.value });
+              }}
+            />
+          </label>
+          <label>
+            {tr("Danh mục / ví báo cáo")}
+            <select
+              value={filter.categoryId ?? ""}
+              onChange={(e) =>
+                onFilter({ ...filter, categoryId: e.target.value || undefined })
+              }
+            >
+              <option value="">{tr("Tất cả danh mục")}</option>
+              {categories
+                .filter((c) => c.kind === "investment")
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {ruleAt(c, today)?.name ?? c.rules[0].name}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <label>
+            {tr("Loại giao dịch báo cáo")}
+            <select
+              value={filter.transactionKind ?? ""}
+              onChange={(e) =>
+                onFilter({
+                  ...filter,
+                  transactionKind: e.target.value || undefined,
+                })
+              }
+            >
+              <option value="">{tr("Tất cả loại")}</option>
+              {Object.entries(localize(transactionNames)).map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
                 </option>
               ))}
-          </select>
-        </label>
-        <label>
-          {tr("Loại giao dịch báo cáo")}
-          <select
-            value={filter.transactionKind ?? ""}
-            onChange={(e) =>
-              onFilter({
-                ...filter,
-                transactionKind: e.target.value || undefined,
-              })
-            }
+            </select>
+          </label>
+        </div>
+        <div className="investment-report-actions">
+          <button
+            className="expense-secondary"
+            onClick={onExport}
+            disabled={!report}
           >
-            <option value="">{tr("Tất cả loại")}</option>
-            {Object.entries(localize(transactionNames)).map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          className="expense-secondary"
-          onClick={onExport}
-          disabled={!report}
-        >
-          {tr("Xuất bảng dữ liệu")}
-        </button>
+            {tr("Xuất bảng dữ liệu")}
+          </button>
+        </div>
       </section>
       {!report ? (
         <p role="alert" className="expense-error">
@@ -242,23 +246,25 @@ export function InvestmentReports({
           </div>
           <div className="investment-chart-grid">
             <section className="panel investment-chart">
-              <h2>{tr("Diễn biến theo tháng")}</h2>
-              <label>
-                {tr("Nội dung biểu đồ")}
-                <select
-                  value={chart}
-                  onChange={(e) => setChart(e.target.value)}
-                >
-                  <option value="value">{tr("Tài sản cuối tháng")}</option>
-                  <option value="flow">{tr("Nạp và rút bên ngoài")}</option>
-                  <option value="profit">{tr("Lãi/lỗ phần đang giữ")}</option>
-                  <option value="cost">{tr("Vốn đang đầu tư")}</option>
-                  <option value="cash">{tr("Tiền chờ")}</option>
-                  <option value="assetValue">
-                    {tr("Giá trị tài sản đã mua")}
-                  </option>
-                </select>
-              </label>
+              <div className="investment-chart-heading">
+                <h2>{tr("Diễn biến theo tháng")}</h2>
+                <label className="investment-chart-control">
+                  {tr("Nội dung biểu đồ")}
+                  <select
+                    value={chart}
+                    onChange={(e) => setChart(e.target.value)}
+                  >
+                    <option value="value">{tr("Tài sản cuối tháng")}</option>
+                    <option value="flow">{tr("Nạp và rút bên ngoài")}</option>
+                    <option value="profit">{tr("Lãi/lỗ phần đang giữ")}</option>
+                    <option value="cost">{tr("Vốn đang đầu tư")}</option>
+                    <option value="cash">{tr("Tiền chờ")}</option>
+                    <option value="assetValue">
+                      {tr("Giá trị tài sản đã mua")}
+                    </option>
+                  </select>
+                </label>
+              </div>
               {months.length && values.some((v) => v !== null) ? (
                 <svg
                   viewBox="0 0 680 240"

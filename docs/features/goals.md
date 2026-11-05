@@ -8,11 +8,17 @@ Trạng thái: triển khai source; bằng chứng local ghi trong docs/07-valid
 
 /goals hỗ trợ mục tiêu chi dùng/cuộc sống và cột mốc tài chính. Mỗi mục tiêu chọn sổ riêng hoặc liên kết dữ liệu khi tạo; loại và cách ghi nhận không đổi về sau. Có tên, số tiền đích dương, hạn tùy chọn, ghi chú, mức dự định góp mỗi tháng và thứ tự ưu tiên. Nút Sắp xếp ưu tiên mở toàn bộ danh sách; dùng lên/xuống chỉnh nhiều vị trí, xem trước thứ tự mới rồi xác nhận.
 
-Nguồn liên kết là từng danh mục Tiết kiệm/Đầu tư hoặc từng Quỹ an toàn. Quỹ chỉ dùng với cột mốc. Mục tiêu chi dùng chọn tỷ lệ (tối đa hai số lẻ), lưu basis points nguyên; tổng phần chia của mục tiêu active/paused không quá 100% mỗi nguồn, không phân biệt cơ sở định giá. Cột mốc theo dõi 100% từng nguồn đã chọn, được trùng nguồn.
+Nguồn liên kết là từng danh mục Tiết kiệm/Đầu tư hoặc từng Quỹ an toàn. Từ 05/11/2026, mỗi danh mục Đầu tư mới chọn là một dòng gồm tài sản và toàn bộ tiền chờ thuộc danh mục: giá trị hiện tại = giá trị tài sản + tiền chờ; vốn hiện còn = giá vốn còn lại + tiền chờ. Không hiển thị ví thành nguồn chọn riêng. Quỹ chỉ dùng với cột mốc. Mục tiêu chi dùng chọn tỷ lệ (tối đa hai số lẻ), lưu basis points nguyên; tổng phần chia của mục tiêu active/paused không quá 100% mỗi nguồn, không phân biệt cơ sở định giá. Cột mốc theo dõi 100% từng nguồn đã chọn, được trùng nguồn.
 
 Chọn vốn hiện còn hoặc giá trị hiện tại cho từng mục tiêu. Tiền mặt và Quỹ dùng số dư; tiền gửi dùng gốc còn lại; vàng/đầu tư dùng giá vốn hoặc định giá. Phần chia làm tròn xuống từng nguồn bằng BigInt. Nguồn thiếu là chưa đủ dữ liệu, không coi là số 0; định giá cũ có nhãn cảnh báo và ngày giá. Nguồn đã ngừng không nhận liên kết mới, các liên kết cũ vẫn đọc được.
 
 Liên kết chỉ đọc: không chuyển tiền ngân hàng, không khóa hay sửa số dư nguồn. Sổ riêng độc lập với các sổ khác; không nhận ra cùng một khoản tiền đã được nhập ở nhiều module. Không cộng các mục tiêu thành tổng tài sản.
+
+### Tương thích nguồn Đầu tư — 05/11/2026
+
+Liên kết mới ghi `scope: "portfolio"`, vẫn tham chiếu UUID danh mục để giữ khóa ngoại/owner. Nguồn có `componentIds` cho tài sản và các ví; `legacyItems` giữ các position cũ ngoài danh sách chọn. Liên kết không có scope tiếp tục tính theo phần đã lưu, giữ tỷ lệ, lịch sử và snapshot hoàn thành; GET không ghi hoặc tự chuyển đổi. Khi chỉnh mục tiêu cũ, nguồn vẫn gom một dòng, có ghi chú và tỷ lệ từng phần. Bỏ chọn rồi chọn lại sẽ dùng tổng danh mục; xem trước thể hiện cách liên kết và tiến độ trước/sau, chỉ ghi khi xác nhận.
+
+Phần chia portfolio tiêu thụ cùng tỷ lệ ở từng thành phần; kiểm giới hạn chung với liên kết cũ theo tài sản/ví để tránh chia quá 100%. Tiền dùng BigInt và schema tổng hỗ trợ nhiều nguồn 24 chữ số. Ngày định giá/cảnh báo cũ theo tài sản; không thay thiếu định giá bằng tiền chờ. Báo cáo Mục tiêu dùng cùng bộ tính và giữ tương thích nguồn cũ. Backup V3 giữ scope trong cấu hình/audit; bảng liên kết vẫn là tham chiếu nguồn vật lý. Không thêm SQL/migration, không reset hoặc sửa số dư nguồn.
 
 ## Kế hoạch và trạng thái
 

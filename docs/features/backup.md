@@ -2,6 +2,12 @@
 
 Người dùng chủ động thao tác tại **Cài đặt → Sao lưu và khôi phục** (`/settings`). Các module giữ xuất CSV báo cáo; các nút backup riêng đã được gom về Cài đặt. API backup cũ vẫn tương thích nhưng file từng module không phải file khôi phục toàn tài khoản.
 
+### Căn hàng các bước khôi phục — 05/11/2026
+
+Thanh Chọn file → Kiểm tra → Khôi phục bỏ margin riêng của từng mục, dùng `gap` để giữ các số và nhãn cùng hàng; khi thiếu chỗ, từng bước tự xuống hàng. Trước sửa, quy tắc `.panel li + li` đẩy bước 2 và 3 xuống 16px. Override chỉ áp dụng cho thanh bước khôi phục, giữ khoảng cách của danh sách nội dung khác.
+
+Đã rà catalog Cài đặt, FAQ hai landing, bản dịch vi/en, preview minh họa và kiến trúc: phạm vi tính năng, nội dung và dữ liệu minh họa vẫn phù hợp nên giữ nguyên. Chỉ đổi CSS, không đổi luồng chọn file/xem trước/xác nhận hoặc điều kiện tài khoản trống. Bằng chứng local và giới hạn được ghi tại [validation](../07-validation.md).
+
 ## Xuất và nhập
 
 - **Tải bản sao lưu** xuất JSON không mật khẩu: toàn bộ 41 bảng Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư/Quỹ an toàn/Mục tiêu, kể cả lịch sử sửa/hủy, lô vàng, định giá, snapshot và kỳ đã chốt. Tiền/lượng giữ dạng chuỗi; Privacy Mode không che số trong file.

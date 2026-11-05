@@ -1,6 +1,173 @@
 import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { vietnamClock } from "../../src/domain/expenses/engine";
+
+for (const kind of ["method", "group"]) {
+  test(`missing label migration keeps ${kind} editable and every close route available`, async ({
+    page,
+  }) => {
+    await setup(page);
+    const before = await (await page.request.get("/api/v1/expenses")).json();
+    await page.getByRole("button", { name: "Phân loại", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Thêm phân loại", exact: true })
+      .click();
+    const dialog = page.locator(".expense-dialog[open]:not([inert])");
+    await dialog
+      .getByRole("combobox", { name: "Loại", exact: true })
+      .selectOption(kind);
+    await dialog.getByLabel("Tên", { exact: true }).fill("Phân loại đang nhập");
+    await dialog
+      .getByLabel("Biểu tượng", { exact: true })
+      .selectOption("wallet");
+    await page.route("**/api/v1/expenses/commands?return=view", (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: "LABEL_VISUALS_MIGRATION_REQUIRED",
+          error: "Cần áp dụng migration 202610190002_label_visuals.sql",
+        }),
+      }),
+    );
+    await dialog
+      .getByRole("button", { name: "Xem trước thay đổi", exact: true })
+      .click();
+    await dialog
+      .getByRole("button", { name: "Xác nhận lưu", exact: true })
+      .click();
+    await expect(dialog.locator(".expense-error")).toContainText(
+      "hệ thống cần được cập nhật",
+    );
+    await expect(dialog).not.toContainText("202610190002");
+    await expect(dialog.getByLabel("Tên", { exact: true })).toBeEnabled();
+    await expect(dialog.getByLabel("Biểu tượng", { exact: true })).toHaveValue(
+      "wallet",
+    );
+    for (const close of ["Đóng", "Hủy", "Escape"]) {
+      if (close === "Escape") await page.keyboard.press("Escape");
+      else
+        await dialog.getByRole("button", { name: close, exact: true }).click();
+      const confirm = page.getByRole("dialog", {
+        name: "Bỏ thay đổi?",
+        exact: true,
+      });
+      await expect(confirm).toBeVisible();
+      await confirm
+        .getByRole("button", { name: "Tiếp tục nhập", exact: true })
+        .click();
+      await expect(dialog.getByLabel("Tên", { exact: true })).toHaveValue(
+        "Phân loại đang nhập",
+      );
+    }
+    // A known rejection can be corrected and saved with a new preview.
+    await page.unroute("**/api/v1/expenses/commands?return=view");
+    await dialog.getByLabel("Biểu tượng", { exact: true }).selectOption("");
+    await dialog
+      .getByRole("button", { name: "Xem trước thay đổi", exact: true })
+      .click();
+    await dialog
+      .getByRole("button", { name: "Xác nhận lưu", exact: true })
+      .click();
+    await expect(
+      page.getByRole("dialog", { name: "Phương thức và nhóm", exact: true }),
+    ).toBeVisible();
+    await expect(dialog.getByLabel("Tên", { exact: true })).toHaveCount(0);
+    const after = await (await page.request.get("/api/v1/expenses")).json();
+    expect(after.book.version).toBe(before.book.version + 1);
+    expect(
+      after.book.labels.find(
+        (label: { name: string }) => label.name === "Phân loại đang nhập",
+      ).kind,
+    ).toBe(kind);
+  });
+}
+
+test("failed nested classification can be discarded without losing the jar draft", async ({
+  page,
+}) => {
+  await setup(page);
+  await page.getByRole("button", { name: "Thêm hũ", exact: true }).click();
+  const active = page.locator(".expense-dialog[open]:not([inert])");
+  await active.getByLabel("Tên hũ", { exact: true }).fill("Hũ đang nhập");
+  await active
+    .getByRole("button", { name: "Thêm phương thức / nhóm", exact: true })
+    .click();
+  await active.getByLabel("Tên", { exact: true }).fill("Ví mới");
+  await active.getByLabel("Biểu tượng", { exact: true }).selectOption("wallet");
+  await page.route("**/api/v1/expenses/commands?return=view", (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({
+        code: "LABEL_VISUALS_MIGRATION_REQUIRED",
+        error: "Missing migration",
+      }),
+    }),
+  );
+  await active
+    .getByRole("button", { name: "Xem trước thay đổi", exact: true })
+    .click();
+  await active
+    .getByRole("button", { name: "Xác nhận lưu", exact: true })
+    .click();
+  await expect(
+    active.getByRole("button", { name: "Hủy", exact: true }),
+  ).toBeEnabled();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Bỏ thay đổi", exact: true }).click();
+  await expect(active.getByLabel("Tên hũ", { exact: true })).toHaveValue(
+    "Hũ đang nhập",
+  );
+  await expect(active.getByLabel("Tên hũ", { exact: true })).toBeEnabled();
+});
+
+test("lost command response retries the same id without duplicating a saved classification", async ({
+  page,
+}) => {
+  await setup(page);
+  const before = await (await page.request.get("/api/v1/expenses")).json();
+  await page.getByRole("button", { name: "Phân loại", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Thêm phân loại", exact: true })
+    .click();
+  const dialog = page.locator(".expense-dialog[open]:not([inert])");
+  await dialog.getByLabel("Tên", { exact: true }).fill("Ví kiểm tra mất mạng");
+  const ids: string[] = [];
+  await page.route("**/api/v1/expenses/commands?return=view", async (route) => {
+    ids.push(route.request().postDataJSON().id);
+    const response = await route.fetch();
+    if (ids.length === 1) await route.abort("failed");
+    else await route.fulfill({ response });
+  });
+  await dialog
+    .getByRole("button", { name: "Xem trước thay đổi", exact: true })
+    .click();
+  await dialog
+    .getByRole("button", { name: "Xác nhận lưu", exact: true })
+    .click();
+  await expect(
+    dialog.getByRole("status").filter({ hasText: "Chưa xác nhận kết quả lưu" }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole("button", { name: "Hủy", exact: true }),
+  ).toBeDisabled();
+  await dialog
+    .getByRole("button", { name: "Xác nhận lưu", exact: true })
+    .click();
+  await expect(
+    page.getByRole("dialog", { name: "Phương thức và nhóm", exact: true }),
+  ).toBeVisible();
+  expect(ids).toHaveLength(2);
+  expect(ids[1]).toBe(ids[0]);
+  const after = await (await page.request.get("/api/v1/expenses")).json();
+  expect(after.book.version).toBe(before.book.version + 1);
+  expect(
+    after.book.labels.filter(
+      (label: { name: string }) => label.name === "Ví kiểm tra mất mạng",
+    ),
+  ).toHaveLength(1);
+});
 const month = vietnamClock().today.slice(0, 7);
 async function setup(page: Page) {
   await page.goto("/login?next=/budgets");

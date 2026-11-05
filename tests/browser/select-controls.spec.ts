@@ -37,6 +37,106 @@ async function login(page: Page) {
   return owner;
 }
 
+test("investment report filters and chart controls stay compact and readable", async ({
+  page,
+}, info) => {
+  test.setTimeout(120000);
+  await login(page);
+  const today = investmentClock().today;
+  const asset = randomUUID(),
+    wallet = randomUUID();
+  await investmentCommand(page, {
+    type: "createCategory",
+    id: asset,
+    walletId: wallet,
+    kind: "investment",
+    name: "Danh mục báo cáo",
+    emoji: "🌱",
+    start: today,
+  });
+  await investmentCommand(page, {
+    type: "postTransaction",
+    transaction: {
+      id: randomUUID(),
+      kind: "deposit",
+      categoryId: wallet,
+      date: today,
+      amount: "1000000",
+    },
+  });
+  for (const locale of ["vi", "en"]) {
+    await page.goto("/");
+    await page.locator(".public-language select").selectOption(locale);
+    await page.goto("/investments");
+    await page.locator("#investment-tab-reports").click();
+    const panel = page.locator(".investment-filters");
+    for (const period of ["custom", "month", "quarter", "year"]) {
+      await panel.locator("select").first().selectOption(period);
+      for (const mode of ["light", "dark"]) {
+        await page.emulateMedia({ colorScheme: mode as "light" | "dark" });
+        for (const width of [320, 390, 768, 1440]) {
+          await page.setViewportSize({ width, height: 1000 });
+          await controlsFit(panel);
+          const grid = await panel
+            .locator(".investment-filter-fields")
+            .evaluate((element) => {
+              const r = element.getBoundingClientRect();
+              const s = getComputedStyle(element);
+              return {
+                width: r.width,
+                columns: s.gridTemplateColumns.split(" ").length,
+                overflow: element.scrollWidth - element.clientWidth,
+              };
+            });
+          expect(grid.columns).toBe(
+            grid.width >= 900 ? 4 : grid.width >= 560 ? 2 : 1,
+          );
+          expect(grid.overflow).toBeLessThanOrEqual(1);
+          const heading = page.locator(".investment-chart-heading");
+          await expect(heading).toBeVisible();
+          await controlsFit(heading);
+          const spacing = await heading.locator("label").evaluate((label) => {
+            const select = label.querySelector("select")!;
+            const range = document.createRange();
+            range.selectNodeContents(label.firstChild!);
+            return (
+              select.getBoundingClientRect().top -
+              range.getBoundingClientRect().bottom
+            );
+          });
+          expect(spacing).toBeGreaterThanOrEqual(7.9);
+          expect(
+            await page.evaluate(
+              () => document.documentElement.scrollWidth - innerWidth,
+            ),
+          ).toBeLessThanOrEqual(1);
+          if (period === "month" && [390, 1440].includes(width))
+            await page.screenshot({
+              path: info.outputPath(`report-${locale}-${mode}-${width}.png`),
+              fullPage: true,
+            });
+        }
+      }
+    }
+    // All chart options still work after changing report periods.
+    const chart = page.locator(".investment-chart-control select");
+    for (const value of [
+      "flow",
+      "profit",
+      "cost",
+      "cash",
+      "assetValue",
+      "value",
+    ]) {
+      await chart.selectOption(value);
+      await expect(chart).toHaveValue(value);
+    }
+    const download = page.waitForEvent("download");
+    await panel.locator(".investment-report-actions button").click();
+    expect((await download).suggestedFilename()).toMatch(/\.csv$/);
+  }
+});
+
 async function seedModules(owner: string) {
   const admin = postgres(process.env.TEST_DATABASE_ADMIN_URL!, { max: 1 });
   try {

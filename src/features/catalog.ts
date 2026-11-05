@@ -101,8 +101,9 @@ export const modules = [
       "Theo dõi tiền tiết kiệm, sổ tiền gửi và vàng, cùng giá trị và lịch sử của từng khoản.",
     scope: [
       "Ghi góp thêm, rút, nhận lãi và tái tục",
-      "Cập nhật giá trị để đọc lãi/lỗ",
+      "Ghi tổng giá vốn và giá vàng theo từng đơn vị để đọc lãi/lỗ",
       "Theo dõi sổ đến hạn và xem báo cáo",
+      "Đối chiếu lịch sử thay đổi theo dòng thời gian",
     ],
     questions: [],
   },
@@ -147,6 +148,7 @@ export const modules = [
     scope: [
       "Đặt số tiền cần đạt, hạn và sắp xếp ưu tiên có xem trước",
       "Liên kết khoản đã có hoặc ghi sổ góp riêng",
+      "Mỗi danh mục Đầu tư gồm tài sản và toàn bộ tiền chờ",
       "Theo dõi tiến độ, hoàn thành hoặc tạm dừng",
     ],
     questions: [],

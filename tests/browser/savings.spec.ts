@@ -6,6 +6,109 @@ import { readFile } from "node:fs/promises";
 import { savingsClock } from "../../src/domain/savings/engine";
 import type { SavingsView } from "../../src/domain/savings/types";
 
+test("savings history keeps its full scope, keyboard disclosure and long reasons readable", async ({
+  page,
+}, info) => {
+  await login(page);
+  await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
+  const history = page.locator(".savings-history");
+  const toggle = history.locator("summary");
+  await toggle.focus();
+  await page.keyboard.press("Enter");
+  await expect(history).toHaveAttribute("open", "");
+  await expect(history).toContainText("Chưa có thay đổi.");
+
+  const categoryId = randomUUID();
+  const transactionId = randomUUID();
+  const reason = "Đối chiếu lại giao dịch.\n" + "abcdefghij".repeat(24);
+  for (const action of [
+    {
+      type: "createCategory",
+      id: categoryId,
+      name: "Ví lịch sử",
+      kind: "cash",
+      start: month,
+    },
+    {
+      type: "postTransaction",
+      transaction: {
+        id: transactionId,
+        categoryId,
+        kind: "deposit",
+        date: day,
+        amount: "98000000",
+      },
+    },
+    { type: "reviseTransaction", transactionId, replacement: null, reason },
+  ]) {
+    const response = await command(page, action);
+    expect(response.ok(), await response.text()).toBe(true);
+  }
+  await (await workspaceAction(page, "Tải lại")).click();
+  await expect(history.locator("li")).toHaveCount(3);
+  await expect(history.locator("li").first()).toContainText("Hủy giao dịch");
+  await expect(history.locator("li").first()).toContainText("Lần ghi #3");
+  await expect(history.locator("li").last()).toContainText("Thêm danh mục");
+  await expect(history.locator(".savings-history-reason")).toHaveText(
+    `Lý do thay đổi${reason}`,
+  );
+  const transactionFilter = page.getByLabel("Loại giao dịch lọc", {
+    exact: true,
+  });
+  if (!(await transactionFilter.isVisible())) {
+    await page.locator(".filter-options-trigger").click();
+  }
+  await page
+    .getByLabel("Loại giao dịch lọc", { exact: true })
+    .selectOption("buyGold");
+  await expect(history.locator("li")).toHaveCount(3);
+  await expect(history).toContainText("Toàn bộ sổ Tiết kiệm · Mới nhất trước");
+
+  const widths =
+    info.project.name === "desktop"
+      ? [1440, 768, 390, 320]
+      : [page.viewportSize()!.width];
+  for (const mode of ["light", "dark"]) {
+    await page.evaluate((mode) => {
+      document.documentElement.dataset.theme = mode;
+      document.documentElement.dataset.visualTheme = "water";
+    }, mode);
+    for (const width of widths) {
+      await page.setViewportSize({ width, height: 1000 });
+      await history.scrollIntoViewIfNeeded();
+      expect(
+        await history.evaluate((el) => el.scrollWidth <= el.clientWidth + 1),
+      ).toBe(true);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+      ).toBe(true);
+      await history.screenshot({
+        path: info.outputPath(`history-${mode}-${width}.png`),
+      });
+    }
+  }
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await toggle.focus();
+  await page.keyboard.press("Space");
+  await expect(history).not.toHaveAttribute("open", "");
+  await page.keyboard.press("Enter");
+  await expect(history).toHaveAttribute("open", "");
+  await page.evaluate(() => localStorage.setItem("fm-locale", "en"));
+  await page
+    .context()
+    .addCookies([
+      { name: "fm-locale", value: "en", url: process.env.TEST_BASE_URL! },
+    ]);
+  await page.reload();
+  await page.getByRole("tab", { name: "Transactions", exact: true }).click();
+  await toggle.click();
+  await expect(history).toContainText("All savings history · Newest first");
+  await expect(history.locator("li").first()).toContainText("Void transaction");
+  await expect(history).toContainText("Recorded in Vietnam time");
+});
+
 test("savings ledgers keep fields, filters, privacy and actions usable across widths", async ({
   page,
 }, info) => {
@@ -80,6 +183,8 @@ test("savings ledgers keep fields, filters, privacy and actions usable across wi
   }
   await selectMonthYear(page, "Tháng đang xem", month);
   await (await workspaceAction(page, "Tải lại")).click();
+  // The mobile action popover stays open after reload; dismiss it before tabs.
+  await page.keyboard.press("Escape");
   await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
   const monthlyTable = page.getByRole("table", {
     name: `Giao dịch tháng ${month}`,
@@ -90,6 +195,10 @@ test("savings ledgers keep fields, filters, privacy and actions usable across wi
   await expect(monthlyTable).toContainText(
     "Ví liên quan: Ví nhận chuyển nội bộ",
   );
+  if (
+    !(await page.getByLabel("Danh mục giao dịch", { exact: true }).isVisible())
+  )
+    await page.locator(".filter-options-trigger").click();
   await page
     .getByLabel("Danh mục giao dịch", { exact: true })
     .selectOption(other);
@@ -135,6 +244,8 @@ test("savings ledgers keep fields, filters, privacy and actions usable across wi
     ]) {
       await page.getByRole("tab", { name: tab, exact: true }).click();
       if (tab === "Báo cáo") {
+        if (!(await page.getByLabel("Từ ngày", { exact: true }).isVisible()))
+          await page.locator(".filter-options-trigger").click();
         await page.getByLabel("Từ ngày", { exact: true }).fill(day);
         await page.getByLabel("Đến ngày", { exact: true }).fill(day);
       }
@@ -163,6 +274,16 @@ test("savings ledgers keep fields, filters, privacy and actions usable across wi
           path: info.outputPath(`ledger-${tab}-${size.width}.png`),
         });
       if (tab === "Danh mục") {
+        for (const action of await table.locator("tbody .icon-action").all()) {
+          await expect(action.locator("svg")).toHaveCount(1);
+          const size = (await action.boundingBox())!;
+          expect(size.width).toBeGreaterThanOrEqual(44);
+          expect(size.height).toBeGreaterThanOrEqual(44);
+          await expect(action).toHaveAttribute(
+            "title",
+            /Sửa|Lưu trữ|Khôi phục/,
+          );
+        }
         const row = table
           .getByRole("row")
           .filter({ hasText: "Danh mục đã lưu trữ" });
@@ -175,6 +296,20 @@ test("savings ledgers keep fields, filters, privacy and actions usable across wi
         ).toBeVisible();
       }
     }
+  }
+  await page.getByRole("tab", { name: "Danh mục", exact: true }).click();
+  for (const action of [
+    "Khôi phục Danh mục đã lưu trữ",
+    `Lưu trữ ${longName}`,
+  ]) {
+    const button = page.getByRole("button", { name: action, exact: true });
+    await button.focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      page.locator(".expense-dialog[open]:not([inert])"),
+    ).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toBeHidden();
   }
   await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
   const picker = page
@@ -307,6 +442,57 @@ async function openTx(page: Page, kind: string) {
   await page.getByLabel("Loại giao dịch", { exact: true }).selectOption(kind);
   await page.getByLabel("Ngày giao dịch", { exact: true }).fill(day);
 }
+
+test("gold price labels follow the category unit in Vietnamese and English", async ({
+  page,
+}) => {
+  await login(page);
+  const categories = [
+    { id: randomUUID(), name: "Vàng theo chỉ", unit: "chỉ" },
+    { id: randomUUID(), name: "Vàng theo lượng", unit: "lượng/cây" },
+  ];
+  for (const c of categories) {
+    const r = await command(page, {
+      type: "createCategory",
+      ...c,
+      kind: "gold",
+      start: month,
+    });
+    expect(r.ok(), await r.text()).toBe(true);
+  }
+  for (const locale of ["vi", "en"]) {
+    await page.goto("/");
+    await page.locator(".public-language select").selectOption(locale);
+    await page.goto("/savings");
+    await page
+      .getByRole("button", {
+        name: locale === "vi" ? "Ghi giao dịch" : "Record transaction",
+        exact: true,
+      })
+      .click();
+    const dialog = page.locator(".expense-dialog[open]:not([inert])");
+    await dialog
+      .getByLabel(locale === "vi" ? "Loại giao dịch" : "Transaction type", {
+        exact: true,
+      })
+      .selectOption("openingGold");
+    for (const c of categories) {
+      await dialog
+        .getByLabel(locale === "vi" ? "Danh mục" : "Category", { exact: true })
+        .selectOption(c.id);
+      const unit =
+        locale === "vi" ? c.unit : c.unit === "chỉ" ? "chi" : "luong/tael";
+      const label =
+        locale === "vi"
+          ? `Giá bán lại dự kiến (VND/${unit})`
+          : `Estimated resale price (VND/${unit})`;
+      await expect(dialog.getByLabel(label, { exact: true })).toBeVisible();
+      await expect(dialog.locator("#savings-help-unitPrice")).toContainText(
+        `1 ${unit}`,
+      );
+    }
+  }
+});
 test("savings schema validation keeps oversized amounts out of technical toasts", async ({
   page,
 }) => {
@@ -559,9 +745,20 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
     "Chưa chốt",
   );
   await openTx(page, "openingGold");
+  await expect(page.getByLabel("Giá vốn mở đầu (VND)")).toHaveAttribute(
+    "aria-describedby",
+    /savings-help-amount/,
+  );
+  await expect(page.locator("#savings-help-amount")).toContainText("7 chỉ");
+  await expect(
+    page.getByLabel("Giá bán lại dự kiến (VND/chỉ)"),
+  ).toHaveAttribute("aria-describedby", /savings-help-unitPrice/);
+  await expect(page.locator("#savings-help-unitPrice")).toContainText(
+    "bán 1 chỉ",
+  );
   await page.getByLabel("Giá vốn mở đầu (VND)").fill("100000000");
   await page.getByLabel("Số lượng (chỉ)").fill("1");
-  await page.getByLabel("Giá bán lại mỗi đơn vị (VND)").fill("100000000");
+  await page.getByLabel("Giá bán lại dự kiến (VND/chỉ)").fill("100000000");
   await save(page);
   await page
     .getByRole("button", { name: "Chi tiết Vàng giữ lâu", exact: true })
@@ -569,7 +766,7 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
   await expect(page.getByRole("dialog")).toContainText("100.000.000 ₫");
   await page.getByRole("button", { name: "Đóng", exact: true }).click();
   await openTx(page, "sellGold");
-  await page.getByLabel("Giá bán lại mỗi đơn vị (VND)").fill("130000000");
+  await page.getByLabel("Giá bán (VND/chỉ)").fill("130000000");
   await page.getByLabel("Phí (VND)", { exact: true }).fill("1000000");
   const v = await view(page);
   const cash = v.book!.categories.find((c) => c.kind === "cash")!;

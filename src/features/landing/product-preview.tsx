@@ -35,7 +35,7 @@ const helpPreview = {
   reports:
     "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
   goals:
-    "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Sắp xếp ưu tiên trong một danh sách; xem trước rồi xác nhận lưu. Trong sổ giao dịch, dùng biểu tượng bút để sửa và thùng rác để hủy.",
+    "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Mỗi danh mục Đầu tư là một nguồn gồm tài sản và toàn bộ tiền chờ. Xem trước rồi xác nhận lưu.",
   overview:
     "Năm thẻ mặc định giữ số chính và cảnh báo. Thêm, ẩn và sắp xếp 10 loại thẻ thông tin theo tài khoản; các sổ không cộng thành tài sản ròng.",
   budgets:
@@ -43,7 +43,7 @@ const helpPreview = {
   income:
     "Nguồn thu đều đặn là nguồn thu lặp lại, không có nghĩa số tiền cố định. Thu phát sinh là khoản riêng lẻ. Chưa nhập khác với đã ghi nhận 0 đồng. Xóa danh mục khi không còn số thu ở bất kỳ tháng nào; nếu còn số thu, dùng Ngừng.",
   savings:
-    "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản.",
+    "Tách tài sản mở đầu, tiền góp mới và lãi/lỗ. Chuyển giữa các khoản tiết kiệm chỉ đổi nơi giữ, không làm tăng tổng tài sản. Với vàng mở đầu, ghi tổng giá vốn và giá bán lại dự kiến cho một đơn vị đã chọn.",
   investments:
     "Mỗi danh mục gồm tài sản đã mua và tiền chờ. Lãi/lỗ chỉ tính trên phần đang giữ; cập nhật định giá không thay đổi tiền trong ví. Xem trước rồi xác nhận giao dịch. Trong ứng dụng, lọc theo ngày, danh mục/ví và loại; có thể hiện cả giao dịch đã hủy.",
   funds:
@@ -243,7 +243,7 @@ const data = {
   savings: {
     title: "Những điều đang lớn lên.",
     subtitle:
-      "Đọc rõ từng danh mục, đối chiếu giao dịch theo tháng và kỳ báo cáo.",
+      "Đối chiếu giao dịch theo tháng, kỳ báo cáo và lịch sử thay đổi theo dòng thời gian.",
     label: "Tài sản trong Tiết kiệm",
     value: "85000000",
     secondary: "Danh mục đang theo dõi",

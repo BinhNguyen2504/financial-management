@@ -49,7 +49,7 @@ Báo cáo tháng/quý/năm/khoảng ngày dùng trạng thái cuối kỳ: vốn
 
 Dùng định giá gần nhất không muộn hơn ngày đang xem; định giá cũ có ngày/cảnh báo, thiếu định giá không thay bằng 0. Không dựng số thực tế tháng tương lai hoặc trước ngày bắt đầu. Tổng toàn module cộng từng tài sản/ví đúng một lần.
 
-Tổng quan dùng lãi/lỗ phần đang giữ và tổng giá trị có tiền chờ. Mục tiêu tiếp tục có nguồn tài sản và ví riêng; giá trị nguồn tài sản không cộng ví để tránh tính hai lần. Backup/restore toàn tài khoản giữ `parentCategoryId` và kiểm tra trước mọi ghi; dữ liệu Đầu tư cũ không tương thích phải báo lỗi, không tự bỏ phần dữ liệu đó. Privacy Mode tiếp tục che số tiền, tooltip, trợ năng và preview; file xuất có dữ liệu đầy đủ.
+Tổng quan dùng lãi/lỗ phần đang giữ và tổng giá trị có tiền chờ. Từ 05/11/2026, Mục tiêu chọn một nguồn cho toàn bộ danh mục: giá trị tài sản + toàn bộ tiền chờ, hoặc giá vốn còn lại + tiền chờ theo cơ sở đã chọn. Liên kết theo tài sản/ví đã lưu vẫn giữ nguyên cách tính và snapshot; chuyển sang tổng danh mục qua chọn lại, xem trước/xác nhận. Xem [tương thích Mục tiêu](goals.md). Backup/restore toàn tài khoản giữ `parentCategoryId` và kiểm tra trước mọi ghi; dữ liệu Đầu tư cũ không tương thích phải báo lỗi, không tự bỏ phần dữ liệu đó. Privacy Mode tiếp tục che số tiền, tooltip, trợ năng và preview; file xuất có dữ liệu đầy đủ.
 
 ## Dữ liệu mẫu và môi trường
 
@@ -139,3 +139,23 @@ CSS workspace loại checkbox/radio và hàng tùy chọn cột khỏi kiểu fo
 ## Nội dung cho người dùng phổ thông — 04/11/2026
 
 Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.
+
+### Cập nhật 05/11/2026
+
+Bộ lọc Báo cáo luôn hiện đủ, dùng grid 1/2/4 cột theo vùng chứa và hàng xuất dữ liệu riêng. Nhãn chọn biểu đồ nằm trên select, cách nhau 8px; tiêu đề và bộ chọn wrap trên màn nhỏ. Xem [chi tiết](feedback-2026-11-05.md).
+
+## Căn giữa hành động khởi đầu — 05/11/2026
+
+Trạng thái chưa có danh mục căn giữa cả lưới `EmptyState` và hàng hành động. Nút “Tạo danh mục đầu tiên” nằm dưới mô tả, thẳng trục với tiêu đề và minh họa trên desktop/mobile. CSS giới hạn trong `.investment-empty`; giữ nguyên nội dung và thao tác mở form.
+
+Đã rà catalog, copy landing, preview minh họa và hợp đồng UX/kiến trúc: thay đổi vị trí nút không đổi năng lực, trạng thái module, ranh giới truy cập hoặc dữ liệu preview nên các mô tả đó tiếp tục đúng. README và tài liệu nội dung ghi nhận cùng thay đổi; [validation](../07-validation.md#căn-giữa-nút-trạng-thái-đầu-tư-trống--05112026) nêu bằng chứng và giới hạn. Không cần migration; bản online cần redeploy để nhận CSS mới.
+
+## Bố cục Ví tiền chờ — 05/11/2026
+
+Trong chi tiết danh mục, “Thêm ví tiền chờ” nằm cùng nhóm tiêu đề, trước mô tả và danh sách ví. Giữ nhãn chữ và biểu tượng cộng để dễ tìm. Mỗi ví hiện ba icon Nạp tiền, Rút tiền, Chuyển ví và nút “Thêm thao tác”; tooltip hiện khi hover/focus, Escape đóng tooltip. Nút có tên truy cập và vùng bấm tối thiểu 44×44px, cách nhau 8px.
+
+“Thêm thao tác” mở phần cùng hàng ví với các nút có nhãn Số dư ví mở đầu, Sửa, Xóa/lưu trữ hoặc Khôi phục. Escape thu gọn phần này và trả focus về nút mở; không thay quy tắc hoạt động/lưu trữ hoặc luồng xem trước/xác nhận. Trên điện thoại, thao tác nằm dưới tên và số dư, tiêu đề/nút thêm tự xuống hàng theo chỗ trống.
+
+Đã rà catalog, landing copy, preview cố định và Help: đây là thay đổi bố cục trong dialog, các năng lực/trạng thái và nội dung giới thiệu hiện có vẫn đúng nên giữ nguyên. Không thêm API vào preview. README, kiến trúc và UX cập nhật cùng thay đổi. Không có migration; online cần redeploy. Bằng chứng và giới hạn nằm trong [validation](../07-validation.md).
+
+Rà ảnh sau sửa: desktop/tablet giữ tên và số dư bên trái, nhóm icon bên phải; điện thoại đưa icon xuống dưới số dư. Ở 320px, nút thêm tự xuống dòng ngay trong nhóm tiêu đề. Không còn nút thêm sát đường phân cách dưới danh sách. Bộ thử dùng số dư đến 24 chữ số để kiểm tra xuống dòng, không phải dữ liệu thật. Giữ nguyên palette và typography của app; không tạo hướng thiết kế mới cho một vùng giao diện.

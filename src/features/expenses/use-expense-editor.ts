@@ -214,6 +214,18 @@ export function useExpenseEditor({
       toast("success", tr("Đã lưu thay đổi."));
       await onSaved(result.view);
     } catch (e) {
+      // This repository error is raised before any writes. A 503 here is a
+      // definite rejection, so the draft can be edited or discarded safely.
+      if (
+        e instanceof RequestError &&
+        e.code === "LABEL_VISUALS_MIGRATION_REQUIRED"
+      ) {
+        setUncertain(false);
+        setPreview(null);
+        command.current = null;
+        reportError(e);
+        return;
+      }
       const unknownWrite =
         !(e instanceof RequestError) ||
         e.status === undefined ||

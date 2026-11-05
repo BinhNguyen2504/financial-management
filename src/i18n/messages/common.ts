@@ -56,6 +56,10 @@ export const common = {
   "Ghi góp thêm, rút, nhận lãi và tái tục":
     "Record contributions, withdrawals, interest and renewals",
   "Cập nhật giá trị để đọc lãi/lỗ": "Update values to review gains and losses",
+  "Ghi tổng giá vốn và giá vàng theo từng đơn vị để đọc lãi/lỗ":
+    "Record total cost basis and gold prices per unit to read gains and losses",
+  "Đối chiếu lịch sử thay đổi theo dòng thời gian":
+    "Review changes in a timeline",
   "Theo dõi sổ đến hạn và xem báo cáo":
     "Track maturing deposits and view reports",
   "Biết tiền đã đầu tư, tài sản đang giữ và tiền chờ trong từng danh mục.":

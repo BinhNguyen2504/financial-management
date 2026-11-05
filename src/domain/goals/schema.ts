@@ -13,6 +13,8 @@ export const sourceKindSchema = z.enum(["savings", "investments", "funds"]);
 export const linkSchema = z.strictObject({
   kind: sourceKindSchema,
   sourceId: z.string().min(1).max(100),
+  // Absent on historical links, which observe individual ledger positions.
+  scope: z.literal("portfolio").optional(),
   // Integer basis points avoid floating point allocation errors.
   share: z.number().int().min(1).max(10000),
 });
@@ -21,10 +23,12 @@ export const sourceSchema = z.strictObject({
   sourceId: z.string(),
   name: z.string(),
   active: z.boolean(),
-  capital: moneySchema,
-  value: moneySchema.nullable(),
+  capital: aggregateMoneySchema,
+  value: aggregateMoneySchema.nullable(),
   valueDate: dateSchema.nullable(),
   stale: z.boolean(),
+  scope: z.literal("portfolio").optional(),
+  componentIds: z.array(z.string()).optional(),
 });
 export const sourcesSchema = z.strictObject({
   versions: z.strictObject({
@@ -33,6 +37,7 @@ export const sourcesSchema = z.strictObject({
     funds: version.nullable(),
   }),
   items: z.array(sourceSchema),
+  legacyItems: z.array(sourceSchema).optional(),
 });
 export const goalInputSchema = z.strictObject({
   id: z.uuid(),

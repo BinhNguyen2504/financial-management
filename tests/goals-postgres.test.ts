@@ -296,6 +296,7 @@ describe("Goals PostgreSQL", () => {
   it("reads investment capital and dated market value independently", async () => {
     const user = await owner(),
       asset = randomUUID(),
+      wallet = randomUUID(),
       investment = postgresInvestmentRepository(sql);
     await runInvestmentCommand(
       investment,
@@ -306,6 +307,7 @@ describe("Goals PostgreSQL", () => {
         action: investmentAction.parse({
           type: "createCategory",
           id: asset,
+          walletId: wallet,
           kind: "investment",
           name: "Danh mục",
           start: "2026-09-01",
@@ -333,6 +335,25 @@ describe("Goals PostgreSQL", () => {
       },
       clock,
     );
+    await runInvestmentCommand(
+      investment,
+      user,
+      {
+        id: randomUUID(),
+        expectedVersion: 2,
+        action: investmentAction.parse({
+          type: "postTransaction",
+          transaction: {
+            id: randomUUID(),
+            categoryId: wallet,
+            kind: "openingCash",
+            date: "2026-09-01",
+            amount: "50",
+          },
+        }),
+      },
+      clock,
+    );
     for (const basis of ["capital", "value"] as const) {
       const action = create();
       if (action.type !== "saveGoal") throw Error();
@@ -341,14 +362,21 @@ describe("Goals PostgreSQL", () => {
         mode: "linked",
         purpose: "milestone",
         basis,
-        links: [{ kind: "investments", sourceId: asset, share: 10000 }],
+        links: [
+          {
+            kind: "investments",
+            sourceId: asset,
+            scope: "portfolio",
+            share: 10000,
+          },
+        ],
       });
       await run(user, action);
     }
     const v = await readGoalView(repo, user, clock);
     expect(v.sources.items.find((p) => p.sourceId === asset)).toMatchObject({
-      capital: "100",
-      value: "120",
+      capital: "150",
+      value: "170",
       valueDate: "2026-09-01",
       stale: true,
     });
@@ -357,9 +385,21 @@ describe("Goals PostgreSQL", () => {
     ).toEqual(
       v.book!.goals.map((g) =>
         g.basis === "capital"
-          ? { current: "100", stale: false }
-          : { current: "120", stale: true },
+          ? { current: "150", stale: false }
+          : { current: "170", stale: true },
       ),
+    );
+    expect(
+      v.sources.items.filter((s) => s.kind === "investments"),
+    ).toHaveLength(1);
+    const backup = await data.backup(user, profile),
+      target = await owner();
+    validateBackup(backup);
+    await data.import(target, randomUUID(), backup);
+    const restored = await readGoalView(repo, target, clock);
+    expect(restored.states).toEqual(v.states);
+    expect(restored.book!.goals.map((g) => g.links)).toEqual(
+      v.book!.goals.map((g) => g.links),
     );
   });
   it("prevents legacy maintenance deletes from orphaning goal sources", async () => {

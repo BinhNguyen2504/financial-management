@@ -2,8 +2,6 @@ import { describeMessage } from "./translate";
 
 const unavailable =
   "Tính năng này tạm thời chưa sẵn sàng. Hãy thử lại sau; nội dung đang nhập được giữ.";
-const notSaved =
-  "Chưa lưu được thay đổi này. Nội dung đang nhập được giữ; hãy thử lại sau.";
 
 /** Keep diagnostic codes/statuses intact; only the message shown to people changes. */
 export function userFacingError(
@@ -28,7 +26,8 @@ export function userFacingError(
     ].includes(message)
   )
     return fallback;
-  if (code === "LABEL_VISUALS_MIGRATION_REQUIRED") return notSaved;
+  if (code === "LABEL_VISUALS_MIGRATION_REQUIRED")
+    return "Chưa thể lưu logo hoặc biểu tượng vì hệ thống cần được cập nhật. Nội dung bạn nhập vẫn được giữ.";
   if (
     [
       "FUNDS_MIGRATION_REQUIRED",

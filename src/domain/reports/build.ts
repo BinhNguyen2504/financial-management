@@ -599,6 +599,8 @@ function buildSource(
         );
         sources.versions[id] = source.versions[id];
         sources.items.push(...source.items);
+        if (source.legacyItems)
+          (sources.legacyItems ??= []).push(...source.legacyItems);
       } catch {
         sources.versions[id] = null;
         result.unavailable.push(id);

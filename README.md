@@ -1,5 +1,9 @@
 # Financial Manager
 
+Tinh chỉnh 05/11/2026: [ba bước khôi phục dữ liệu](docs/features/backup.md#căn-hàng-các-bước-khôi-phục--05112026) cùng hàng; bỏ khoảng lệch 16px của bước 2 và 3, giữ tự xuống hàng trên màn hình hẹp.
+
+Tinh chỉnh 05/11/2026: [dialog phân loại, giá vàng và Báo cáo Đầu tư](docs/features/feedback-2026-11-05.md). Lỗi thiếu schema logo/icon giữ bản nháp và cho đóng dialog; bảng danh mục tiết kiệm dùng icon lưu trữ/khôi phục; giá vàng ghi rõ từng đơn vị; bộ lọc báo cáo dùng grid. [SQL bổ sung schema](docs/operations/label-visuals-repair.sql) được chuẩn bị để chủ website chạy trên đúng project Supabase; chưa chạy cloud hoặc deploy.
+
 Tinh chỉnh 04/11/2026: [khoảng cách giữa các nhóm nội dung](docs/features/workspace-spacing-2026-11-04.md) tách bộ lọc khỏi thống kê/bảng, giữ nhãn thống kê gọn và bỏ lề cộng trùng ở các trang dùng grid.
 
 Tinh chỉnh 02/11/2026: [bố cục thao tác toàn ứng dụng](docs/features/action-layout-2026-11-02.md) thống nhất khoảng cách nút, footer dialog và phản hồi thử lại; giữ bản nháp, bước xem trước/xác nhận và dữ liệu minh họa độc lập.
@@ -18,9 +22,11 @@ Tinh chỉnh 02/11/2026: [bố cục thao tác toàn ứng dụng](docs/features
 
 **Báo cáo:** `/reports` tổng hợp Thu–chi, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu. Chọn tháng/quý/năm, so kỳ trước đầy đủ, mở chi tiết chỉ đọc và xuất CSV theo tab. Kỳ hiện tại có nhãn chưa kết thúc; Mục tiêu luôn là tiến độ hiện tại. Các sổ độc lập không cộng thành tài sản ròng. Xem [đặc tả Báo cáo](docs/features/reports.md). Trạng thái source không chứng minh triển khai cloud.
 
+**Ví tiền chờ (05/11/2026):** nút thêm ví nằm cạnh tiêu đề; Nạp/Rút/Chuyển dùng icon có tooltip, các thao tác mở đầu/sửa/lưu trữ nằm trong “Thêm thao tác”. Xem [đặc tả](docs/features/investments.md).
+
 **Đầu tư:** theo dõi vốn, giá trị tài sản đang giữ và tiền chờ riêng từng danh mục. Tổng giá trị gồm tài sản + tiền chờ; lãi/lỗ chỉ tính phần còn giữ. Nạp → mua → định giá → bán về ví → rút; xem trước rồi xác nhận, sửa/hủy có lịch sử, báo cáo nhiều năm và CSV. Lọc giao dịch theo ngày, danh mục/ví và loại; tùy chọn hiện cả giao dịch đã hủy nằm ở hàng riêng dưới bộ lọc. Bán hết không tự lưu trữ; chỉ lưu trữ khi hết vốn, giá trị và tiền chờ. Xem [đặc tả Đầu tư](docs/features/investments.md). Source/local và thay dữ liệu cloud được xác minh riêng.
 
-**Tiết kiệm:** bảng danh mục và giao dịch căn cột trên desktop, xếp dọc có nhãn trên mobile, tùy chọn cột; tiền/ví, từng sổ tiền gửi và đợt mua vàng; rút/bán, lãi thực nhận, tái tục, giá lịch sử, báo cáo xuyên năm, chốt/mở lại tháng và CSV/JSON. Xem [đặc tả và migration Tiết kiệm](docs/features/savings.md). Chưa tự đồng bộ số dư với Thu nhập/Chi tiêu. Đọc lại cloud ngày 18/10 xác nhận đã có schema và bộ mẫu Tiết kiệm; chưa dùng bằng chứng này để khẳng định đăng nhập/thiết bị thật.
+**Tiết kiệm:** bảng danh mục và giao dịch căn cột trên desktop, xếp dọc có nhãn trên mobile, tùy chọn cột; tiền/ví, từng sổ tiền gửi và đợt mua vàng; rút/bán, lãi thực nhận, tái tục, giá lịch sử, báo cáo xuyên năm, chốt/mở lại tháng và CSV/JSON. Lịch sử thay đổi trình bày theo dòng thời gian, tách nội dung, thời gian ghi nhận, lần ghi và lý do; hiển thị toàn bộ sổ, mới nhất trước. Xem [đặc tả và migration Tiết kiệm](docs/features/savings.md). Chưa tự đồng bộ số dư với Thu nhập/Chi tiêu. Đọc lại cloud ngày 18/10 xác nhận đã có schema và bộ mẫu Tiết kiệm; chưa dùng bằng chứng này để khẳng định đăng nhập/thiết bị thật.
 
 Trang `/` là landing công khai với preview tương tác bằng dữ liệu minh họa. Mọi trang ứng dụng yêu cầu đăng nhập; khi chưa cấu hình Auth, chuyển đến trang đăng nhập có hướng dẫn trạng thái thiết lập. Không lưu tài chính trong trình duyệt. Dấu `—` trên tổng quan vẫn là chưa có dữ liệu. Có thể sinh **bộ dữ liệu mẫu tham khảo Notion** bằng `npm run data:sample -- --owner <USER_UID>`, rồi nạp qua Supabase SQL Editor. Bộ có inspect, seed, backup và reset sau khi chốt UI/UX; không tự kết nối hoặc ghi cloud. Xem [hướng dẫn dữ liệu mẫu](docs/10-sample-data.md), [đặc tả Chi tiêu](docs/features/expenses.md) và [hướng dẫn kết nối cloud](docs/09-expenses-cloud.md).
 
@@ -232,6 +238,8 @@ Dialog có tiến trình hai bước luôn hiển thị: tạo bản sao lưu �
 
 Bố cục 05/11/2026: bộ lọc gọn, chi tiết tách tiến độ/kế hoạch/số dư, giao dịch dùng biểu tượng sửa/hủy. Nút **Sắp xếp ưu tiên** mở toàn bộ danh sách, chỉnh nhiều vị trí rồi xem trước/xác nhận một lần. Giữ năm theme và Việt/Anh. Xem [chi tiết thay đổi và kiểm chứng](docs/features/goals-layout-2026-11-05.md).
 
+Nguồn Đầu tư trong Mục tiêu — 05/11/2026: mỗi danh mục chỉ có một dòng gồm tài sản và toàn bộ tiền chờ. Giá trị hiện tại cộng giá trị tài sản với tiền chờ; vốn hiện còn cộng giá vốn còn lại với tiền chờ. Liên kết cũ giữ nguyên cách tính, chuyển sang tổng danh mục qua chọn lại và xem trước/xác nhận. Không cần migration; local cần khởi động lại, bản online cần redeploy source. Chưa triển khai cloud. Xem [quy tắc và tương thích](docs/features/goals.md).
+
 Bộ mẫu review 05/11/2026: `npm run data:goals:review -- --owner <USER_UID>` chuẩn bị backup/package; `--file <package>/sample-data.json --apply` nạp nguyên tử qua runtime/RLS. Có 13 case khi đủ nguồn, giữ dữ liệu các module khác và các chỉnh sửa khi chạy lại. Reset chờ chốt UI/UX. Xem [hướng dẫn](docs/features/goals-review-data.md).
 
 ## Cột giao dịch Quỹ an toàn — 02/11/2026
@@ -262,6 +270,10 @@ Mỗi sổ đọc bằng projection gọn, GET/preview dùng snapshot nhất qu�
 ## Nội dung và hướng dẫn tại chỗ — 04/11/2026
 
 Các trang có phần mở rộng giải thích cách bắt đầu và đọc số liệu; Tổng quan nêu rõ việc tiếp theo, tên quỹ và nguồn thu dùng ngôn ngữ gần gũi. Xem [hợp đồng nội dung và đối chiếu tác vụ](docs/features/friendly-content-2026-11-04.md). Không đổi API, schema, dữ liệu hoặc cách tính tiền.
+
+Trạng thái Chi tiêu trống căn giữa tiêu đề, mô tả và nút thêm hũ/đặt lại bộ lọc (điều chỉnh 05/11/2026).
+
+Trạng thái Đầu tư trống đặt nút “Tạo danh mục đầu tiên” ở giữa, cùng trục với minh họa và nội dung hướng dẫn (05/11/2026). Xem [ghi nhận bố cục](docs/features/investments.md#căn-giữa-hành-động-khởi-đầu--05112026).
 
 ### Minh họa giao diện — 04/11/2026
 

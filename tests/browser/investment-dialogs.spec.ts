@@ -495,3 +495,132 @@ test("investment dialog supports both languages, five themes, light/dark and enl
     path: `artifacts/investment-dialog-text-200-${info.project.name}.png`,
   });
 });
+
+test("wallet actions stay compact, named and keyboard accessible across widths", async ({
+  page,
+}, info) => {
+  await setup(page);
+  await page
+    .getByRole("button", { name: "Chi tiết Kiểm tra asset", exact: true })
+    .click();
+  const detail = page.getByRole("dialog", {
+    name: "Kiểm tra asset",
+    exact: true,
+  });
+  const wallet = detail.locator(".investment-wallet").first();
+  const more = wallet.getByRole("button", {
+    name: "Thêm thao tác",
+    exact: true,
+  });
+  const quick = ["Nạp tiền", "Rút tiền", "Chuyển ví", "Thêm thao tác"];
+  for (const width of [1440, 768, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await wallet.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    await expect(wallet.getByRole("button")).toHaveCount(4);
+    for (const name of quick) {
+      const action = wallet.getByRole("button", { name, exact: true });
+      await action.focus();
+      const hint = action.locator("..").getByRole("tooltip");
+      await expect(hint).toHaveText(name);
+      const box = await action.boundingBox();
+      expect(box!.width).toBeGreaterThanOrEqual(44);
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+      const tooltip = await hint.boundingBox();
+      expect(tooltip!.x).toBeGreaterThanOrEqual(0);
+      expect(tooltip!.x + tooltip!.width).toBeLessThanOrEqual(width);
+      await action.press("Escape");
+      await expect(hint).toHaveCount(0);
+      await expect(detail).toBeVisible();
+    }
+    const layout = await detail.evaluate((element) => {
+      const add = element
+        .querySelector(".investment-wallet-heading button")!
+        .getBoundingClientRect();
+      const row = element
+        .querySelector(".investment-wallet")!
+        .getBoundingClientRect();
+      const body = element.querySelector(".dialog-body")!;
+      return {
+        addBottom: add.bottom,
+        rowTop: row.top,
+        overflow: body.scrollWidth - body.clientWidth,
+      };
+    });
+    expect(layout.addBottom).toBeLessThan(layout.rowTop);
+    expect(layout.overflow).toBeLessThanOrEqual(1);
+    await more.click();
+    await expect(more).toHaveAttribute("aria-expanded", "true");
+    for (const name of ["Số dư ví mở đầu", "Sửa", "Xóa / lưu trữ"]) {
+      await expect(
+        wallet.getByRole("button", { name, exact: true }),
+      ).toBeVisible();
+    }
+    await wallet.getByRole("button", { name: "Sửa", exact: true }).focus();
+    await page.keyboard.press("Escape");
+    await expect(more).toHaveAttribute("aria-expanded", "false");
+    await expect(more).toBeFocused();
+    // Move focus to a plain control; a second Escape would correctly close the dialog
+    // when the pointer has already dismissed the tooltip.
+    await detail.getByRole("button", { name: "Đóng", exact: true }).focus();
+    await expect(detail).toBeVisible();
+    await page.screenshot({
+      path: `artifacts/wallet-actions-${info.project.name}-${width}.png`,
+    });
+  }
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.evaluate(() => {
+      localStorage.setItem("fm-theme", "dark");
+      window.dispatchEvent(new Event("fm-preference-change"));
+    });
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await wallet.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: `artifacts/wallet-actions-${info.project.name}-${width}-dark.png`,
+    });
+  }
+  await page.evaluate(() => {
+    localStorage.setItem("fm-locale", "en");
+    window.dispatchEvent(new CustomEvent("fm-locale-change", { detail: "en" }));
+  });
+  await expect(
+    wallet.getByRole("button", { name: "More actions", exact: true }),
+  ).toBeVisible();
+  await expect(
+    wallet.getByRole("button", { name: "Deposit cash", exact: true }),
+  ).toBeVisible();
+  await page.evaluate(() => {
+    localStorage.setItem("fm-locale", "vi");
+    window.dispatchEvent(new CustomEvent("fm-locale-change", { detail: "vi" }));
+  });
+  // Each quick command retains the selected wallet and opens its existing editor.
+  for (const [name, kind] of [
+    ["Nạp tiền", "deposit"],
+    ["Rút tiền", "withdraw"],
+    ["Chuyển ví", "transfer"],
+  ]) {
+    await wallet.getByRole("button", { name, exact: true }).click();
+    const editor = page.getByRole("dialog", {
+      name: "Ghi giao dịch",
+      exact: true,
+    });
+    await expect(
+      editor.getByLabel("Loại giao dịch", { exact: true }),
+    ).toHaveValue(kind);
+    await editor
+      .getByRole("button", { name: "Đóng cửa sổ", exact: true })
+      .click();
+  }
+  await more.click();
+  await wallet
+    .getByRole("button", { name: "Số dư ví mở đầu", exact: true })
+    .click();
+  const editor = page.getByRole("dialog", {
+    name: "Ghi giao dịch",
+    exact: true,
+  });
+  await expect(
+    editor.getByLabel("Loại giao dịch", { exact: true }),
+  ).toHaveValue("openingCash");
+});

@@ -274,6 +274,12 @@
   max-width: 160px;
   margin: 0 auto;
 }
+.investment-empty > .friendly-empty {
+  justify-items: center;
+}
+.investment-empty > .friendly-empty > .expense-actions {
+  justify-content: center;
+}
 .investment-empty p {
   max-width: 540px;
   margin: 16px auto;
@@ -287,6 +293,31 @@
 }
 .investment-chart {
   min-width: 0;
+}
+.investment-report-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+.investment-chart-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+.investment-chart-heading h2 {
+  margin: 0;
+}
+.investment-workspace label.investment-chart-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 1 280px;
+  width: 100%;
+}
+.investment-chart-control select {
+  width: 100%;
 }
 .investment-chart svg {
   display: block;
@@ -548,4 +579,78 @@
 .investment-fields > p {
   margin: 0;
   line-height: 1.6;
+}
+
+/* Keep wallet creation with its heading and secondary tasks beside their wallet. */
+.investment-wallet-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.investment-wallet-heading h3,
+.investment-wallet h4 {
+  margin: 0;
+}
+.investment-wallet-section > .expense-muted {
+  margin: 12px 0 4px;
+  line-height: 1.6;
+}
+.investment-wallet > div:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.investment-wallet-controls {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+.investment-wallet-quick-actions {
+  justify-content: flex-end;
+  gap: 8px;
+}
+.investment-wallet-action {
+  position: relative;
+  display: inline-flex;
+}
+.investment-wallet-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  width: max-content;
+  max-width: 180px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: var(--text);
+  color: var(--surface);
+  font-size: var(--font-size-14);
+  line-height: 1.4;
+}
+.investment-wallet-action:first-child .investment-wallet-tooltip {
+  left: 0;
+  transform: none;
+}
+.investment-wallet-action:last-child .investment-wallet-tooltip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.investment-wallet-more:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+  max-width: 340px;
+}
+@media (max-width: 700px) {
+  .investment-wallet-controls {
+    width: 100%;
+  }
+  .investment-wallet-quick-actions,
+  .investment-wallet-more:not([hidden]) {
+    justify-content: flex-start;
+  }
 }

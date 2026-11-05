@@ -1,4 +1,5 @@
 "use client";
+import { WalletActions } from "./wallet-actions";
 import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
@@ -26,6 +27,7 @@ import type {
 } from "@/domain/investments/types";
 import { Modal as ExpenseModal } from "@/components/modal";
 import {
+  Plus,
   Trash2 as DeleteCommandGlyph,
   Pencil as EditCommandGlyph,
 } from "lucide-react";
@@ -150,8 +152,22 @@ export function InvestmentDetails({
         </div>
       )}
       {portfolio && (
-        <section className="dialog-secondary-section">
-          <h3>{tr("Ví tiền chờ")}</h3>
+        <section className="dialog-secondary-section investment-wallet-section">
+          <div className="investment-wallet-heading">
+            <h3>{tr("Ví tiền chờ")}</h3>
+            {p.active && (
+              <button
+                type="button"
+                className="expense-secondary"
+                onClick={() =>
+                  onEdit({ type: "create", parentCategoryId: p.id })
+                }
+              >
+                <Plus size={17} aria-hidden="true" />
+                {tr("Thêm ví tiền chờ")}
+              </button>
+            )}
+          </div>
           <p className="expense-muted">
             {tr(
               "Tiền chưa mua tài sản vẫn nằm trong tổng giá trị danh mục. Tiền bán về ví; chỉ rút mới đưa tiền ra khỏi danh mục.",
@@ -163,58 +179,14 @@ export function InvestmentDetails({
                 <h4>{w.name}</h4>
                 <strong>{money(w.cash)}</strong>
               </div>
-              <div className="expense-actions">
-                {p.active &&
-                  w.active &&
-                  (
-                    ["deposit", "withdraw", "transfer", "openingCash"] as const
-                  ).map((kind) => (
-                    <button
-                      type="button"
-                      className="expense-secondary"
-                      key={kind}
-                      onClick={() =>
-                        onEdit({ type: "transaction", kind, categoryId: w.id })
-                      }
-                    >
-                      {localize(transactionNames)[kind]}
-                    </button>
-                  ))}
-                <button
-                  type="button"
-                  className="expense-secondary"
-                  onClick={() =>
-                    onEdit({ type: "configure", categoryId: w.id })
-                  }
-                >
-                  {tr("Sửa")}
-                </button>
-                {p.active && (
-                  <button
-                    type="button"
-                    className="expense-secondary"
-                    onClick={() =>
-                      onEdit({
-                        type: w.active ? "archive" : "restore",
-                        categoryId: w.id,
-                      })
-                    }
-                  >
-                    {w.active ? tr("Xóa / lưu trữ") : tr("Khôi phục")}
-                  </button>
-                )}
-              </div>
+              <WalletActions
+                id={w.id}
+                active={w.active}
+                portfolioActive={p.active}
+                onEdit={onEdit}
+              />
             </article>
           ))}
-          {p.active && (
-            <button
-              type="button"
-              className="expense-secondary"
-              onClick={() => onEdit({ type: "create", parentCategoryId: p.id })}
-            >
-              {tr("Thêm ví tiền chờ")}
-            </button>
-          )}
         </section>
       )}
       <DialogList

@@ -72,6 +72,106 @@ async function savings(page: Page, action: unknown) {
     });
   expect(r.ok(), await r.text()).toBe(true);
 }
+test("offers one investment portfolio with assets plus all owned cash and saves that total", async ({
+  page,
+}) => {
+  await login(page);
+  const asset = randomUUID(),
+    wallet = randomUUID();
+  async function investment(action: unknown) {
+    const v = await (await page.request.get("/api/v1/investments")).json();
+    const r = await page.request.post("/api/v1/investments/commands", {
+      headers: { origin: process.env.TEST_BASE_URL! },
+      data: { id: randomUUID(), expectedVersion: v.book?.version ?? 0, action },
+    });
+    expect(r.ok(), await r.text()).toBe(true);
+  }
+  await investment({
+    type: "createCategory",
+    id: asset,
+    walletId: wallet,
+    kind: "investment",
+    name: "Quỹ cổ phiếu",
+    start: clock.today,
+  });
+  await investment({
+    type: "postTransaction",
+    transaction: {
+      id: randomUUID(),
+      kind: "openingCash",
+      categoryId: wallet,
+      date: clock.today,
+      amount: "10000000",
+    },
+  });
+  await investment({
+    type: "postTransaction",
+    transaction: {
+      id: randomUUID(),
+      kind: "buy",
+      categoryId: asset,
+      cashCategoryId: wallet,
+      date: clock.today,
+      amount: "7000000",
+      value: "8000000",
+    },
+  });
+  await page.reload();
+  const d = await create(page);
+  await d
+    .getByRole("combobox", { name: "Cách ghi nhận", exact: true })
+    .selectOption("linked");
+  const source = d.locator(".goal-source");
+  await expect(source).toHaveCount(1);
+  await expect(source).toContainText("Quỹ cổ phiếu");
+  await expect(source).toContainText("11.000.000");
+  await d.getByRole("checkbox", { name: /Quỹ cổ phiếu/ }).check();
+  await d.getByLabel("Tỷ lệ (%)", { exact: true }).fill("40");
+  await page.screenshot({
+    path: `artifacts/goal-portfolio-source-${test.info().project.name}.png`,
+    fullPage: true,
+  });
+  await d
+    .getByRole("button", { name: "Xem trước thay đổi", exact: true })
+    .click();
+  await expect(
+    d.getByRole("region", { name: "Xem trước thay đổi", exact: true }),
+  ).toContainText("4.400.000");
+  await d.getByRole("button", { name: "Xác nhận lưu", exact: true }).click();
+  await expect(d).toBeHidden();
+  let v = await view(page);
+  expect(v.states[0].current).toBe("4400000");
+  expect(v.book!.goals[0].links).toEqual([
+    { kind: "investments", sourceId: asset, scope: "portfolio", share: 4000 },
+  ]);
+  await investment({
+    type: "postTransaction",
+    transaction: {
+      id: randomUUID(),
+      kind: "sell",
+      categoryId: asset,
+      cashCategoryId: wallet,
+      date: clock.today,
+      amount: "8000000",
+      cost: "7000000",
+      value: "0",
+    },
+  });
+  v = await view(page);
+  expect(v.states[0].current).toBe("4400000");
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Xem mục tiêu Mua xe", exact: true })
+    .click();
+  await page.getByRole("tab", { name: "Nguồn liên kết", exact: true }).click();
+  await expect(page.locator(".goal-sources-detail .goal-source")).toHaveCount(
+    1,
+  );
+  await page.screenshot({
+    path: `artifacts/goal-portfolio-${test.info().project.name}.png`,
+    fullPage: true,
+  });
+});
 test("creates a ledger only after confirmation and records exact contributions", async ({
   page,
 }) => {

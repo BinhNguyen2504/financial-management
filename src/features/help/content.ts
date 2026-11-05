@@ -963,6 +963,7 @@ export const articles: HelpArticles = {
   goals: article(
     [
       "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử.",
+      "Mỗi danh mục Đầu tư gồm tài sản và toàn bộ tiền chờ. Giá trị hiện tại dùng giá trị tài sản; vốn hiện còn dùng giá vốn còn lại, đều cộng tiền chờ.",
     ],
     [
       "Phân biệt khoản tiền cần chuẩn bị cho cuộc sống với cột mốc theo dõi tài chính.",

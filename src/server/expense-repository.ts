@@ -60,7 +60,7 @@ export function transactionAdapter(
           )
         )
           throw new ExpenseError(
-            "Cần áp dụng migration 202610190002_label_visuals.sql để lưu logo hoặc biểu tượng phân loại. Dữ liệu chưa được lưu; nội dung đang nhập vẫn được giữ.",
+            "Chưa thể lưu logo hoặc biểu tượng vì hệ thống cần được cập nhật. Nội dung bạn nhập vẫn được giữ.",
             503,
             "LABEL_VISUALS_MIGRATION_REQUIRED",
           );

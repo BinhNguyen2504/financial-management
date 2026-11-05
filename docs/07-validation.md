@@ -1,5 +1,11 @@
 # Xác minh
 
+## Dòng thời gian lịch sử Tiết kiệm — 05/11/2026
+
+Kiểm chứng bố cục này ngày 05/11/2026: production build webpack, PostgreSQL tạm và Auth contract double local; 5/5 ca browser trên Chromium desktop/mobile, Firefox desktop, WebKit desktop/iPhone emulation. Kiểm tra Enter/Space, giảm chuyển động, trạng thái trống, thứ tự lần ghi, lý do nhiều dòng/chuỗi dài, phạm vi lịch sử khi lọc giao dịch và bản dịch Anh; Chromium desktop kiểm thêm 1440/768/390/320px ở sáng/tối. Ảnh tại `artifacts/savings-history-final/`, log build `artifacts/savings-history-final-next.log`. Typecheck, lint phần thay đổi, architecture và 18 kiểm tra unit liên quan đạt. Đã đối chiếu README, catalog, landing/preview minh họa và tài liệu kiến trúc/UX; preview tiếp tục dùng số liệu cố định.
+
+Hướng thiết kế kế thừa `achromatic-ledger` của lần rà bảng Tiết kiệm (seed `1746490057`, giữ palette/type; không redraw), theo `design-taste-frontend` và `ui-ux-pro-max`. Câu hỏi: sổ đã được cập nhật như thế nào và khi nào? Tên thao tác đứng trước; nhận diện giữ Nunito và theme của sản phẩm. Rà ảnh thực tế sửa lề cộng từ danh sách chung để đường thời gian liên tục. Lint thiết kế: 0 FAIL; 2 WARN thuộc shadow tooltip/focus biểu đồ có sẵn, ngoài phần lịch sử. Đợt browser đầu có 3/5 đạt; hai ca mobile dừng vì test chưa mở Bộ lọc trước khi chọn. Đợt cuối đã sửa thao tác test và đạt 5/5. Không thay schema, không cần SQL; chưa deploy và không dùng kiểm tra local để khẳng định Supabase Auth thật hoặc thiết bị vật lý.
+
 ## Bộ mẫu Mục tiêu và đối soát cloud — 05/11/2026
 
 - Đọc `Notion/goal.png` và source hiện tại trước khi tạo mẫu. Hai mức đích 85/500 triệu và tên học phí tham khảo ảnh; các mục tiêu/giao dịch tự tạo có ghi chú mẫu. Dữ liệu nguồn liên kết lấy từ database hiện tại, không sửa số dư hoặc định giá để ép tiến độ theo ảnh.
@@ -1237,3 +1243,55 @@ Phạm vi: bộ lọc/thẻ, tiến độ/kế hoạch, nguồn/giao dịch/lị
 Các log `goals-layout-browsers.log` và `goals-layout-final.log` thuộc lượt bị dừng để điều chỉnh bố cục; không dùng làm kết quả tổng cuối. Lượt đầu phát hiện khoảng cách empty state 10px (đã chỉnh 16px) và selector Quỹ dùng tên cũ (đã đối chiếu DOM và sửa test). Không sửa quy tắc tài chính để làm test qua.
 
 Giới hạn: browser dùng PostgreSQL local, Auth double, production snapshot và giả lập thiết bị; không chứng minh Auth/RLS cloud, gửi email thật, triển khai Vercel hoặc thiết bị vật lý. Không chạy import/reset/migration cloud hay đổi dữ liệu review của tài khoản.
+
+
+## Căn giữa nút trạng thái Chi tiêu trống — 05/11/2026
+
+- CSS căn giữa lưới và hàng hành động bên trong `.expense-empty`, gồm thêm hũ và đặt lại bộ lọc. Không thay đổi nghiệp vụ/dữ liệu.
+- Production build qua runner PostgreSQL/Auth double cục bộ: `friendly-empty.spec.ts` đạt **2/2** trên Chromium desktop/mobile; phân biệt chưa có dữ liệu và lọc rỗng, reset không ghi dữ liệu, nút thêm hũ mở đúng dialog. Build log: `artifacts/browser-next.log` (tệp dùng chung, có thể bị thay ở lượt sau).
+- Probe component riêng trên Firefox dùng markup tương ứng `EmptyState` và hai stylesheet thực tế (expenses/friendly-content), với font/token mô phỏng: 320/390/768/1440/2048px, sai lệch tâm nút <0.02px, cao 44px, không tràn ngang. Đã xem ảnh `artifacts/expense-empty-centered.png`. Đây là bằng chứng căn hàng của component, không phải ảnh toàn ứng dụng hay kiểm chứng theme đầy đủ.
+- Prettier CSS và `git diff --check` đạt. Không chạy lại toàn bộ unit/database suite cho thay đổi CSS này. Đã rà catalog, landing/preview và hợp đồng UX/kiến trúc; cập nhật README và tài liệu nội dung. Không deploy hay kiểm chứng thiết bị vật lý/cloud.
+
+## Căn giữa nút trạng thái Đầu tư trống — 05/11/2026
+
+- Hai quy tắc CSS giới hạn trong `.investment-empty` căn giữa lưới nội dung và hàng nút “Tạo danh mục đầu tiên”.
+- Probe component render trực tiếp `Garden` và `EmptyState` hiện hành bằng React server rendering, dùng CSS thực tế (globals, expenses, zen, experience và các import, visual-themes, investments), font mặc định của môi trường thay cho Nunito được Next tải. **30/30** tổ hợp đạt trên Chromium/Firefox/WebKit × 320/390/768/1440/2048px × sáng/tối, với theme Water như ảnh phản hồi. Sai lệch tâm lớn nhất <0.001px, cao tối thiểu 44px, nút dưới mô tả, không tràn ngang.
+- Đã xem ảnh component desktop/mobile: `artifacts/investment-empty-1440.png`, `artifacts/investment-empty-390.png`. Kết quả: `artifacts/investment-empty-results.json`; script: `artifacts/investment-empty-probe.mjs` và `artifacts/investment-empty-loader.mjs`.
+- Prettier CSS và `git diff --check` đạt. Đã rà catalog/landing/preview và hợp đồng UX/kiến trúc, cập nhật README, tài liệu Đầu tư và nội dung. Đây là kiểm chứng component cục bộ với font thay thế; chưa chạy lại toàn ứng dụng, production build, Auth/RLS cloud hay thiết bị vật lý. Không đổi dữ liệu, migration hoặc deploy.
+
+## Dialog phân loại, đơn giá vàng và Báo cáo Đầu tư — 05/11/2026
+
+- `npm run check` đạt: lint, architecture, Prettier, **338/338 unit**, typecheck và production build. Log: `artifacts/feedback-check-final.log`. Sau chỉnh sửa đồng bộ fixture browser, Prettier các file liên quan và `git diff --check` tiếp tục đạt.
+- `npm run test:db` đạt **120/120**, PostgreSQL cô lập do runner tạo; không dùng database cloud. Bao gồm schema legacy, giữ nguyên version/receipt khi từ chối metadata, lưu metadata sau migration, và SQL bổ sung chạy hai lần ở trạng thái đủ/thiếu từng cột/cả hai cột, giữ dữ liệu phân loại. Log: `artifacts/feedback-db-final.log`.
+- Production snapshot qua Auth double local: **32/32 browser** ở lượt xác nhận cuối, Chrome desktop/mobile, WebKit desktop (`TEST_WEBKIT_DESKTOP=1`) và Firefox (`TEST_FIREFOX=1`). Nhóm ca thuộc `expense-feedback.spec.ts`, `savings.spec.ts`, `select-controls.spec.ts`: lỗi migration cả method/group, X/Hủy/Escape và tiếp tục nhập, sửa rồi lưu, bỏ dialog con giữ hũ cha, mất phản hồi rồi retry cùng ID không nhân đôi, Archive/Restore có icon/title/hit area và thao tác bàn phím, CRUD vàng, nhãn theo chỉ/lượng trong Việt/Anh, báo cáo cùng xuất CSV.
+- Báo cáo được đo ở 320/390/768/1440px, sáng/tối, Việt/Anh, khoảng ngày/tháng/quý/năm và toàn bộ lựa chọn biểu đồ. Kiểm tra grid theo vùng chứa, nhãn/select cách nhau ít nhất 8px (sai số 0.1px), native select và không tràn ngang. Đã xem ảnh desktop/mobile Chrome và desktop WebKit. Log: `artifacts/feedback-browser-confirm.log`; build log: `artifacts/feedback-browser-confirm-next.log`; ảnh: `artifacts/browser-feedback-confirm/`.
+- Lượt browser trước có lỗi fixture: dùng label selector thay vì accessible role của select, emoji mẫu rỗng, kiểm tra version trước khi form lưu đóng, và thao tác với filter/tab khi popover mobile chưa được đóng hoặc bộ lọc chưa mở. Đã sửa fixture theo giao diện thật, giữ nguyên nghiệp vụ; kết quả cuối 32/32 thay thế các lượt trước, không gộp lượt lỗi thành toàn bộ xanh.
+- Đã rà và cập nhật catalog, nội dung landing/preview, README, tài liệu tính năng, kiến trúc, UX, triển khai và troubleshooting. [SQL bàn giao](operations/label-visuals-repair.sql) do chủ website chạy trên đúng project Supabase theo [hướng dẫn](features/feedback-2026-11-05.md). Không chạy migration online, deploy, kiểm chứng Auth/RLS cloud hoặc thiết bị vật lý; đây là kiểm chứng local cho nhóm phản hồi này.
+
+
+## Căn hàng ba bước khôi phục — 05/11/2026
+
+- Chỉ sửa `src/features/settings/settings.css`: override margin của thanh bước, không sửa CSS danh sách chung hoặc logic tài chính. CSS trong snapshot `artifacts/browser-app-hZOTOZ/` khớp source sau sửa (`cmp`).
+- Production build local đạt, gồm TypeScript và sinh trang. Log: `artifacts/settings-steps-2026-11-05-production.log`. PostgreSQL cô lập và Auth double; không dùng tài khoản cloud.
+- Đo trực tiếp trên trang Cài đặt production: **60/60** tổ hợp Chrome/Firefox/WebKit × vi/en × 1440/1100/768/390/320px × cỡ chữ 100%/200% đạt. Margin từng bước bằng 0; các bước trên cùng hàng thẳng nhau, số ở giữa chiều cao từng bước, không tràn ngang. Tạm bỏ declaration margin qua CSSOM tái hiện margin 16px từ `.panel li + li`; sau đó khôi phục ngay. Bằng chứng: `artifacts/settings-steps-2026-11-05/geometry.json`, `geometry.log` và ảnh từng engine ở 1440/390px; đã xem ảnh Chrome desktop/mobile và WebKit mobile.
+- Suite hiện có `settings-restore-layout.spec.ts`: **20/20** đạt ở Chrome desktop/mobile, WebKit desktop/mobile và Firefox. Log: `artifacts/settings-steps-2026-11-05/suite.log`; output: `production-suite/` cùng thư mục. Prettier CSS và `git diff --check` đạt.
+- Lượt thử trên dev trước đó không được tính là kiểm chứng: hai script Chrome timeout khi chờ tải trang; suite WebKit có lỗi chờ Help rồi các ca tiếp theo mất server khi môi trường dev được dừng để chuyển sang production. Không sửa sản phẩm theo các lỗi của lượt này; lượt production hoàn tất ở trên là bằng chứng cuối.
+- Đã rà catalog, FAQ hai landing, bản dịch, preview cố định và tài liệu kiến trúc; nội dung vẫn phù hợp. Cập nhật README, đặc tả sao lưu và UX. Không cần SQL/migration; bản online cần build/deploy lại. Chưa deploy, kiểm Auth/RLS cloud hoặc thiết bị vật lý.
+
+## Bố cục và thao tác Ví tiền chờ — 05/11/2026
+
+- Bản production Next.js webpack local + PostgreSQL cô lập và Auth contract double: **10/10** qua trên Chromium desktop/mô phỏng iPhone, Firefox, WebKit desktop/mô phỏng iPhone. Log cuối `artifacts/wallet-actions-complete-browser.log`; build `artifacts/wallet-actions-complete-next.log`.
+- Ca bố cục kiểm tra 1440/768/390/320px, số dư đến 24 chữ số, nút thêm nằm trước danh sách, chỉ bốn nút thường trực mỗi ví, không tràn ngang, vùng bấm ≥44px; tooltip gắn đúng icon khi focus/Escape; mở/thu gọn thao tác phụ và trả focus; VI/EN và ảnh sáng/tối. Kiểm tra nút Nạp/Rút/Chuyển/Mở đầu vẫn mở đúng loại giao dịch. Ca nghiệp vụ hiện có tiếp tục đối soát nạp → mua → định giá → bán hết → rút → mua lại.
+- Đã xem ảnh desktop/tablet/điện thoại, gồm `artifacts/wallet-actions-desktop-{1440,768,390,320}.png` và bản `-dark.png` ở 1440/390px. Giữ phong cách Nunito/năm theme hiện có; không chạy inspector CLI lên màn đăng nhập để thay cho chi tiết đã xác thực. Dùng đo DOM và ảnh Playwright trong phiên local có đăng nhập để kiểm chứng vùng sửa.
+- TypeScript, ESLint/Prettier các file source/test thay đổi, architecture **328 files / 0 violations**, lint app của design-taste **0 FAIL / 0 WARN**, `git diff --check` qua. Lượt đầu phát hiện test nhấn Escape thừa/selector tên nút đóng sai và con trỏ còn hover khi đổi viewport; đã sửa điều khiển test, giữ nghiệp vụ. Chỉ log cuối 10/10 là kết quả xác nhận.
+- README, đặc tả Đầu tư, UX và kiến trúc đã cập nhật; catalog, landing copy, Help và preview đã rà, giữ nguyên phạm vi/trạng thái và dữ liệu minh họa cố định. Không migration/SQL hoặc ghi cloud. Chưa deploy, kiểm chứng Supabase Auth cloud hoặc thiết bị vật lý; bản online cần redeploy.
+
+
+## Một nguồn cho toàn bộ danh mục Đầu tư trong Mục tiêu — 05/11/2026
+
+- Nguồn mới gom tài sản và toàn bộ ví thuộc danh mục thành một dòng: giá trị hiện tại = giá trị tài sản + tiền chờ; vốn hiện còn = giá vốn còn lại + tiền chờ. Tỷ lệ chỉ áp một lần. Liên kết cũ tiếp tục tính theo phần đã lưu, giữ snapshot hoàn thành, thứ tự snapshot lịch sử và khả năng replay; đổi sang tổng danh mục qua chọn lại/xem trước/xác nhận.
+- **345/345 unit**, **120/120 PostgreSQL** đạt. Ca mới đối soát nhiều ví, mua/bán hết/mua lại, hai cơ sở tính, tiền vượt giới hạn một position với BigInt, định giá cũ, báo cáo cũ/mới, giới hạn phần chia giữa nguồn cũ và tổng danh mục, sao lưu/khôi phục V3 qua runtime/RLS local. Log: `artifacts/goal-portfolio-unit-final.log`, `artifacts/goal-portfolio-postgres-final.log`.
+- **45/45 browser** đạt trên Chromium desktop/mô phỏng iPhone, Firefox desktop, WebKit desktop/mô phỏng iPhone. Ví dụ 8 triệu tài sản + 3 triệu tiền chờ = một dòng 11 triệu; chia 40% cho tiến độ 4,4 triệu, bán hết về ví vẫn giữ tổng. Có lưu thực qua API, nguồn thay đổi sau preview, giữ nháp, retry, riêng tư, Việt/Anh, thứ tự, năm theme và form hẹp. Log cuối `artifacts/goal-portfolio-final-browser.log`; output riêng `artifacts/goal-portfolio-final-browser/`; build production webpack `artifacts/goal-portfolio-final-next.log`.
+- Đã xem ảnh nguồn và chi tiết trên desktop/mobile: `artifacts/goal-portfolio-source-{desktop,mobile}.png`, `artifacts/goal-portfolio-{desktop,mobile}.png`. So sánh 14 file source liên quan với snapshot production `artifacts/browser-app-jIp55S/` không khác; manifest `artifacts/goal-portfolio-source-manifest.json`.
+- Lint, Prettier, architecture **329 source files / 0 violations**, typecheck và `git diff --check` đạt. Production build Turbopack ngoài sandbox đạt (`artifacts/goal-portfolio-build.log`); snapshot webpack cuối cũng biên dịch/TypeScript/sinh trang đạt. Lượt `npm run check` đầu bị kẹt ở build trong sandbox, không tính là full gate hoàn tất. Lượt browser đầu 17/18 do ENOENT khi ghi trace chung thư mục với lượt khác; chỉ dùng lượt cuối 45/45 với output riêng làm bằng chứng.
+- Đã cập nhật catalog, landing copy/bản dịch, hướng dẫn Help, README, đặc tả Goals/Đầu tư, kiến trúc và UX. Preview Mua xe vẫn dùng số cố định của sổ riêng, không gọi API tài chính. Không migration/SQL, reset hoặc chuyển dữ liệu tài khoản. Local cần khởi động lại; online cần redeploy source cùng phiên bản. Chỉ kiểm chứng PostgreSQL cô lập/Auth double và trình duyệt local; chưa deploy, kiểm Supabase Auth/RLS cloud hoặc thiết bị vật lý.

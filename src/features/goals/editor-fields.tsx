@@ -6,6 +6,7 @@ import { formatDate, formatDecimal } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 import type { Goal, GoalAction } from "@/domain/goals/schema";
 import { sourceKey, type GoalView } from "@/domain/goals/engine";
+import { availableShare } from "@/domain/goals/source-links";
 import { purposeNames, sourceNames, kindNames } from "./editor-config";
 export function GoalFields({
   action,
@@ -208,33 +209,44 @@ export function GoalFields({
                     : "Cột mốc theo dõi toàn bộ nguồn đã chọn và có thể tham chiếu chung nguồn.",
                 )}
               </p>
+              <p>
+                {tr(
+                  "Mỗi danh mục Đầu tư gồm tài sản và toàn bộ tiền chờ. Giá trị hiện tại dùng giá trị tài sản; vốn hiện còn dùng giá vốn còn lại, đều cộng tiền chờ.",
+                )}
+              </p>
               {view.sources.items
                 .filter(
                   (s) =>
                     (s.active ||
-                      input.links.some((l) => sourceKey(l) === sourceKey(s))) &&
+                      input.links.some(
+                        (l) =>
+                          sourceKey(l) === sourceKey(s) ||
+                          (l.kind === s.kind &&
+                            s.componentIds?.includes(l.sourceId)),
+                      )) &&
                     (s.kind !== "funds" || input.purpose === "milestone"),
                 )
                 .map((s) => {
-                  const l = input.links.find(
-                    (l) => sourceKey(l) === sourceKey(s),
+                  const selected = input.links.filter(
+                    (l) =>
+                      sourceKey(l) === sourceKey(s) ||
+                      (l.kind === s.kind &&
+                        s.componentIds?.includes(l.sourceId)),
                   );
-                  const used = (view.book?.goals ?? [])
-                    .filter(
-                      (g) =>
-                        g.id !== input.id &&
-                        g.purpose === "spending" &&
-                        ["active", "paused"].includes(g.status),
-                    )
-                    .flatMap((g) => g.links)
-                    .filter((link) => sourceKey(link) === sourceKey(s))
-                    .reduce((n, l) => n + l.share, 0);
+                  const available = availableShare(
+                    view.book?.goals ?? [],
+                    view.sources,
+                    s,
+                    input.id,
+                  );
+                  const legacy =
+                    s.scope === "portfolio" && selected.some((l) => !l.scope);
                   return (
                     <div className="goal-source" key={sourceKey(s)}>
                       <label>
                         <input
                           type="checkbox"
-                          checked={Boolean(l)}
+                          checked={selected.length > 0}
                           onChange={(e) =>
                             updateGoal({
                               links: e.target.checked
@@ -243,14 +255,15 @@ export function GoalFields({
                                     {
                                       kind: s.kind,
                                       sourceId: s.sourceId,
+                                      ...(s.scope ? { scope: s.scope } : {}),
                                       share:
                                         input.purpose === "milestone"
                                           ? 10000
-                                          : Math.max(1, 10000 - used),
+                                          : Math.max(1, available),
                                     },
                                   ]
                                 : input.links.filter(
-                                    (l) => sourceKey(l) !== sourceKey(s),
+                                    (l) => !selected.includes(l),
                                   ),
                             })
                           }
@@ -273,21 +286,26 @@ export function GoalFields({
                               ? ` · ${formatDate(s.valueDate, locale)}`
                               : ""}
                           </small>
+                          {legacy && (
+                            <small>
+                              {tr(
+                                "Liên kết đã lưu vẫn theo từng phần. Bỏ chọn rồi chọn lại để dùng tổng danh mục; xem trước trước khi lưu.",
+                              )}
+                            </small>
+                          )}
                         </span>
                       </label>
                       {input.purpose === "spending" && (
                         <span>
                           <small>
                             {tr("Còn khả dụng")}:{" "}
-                            {formatDecimal(
-                              String((10000 - used) / 100),
-                              locale,
-                            )}
-                            %
+                            {formatDecimal(String(available / 100), locale)}%
                           </small>
-                          {l && (
-                            <label>
+                          {selected.map((l) => (
+                            <label key={sourceKey(l)}>
                               {tr("Tỷ lệ (%)")}
+                              {legacy &&
+                                ` · ${tr(l.sourceId === s.sourceId ? "Tài sản đầu tư" : "Tiền chờ")}`}
                               <LocalizedInput
                                 numberKind="decimal"
                                 precision={2}
@@ -297,7 +315,7 @@ export function GoalFields({
                                 onValueChange={(v) =>
                                   updateGoal({
                                     links: input.links.map((x) =>
-                                      sourceKey(x) === sourceKey(s)
+                                      sourceKey(x) === sourceKey(l)
                                         ? {
                                             ...x,
                                             share: Math.round(Number(v) * 100),
@@ -308,7 +326,7 @@ export function GoalFields({
                                 }
                               />
                             </label>
-                          )}
+                          ))}
                         </span>
                       )}
                     </div>

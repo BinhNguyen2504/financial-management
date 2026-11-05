@@ -56,6 +56,7 @@ export function SavingsEditorFields({
     type = "text",
     secret = false,
     required = true,
+    help?: string,
   ) {
     if (type === "month")
       return (
@@ -94,6 +95,7 @@ export function SavingsEditorFields({
           aria-describedby={
             [
               secret && key !== "quantity" ? `savings-hint-${key}` : "",
+              help ? `savings-help-${key}` : "",
               fieldErrors[key] ? `savings-error-${key}` : "",
             ]
               .filter(Boolean)
@@ -121,6 +123,11 @@ export function SavingsEditorFields({
         />
         {secret && key !== "quantity" && (
           <MoneyHint id={`savings-hint-${key}`} value={f[key]} />
+        )}
+        {help && (
+          <small id={`savings-help-${key}`} className="expense-muted">
+            {help}
+          </small>
         )}
         {fieldErrors[key] && (
           <small id={`savings-error-${key}`} className="field-error">
@@ -331,6 +338,12 @@ export function SavingsEditorFields({
                   : tr("Số tiền (VND)"),
               "text",
               true,
+              true,
+              txKind === "openingGold"
+                ? tr(
+                    "Tổng giá vốn của toàn bộ số vàng mở đầu. Ví dụ: 7 chỉ có tổng giá vốn 79.400.000đ thì nhập 79.400.000.",
+                  )
+                : undefined,
             )}
           {["openingGold", "buyGold"].includes(txKind) &&
             input(
@@ -344,11 +357,23 @@ export function SavingsEditorFields({
           {["openingGold", "buyGold", "sellGold"].includes(txKind) &&
             input(
               "unitPrice",
-              txKind === "buyGold"
-                ? tr("Giá mua mỗi đơn vị (VND)")
-                : tr("Giá bán lại mỗi đơn vị (VND)"),
+              tr(
+                txKind === "buyGold"
+                  ? "Giá mua (VND/{0})"
+                  : txKind === "sellGold"
+                    ? "Giá bán (VND/{0})"
+                    : "Giá bán lại dự kiến (VND/{0})",
+                { 0: tr(selectedCategory?.unit ?? "đơn vị") },
+              ),
               "text",
               true,
+              true,
+              txKind === "openingGold"
+                ? tr(
+                    "Giá dự kiến nhận được khi bán 1 {0} tại ngày ghi nhận; dùng để định giá số vàng đang giữ, không phải tổng giá vốn.",
+                    { 0: tr(selectedCategory?.unit ?? "đơn vị") },
+                  )
+                : undefined,
             )}
           {hasContract &&
             select(

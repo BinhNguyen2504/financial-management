@@ -2,6 +2,8 @@
 
 ## Nguyên tắc
 
+Ngày 05/11/2026: lịch sử thay đổi Tiết kiệm có khung thu gọn, số lần cập nhật và phạm vi toàn bộ sổ. Dòng thời gian ưu tiên tên thao tác; thời gian ghi nhận và lần ghi là thông tin phụ, lý do tách riêng. Desktop căn thời gian bên phải; điện thoại xếp dọc, giữ nội dung dài và thao tác bàn phím của disclosure native. Giữ Nunito, năm theme và hướng sổ tài chính hiện có.
+
 Tinh chỉnh 26/10/2026: nhóm thao tác bảng hũ căn giữa theo số nút thực tế; sửa và dùng tiền dùng icon có cùng kích thước, nhãn truy cập và tooltip. Nền bảng phải nằm trong đường bo của khung, kể cả khi bảng cuộn ngang. Nút xác nhận ghi tiền trong form giữ chữ rõ ràng; card mobile giữ nhãn chữ.
 
 Thiết kế cho thao tác hàng ngày trên điện thoại và kiểm tra sâu trên máy tính. Ưu tiên nhập nhanh và nhìn rõ nguồn số liệu. Ảnh Notion cho biết nội dung cần quản lý, không bắt buộc giữ bố cục bảng dài, màu sắc hay trang trí của Notion.
@@ -360,3 +362,21 @@ Rà cuối 05/11/2026: menu preview lấy thứ tự từ catalog điều hướ
 ## Bố cục Mục tiêu — 05/11/2026
 
 Giữ Nunito/năm theme, tăng phân cấp bằng số liệu và nhóm nội dung thay vì kéo giãn nhãn/giá trị. Bộ lọc tìm kiếm rộng, trạng thái vừa đủ, reset/sắp xếp theo kích thước nội dung. Chi tiết dẫn bằng tiến độ, kế hoạch góp và sổ riêng/nguồn liên kết. Giao dịch dùng cặp biểu tượng 44px và nhãn truy cập; sắp xếp nhiều mục diễn ra trong một hộp thoại có nháp và xác nhận. Xem [kiểm chứng bố cục](features/goals-layout-2026-11-05.md).
+
+## Dialog phân loại và đơn giá vàng — 05/11/2026
+
+Lỗi thiếu schema logo/icon cho phép tiếp tục sửa hoặc đóng qua xác nhận bỏ thay đổi; dialog con giữ bản nháp cha. Nhãn giá vàng ghi rõ đơn vị danh mục, giải thích tổng giá vốn riêng với giá bán lại của một đơn vị. Archive/Restore dùng icon có tên truy cập. Báo cáo Đầu tư hiện đủ bộ lọc trong grid responsive và tách nhãn/select biểu đồ. Xem [đặc tả và kiểm chứng](features/feedback-2026-11-05.md).
+
+## Thao tác Ví tiền chờ — 05/11/2026
+
+Nút thêm ví thuộc nhóm tiêu đề; tên ví và số dư dẫn mỗi hàng. Ba thao tác thường dùng chuyển thành icon 44px có tooltip hover/focus; “Thêm thao tác” gom mở đầu, sửa, lưu trữ/khôi phục thành phần mở rộng có nhãn. Escape đóng tooltip/phần mở rộng trước khi đóng dialog; điện thoại xếp thao tác dưới số dư, không ép sáu nút chữ trên một dòng. Giữ Nunito/năm theme và luồng xem trước/xác nhận. Xem [đặc tả Đầu tư](features/investments.md).
+
+
+## Nguồn danh mục trong Mục tiêu — 05/11/2026
+
+Danh sách nguồn Đầu tư có một dòng cho mỗi danh mục, gồm tài sản và toàn bộ tiền chờ. Ghi chú giải thích hai cơ sở tính, dùng chung Việt/Anh và che tiền. Liên kết cũ được gom cùng dòng, giữ tỷ lệ từng phần; bỏ chọn rồi chọn lại dùng tổng danh mục qua xem trước/xác nhận. Không tự thay tiến độ hoặc snapshot cũ. Preview landing giữ ví dụ Mua xe dùng sổ riêng và số liệu cố định, chỉ cập nhật hướng dẫn nguồn. Xem [quy tắc](features/goals.md).
+
+
+## Căn hàng các bước khôi phục — 05/11/2026
+
+Thanh Chọn file → Kiểm tra → Khôi phục dùng `gap` cho khoảng cách, bỏ margin dọc kế thừa từ danh sách trong panel để số và nhãn thẳng hàng. Từng bước được xuống hàng khi thiếu chỗ. Giữ điều kiện tài khoản trống và luồng xem trước/xác nhận; xem [đặc tả sao lưu](features/backup.md#căn-hàng-các-bước-khôi-phục--05112026).

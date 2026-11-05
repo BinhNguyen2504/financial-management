@@ -147,6 +147,11 @@ export const savings = {
   "Loại giao dịch lọc": "Transaction type filter",
   "Chưa có giao dịch trong bộ lọc này.": "No transactions for these filters.",
   "Lịch sử thay đổi (": "Change history (",
+  "Lịch sử thay đổi": "Change history",
+  "Toàn bộ sổ Tiết kiệm · Mới nhất trước": "All savings history · Newest first",
+  "Thời gian ghi nhận theo giờ Việt Nam": "Recorded in Vietnam time",
+  "Chưa có thay đổi. Các lần cập nhật sổ sẽ xuất hiện tại đây.":
+    "No changes yet. Updates to your savings will appear here.",
   "Danh mục tiết kiệm": "Savings categories",
   "Thay đổi theo tháng hiệu lực. Lưu trữ giữ nguyên lịch sử.":
     "Changes use an effective month. Archiving preserves history.",
@@ -260,6 +265,12 @@ export const savings = {
   "Số lượng ({0})": "Quantity ({0})",
   "Giá mua mỗi đơn vị (VND)": "Purchase price per unit (VND)",
   "Giá bán lại mỗi đơn vị (VND)": "Resale price per unit (VND)",
+  "Giá mua (VND/{0})": "Purchase price (VND/{0})",
+  "Giá bán (VND/{0})": "Sale price (VND/{0})",
+  "Tổng giá vốn của toàn bộ số vàng mở đầu. Ví dụ: 7 chỉ có tổng giá vốn 79.400.000đ thì nhập 79.400.000.":
+    "Total cost basis of all opening gold. For example, for 7 chi with a total cost basis of VND 79,400,000, enter 79,400,000.",
+  "Giá dự kiến nhận được khi bán 1 {0} tại ngày ghi nhận; dùng để định giá số vàng đang giữ, không phải tổng giá vốn.":
+    "Expected proceeds from selling 1 {0} on the recorded date; used to value your gold holdings, separate from the total cost basis.",
   "Sổ tiền gửi": "Term deposit",
   "Chọn sổ": "Choose deposit",
   "Tên sổ": "Deposit name",

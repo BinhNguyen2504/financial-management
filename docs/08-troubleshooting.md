@@ -100,3 +100,7 @@ Helper `financial_request_owner()` là SECURITY INVOKER/STABLE, search_path rỗ
 Migration sửa hàm definer dưới đúng role chủ sở hữu bằng quyền SET/CREATE tạm và khôi phục membership/schema privilege trước đó. Hỗ trợ chạy lại, giữ nguyên dữ liệu, receipt, fingerprint và request đang chờ. Không đổi JSON backup hoặc command/API payload.
 
 SQLSTATE 42501 trong transaction reset trả `RESET_PERMISSION_REQUIRED` và thông báo: hệ thống chưa đủ quyền xử lý, dữ liệu chưa bị xóa. Transaction đã rollback nên UI cho đóng hộp thoại; không coi lỗi quyền đã xác định là mất xác nhận. Lỗi mạng/phản hồi mất hoặc không xác định vẫn giữ request/operation cho retry đúng yêu cầu.
+
+### Dialog phân loại không đóng sau lỗi logo/icon — 05/11/2026
+
+Source mới phân biệt `LABEL_VISUALS_MIGRATION_REQUIRED` là chưa ghi dữ liệu, cho sửa hoặc đóng qua xác nhận bỏ thay đổi. Mất phản hồi lưu thực sự vẫn cần xác minh bằng cùng command ID. Website lưu logo/icon cần [bổ sung schema trong SQL Editor](features/feedback-2026-11-05.md#cập-nhật-database-website-bằng-sql-editor); chỉ sửa source không cập nhật schema online.

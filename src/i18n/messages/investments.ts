@@ -1,4 +1,5 @@
 export const investments = {
+  "Thêm thao tác": "More actions",
   "Tổng giá trị sau giao dịch": "Total value after transaction",
   "Tài sản và tiền chờ của cùng danh mục":
     "Holdings and available cash in the same portfolio",

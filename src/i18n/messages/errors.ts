@@ -364,6 +364,8 @@ export const errors = {
     "Sign in to open financial data.",
   "Cần áp dụng migration 202610190002_label_visuals.sql để lưu logo hoặc biểu tượng phân loại. Dữ liệu chưa được lưu; nội dung đang nhập vẫn được giữ.":
     "Apply migration 202610190002_label_visuals.sql to save category logos or icons. Data has not been saved; your draft is preserved.",
+  "Chưa thể lưu logo hoặc biểu tượng vì hệ thống cần được cập nhật. Nội dung bạn nhập vẫn được giữ.":
+    "Logos or icons cannot be saved until the system is updated. Your draft is preserved.",
   "Quỹ an toàn chưa được bật trên hệ thống. Cần áp dụng migration Fund theo hướng dẫn triển khai.":
     "Safety funds is not enabled on this system. Apply the Fund migration using the deployment instructions.",
   "Cấu hình giới hạn backup không hợp lệ.":

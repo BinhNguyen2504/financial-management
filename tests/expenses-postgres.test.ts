@@ -1,5 +1,6 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import postgres from "postgres";
 import {
   postgresExpenseRepository,
@@ -143,6 +144,47 @@ describe("PostgreSQL transactions, retry, concurrency and owner isolation", () =
       await measured.end();
     }
   });
+  it.each([[], ["brand_key"], ["icon_key"], ["brand_key", "icon_key"]])(
+    "repairs visual schema %j atomically and can run twice without changing labels",
+    async (...columns) => {
+      const repair = await readFile(
+        "docs/operations/label-visuals-repair.sql",
+        "utf8",
+      );
+      const rollback = new Error("Rollback repair fixture");
+      try {
+        await admin.begin(async (tx) => {
+          for (const column of columns)
+            await tx.unsafe(
+              `alter table public.expense_labels drop column ${column}`,
+            );
+          const before = await tx.unsafe(
+            "select jsonb_build_object('brand_key',null,'icon_key',null) || to_jsonb(l) as data from public.expense_labels l order by owner_id,id",
+          );
+          await tx.unsafe(repair);
+          await tx.unsafe(repair);
+          const schema = await tx.unsafe(
+            "select column_name from information_schema.columns where table_schema='public' and table_name='expense_labels' and column_name in ('brand_key','icon_key') and data_type='text' and is_nullable='YES'",
+          );
+          expect(schema).toHaveLength(2);
+          const [constraint] = await tx.unsafe(
+            "select convalidated, pg_get_constraintdef(oid) as definition from pg_constraint where conrelid='public.expense_labels'::regclass and conname='expense_labels_visual_key_length'",
+          );
+          expect(constraint.convalidated).toBe(true);
+          expect(constraint.definition).toContain("length(brand_key) <= 100");
+          expect(constraint.definition).toContain("length(icon_key) <= 100");
+          expect(
+            await tx.unsafe(
+              "select jsonb_build_object('brand_key',null,'icon_key',null) || to_jsonb(l) as data from public.expense_labels l order by owner_id,id",
+            ),
+          ).toEqual(before);
+          throw rollback;
+        });
+      } catch (error) {
+        if (error !== rollback) throw error;
+      }
+    },
+  );
   it.each([["brand_key", "icon_key"], ["brand_key"], ["icon_key"]])(
     "keeps existing expenses usable without visual columns %j",
     async (...columns) => {

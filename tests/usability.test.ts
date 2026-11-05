@@ -31,9 +31,9 @@ describe("plain-language error presentation", () => {
       "Apply migration 202610190002_label_visuals.sql",
       "LABEL_VISUALS_MIGRATION_REQUIRED",
     );
-    expect(message).toContain("Chưa lưu");
+    expect(message).toContain("Chưa thể lưu logo hoặc biểu tượng");
     expect(message).toContain("được giữ");
-    expect(translate("en", message)).toContain("has not been saved");
+    expect(translate("en", message)).toContain("Your draft is preserved");
     expect(
       userFacingError("SQLSTATE 42P01 relation missing", undefined, "Thử lại."),
     ).toBe("Thử lại.");

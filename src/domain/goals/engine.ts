@@ -8,6 +8,8 @@ import {
   type GoalTransaction,
 } from "./schema";
 import type { Clock } from "../shared/types";
+import { allocationKeys, linkedSource, sourceKey } from "./source-links";
+export { sourceKey } from "./source-links";
 
 export class GoalError extends Error {
   constructor(
@@ -21,8 +23,6 @@ export class GoalError extends Error {
 function requireGoal(value: unknown, message: string): asserts value {
   if (!value) throw new GoalError(message);
 }
-export const sourceKey = (link: { kind: string; sourceId: string }) =>
-  `${link.kind}:${link.sourceId}`;
 export const emptyBook = (): GoalBook => ({
   version: 0,
   goals: [],
@@ -86,7 +86,7 @@ export function balances(book: GoalBook) {
 function linkedCurrent(goal: Goal, sources: GoalSources): string | null {
   let sum = 0n;
   for (const link of goal.links) {
-    const s = sources.items.find((s) => sourceKey(s) === sourceKey(link));
+    const s = linkedSource(sources, link);
     if (!s || sources.versions[link.kind] === null) return null;
     const amount = goal.basis === "capital" ? s.capital : s.value;
     if (amount === null) return null;
@@ -145,9 +145,7 @@ export function goalState(
   const stale =
     goal.mode === "linked" &&
     goal.basis === "value" &&
-    goal.links.some(
-      (l) => sources.items.find((s) => sourceKey(l) === sourceKey(s))?.stale,
-    );
+    goal.links.some((l) => linkedSource(sources, l)?.stale);
   return {
     id: goal.id,
     current,
@@ -178,7 +176,7 @@ export function view(
   };
 }
 export type GoalView = ReturnType<typeof view> & { dataGeneration?: number };
-function allocations(book: GoalBook) {
+function allocations(book: GoalBook, sources: GoalSources) {
   const used = new Map<string, number>();
   for (const g of book.goals.filter(
     (g) =>
@@ -186,8 +184,17 @@ function allocations(book: GoalBook) {
       g.purpose === "spending" &&
       ["active", "paused"].includes(g.status),
   ))
-    for (const l of g.links)
-      used.set(sourceKey(l), (used.get(sourceKey(l)) ?? 0) + l.share);
+    for (const l of g.links) {
+      const source =
+        linkedSource(sources, l) ??
+        book.audit
+          .slice()
+          .reverse()
+          .map((a) => linkedSource(a.sources, l))
+          .find(Boolean);
+      for (const key of allocationKeys(l, source))
+        used.set(key, (used.get(key) ?? 0) + l.share);
+    }
   requireGoal(
     [...used.values()].every((share) => share <= 10000),
     "Tổng tỷ lệ đã chia cho mỗi nguồn không được vượt 100%.",
@@ -208,10 +215,12 @@ export function applyAction(
         ? (book.goals.find((g) => g.id === action.goalId)?.links ?? [])
         : [];
   // Keep only sources needed to replay this action, rather than every account asset.
+  const linkedSources = links.map((l) => linkedSource(sources, l));
   const snapshotSources: GoalSources = {
     versions: { ...sources.versions },
-    items: sources.items.filter((s) =>
-      links.some((l) => sourceKey(l) === sourceKey(s)),
+    // Preserve source order so historical audit and completion snapshots replay exactly.
+    items: [...sources.items, ...(sources.legacyItems ?? [])].filter((s) =>
+      linkedSources.includes(s),
     ),
   };
   const find = (id: string) => {
@@ -274,12 +283,15 @@ export function applyAction(
       "Mỗi nguồn chỉ được chọn một lần.",
     );
     for (const link of input.links) {
-      const source = sources.items.find(
-        (s) => sourceKey(s) === sourceKey(link),
-      );
+      const source = linkedSource(sources, link);
       requireGoal(
         source && sources.versions[link.kind] !== null,
         "Nguồn liên kết chưa sẵn sàng.",
+      );
+      requireGoal(
+        !sources.legacyItems?.includes(source) ||
+          old?.links.some((l) => sourceKey(l) === sourceKey(link) && !l.scope),
+        "Chọn toàn bộ danh mục, bao gồm tài sản và tiền chờ.",
       );
       requireGoal(
         source.active ||
@@ -336,8 +348,7 @@ export function applyAction(
     if (action.status === "active") {
       for (const l of g.links)
         requireGoal(
-          sources.items.some((s) => sourceKey(s) === sourceKey(l)) &&
-            sources.versions[l.kind] !== null,
+          linkedSource(sources, l) && sources.versions[l.kind] !== null,
           "Nguồn liên kết chưa sẵn sàng.",
         );
       g.completion = null;
@@ -396,7 +407,7 @@ export function applyAction(
       reason,
     });
   }
-  allocations(book);
+  allocations(book, sources);
   balances(book);
   for (const g of book.goals.filter(
     (g) => g.mode === "ledger" && g.status === "archived",

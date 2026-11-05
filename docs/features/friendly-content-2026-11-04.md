@@ -32,9 +32,17 @@ Biểu mẫu và các nhóm trường hiện có được giữ; không thêm b�
 
 ## Kiểm chứng
 
+### Căn giữa hành động Chi tiêu — 05/11/2026
+
+Khối `.expense-empty` căn giữa cả lưới `EmptyState` lẫn hàng hành động: nút thêm hũ và đặt lại bộ lọc thẳng tâm với tiêu đề/mô tả. Quy tắc chỉ áp dụng trong khối này; các trạng thái trống của sổ khác giữ bố cục hiện có. Không đổi nội dung, nghiệp vụ hoặc dữ liệu.
+
+Đã rà catalog, copy landing, preview minh họa và hợp đồng UX/kiến trúc: vị trí nút không thay đổi năng lực, trạng thái module, ranh giới truy cập hoặc dữ liệu minh họa nên không cần sửa các mô tả đó. README và tài liệu này ghi nhận thay đổi trình bày. Bằng chứng mới ghi riêng trong nhật ký validation.
+
 Kết quả cập nhật trong [nhật ký validation](../07-validation.md). Ảnh mới nằm trong `artifacts/friendly-content-2026-11-04/`, tách khỏi ảnh lượt trước. Kiểm thử dùng PostgreSQL và Auth double cục bộ; không chứng minh cloud deployment, Auth thật hoặc hành vi thiết bị vật lý. Chưa thực hiện nghiên cứu sử dụng với khách hàng thực.
 
 ## Tổng hợp kiểm chứng — 05/11/2026
+
+Điều chỉnh tiếp theo ở Đầu tư: căn giữa lưới nội dung và hàng nút “Tạo danh mục đầu tiên” trong `.investment-empty`, giữ nút cùng trục với minh họa/tiêu đề/mô tả. Xem [ghi nhận chức năng](investments.md#căn-giữa-hành-động-khởi-đầu--05112026) và [bằng chứng component](../07-validation.md#căn-giữa-nút-trạng-thái-đầu-tư-trống--05112026).
 
 - Help mở đầu theo thứ tự **Trang này giúp gì → Bắt đầu thế nào → Đọc kết quả ra sao**; các anchor và bài chi tiết hiện có được giữ.
 - `npm run check` đạt, gồm 336 unit test. Lượt browser chính đạt 242/244; hai ca selector cũ đã sửa và chạy lại 8/8 trên bốn cấu hình. Trạng thái trống Chi tiêu bổ sung đạt 4/4; Help và English cuối đạt 16/16.

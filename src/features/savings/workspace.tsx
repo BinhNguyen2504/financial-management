@@ -5,11 +5,10 @@ import { FilterOptions } from "@/components/filter-options";
 import { useUser } from "@/features/profile/user-provider";
 import { ViewControls } from "@/components/view-controls";
 import { ActionOptions } from "@/components/action-options";
-import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
-import { formatDate, formatTime } from "@/i18n/format";
+import { formatDate } from "@/i18n/format";
 
 import { AssetScene } from "@/components/asset-scene";
 import { LoadingStatus } from "@/components/loading";
@@ -26,8 +25,9 @@ import Link from "next/link";
 import { SavingsDetails } from "./details";
 import { SavingsCategoryTable, SavingsTransactionTable } from "./ledger-tables";
 import { SavingsEditor } from "./editor";
+import { SavingsHistory } from "./history";
 
-import { auditActionNames, kindNames, transactionNames } from "./editor-config";
+import { kindNames, transactionNames } from "./editor-config";
 import { SavingsReports } from "./report-panel";
 import { useSavingsWorkspace } from "./use-savings-workspace";
 
@@ -485,20 +485,7 @@ function AccountSavings(props: Parameters<typeof useSavingsWorkspace>[0]) {
                       label={`${tr("Giao dịch tháng")} ${month}`}
                       onEdit={setEditor}
                     />
-                    <AnimatedDetails>
-                      <summary>
-                        {tr("Lịch sử thay đổi (")}
-                        {view.book?.audit.length ?? 0})
-                      </summary>
-                      {[...(view.book?.audit ?? [])].reverse().map((a) => (
-                        <p key={a.version}>
-                          {tr("Lần ghi")} #{a.version} ·{" "}
-                          {formatTime(a.at, locale)} ·{" "}
-                          {tr(auditActionNames[a.action.type])}
-                          {"reason" in a.action ? ` · ${a.action.reason}` : ""}
-                        </p>
-                      ))}
-                    </AnimatedDetails>
+                    <SavingsHistory audit={view.book?.audit ?? []} />
                   </section>
                 )}
                 {tab === "categories" && (

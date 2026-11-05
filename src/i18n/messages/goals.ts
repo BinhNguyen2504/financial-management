@@ -1,4 +1,14 @@
 export const goals = {
+  "Mỗi danh mục Đầu tư gồm tài sản và toàn bộ tiền chờ. Giá trị hiện tại dùng giá trị tài sản; vốn hiện còn dùng giá vốn còn lại, đều cộng tiền chờ.":
+    "Each investment portfolio includes its assets and all owned cash. Current value uses asset value; remaining capital uses remaining cost basis. Both include cash.",
+  "Liên kết đã lưu vẫn theo từng phần. Bỏ chọn rồi chọn lại để dùng tổng danh mục; xem trước trước khi lưu.":
+    "Saved links still track individual parts. Uncheck and reselect to use the whole portfolio; preview before saving.",
+  "Chọn toàn bộ danh mục, bao gồm tài sản và tiền chờ.":
+    "Choose the whole portfolio, including assets and cash.",
+  "Toàn bộ danh mục": "Whole portfolio",
+  "Liên kết theo từng phần": "Individual position link",
+  "Tài sản đầu tư": "Invested assets",
+  "Tiền chờ": "Available cash",
   "Khi bạn muốn thay đổi mục tiêu cần ưu tiên trước.":
     "When you want to change which goals come first.",
   "Chọn Sắp xếp ưu tiên cạnh bộ lọc để mở toàn bộ danh sách.":

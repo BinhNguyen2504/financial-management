@@ -13,6 +13,9 @@ Triển khai ngày 17/10/2026 tại `/savings`. Tiền/ví, sổ tiền gửi v�
 
 Tên, mô tả, emoji và trạng thái danh mục có tháng hiệu lực. Lưu trữ/xóa chỉ khi không còn tài sản, chọn tháng sau giao dịch cuối cùng; khôi phục được. Không xóa lịch sử, giá vốn hoặc báo cáo cũ.
 
+Lịch sử thay đổi dưới tab Giao dịch là của **toàn bộ sổ Tiết kiệm**, không giới hạn theo tháng hoặc bộ lọc giao dịch. Bố cục ngày 05/11/2026 dùng dòng thời gian có thể thu gọn: nội dung thay đổi là dòng chính, thời gian ghi nhận theo giờ Việt Nam và lần ghi là thông tin phụ; lý do sửa/hủy hoặc mở lại tháng nằm riêng và giữ xuống dòng. Các lần ghi mới nhất đứng trước, phân biệt sửa với hủy giao dịch. Không có thay đổi vẫn hiện thông báo; desktop căn thời gian bên phải, mobile xếp dọc. Dùng Nunito và màu theo năm theme hiện có.
+
+
 ## Quy tắc tính
 
 - Tiền VND nguyên dạng chuỗi, tối đa 24 chữ số cho từng đầu vào. Số lượng vàng tối đa 18 chữ số nguyên và 6 chữ số lẻ; tính bằng BigInt với scale 1.000.000. Giá VND/đơn vị là số nguyên. Giá trị giao dịch/định giá làm tròn nửa lên đến đồng.
@@ -133,3 +136,7 @@ Bảng diễn biến, hướng dẫn và ghi chú dài dùng thành phần mở 
 ## Nội dung cho người dùng phổ thông — 04/11/2026
 
 Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.
+
+### Cập nhật 05/11/2026
+
+Danh mục dùng icon lưu trữ/khôi phục với tên truy cập đầy đủ. Vàng mở đầu có hướng dẫn tổng giá vốn và đơn giá bán lại theo đơn vị danh mục; mua/bán cũng ghi rõ đơn vị. Không thay đổi phép tính. Xem [chi tiết](feedback-2026-11-05.md).

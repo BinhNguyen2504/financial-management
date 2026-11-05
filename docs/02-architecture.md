@@ -63,6 +63,8 @@ Lint, kiểm tra import/cycle/client-server và định dạng là một phần 
 
 Tiết kiệm có `ledger-tables.tsx` (27/10/2026) dùng chung bảng giao dịch tháng và giao dịch nguồn báo cáo; workspace truyền giao dịch đã lọc cùng effects tương ứng. Bảng danh mục tra rule theo tháng đang xem, tên danh mục giao dịch tra theo ngày giao dịch. `ColumnTable` giữ cấu hình cột riêng trên trình duyệt, CSS container query chọn bố cục theo vùng nội dung. Không thêm request, thay đổi domain/schema hay quyền truy cập cho thay đổi bố cục này.
 
+Ngày 05/11/2026, `savings/history.tsx` nhận audit của toàn bộ sổ từ workspace và trình bày thành dòng thời gian qua `AnimatedDetails` dùng disclosure native. Thời gian tiếp tục dùng formatter giờ Việt Nam; lý do lấy nguyên nội dung đã ghi. Không đọc thêm API, không thay domain/persistence hoặc bộ lọc giao dịch.
+
 Spacing workspace (04/11/2026) được giới hạn trong `.app-shell` tại `styles/experience/workspace-spacing.css`, nhập sau `workspace-comfort.css`. `FilterOptions` sở hữu khoảng cách ngoài; các trang grid sở hữu gap thay vì cộng lề từ heading/hướng dẫn. Quy tắc nhãn/số thống kê và ẩn trigger mobile có độ ưu tiên đủ để giữ nguyên sau khi stylesheet module được tải. Không thay component state, API hay dữ liệu preview. Xem [phạm vi và kiểm chứng](features/workspace-spacing-2026-11-04.md).
 
 - `src/app`: route web và `/api/v1`, chỉ chuyển request/response, không chứa công thức tài chính trong JSX.
@@ -122,7 +124,7 @@ Khi bắt đầu native mới cân nhắc cấu trúc `apps/web`, `apps/mobile` 
 
 ## Đầu tư — 18/10/2026
 
-Đầu tư có domain/application/repository/API/UI riêng, theo tổng danh mục VND. Từ 02/11/2026, mỗi ví có parentCategoryId thuộc một danh mục; tạo danh mục và ví mặc định nguyên tử. Projection portfolios cộng ví vào tổng từng danh mục, còn raw positions dùng cho Mục tiêu và tổng module để không cộng trùng. Lãi/lỗ UI chỉ tính tài sản còn giữ. Dùng lại cơ chế Auth, RLS, preview, advisory lock, version và idempotency của các module hiện có; không dùng engine vàng/sổ tiền gửi cho danh mục tổng tiền. Mua/bán là một command cập nhật vốn, định giá và ví trong cùng transaction. Sáu bảng mới giữ metadata có ngày, revisions giao dịch/định giá, audit và command; không có tháng chốt. Trang await kiểm tra truy cập server. Chi tiết [Đầu tư](features/investments.md).
+Đầu tư có domain/application/repository/API/UI riêng, theo tổng danh mục VND. Từ 02/11/2026, mỗi ví có parentCategoryId thuộc một danh mục; tạo danh mục và ví mặc định nguyên tử. Projection portfolios cộng ví vào tổng từng danh mục, còn raw positions dùng cho tổng module và tương thích liên kết Mục tiêu cũ. Từ 05/11/2026, nguồn Mục tiêu mới dùng một portfolio gồm tài sản và toàn bộ ví thuộc danh mục; xem đặc tả Goals về scope và phần chia tương thích. Lãi/lỗ UI chỉ tính tài sản còn giữ. Dùng lại cơ chế Auth, RLS, preview, advisory lock, version và idempotency của các module hiện có; không dùng engine vàng/sổ tiền gửi cho danh mục tổng tiền. Mua/bán là một command cập nhật vốn, định giá và ví trong cùng transaction. Sáu bảng mới giữ metadata có ngày, revisions giao dịch/định giá, audit và command; không có tháng chốt. Trang await kiểm tra truy cập server. Chi tiết [Đầu tư](features/investments.md).
 
 Không tự nối số dư với các module khác hoặc tạo báo cáo tài sản ròng toàn ứng dụng. Migration cloud và kiểm chứng thiết bị thật là bước riêng.
 
@@ -288,3 +290,11 @@ Các trang có phần mở rộng giải thích cách bắt đầu và đọc s�
 ## Nội dung hộp thoại Mục tiêu — 05/11/2026
 
 Goals tái sử dụng DialogTabs (tab/scroll/state), DialogNote và DialogPreview. DialogList có tùy chọn filterDisclosure mặc định false: chỉ caller bật mới có bộ lọc phụ thu gọn trên mobile; desktop vẫn hiện bộ lọc theo hàng. DialogChanges nhận subjectLabel tùy chọn, mặc định Hũ; Goals truyền Mục tiêu. GoalPriority chỉ tạo nháp GoalAction.reorder, vẫn qua preview và commands hiện có; không bổ sung bảng hoặc route. Xem [đặc tả bố cục](features/goals-layout-2026-11-05.md).
+
+## Phản hồi lưu phân loại — 05/11/2026
+
+`LABEL_VISUALS_MIGRATION_REQUIRED` vẫn là HTTP 503 nhưng repository từ chối trước mọi ghi. Expense editor nhận diện code này để mở lại chỉnh sửa/đóng qua xác nhận bỏ nháp, thay vì coi toàn bộ 5xx là kết quả lưu chưa rõ. Các lỗi mất phản hồi thực sự giữ command ID để retry idempotent. Không đổi route, schema API hoặc quyền runtime. Xem [chi tiết và SQL cho website](features/feedback-2026-11-05.md).
+
+## Trình bày Ví tiền chờ — 05/11/2026
+
+`src/features/investments/wallet-actions.tsx` giữ trạng thái tooltip và phần thao tác phụ trong từng ví; `details.tsx` đặt nút tạo ví ở tiêu đề. Các nút tiếp tục phát `EditorMode` hiện có tới editor, không thay domain, HTTP, schema, Auth hoặc RLS. Catalog/landing/preview được rà, giữ phạm vi module và dữ liệu minh họa cố định.

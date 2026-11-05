@@ -4,7 +4,8 @@ import { useMoney } from "@/components/privacy";
 import { formatDate, formatDecimal } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 import type { GoalAction } from "@/domain/goals/schema";
-import { sourceKey, type GoalView } from "@/domain/goals/engine";
+import type { GoalView } from "@/domain/goals/engine";
+import { linkedSource } from "@/domain/goals/source-links";
 import type { GoalCommandResult } from "@/application/goals";
 import { statusNames, kindNames } from "./editor-config";
 export function GoalPreview({
@@ -46,7 +47,7 @@ export function GoalPreview({
             items
               .map(
                 (l) =>
-                  `${view.sources.items.find((s) => sourceKey(s) === sourceKey(l))?.name ?? tr("Nguồn liên kết chưa sẵn sàng.")} (${formatDecimal(String(l.share / 100), locale)}%)`,
+                  `${linkedSource(view.sources, l)?.name ?? tr("Nguồn liên kết chưa sẵn sàng.")}${l.kind === "investments" ? ` · ${tr(l.scope === "portfolio" ? "Toàn bộ danh mục" : "Liên kết theo từng phần")}` : ""} (${formatDecimal(String(l.share / 100), locale)}%)`,
               )
               .join(", ") || "—";
           return [

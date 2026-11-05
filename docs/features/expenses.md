@@ -154,3 +154,7 @@ Bảng dữ liệu biểu đồ, thông tin hũ, nhóm hũ đã ngừng và kho�
 ## Nội dung cho người dùng phổ thông — 04/11/2026
 
 Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.
+
+### Cập nhật 05/11/2026
+
+Lỗi thiếu schema logo/icon giữ bản nháp nhưng cho sửa hoặc đóng qua xác nhận bỏ thay đổi; phân biệt với mất phản hồi command. Xem [chi tiết và SQL cho website](feedback-2026-11-05.md).

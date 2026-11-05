@@ -473,6 +473,185 @@
   cursor: pointer;
   min-height: 44px;
 }
+.savings-workspace .savings-history {
+  margin-top: 24px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.savings-history-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: inherit;
+  list-style: none;
+  color: var(--muted);
+}
+.savings-history-toggle::-webkit-details-marker {
+  display: none;
+}
+.savings-history-toggle:hover {
+  background: var(--surface-alt);
+}
+.savings-history-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.savings-history-toggle > svg {
+  flex: none;
+}
+.savings-history-heading {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+.savings-history-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--text);
+  font-size: var(--font-size-14);
+}
+.savings-history-count {
+  padding: 1px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: var(--font-size-12);
+  font-variant-numeric: tabular-nums;
+}
+.savings-history-scope {
+  font-size: var(--font-size-12);
+  line-height: 1.6;
+}
+.savings-history-chevron {
+  transition: transform 180ms ease;
+}
+.savings-history[open]:not([data-closing]) .savings-history-chevron {
+  transform: rotate(180deg);
+}
+.savings-history-content {
+  padding: 0 18px 18px;
+}
+.savings-history-content .savings-history-timezone {
+  margin: 0;
+  padding: 14px 0 4px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: var(--font-size-12);
+}
+.savings-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.savings-history-list > li {
+  position: relative;
+  padding: 16px 0 16px 24px;
+  overflow-wrap: anywhere;
+}
+.savings-workspace .savings-history-list > li {
+  margin: 0;
+}
+.savings-history-list > li::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  bottom: -24px;
+  left: 4px;
+  width: 1px;
+  background: var(--border);
+}
+.savings-history-list > li:last-child {
+  padding-bottom: 0;
+}
+.savings-history-list > li:last-child::before {
+  display: none;
+}
+.savings-history-list > li::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--muted);
+  border-radius: 50%;
+  background: var(--surface);
+}
+.savings-history-list > li:first-child::after {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+.savings-history-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 20px;
+  align-items: baseline;
+  font-size: var(--font-size-14);
+  line-height: 1.6;
+}
+.savings-history-action {
+  font-weight: var(--weight-strong);
+}
+.savings-history-entry time,
+.savings-history-version {
+  color: var(--muted);
+  font-size: var(--font-size-12);
+  font-variant-numeric: tabular-nums;
+}
+.savings-history-entry time {
+  text-align: right;
+}
+.savings-history-content .savings-history-reason {
+  display: grid;
+  gap: 4px;
+  margin: 10px 0 0;
+  padding: 10px 14px;
+  border-left: 2px solid var(--border);
+  background: var(--surface-alt);
+  white-space: pre-wrap;
+  font-size: var(--font-size-14);
+  line-height: 1.6;
+}
+.savings-history-reason > span {
+  color: var(--muted);
+  font-size: var(--font-size-12);
+}
+.savings-history-content .savings-history-empty {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: var(--font-size-14);
+  line-height: 1.6;
+}
+@media (max-width: 700px) {
+  .savings-history-toggle {
+    padding: 14px;
+    gap: 10px;
+  }
+  .savings-history-content {
+    padding: 0 14px 16px;
+  }
+  .savings-history-entry {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .savings-history-entry time {
+    text-align: left;
+  }
+  .savings-history-version {
+    grid-row: 2;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .savings-history-chevron {
+    transition: none;
+  }
+}
 @media (max-width: 1200px) {
   .savings-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));

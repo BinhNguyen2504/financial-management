@@ -1,4 +1,6 @@
 export const catalog = {
+  "Mỗi danh mục Đầu tư gồm tài sản và toàn bộ tiền chờ":
+    "Each investment portfolio includes its assets and all owned cash",
   "Đặt số tiền cần đạt, hạn và sắp xếp ưu tiên có xem trước":
     "Set a target, deadline and preview priority changes",
   "Xây Emergency, Rainy Day và Sinking từ chi phí sinh hoạt, theo dõi dự phòng bằng những hình ảnh lớn dần.":
