@@ -668,14 +668,14 @@ test("income rejects deletion when another session records a receipt after the d
 test("fixed income is only reminded from its receive day and shows three states", async ({
   page,
 }) => {
+  // The server uses the real Vietnam date, so derive the expected state from it.
+  // A source received on day 31 is clamped to the month's last day: not yet due
+  // before that day, due on it. A source received today is always due.
   const day = Number(today.slice(8, 10)),
     lastDay = new Date(
       Date.UTC(year, Number(today.slice(5, 7)), 0),
-    ).getUTCDate();
-  test.skip(
-    day >= lastDay,
-    "A later receive day does not exist on the last day of the month.",
-  );
+    ).getUTCDate(),
+    lateIsUpcoming = day < lastDay;
   await login(page);
   const current = today.slice(0, 7);
   async function add(name: string, receiveDay: number) {
@@ -691,36 +691,41 @@ test("fixed income is only reminded from its receive day and shows three states"
     await save(page);
   }
   const row = (name: string) => page.locator(".income-item", { hasText: name });
-  await add("Thu sắp về", day + 1);
+  await add("Thu cuối tháng", 31);
   await add("Thu đã đến ngày", day);
-  // Not yet due: own state, and it is not counted or listed as missing.
-  await expect(row("Thu sắp về")).toHaveClass(/is-upcoming/);
-  await expect(row("Thu sắp về")).toContainText("Chưa đến ngày nhận");
-  await expect(row("Thu sắp về")).toContainText(
-    `Nhận ngày ${day + 1} hằng tháng`,
-  );
   await expect(row("Thu đã đến ngày")).toHaveClass(/is-missing/);
   await expect(row("Thu đã đến ngày")).toContainText("Chưa nhập");
-  // Only the due source is counted and offered in the missing list.
+  await expect(row("Thu cuối tháng")).toContainText(
+    `Nhận ngày ${lastDay} hằng tháng`,
+  );
+  if (lateIsUpcoming) {
+    // Not yet due: own state, and not counted or offered as missing.
+    await expect(row("Thu cuối tháng")).toHaveClass(/is-upcoming/);
+    await expect(row("Thu cuối tháng")).toContainText("Chưa đến ngày nhận");
+  } else {
+    await expect(row("Thu cuối tháng")).toHaveClass(/is-missing/);
+    await expect(row("Thu cuối tháng")).toContainText("Chưa nhập");
+  }
   await expect(page.locator(".data-warning")).toContainText(
-    "Còn 1 khoản thu cố định chưa nhập",
+    `Còn ${lateIsUpcoming ? 1 : 2} khoản thu cố định chưa nhập`,
   );
   await expect(
     page.getByRole("button", { name: /^Nhập Thu đã đến ngày · / }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: /^Nhập Thu sắp về · / }),
-  ).toHaveCount(0);
+    page.getByRole("button", { name: /^Nhập Thu cuối tháng · / }),
+  ).toHaveCount(lateIsUpcoming ? 0 : 1);
   // Entering early is allowed; the row becomes filled.
-  await record(page, "Thu sắp về", "1000000");
-  await expect(row("Thu sắp về")).toHaveClass(/is-filled/);
-  // The API exposes the day, and a command without a day keeps the stored one.
+  await record(page, "Thu cuối tháng", "1000000");
+  await expect(row("Thu cuối tháng")).toHaveClass(/is-filled/);
+  // The API keeps the day as entered (31, not the clamped day), and a command
+  // without a day keeps the stored one.
   const rows = (await view(page)).rows.filter(
     (r) => r.kind === "fixed" && r.month === current,
   );
   expect(rows.map((r) => [r.name, r.receiveDay]).sort()).toEqual(
     [
-      ["Thu sắp về", day + 1],
+      ["Thu cuối tháng", 31],
       ["Thu đã đến ngày", day],
     ].sort(),
   );
@@ -728,16 +733,16 @@ test("fixed income is only reminded from its receive day and shows three states"
     (
       await command(page, {
         type: "configureCategory",
-        categoryId: rows.find((r) => r.name === "Thu sắp về")!.categoryId!,
+        categoryId: rows.find((r) => r.name === "Thu cuối tháng")!.categoryId!,
         month: current,
-        name: "Thu sắp về",
+        name: "Thu cuối tháng",
         description: "",
       })
     ).ok(),
   ).toBe(true);
   expect(
     (await view(page)).rows.find(
-      (r) => r.name === "Thu sắp về" && r.month === current,
+      (r) => r.name === "Thu cuối tháng" && r.month === current,
     )?.receiveDay,
-  ).toBe(day + 1);
+  ).toBe(31);
 });

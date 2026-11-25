@@ -53,7 +53,7 @@ test("navigation, persistent appearance, installation guidance and profile retur
   expect(
     (await navigation.locator(".navigation-name").allTextContents()).slice(
       0,
-      8,
+      9,
     ),
   ).toEqual([
     "Tổng quan",
@@ -63,6 +63,7 @@ test("navigation, persistent appearance, installation guidance and profile retur
     "Đầu tư",
     "Quỹ an toàn",
     "Mục tiêu",
+    "Báo cáo",
     "Cài đặt",
   ]);
   await expect(
