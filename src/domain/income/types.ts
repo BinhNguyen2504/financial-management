@@ -5,6 +5,8 @@ export interface IncomeRule {
   name: string;
   description: string;
   active: boolean;
+  /** Day of month the money usually arrives (1-31). Absent on older rules = 1. */
+  receiveDay?: number;
 }
 export interface IncomeCategory {
   id: string;
@@ -44,6 +46,8 @@ export interface IncomeRow {
   amount: Money | null;
   note: string;
   active: boolean;
+  /** Resolved day of month the money arrives (1-31); one-off rows use 1. */
+  receiveDay: number;
 }
 export interface IncomeView {
   book: IncomeBook | null;

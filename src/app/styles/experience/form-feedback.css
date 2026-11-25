@@ -211,6 +211,16 @@ textarea[aria-invalid="true"],
   border-left: 4px solid var(--warning);
   background: color-mix(in srgb, var(--warning-soft) 45%, var(--surface));
 }
+/* Fixed income rows: not yet due (info, quieter), due but empty (warning, above), filled (success). */
+.income-item.is-upcoming {
+  border-left: 4px solid var(--badge-info-ink);
+  border-style: dashed dashed dashed solid;
+  background: color-mix(in srgb, var(--badge-info-fill) 55%, var(--surface));
+}
+.income-item.is-filled {
+  border-left: 4px solid var(--badge-success-ink);
+  background: color-mix(in srgb, var(--badge-success-fill) 40%, var(--surface));
+}
 .income-item.is-oneoff {
   border-left: 4px solid var(--accent);
   background: color-mix(in srgb, var(--accent-soft) 50%, var(--surface));

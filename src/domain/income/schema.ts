@@ -6,6 +6,11 @@ import { z } from "zod";
 const id = z.uuid();
 const name = z.string().trim().min(1, "Cần nhập tên.").max(100);
 const description = z.string().trim().max(1000);
+export const receiveDaySchema = z
+  .number()
+  .int("Ngày nhận phải là số nguyên từ 1 đến 31.")
+  .min(1, "Ngày nhận phải từ 1 đến 31.")
+  .max(31, "Ngày nhận phải từ 1 đến 31.");
 export const incomeActionSchema = z.discriminatedUnion("type", [
   z
     .object({
@@ -14,6 +19,7 @@ export const incomeActionSchema = z.discriminatedUnion("type", [
       start: monthSchema,
       name,
       description,
+      receiveDay: receiveDaySchema.optional(),
     })
     .strict(),
   z
@@ -23,6 +29,7 @@ export const incomeActionSchema = z.discriminatedUnion("type", [
       month: monthSchema,
       name,
       description,
+      receiveDay: receiveDaySchema.optional(),
     })
     .strict(),
   z

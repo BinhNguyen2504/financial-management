@@ -28,6 +28,7 @@ import {
   actionSchema as investmentAction,
 } from "../investments/schema";
 import { profileSchema } from "../profile";
+import { receiveDaySchema as receiveDay } from "../income/schema";
 
 const uuid = z.uuid(),
   text = z.string().max(1000),
@@ -280,6 +281,9 @@ const incomeCommand = z.strictObject({
         afterName: name.nullable(),
         beforeActive: z.boolean().nullable(),
         afterActive: z.boolean().nullable(),
+        // Results stored before the receive day existed have neither key.
+        beforeReceiveDay: receiveDay.nullable().optional(),
+        afterReceiveDay: receiveDay.nullable().optional(),
       }),
     ),
   }),
@@ -402,7 +406,14 @@ export const tableSchemas = {
     deleted: z.boolean(),
     rules: z
       .array(
-        z.strictObject({ month, name, description: text, active: z.boolean() }),
+        z.strictObject({
+          month,
+          name,
+          description: text,
+          active: z.boolean(),
+          // jsonb is stored verbatim and compared after restore, so no default.
+          receiveDay: receiveDay.optional(),
+        }),
       )
       .min(1),
   }),

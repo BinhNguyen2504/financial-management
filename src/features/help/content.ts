@@ -294,6 +294,11 @@ export const articles: HelpArticles = {
         "**Dấu — nghĩa là chưa ghi số thu**. ==0 ₫== nghĩa là **đã xác nhận thực nhận bằng 0**; hai trạng thái khác nhau. Tổng đã ghi nhận không bao gồm tiền chưa nhập.",
       ),
       term(
+        "receive-day",
+        "Ngày nhận tiền hằng tháng",
+        "Mỗi nguồn thu đều đặn có **ngày nhận trong tháng** (mặc định ==ngày 1==). Từ ngày đó trở đi, nguồn mới được nhắc nhập; **trước ngày nhận không nhắc** và dòng có nhãn “Chưa đến ngày nhận”, nhưng bạn vẫn nhập được nếu tiền về sớm. Ngày 29–31 tính là ngày cuối tháng ở tháng ngắn hơn.",
+      ),
+      term(
         "income-effective",
         "Tháng hiệu lực và ngừng danh mục",
         "Đổi tên/mô tả từ tháng chọn vẫn giữ thông tin trước đó. Ngừng bỏ các dòng trống từ tháng hiệu lực nhưng giữ số thu đã ghi và lịch sử.",
@@ -311,7 +316,7 @@ export const articles: HelpArticles = {
         "Khi bắt đầu theo dõi một nguồn thu đều đặn.",
         [
           "Vào phần Nguồn thu đều đặn, chọn Thêm danh mục.",
-          "Nhập tên, mô tả nếu cần và tháng bắt đầu.",
+          "Nhập tên, mô tả nếu cần, ngày nhận tiền hằng tháng và tháng bắt đầu.",
           "Chọn Lưu; quay lại tháng cần nhập tiền.",
         ],
         "Kết quả: danh mục xuất hiện trong các tháng hiệu lực, số tiền vẫn chưa nhập.",

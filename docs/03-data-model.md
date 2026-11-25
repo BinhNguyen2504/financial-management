@@ -8,7 +8,7 @@
 
 **Đề xuất để thảo luận, chưa là schema đã triển khai.** Sẽ chốt sau khi có quy tắc từng tính năng. Hệ thống phải lưu dữ liệu phát sinh và lịch sử định giá, thay vì bảng có cột Tháng 1…Tháng 12 rồi nhập tổng ở nhiều nơi.
 
-**Thu nhập đã xác nhận:** tổng thực nhận theo danh mục–tháng và khoản phát sinh riêng; cấu hình theo tháng hiệu lực, không tự ghi tiền định kỳ hoặc thay đổi tài khoản. Xem [đặc tả Thu nhập](features/income.md) và migration `202610150002_income.sql`. Mô hình ledger bên dưới tiếp tục là dự kiến.
+**Thu nhập đã xác nhận:** tổng thực nhận theo danh mục–tháng và khoản phát sinh riêng; cấu hình (tên, mô tả, ngày nhận tiền hằng tháng) theo tháng hiệu lực trong cột jsonb `rules`, không tự ghi tiền định kỳ hoặc thay đổi tài khoản. Xem [đặc tả Thu nhập](features/income.md) và migration `202610150002_income.sql`. Mô hình ledger bên dưới tiếp tục là dự kiến.
 
 ## Ba khái niệm tách biệt
 

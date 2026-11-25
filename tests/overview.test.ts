@@ -73,6 +73,7 @@ describe("overview contracts and financial summaries", () => {
           amount: null,
           note: "",
           active: true,
+          receiveDay: 1,
         },
         {
           key: "b",
@@ -84,6 +85,7 @@ describe("overview contracts and financial summaries", () => {
           amount: "0",
           note: "",
           active: true,
+          receiveDay: 1,
         },
         {
           key: "c",
@@ -95,6 +97,7 @@ describe("overview contracts and financial summaries", () => {
           amount: "9999",
           note: "",
           active: true,
+          receiveDay: 1,
         },
       ],
     };
@@ -103,6 +106,27 @@ describe("overview contracts and financial summaries", () => {
       missing: 1,
     });
     expect(incomeSummary({ ...view, rows: [view.rows[0]] }).total).toBeNull();
+  });
+  it("does not count income that has not reached its receive day as missing", () => {
+    const row = (receiveDay: number): IncomeView["rows"][number] => ({
+      key: String(receiveDay),
+      categoryId: String(receiveDay),
+      kind: "fixed",
+      month: "2026-10",
+      name: "Salary",
+      description: "",
+      amount: null,
+      note: "",
+      active: true,
+      receiveDay,
+    });
+    const view: IncomeView = {
+      book: null,
+      year: 2026,
+      today: "2026-10-29",
+      rows: [row(1), row(29), row(30)],
+    };
+    expect(incomeSummary(view)).toMatchObject({ missing: 2 });
   });
   it("uses jar reports with exact sums and preserves provisional status and overspending", () => {
     const row: ExpenseRow = {

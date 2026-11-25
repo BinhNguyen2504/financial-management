@@ -40,8 +40,8 @@ export const common = {
     "Open each book to update it and review details",
   "Theo dõi số tiền thực nhận từ lương và các khoản thu thêm theo tháng.":
     "Track money received from salary and extra income by month.",
-  "Ghi số thực nhận từ nguồn thu đều đặn":
-    "Record receipts from regular income sources",
+  "Ghi số thực nhận từ nguồn thu đều đặn, nhắc từ ngày nhận tiền":
+    "Record receipts from regular income sources, with reminders from the receive day",
   "Thêm khoản thu một lần": "Add one-off income",
   "Xem báo cáo và xuất bảng dữ liệu": "View reports and export data",
   "Chia tiền theo mục đích, theo dõi khoản đã chi và số còn lại trong từng hũ.":

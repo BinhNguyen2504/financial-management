@@ -94,6 +94,31 @@ describe("portable full backup validation", () => {
     (b.tables.income_oneoffs[0] as unknown as { amount: number }).amount = 100;
     expect(() => validateBackup(b)).toThrow();
   });
+  it("reads income rules written before the receive day unchanged and validates an explicit day", () => {
+    const category = {
+      id: randomUUID(),
+      start_month: "2026-10",
+      deleted: false,
+      rules: [
+        { month: "2026-10", name: "Lương", description: "", active: true },
+      ],
+    };
+    // No default is added: the restored jsonb must equal what the backup holds.
+    const legacy = tableSchemas.income_categories.parse(category);
+    expect(legacy.rules[0]).not.toHaveProperty("receiveDay");
+    const dated = tableSchemas.income_categories.parse({
+      ...category,
+      rules: [{ ...category.rules[0], receiveDay: 25 }],
+    });
+    expect(dated.rules[0].receiveDay).toBe(25);
+    for (const bad of [0, 32, 2.5, "5"])
+      expect(() =>
+        tableSchemas.income_categories.parse({
+          ...category,
+          rules: [{ ...category.rules[0], receiveDay: bad }],
+        }),
+      ).toThrow();
+  });
   it("reads a jar saved before soft deletion as not deleted and keeps the flag in the expense book", () => {
     const jar = {
       id: randomUUID(),

@@ -194,6 +194,9 @@ export const errors = {
   "Nhập số tiền VND nguyên không âm, tối đa 24 chữ số.":
     "Enter a non-negative whole VND amount, up to 24 digits.",
   "Cần nhập tên.": "Name is required.",
+  "Ngày nhận phải từ 1 đến 31.": "The receive day must be from 1 to 31.",
+  "Ngày nhận phải là số nguyên từ 1 đến 31.":
+    "The receive day must be a whole number from 1 to 31.",
   "ví momo": "momo wallet",
   "Ăn uống": "Food",
   "Nhà ở": "Housing",

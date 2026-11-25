@@ -18,7 +18,7 @@ Tinh chỉnh 02/11/2026: [bố cục thao tác toàn ứng dụng](docs/features
 
 **Sao lưu và khôi phục:** Cài đặt cho phép xuất JSON V3 đầy đủ sáu module (nhận cả bản V1/V2) cùng lịch sử và hồ sơ, nhập sang tài khoản trống với tùy chọn khôi phục hồ sơ. File không mật khẩu, không chứa thông tin đăng nhập. Xuất file không phụ thuộc migration biên nhận import; khôi phục cần migration này. Schema cũ thiếu cột logo/icon phân loại vẫn xuất được; khôi phục chỉ được bỏ qua cột còn thiếu khi giá trị trong file là null, tránh mất metadata. Cấu hình giới hạn truyền file phù hợp hosting; xem [đặc tả backup](docs/features/backup.md). Chưa áp dụng migration mới lên cloud.
 
-**Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, báo cáo bảng/biểu đồ và xuất CSV. Cho xóa danh mục khi không còn số thu ở bất kỳ tháng/năm nào; bản ghi 0 đồng vẫn chặn xóa. Xem [đặc tả Thu nhập](docs/features/income.md).
+**Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, ngày nhận tiền hằng tháng cho từng nguồn cố định (chỉ nhắc nhập từ ngày đó, khoản chưa đến ngày có nhãn riêng), báo cáo bảng/biểu đồ và xuất CSV. Cho xóa danh mục khi không còn số thu ở bất kỳ tháng/năm nào; bản ghi 0 đồng vẫn chặn xóa. Xem [đặc tả Thu nhập](docs/features/income.md).
 
 **Báo cáo:** `/reports` tổng hợp Thu–chi, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu. Chọn tháng/quý/năm, so kỳ trước đầy đủ, mở chi tiết chỉ đọc và xuất CSV theo tab. Mỗi bảng nằm trong một card riêng, hàng tiêu đề có nền và chữ đậm để phân biệt với dữ liệu. Kỳ hiện tại có nhãn chưa kết thúc; Mục tiêu luôn là tiến độ hiện tại. Các sổ độc lập không cộng thành tài sản ròng. Xem [đặc tả Báo cáo](docs/features/reports.md). Trạng thái source không chứng minh triển khai cloud.
 
@@ -185,7 +185,7 @@ Tinh chỉnh 26/10: chú thích dưới các card hướng dẫn cài đặt có
 
 Liên kết ngoài trong hướng dẫn cài đặt, tài liệu tham khảo Quỹ an toàn và thiết lập Thu nhập dùng chung màu theo theme, chữ đậm và gạch chân luôn hiện; hover/focus làm nét gạch chân đậm hơn để dễ nhận biết thao tác.
 
-Menu theo trạng thái triển khai, sidebar thu gọn, header giữ nút ẩn tiền, theme sáng/tối/hệ thống; Thu nhập nhắc rõ khoản thiếu và nhập ngay từ báo cáo. Chi tiêu chọn năm bất kỳ, chọn phân loại có sẵn kèm logo/icon và tùy chỉnh cột. Hướng dẫn cài đặt có minh họa theo thiết bị. Xem [đối chiếu 33 phản hồi](docs/features/interface-feedback-2026-10-19.md). Lưu logo/icon tùy chọn cần migration `202610190002_label_visuals.sql`; schema cũ vẫn dùng được các thao tác không có metadata. Chưa áp dụng migration cloud trong đợt này.
+Menu theo trạng thái triển khai, sidebar thu gọn, header giữ nút ẩn tiền, theme sáng/tối/hệ thống; Thu nhập nhắc rõ khoản thiếu (từ ngày nhận tiền của từng khoản) và nhập ngay từ báo cáo. Chi tiêu chọn năm bất kỳ, chọn phân loại có sẵn kèm logo/icon và tùy chỉnh cột. Hướng dẫn cài đặt có minh họa theo thiết bị. Xem [đối chiếu 33 phản hồi](docs/features/interface-feedback-2026-10-19.md). Lưu logo/icon tùy chọn cần migration `202610190002_label_visuals.sql`; schema cũ vẫn dùng được các thao tác không có metadata. Chưa áp dụng migration cloud trong đợt này.
 
 Tinh chỉnh 21/10: chọn cột bằng popover nổi, không đẩy bảng; Chi tiêu đặt nút cạnh tiêu đề tháng, dùng chung lựa chọn trên desktop/mobile. Logo phương thức 20px, ưu tiên biểu tượng riêng thay wordmark và sắp nhãn phụ thành các cụm gọn. Xem [đặc tả](docs/features/expenses.md#cột-hiển-thị-và-nhận-diện-phương-thức--21102026).
 

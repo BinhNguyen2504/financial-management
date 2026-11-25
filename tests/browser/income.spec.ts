@@ -664,3 +664,80 @@ test("income rejects deletion when another session records a receipt after the d
     }),
   ).toBeVisible();
 });
+
+test("fixed income is only reminded from its receive day and shows three states", async ({
+  page,
+}) => {
+  const day = Number(today.slice(8, 10)),
+    lastDay = new Date(
+      Date.UTC(year, Number(today.slice(5, 7)), 0),
+    ).getUTCDate();
+  test.skip(
+    day >= lastDay,
+    "A later receive day does not exist on the last day of the month.",
+  );
+  await login(page);
+  const current = today.slice(0, 7);
+  async function add(name: string, receiveDay: number) {
+    await page
+      .getByRole("button", { name: "Thêm danh mục", exact: true })
+      .click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByLabel("Tên", { exact: true }).fill(name);
+    await dialog
+      .getByLabel("Ngày nhận tiền hằng tháng")
+      .selectOption(String(receiveDay));
+    await selectMonthYear(page, "Tháng bắt đầu", current);
+    await save(page);
+  }
+  const row = (name: string) => page.locator(".income-item", { hasText: name });
+  await add("Thu sắp về", day + 1);
+  await add("Thu đã đến ngày", day);
+  // Not yet due: own state, and it is not counted or listed as missing.
+  await expect(row("Thu sắp về")).toHaveClass(/is-upcoming/);
+  await expect(row("Thu sắp về")).toContainText("Chưa đến ngày nhận");
+  await expect(row("Thu sắp về")).toContainText(
+    `Nhận ngày ${day + 1} hằng tháng`,
+  );
+  await expect(row("Thu đã đến ngày")).toHaveClass(/is-missing/);
+  await expect(row("Thu đã đến ngày")).toContainText("Chưa nhập");
+  // Only the due source is counted and offered in the missing list.
+  await expect(page.locator(".data-warning")).toContainText(
+    "Còn 1 khoản thu cố định chưa nhập",
+  );
+  await expect(
+    page.getByRole("button", { name: /^Nhập Thu đã đến ngày · / }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /^Nhập Thu sắp về · / }),
+  ).toHaveCount(0);
+  // Entering early is allowed; the row becomes filled.
+  await record(page, "Thu sắp về", "1000000");
+  await expect(row("Thu sắp về")).toHaveClass(/is-filled/);
+  // The API exposes the day, and a command without a day keeps the stored one.
+  const rows = (await view(page)).rows.filter(
+    (r) => r.kind === "fixed" && r.month === current,
+  );
+  expect(rows.map((r) => [r.name, r.receiveDay]).sort()).toEqual(
+    [
+      ["Thu sắp về", day + 1],
+      ["Thu đã đến ngày", day],
+    ].sort(),
+  );
+  expect(
+    (
+      await command(page, {
+        type: "configureCategory",
+        categoryId: rows.find((r) => r.name === "Thu sắp về")!.categoryId!,
+        month: current,
+        name: "Thu sắp về",
+        description: "",
+      })
+    ).ok(),
+  ).toBe(true);
+  expect(
+    (await view(page)).rows.find(
+      (r) => r.name === "Thu sắp về" && r.month === current,
+    )?.receiveDay,
+  ).toBe(day + 1);
+});

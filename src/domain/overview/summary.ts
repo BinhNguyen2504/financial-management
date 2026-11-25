@@ -1,6 +1,7 @@
 import type { WidgetId, SavedLayout } from "./layout";
 import type { ExpenseView } from "../expenses/types";
 import { summarize } from "../expenses/reports";
+import { isIncomeDue } from "../income/engine";
 import type { IncomeView, IncomeRow } from "../income/types";
 import type { SavingsView } from "../savings/types";
 import type { InvestmentView } from "../investments/types";
@@ -72,7 +73,11 @@ export function incomeSummary(view: IncomeView) {
     empty: !rows.length,
     total: incomeTotal(rows),
     missing: rows.filter(
-      (r) => r.kind === "fixed" && r.active && r.amount === null,
+      (r) =>
+        r.kind === "fixed" &&
+        r.active &&
+        r.amount === null &&
+        isIncomeDue(r, view.today),
     ).length,
   };
 }

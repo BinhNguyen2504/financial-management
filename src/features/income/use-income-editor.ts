@@ -10,7 +10,7 @@ import { focusFirstInvalid } from "@/components/form-feedback";
 
 import { useMoney, useMoneyHidden } from "@/components/privacy";
 import { useToast } from "@/components/toast";
-import { ruleAt } from "@/domain/income/engine";
+import { DEFAULT_RECEIVE_DAY, ruleAt } from "@/domain/income/engine";
 import {
   incomeActionSchema,
   type IncomeAction,
@@ -65,6 +65,9 @@ export function useIncomeEditor({
   const [description, setDescription] = useState(
     initialRow?.description ?? config?.description ?? "",
   );
+  const [receiveDay, setReceiveDay] = useState(
+    String(config?.receiveDay ?? DEFAULT_RECEIVE_DAY),
+  );
   const [period, setPeriod] = useState(initialMonth);
   const [amount, setAmount] = useState(initialRow?.amount ?? "");
   const [note, setNote] = useState(initialRow?.note ?? "");
@@ -85,6 +88,7 @@ export function useIncomeEditor({
     mode.type,
   );
   const hasName = ["create", "configure", "oneoff"].includes(mode.type);
+  const hasReceiveDay = mode.type === "create" || mode.type === "configure";
   const hasAmount = mode.type === "monthly" || mode.type === "oneoff";
   function action(): IncomeAction {
     return buildIncomeAction({
@@ -95,6 +99,7 @@ export function useIncomeEditor({
       description,
       amount,
       note,
+      receiveDay,
     });
   }
   const targetRule =
@@ -103,7 +108,8 @@ export function useIncomeEditor({
     mode.type === "configure"
       ? !!targetRule &&
         name.trim() === targetRule.name &&
-        description.trim() === targetRule.description
+        description.trim() === targetRule.description &&
+        Number(receiveDay) === (targetRule.receiveDay ?? DEFAULT_RECEIVE_DAY)
       : mode.type === "monthly" && initialRow?.amount !== null
         ? normalizeInteger(amount) === initialRow?.amount &&
           note.trim() === (initialRow?.note ?? "")
@@ -218,6 +224,7 @@ export function useIncomeEditor({
     period,
     amount,
     note,
+    receiveDay,
   });
   const [originalCloseDraft] = useState(closeDraft);
   const { close, discardConfirmation } = useDiscardChanges(
@@ -272,6 +279,9 @@ export function useIncomeEditor({
     config,
     money,
     hasName,
+    hasReceiveDay,
+    receiveDay,
+    setReceiveDay,
     name,
     setName,
     description,

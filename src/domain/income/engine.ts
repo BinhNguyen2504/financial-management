@@ -11,6 +11,33 @@ export class IncomeError extends Error {
 }
 export { incomeClock } from "../shared/clock";
 
+/** Rules written before the receive day existed prompt from day 1. */
+export const DEFAULT_RECEIVE_DAY = 1;
+
+/** Last calendar day of a `YYYY-MM` month (month lengths do not depend on locale). */
+function daysInMonth(month: string) {
+  const [year, m] = month.split("-").map(Number);
+  return new Date(Date.UTC(year, m, 0)).getUTCDate();
+}
+/** Day the money is expected in `month`; 29-31 fall back to the month's last day. */
+export function incomeDueDay(month: string, receiveDay: number) {
+  return Math.min(receiveDay, daysInMonth(month));
+}
+/**
+ * A fixed row is "due" (may be reminded) from its receive day onward: past
+ * months are always due, the current month from the receive day, later
+ * months never. `today` is `YYYY-MM-DD` in Vietnam time.
+ */
+export function isIncomeDue(
+  row: { month: string; receiveDay: number },
+  today: string,
+) {
+  const current = today.slice(0, 7);
+  if (row.month < current) return true;
+  if (row.month > current) return false;
+  return Number(today.slice(8, 10)) >= incomeDueDay(row.month, row.receiveDay);
+}
+
 export function ruleAt(category: IncomeCategory, month: string) {
   return category.rules
     .filter((r) => r.month <= month)
@@ -61,6 +88,9 @@ export function applyAction(
             name: action.name,
             description: action.description,
             active: true,
+            ...(action.receiveDay === undefined
+              ? {}
+              : { receiveDay: action.receiveDay }),
           },
         ],
       });
@@ -73,11 +103,13 @@ export function applyAction(
           "Danh mục đã ngừng ở tháng này. Chọn tháng trước khi ngừng.",
         );
       category!.rules = category!.rules.filter((r) => r.month !== action.month);
+      const receiveDay = action.receiveDay ?? previous.receiveDay;
       category!.rules.push({
         month: action.month,
         name: action.name,
         description: action.description,
         active: true,
+        ...(receiveDay === undefined ? {} : { receiveDay }),
       });
       break;
     }
@@ -205,6 +237,7 @@ export function toView(
           amount: value?.amount ?? null,
           note: value?.note ?? "",
           active: rule.active,
+          receiveDay: rule.receiveDay ?? DEFAULT_RECEIVE_DAY,
         });
       }
     }
@@ -224,6 +257,7 @@ export function toView(
         amount: row.amount,
         note: "",
         active: true,
+        receiveDay: DEFAULT_RECEIVE_DAY,
       });
   }
   return { book, rows, year, today: clock.today };

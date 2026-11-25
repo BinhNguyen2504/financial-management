@@ -115,6 +115,38 @@ describe("Income PostgreSQL persistence and isolation", () => {
       ),
     ).rejects.toThrow(/append only/);
   });
+  it("stores the receive day inside the jsonb rules and reads legacy rules as day 1", async () => {
+    const { user, id } = await initialized();
+    const rowsOf = async () =>
+      (await readIncomeView(repository, user, 2027, clock)).rows.filter(
+        (r) => r.kind === "fixed",
+      );
+    expect((await rowsOf()).every((r) => r.receiveDay === 1)).toBe(true);
+    const stored =
+      await admin`select rules from income_categories where owner_id=${user}`;
+    expect(stored[0].rules[0]).not.toHaveProperty("receiveDay");
+    const configure: IncomeAction = {
+      type: "configureCategory",
+      categoryId: id,
+      month: "2027-02",
+      name: "Lương",
+      description: "",
+      receiveDay: 25,
+    };
+    await execute(user, 1, configure, randomUUID(), true);
+    expect((await rowsOf()).every((r) => r.receiveDay === 1)).toBe(true);
+    await execute(user, 1, configure);
+    const days = Object.fromEntries(
+      (await rowsOf()).map((r) => [r.month, r.receiveDay]),
+    );
+    expect(days).toMatchObject({ "2027-01": 1, "2027-02": 25, "2027-03": 25 });
+    const after =
+      await admin`select rules from income_categories where owner_id=${user}`;
+    expect(after[0].rules.at(-1)).toMatchObject({
+      month: "2027-02",
+      receiveDay: 25,
+    });
+  });
   it("serializes concurrent writes and retries the same command once", async () => {
     const { user, id } = await initialized();
     const commandId = randomUUID();

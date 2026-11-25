@@ -382,3 +382,7 @@ Danh sách nguồn Đầu tư có một dòng cho mỗi danh mục, gồm tài s
 ## Căn hàng các bước khôi phục — 05/11/2026
 
 Thanh Chọn file → Kiểm tra → Khôi phục dùng `gap` cho khoảng cách, bỏ margin dọc kế thừa từ danh sách trong panel để số và nhãn thẳng hàng. Từng bước được xuống hàng khi thiếu chỗ. Giữ điều kiện tài khoản trống và luồng xem trước/xác nhận; xem [đặc tả sao lưu](features/backup.md#căn-hàng-các-bước-khôi-phục--05112026).
+
+## Trạng thái nguồn thu theo ngày nhận — 25/11/2026
+
+Dòng nguồn thu cố định ở tab Tháng của Thu nhập có ba trạng thái phân biệt bằng nhãn, viền trái và nền, không chỉ bằng màu: **chưa đến ngày nhận** (`StatusBadge` thông tin, viền nét đứt), **đã đến ngày nhưng chưa nhập** (cảnh báo, như trước) và **đã ghi số tiền** (viền xanh lá, hiện số). Các lớp `.income-item.is-upcoming` / `.is-filled` nằm cạnh `.is-missing` trong `form-feedback.css` và dùng token của badge theo theme sáng/tối; badge vẫn dùng `components/status-badge`. Nguồn nhận ngày 29–31 hiển thị ngày cuối tháng ở tháng ngắn. Xem [Thu nhập](features/income.md#ngày-nhận-tiền-hằng-tháng--25112026).

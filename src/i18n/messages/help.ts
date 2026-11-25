@@ -252,8 +252,11 @@ export const help = {
     "When starting to track a regular source.",
   "Vào phần Nguồn thu đều đặn, chọn Thêm danh mục.":
     "Open Regular categories and choose Add category.",
-  "Nhập tên, mô tả nếu cần và tháng bắt đầu.":
-    "Enter a name, optional description and start month.",
+  "Nhập tên, mô tả nếu cần, ngày nhận tiền hằng tháng và tháng bắt đầu.":
+    "Enter a name, optional description, the day of the month you receive it and the start month.",
+  "Ngày nhận tiền hằng tháng": "Day of month you receive it",
+  "Mỗi nguồn thu đều đặn có **ngày nhận trong tháng** (mặc định ==ngày 1==). Từ ngày đó trở đi, nguồn mới được nhắc nhập; **trước ngày nhận không nhắc** và dòng có nhãn “Chưa đến ngày nhận”, nhưng bạn vẫn nhập được nếu tiền về sớm. Ngày 29–31 tính là ngày cuối tháng ở tháng ngắn hơn.":
+    "Each recurring source has a **day of the month** it arrives (default ==day 1==). You are only reminded from that day onward; **before it there is no reminder** and the row is labelled “Before receive day”, but you can still enter it if the money arrives early. Days 29–31 count as the last day in shorter months.",
   "Chọn Lưu; quay lại tháng cần nhập tiền.":
     "Save, then return to the month needing an amount.",
   "Kết quả: danh mục xuất hiện trong các tháng hiệu lực, số tiền vẫn chưa nhập.":

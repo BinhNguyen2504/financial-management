@@ -1,5 +1,15 @@
 # Xác minh
 
+## Ngày nhận tiền hằng tháng cho Thu nhập — 25/11/2026
+
+- Thay đổi: mỗi nguồn thu cố định có ngày nhận trong tháng (`receiveDay`, 1–31, mặc định ngày 1); chỉ nhắc/tính “chưa nhập” từ ngày đó, không chặn nhập sớm; dòng chưa đến ngày có nhãn, viền và nền riêng so với dòng chưa nhập và đã nhập. Lưu trong cột jsonb `rules`, **không có migration** và không đổi dữ liệu đã nhập; rule cũ đọc là ngày 1. Backup giữ `schemaVersion` 3, trường tùy chọn không có giá trị mặc định.
+- `npm run check` (Node 22.12.0): lint, kiểm tra kiến trúc (333 source files / 0 violations), format, `npm test` **390/390**, typecheck và build qua. Test mới: `isIncomeDue`/clamp ngày cuối tháng, đổi ngày từ tháng hiệu lực, Ngừng và sửa không kèm ngày giữ ngày, từ chối ngày ngoài 1–31, `missing` ở Báo cáo và Tổng quan bỏ qua khoản chưa đến ngày, xem trước có ngày trước/sau, backup có/không có `receiveDay`, `buildIncomeAction`.
+- `npm run test:db` (PostgreSQL 14 tạm, local): **130/130**, gồm test lưu `receiveDay` trong jsonb, rule cũ không có khóa, xem trước không ghi, và xuất/khôi phục toàn tài khoản giữ nguyên bảng (không `RESTORE_MISMATCH`).
+- `npm run test:e2e` cho `income`, `interface-feedback`, `status-badges`, `overview`, `backup` (Chromium desktop + mobile iPhone 13 emulation, Auth double local): 66 qua, 4 lỗi (đó là hai ca `interface-feedback` nói dưới đây, mỗi ca trên desktop và mobile). `income.spec.ts` (kể cả ca mới ba trạng thái) qua đủ 16/16. Hai ca `interface-feedback` “navigation, persistent appearance…” lỗi ở thứ tự menu (“Báo cáo” thay vì “Cài đặt” ở vị trí thứ 8) và **cũng lỗi trên `main` chưa có thay đổi này**; chưa xử lý trong đợt này. Ca mới tự bỏ qua khi hôm nay là ngày cuối tháng vì không tồn tại ngày nhận muộn hơn.
+- Xem ảnh chụp desktop sáng/tối, dialog và mobile sáng: ba trạng thái phân biệt được bằng nhãn, viền và nền; ô “Ngày nhận tiền hằng tháng” là select native. Chưa chạy bộ theme/Firefox/WebKit, chữ lớn 200% hoặc thiết bị thật.
+- Giới hạn: chưa áp dụng hay đọc cloud, chưa kiểm thử đăng nhập/thiết bị thật; ngày “hôm nay” lấy theo Asia/Ho_Chi_Minh từ server.
+- Đã cập nhật README, `src/features/catalog.ts`, `docs/features/income.md`, `docs/features/overview.md`, `docs/features/backup.md`, `docs/03-data-model.md`, `docs/04-ux-direction.md`, Help vi/en và i18n. Landing/preview giữ nguyên: dữ liệu minh họa cố định, không gọi API.
+
 ## Dòng thời gian lịch sử Tiết kiệm — 05/11/2026
 
 Kiểm chứng bố cục này ngày 05/11/2026: production build webpack, PostgreSQL tạm và Auth contract double local; 5/5 ca browser trên Chromium desktop/mobile, Firefox desktop, WebKit desktop/iPhone emulation. Kiểm tra Enter/Space, giảm chuyển động, trạng thái trống, thứ tự lần ghi, lý do nhiều dòng/chuỗi dài, phạm vi lịch sử khi lọc giao dịch và bản dịch Anh; Chromium desktop kiểm thêm 1440/768/390/320px ở sáng/tối. Ảnh tại `artifacts/savings-history-final/`, log build `artifacts/savings-history-final-next.log`. Typecheck, lint phần thay đổi, architecture và 18 kiểm tra unit liên quan đạt. Đã đối chiếu README, catalog, landing/preview minh họa và tài liệu kiến trúc/UX; preview tiếp tục dùng số liệu cố định.

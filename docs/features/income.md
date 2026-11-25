@@ -22,7 +22,7 @@ Sửa/ngừng danh mục bắt buộc xem trước: phạm vi tháng hiệu lự
 
 ## Báo cáo
 
-- Bộ lọc năm, cả năm/quý/khoảng tháng, cố định/phát sinh, danh mục. Tổng luôn là **Tổng đã ghi nhận**, kèm số danh mục–tháng đã đến còn chưa nhập.
+- Bộ lọc năm, cả năm/quý/khoảng tháng, cố định/phát sinh, danh mục. Tổng luôn là **Tổng đã ghi nhận**, kèm số danh mục–tháng đã đến ngày nhận còn chưa nhập.
 - Dấu `—` là chưa có số thu; `0 ₫` là đã nhập 0. Giá trị thiếu không trở thành 0 và đường xu hướng không nối qua tháng thiếu.
 - Bảng hàng danh mục, hàng Thu phát sinh, cột tháng và tổng kỳ; mở chi tiết phát sinh. Tổng quý chỉ bao gồm giao của quý và khoảng đang lọc.
 - Biểu đồ cột tháng, đường xu hướng, thanh tỷ trọng danh mục và cố định/phát sinh. Luôn có bảng thay thế và nhãn VND. Tỷ trọng bằng 0 khi tổng thực nhận bằng 0.
@@ -40,7 +40,7 @@ Mọi endpoint xác thực cookie hoặc Bearer; chủ sở hữu chỉ lấy t�
 | `POST /api/v1/income/preview` | Kiểm tra command và xem ảnh hưởng, không ghi dữ liệu/version/audit |
 | `POST /api/v1/income/commands` | Lưu transaction, audit, kết quả chống retry trùng |
 
-Command: `{id: UUID, expectedVersion: number, action}`. Các action: createCategory, configureCategory, stopCategory, deleteCategory, setMonthly, clearMonthly, upsertOneOff, deleteOneOff. Schema TypeScript/Zod trong `src/domain/income/schema.ts` là hợp đồng chi tiết. Phiên bản sổ ban đầu bằng 0; command đầu tự tạo sổ, không cần thao tác khởi tạo riêng.
+Command: `{id: UUID, expectedVersion: number, action}`. Các action: createCategory (có `receiveDay` tùy chọn), configureCategory (có `receiveDay` tùy chọn), stopCategory, deleteCategory, setMonthly, clearMonthly, upsertOneOff, deleteOneOff. Schema TypeScript/Zod trong `src/domain/income/schema.ts` là hợp đồng chi tiết. Phiên bản sổ ban đầu bằng 0; command đầu tự tạo sổ, không cần thao tác khởi tạo riêng.
 
 409 VERSION_CONFLICT giữ form và yêu cầu tải dữ liệu mới trước khi thử lại. Retry cùng ID/nội dung trả kết quả cũ; tái dùng ID với nội dung khác trả 409 IDEMPOTENCY_CONFLICT. Lỗi Auth tạm thời hoặc storage trả 503, không giả thành đăng xuất. Không lưu tài chính/form vào localStorage hoặc service worker.
 
@@ -118,3 +118,14 @@ Nhóm khoản thu thiếu mở/đóng bằng thành phần chung, giữ trạng 
 ## Nội dung cho người dùng phổ thông — 04/11/2026
 
 Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.
+
+## Ngày nhận tiền hằng tháng — 25/11/2026
+
+Mỗi nguồn thu đều đặn có **ngày nhận trong tháng** (`receiveDay`, 1–31). Trước đây app nhắc nhập mọi khoản thu cố định ngay từ đầu tháng dù tiền chưa về; nay chỉ nhắc từ ngày nhận trở đi.
+
+- **Lưu trữ:** trường tùy chọn trong từng phần tử `rules` (jsonb, theo tháng hiệu lực như tên/mô tả). Không có migration, không đổi bảng `income_monthly` hay số đã nhập. Rule chưa có trường được đọc là **ngày 1**, tức hành vi cũ không đổi; người dùng tự đặt ngày cho từng khoản sau khi cập nhật.
+- **Hiệu lực:** đổi ngày qua Sửa danh mục (có xem trước, hiện “Nhận ngày N” trước/sau) và áp dụng từ tháng hiệu lực trở đi; tháng trước giữ ngày cũ, còn cấu hình đã đặt ở tháng muộn hơn giữ ngày riêng của nó (như tên và mô tả). Sửa tên/mô tả không kèm ngày giữ ngày hiện có; Ngừng giữ ngày.
+- **Đến ngày:** `isIncomeDue` (domain) dùng chung cho trang Thu nhập, Báo cáo (cột “chưa nhập”, CSV) và widget Tổng quan. Tháng quá khứ luôn đến hạn; tháng hiện tại đến hạn khi ngày hôm nay (Asia/Ho_Chi_Minh) ≥ ngày nhận; ngày 29–31 ở tháng ngắn tính là ngày cuối tháng; tháng tương lai không đến hạn.
+- **Không chặn nhập:** trước ngày nhận app không nhắc nhưng vẫn cho ghi số thực nhận (phòng tiền về sớm). Tháng tương lai vẫn chỉ xem.
+- **Ba trạng thái trên tab Tháng:** *Chưa đến ngày nhận* (nhãn thông tin, viền nét đứt, không tính vào “thiếu”), *Chưa nhập* (nhãn cam, viền cam, khi đã đến ngày) và đã ghi số tiền (viền xanh lá). Mỗi dòng ghi “Nhận ngày N hằng tháng”; tab Nguồn thu đều đặn cũng hiện ngày. Câu tóm tắt nêu số khoản chưa đến ngày nhận.
+- **Backup:** `receiveDay` là trường tùy chọn, không có giá trị mặc định trong schema backup (jsonb được so sánh nguyên văn sau khôi phục). Backup cũ khôi phục bình thường; `schemaVersion` giữ 3. Bản sao lưu xuất sau khi đặt ngày không đọc được bằng bản code cũ.

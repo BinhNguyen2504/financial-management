@@ -12,6 +12,8 @@ export function IncomeEditorPreview({
   controller: ReturnType<typeof useIncomeEditor>;
 }) {
   const { preview, tr, locale } = controller;
+  const day = (value?: number | null) =>
+    value ? ` · ${tr("Nhận ngày {0}", { 0: value })}` : "";
 
   return (
     preview && (
@@ -38,8 +40,8 @@ export function IncomeEditorPreview({
               .map((r) => ({
                 key: `${r.kind}/${r.key}/${r.month}`,
                 label: monthName(r.month, locale),
-                before: r.beforeName ?? tr("Chưa có"),
-                after: `${r.afterName ?? tr("Không còn dòng trống")}${r.afterActive === false ? tr(" · Đã ngừng; giữ số đã ghi") : ""}`,
+                before: `${r.beforeName ?? tr("Chưa có")}${day(r.beforeReceiveDay)}`,
+                after: `${r.afterName ?? tr("Không còn dòng trống")}${day(r.afterReceiveDay)}${r.afterActive === false ? tr(" · Đã ngừng; giữ số đã ghi") : ""}`,
               }))}
           />
         )}

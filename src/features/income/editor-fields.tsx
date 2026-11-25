@@ -27,6 +27,9 @@ export function IncomeEditorFields({
     config,
     money,
     hasName,
+    hasReceiveDay,
+    receiveDay,
+    setReceiveDay,
     name,
     setName,
     description,
@@ -105,6 +108,35 @@ export function IncomeEditorFields({
                 disabled={busy}
                 onChange={(e) => setDescription(e.target.value)}
               />
+            </label>
+          )}
+          {hasReceiveDay && (
+            <label>
+              {tr("Ngày nhận tiền hằng tháng")}
+              <select
+                id="income-field-receiveDay"
+                value={receiveDay}
+                disabled={busy}
+                aria-invalid={!!fieldErrors.receiveDay}
+                aria-describedby={
+                  fieldErrors.receiveDay
+                    ? "income-error-receiveDay"
+                    : "income-receive-day-hint"
+                }
+                onChange={(e) => setReceiveDay(e.target.value)}
+              >
+                {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                  <option key={day} value={day}>
+                    {tr("Ngày {0}", { 0: day })}
+                  </option>
+                ))}
+              </select>
+              {fieldError("receiveDay")}
+              <span className="expense-muted" id="income-receive-day-hint">
+                {tr(
+                  "Chỉ nhắc nhập từ ngày này trở đi. Ngày 29–31 tính là ngày cuối tháng ở tháng ngắn hơn.",
+                )}
+              </span>
             </label>
           )}
           <MonthYearSelect

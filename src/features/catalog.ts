@@ -31,7 +31,7 @@ export const modules = [
     description:
       "Theo dõi số tiền thực nhận từ lương và các khoản thu thêm theo tháng.",
     scope: [
-      "Ghi số thực nhận từ nguồn thu đều đặn",
+      "Ghi số thực nhận từ nguồn thu đều đặn, nhắc từ ngày nhận tiền",
       "Thêm khoản thu một lần",
       "Xem báo cáo và xuất bảng dữ liệu",
     ],

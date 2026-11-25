@@ -4,7 +4,7 @@ Tổng quan giữ số liệu quan trọng của năm module. Mặc định có 
 
 | Thẻ | Số liệu |
 | --- | --- |
-| Thu nhập | Tổng thực nhận tháng này; nhắc khoản thu cố định chưa nhập |
+| Thu nhập | Tổng thực nhận tháng này; nhắc khoản thu cố định đã đến ngày nhận mà chưa nhập (không tính khoản chưa đến ngày) |
 | Chi tiêu | Thực chi và mức tháng; cảnh báo vượt mức và tạm tính |
 | Tiết kiệm | Tổng giá trị hoặc giá trị đã biết; cảnh báo thiếu/định giá cũ |
 | Đầu tư | Tổng giá trị hoặc giá trị đã biết và lãi/lỗ chưa chốt; cảnh báo định giá |
