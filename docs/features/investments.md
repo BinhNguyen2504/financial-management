@@ -159,3 +159,7 @@ Trong chi tiết danh mục, “Thêm ví tiền chờ” nằm cùng nhóm tiê
 Đã rà catalog, landing copy, preview cố định và Help: đây là thay đổi bố cục trong dialog, các năng lực/trạng thái và nội dung giới thiệu hiện có vẫn đúng nên giữ nguyên. Không thêm API vào preview. README, kiến trúc và UX cập nhật cùng thay đổi. Không có migration; online cần redeploy. Bằng chứng và giới hạn nằm trong [validation](../07-validation.md).
 
 Rà ảnh sau sửa: desktop/tablet giữ tên và số dư bên trái, nhóm icon bên phải; điện thoại đưa icon xuống dưới số dư. Ở 320px, nút thêm tự xuống dòng ngay trong nhóm tiêu đề. Không còn nút thêm sát đường phân cách dưới danh sách. Bộ thử dùng số dư đến 24 chữ số để kiểm tra xuống dòng, không phải dữ liệu thật. Giữ nguyên palette và typography của app; không tạo hướng thiết kế mới cho một vùng giao diện.
+
+## Tên danh mục đầu tư không trùng — 25/11/2026
+
+Tạo hoặc đổi tên danh mục loại đầu tư không được trùng tên danh mục đầu tư khác (không phân biệt hoa/thường và khoảng trắng thừa, giữ dấu; danh mục đã lưu trữ vẫn tính). Ví tiền chờ không bị so sánh vì mỗi danh mục đầu tư tự tạo ví cùng tên. Chỉ kiểm tra khi tạo mới hoặc tên đổi nên dữ liệu và backup cũ vẫn dùng được. Nút “Về kỳ hiện tại” nằm ngay cạnh ô chọn ngày xem.

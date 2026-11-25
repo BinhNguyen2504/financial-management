@@ -405,6 +405,46 @@ describe("full-account transfer via runtime RLS", () => {
     ).rejects.toMatchObject({ code: "IDEMPOTENCY_CONFLICT" });
     expect((await repo.backup(target, profile)).tables).toEqual(backup.tables);
   });
+  it("round-trips the income receive day through export and restore", async () => {
+    const { id } = await fixture(),
+      ir = postgresIncomeRepository(sql);
+    const view = await readIncomeView(ir, id, 2026, clock);
+    const row = view.rows.find((r) => r.kind === "fixed" && r.active)!;
+    await runIncomeCommand(
+      ir,
+      id,
+      {
+        id: randomUUID(),
+        expectedVersion: view.book!.version,
+        action: {
+          type: "configureCategory",
+          categoryId: row.categoryId!,
+          month: row.month,
+          name: row.name,
+          description: row.description,
+          receiveDay: 25,
+        },
+      },
+      clock,
+    );
+    const exported = await repo.backup(id, profile);
+    expect(
+      exported.tables.income_categories.some((c) =>
+        c.rules.some((r) => r.receiveDay === 25),
+      ),
+    ).toBe(true);
+    // A category the owner never configured keeps rules without the key.
+    expect(
+      exported.tables.income_categories.some((c) =>
+        c.rules.some((r) => !("receiveDay" in r)),
+      ),
+    ).toBe(true);
+    const target = await owner();
+    await repo.import(target, randomUUID(), exported);
+    expect((await repo.backup(target, profile)).tables).toEqual(
+      exported.tables,
+    );
+  });
   it("blocks a target with data in only one module and preserves unrelated owners", async () => {
     const { id, backup } = await fixture(),
       target = await owner();

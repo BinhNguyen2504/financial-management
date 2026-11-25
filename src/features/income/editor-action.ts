@@ -12,6 +12,8 @@ export interface IncomeActionInput {
   description: string;
   amount: string;
   note: string;
+  /** Day of month as typed in the select (1-31). */
+  receiveDay: string;
 }
 
 /** Convert the editor draft without changing or submitting it. */
@@ -23,6 +25,7 @@ export function buildIncomeAction({
   description,
   amount,
   note,
+  receiveDay,
 }: IncomeActionInput): IncomeAction {
   switch (mode.type) {
     case "create":
@@ -32,6 +35,7 @@ export function buildIncomeAction({
         start: period,
         name,
         description,
+        receiveDay: Number(receiveDay),
       };
     case "configure":
       return {
@@ -40,6 +44,7 @@ export function buildIncomeAction({
         month: period,
         name,
         description,
+        receiveDay: Number(receiveDay),
       };
     case "stop":
       return {

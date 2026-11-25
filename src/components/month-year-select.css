@@ -10,6 +10,10 @@
   min-width: 0;
   max-width: 24rem;
 }
+/* "Về kỳ hiện tại" sits directly under the year/month selects it resets. */
+.month-year-field > .period-current {
+  margin-top: 0.5rem;
+}
 .month-year-legend {
   color: var(--text);
   font-size: var(--text-label, 0.875rem);

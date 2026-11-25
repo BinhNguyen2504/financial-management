@@ -10,6 +10,7 @@ import {
 
 import { replay } from "./replay";
 import { portfolioPositions } from "./portfolios";
+import { nameKey, nameTaken } from "../shared/names";
 export { replay } from "./replay";
 export {
   InvestmentError,
@@ -33,11 +34,30 @@ export function applyAction(
   const dateAllowed = (date: string) => {
     if (date > clock.today) fail("Không ghi dữ liệu trong tương lai.");
   };
+  /**
+   * A new or renamed investment category may not reuse another one's name;
+   * archived ones still count while they appear in history. Cash wallets are
+   * not compared: each investment category creates a wallet with its own name.
+   * Only the actions that set a name call this, so older duplicates stay
+   * readable and editable.
+   */
+  const ensureUniqueName = (
+    name: string,
+    dates: string[],
+    exceptId?: string,
+  ) => {
+    const taken = book.categories
+      .filter((c) => c.kind === "investment" && c.id !== exceptId)
+      .flatMap((c) => dates.map((d) => ruleAt(c, d)?.name));
+    if (nameTaken(name, taken)) fail("Tên danh mục đã tồn tại.");
+  };
   switch (action.type) {
     case "createCategory": {
       dateAllowed(action.start);
       if (book.categories.some((c) => c.id === action.id))
         fail("Mã danh mục đã tồn tại.");
+      if (action.kind === "investment")
+        ensureUniqueName(action.name, [action.start, clock.today]);
       if (action.kind === "cash") {
         const parent = action.parentCategoryId
           ? cat(action.parentCategoryId)
@@ -104,6 +124,11 @@ export function applyAction(
             : action.parentCategoryId;
         if (c.kind !== action.kind)
           fail("Không đổi loại danh mục. Hãy tạo danh mục hoặc ví mới.");
+        if (
+          c.kind === "investment" &&
+          nameKey(action.name) !== nameKey(old.name)
+        )
+          ensureUniqueName(action.name, [action.date, clock.today], c.id);
         if (parentId !== c.parentCategoryId) {
           if (
             book.revisions.some(

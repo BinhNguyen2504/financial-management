@@ -3,7 +3,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PageGuide } from "@/features/help/page-guide";
 import { FilterOptions } from "@/components/filter-options";
 import { useUser } from "@/features/profile/user-provider";
-import { ViewControls } from "@/components/view-controls";
+import { CurrentPeriodButton, ViewControls } from "@/components/view-controls";
 import { ActionOptions } from "@/components/action-options";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { formatDate } from "@/i18n/format";
@@ -205,6 +205,9 @@ function AccountInvestment(
                 }}
               />
             </label>
+            {date !== initialToday && (
+              <CurrentPeriodButton onClick={() => setDate(initialToday)} />
+            )}
             <div className="expense-actions">
               <button
                 className="expense-primary"
@@ -233,8 +236,6 @@ function AccountInvestment(
             </div>
           </div>
           <ViewControls
-            past={date !== initialToday}
-            onCurrent={() => setDate(initialToday)}
             count={
               tab === "reports"
                 ? [

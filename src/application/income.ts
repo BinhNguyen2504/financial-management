@@ -14,6 +14,9 @@ export interface IncomeChange {
   afterName: string | null;
   beforeActive: boolean | null;
   afterActive: boolean | null;
+  /** Absent in results stored before the receive day existed. */
+  beforeReceiveDay?: number | null;
+  afterReceiveDay?: number | null;
 }
 export interface CommandResult {
   version: number;
@@ -112,6 +115,8 @@ export async function runIncomeCommand(
             afterName: b?.name ?? null,
             beforeActive: a?.active ?? null,
             afterActive: b?.active ?? null,
+            beforeReceiveDay: a?.kind === "fixed" ? a.receiveDay : null,
+            afterReceiveDay: b?.kind === "fixed" ? b.receiveDay : null,
           });
         }
       }

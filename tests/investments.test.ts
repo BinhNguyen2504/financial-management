@@ -339,6 +339,50 @@ describe("Investment aggregate accounting", () => {
       ).toThrow();
   });
 });
+describe("Investment category names", () => {
+  const create = (name: string, walletId = randomUUID()) => ({
+    type: "createCategory",
+    id: randomUUID(),
+    walletId,
+    start,
+    kind: "investment",
+    name,
+  });
+  it("rejects a new or renamed investment category that reuses a name, but not its auto-created wallet name", () => {
+    const s = setup();
+    for (const name of ["Cổ phiếu", "  cổ  PHIẾU "])
+      expect(() => s.act(create(name))).toThrow(/Tên danh mục đã tồn tại/);
+    // The wallet of "Cổ phiếu" is also named "TCBS"; a new category may use that name.
+    expect(() => s.act(create("TCBS"))).not.toThrow();
+    const other = s.book.categories.find(
+      (c) => c.kind === "investment" && c.id !== s.asset,
+    )!;
+    expect(() =>
+      s.act({
+        type: "configureCategory",
+        categoryId: other.id,
+        date: start,
+        kind: "investment",
+        name: "cổ phiếu",
+      }),
+    ).toThrow(/Tên danh mục đã tồn tại/);
+    // Re-casing its own name is a rename to itself, not a duplicate.
+    expect(() =>
+      s.act({
+        type: "configureCategory",
+        categoryId: s.asset,
+        date: start,
+        kind: "investment",
+        name: "CỔ PHIẾU",
+      }),
+    ).not.toThrow();
+  });
+  it("still counts an archived category", () => {
+    const s = setup();
+    s.act({ type: "archiveCategory", categoryId: s.asset, date: start });
+    expect(() => s.act(create("Cổ phiếu"))).toThrow(/Tên danh mục đã tồn tại/);
+  });
+});
 describe("Investment reports", () => {
   function seeded() {
     const s = setup();

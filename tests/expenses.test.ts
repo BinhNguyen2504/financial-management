@@ -764,6 +764,71 @@ describe("Years, archives, and labels", () => {
     );
   });
 });
+describe("Jar names", () => {
+  const second = "20000000-0000-4000-8000-000000000002";
+  const jar = (name: string, jarId = second) =>
+    ({
+      type: "createJar",
+      id: jarId,
+      kind: "monthly",
+      start: "2026-09",
+      opening: "0",
+      name,
+      description: "",
+      method: "Tiền mặt",
+      group: "",
+      amount: "1000000",
+    }) as const;
+  const configure = (jarId: string, name: string) =>
+    ({
+      type: "configureJar",
+      jarId,
+      month: "2026-10",
+      name,
+      description: "",
+      method: "Tiền mặt",
+      group: "",
+      amount: "1000000",
+    }) as const;
+  it("rejects a new jar that reuses a name and reports it on the name field", () => {
+    for (const name of ["sinh hoạt", "  SINH   HOẠT "])
+      expect(() => applyAction(book(), jar(name), clock)).toThrow(
+        expect.objectContaining({
+          code: "DUPLICATE_NAME",
+          fieldErrors: { name: "Tên hũ đã tồn tại." },
+        }),
+      );
+    expect(() => applyAction(book(), jar("Sinh hoat"), clock)).not.toThrow();
+  });
+  it("rejects renaming onto another jar, allows keeping or re-casing its own name, and counts stopped jars", () => {
+    const two = applyAction(book(), jar("Đi lại"), clock);
+    expect(() =>
+      applyAction(two, configure(second, "sinh hoạt"), clock),
+    ).toThrow(/Tên hũ đã tồn tại/);
+    expect(() =>
+      applyAction(two, configure(id, "SINH HOẠT"), clock),
+    ).not.toThrow();
+    const stopped = applyAction(
+      book(),
+      { type: "stopJar", jarId: id, month: "2026-10" },
+      clock,
+    );
+    expect(() => applyAction(stopped, jar("Sinh hoạt"), clock)).toThrow(
+      /Tên hũ đã tồn tại/,
+    );
+  });
+  it("lets jars that already share a name be edited while the name stays the same", () => {
+    const legacy = structuredClone(applyAction(book(), jar("Đi lại"), clock));
+    legacy.jars.find((j) => j.id === second)!.rules[0].name = "Sinh hoạt";
+    expect(() =>
+      applyAction(
+        legacy,
+        { ...configure(second, "Sinh hoạt"), amount: "1500000" },
+        clock,
+      ),
+    ).not.toThrow();
+  });
+});
 describe("Reports reconcile without double counting", () => {
   it("separates accumulation contributions from consumption and excludes future funding", () => {
     const b = book("accumulation");
@@ -827,7 +892,7 @@ describe("Reports reconcile without double counting", () => {
         kind: "accumulation",
         start: "2026-10",
         opening: "4000000",
-        name: "Sinh hoạt",
+        name: "Sinh hoạt 2",
         description: "",
         amount: "2000000",
         method: "Ví",
@@ -835,6 +900,9 @@ describe("Reports reconcile without double counting", () => {
       },
       clock,
     );
+    // New jars can no longer share a name, but older data may already hold two.
+    b = structuredClone(b);
+    b.jars.find((j) => j.id === spendId)!.rules[0].name = "Sinh hoạt";
     b = applyAction(
       b,
       {

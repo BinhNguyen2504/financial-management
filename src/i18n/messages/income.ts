@@ -211,4 +211,13 @@ export const income = {
   "Nội dung": "Description",
   "Số tiền": "Amount",
   "Thao tác": "Actions",
+  "Ngày nhận tiền hằng tháng": "Day of month you receive it",
+  "Ngày {0}": "Day {0}",
+  "Chỉ nhắc nhập từ ngày này trở đi. Ngày 29–31 tính là ngày cuối tháng ở tháng ngắn hơn.":
+    "You are only reminded from this day onward. Days 29–31 count as the last day in shorter months.",
+  "Nhận ngày {0}": "Receive day {0}",
+  "Nhận ngày {0} hằng tháng": "Received on day {0} each month",
+  "Chưa đến ngày nhận": "Before receive day",
+  "Đã ghi nhận đủ các danh mục đến ngày nhận. Còn {0} danh mục chưa đến ngày nhận.":
+    "Every source that has reached its receive day is recorded. {0} not yet at their receive day.",
 } as const;

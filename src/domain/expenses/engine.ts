@@ -9,6 +9,7 @@ import type {
   RowChange,
 } from "./types";
 import { expenseActionSchema, type ExpenseAction } from "./schema";
+import { nameKey, nameTaken } from "../shared/names";
 
 export class ExpenseError extends Error {
   constructor(
@@ -255,6 +256,24 @@ export function applyAction(
     if (!jar) throw new ExpenseError("Không tìm thấy hũ chi tiêu.", 404);
     return jar;
   };
+  /**
+   * A new or renamed jar may not reuse another jar's name (stopped jars still
+   * count while they appear in history). Only the actions that set a name call
+   * this, so older duplicates stay readable and editable.
+   */
+  const ensureUniqueJarName = (
+    name: string,
+    months: string[],
+    exceptId?: string,
+  ) => {
+    const taken = book.jars
+      .filter((j) => !j.deleted && j.id !== exceptId)
+      .flatMap((j) => months.map((m) => ruleAt(j.rules, m)?.name));
+    if (nameTaken(name, taken)) {
+      const message = "Tên hũ đã tồn tại.";
+      throw new ExpenseError(message, 422, "DUPLICATE_NAME", { name: message });
+    }
+  };
   if (action.type === "createJar" || action.type === "configureJar") {
     const original =
       action.type === "configureJar"
@@ -285,6 +304,7 @@ export function applyAction(
       editable(book, action.start, clock);
       if (book.jars.some((j) => j.id === action.id))
         throw new ExpenseError("Hũ đã tồn tại.", 409);
+      ensureUniqueJarName(action.name, [action.start, clock.today.slice(0, 7)]);
       book.jars.push({
         id: action.id,
         kind: action.kind,
@@ -337,6 +357,15 @@ export function applyAction(
       const jar = findJar(action.jarId);
       const rule = ruleAt(jar.rules, action.month);
       if (!rule) throw new ExpenseError("Hũ chưa bắt đầu trong tháng này.");
+      if (
+        action.type === "configureJar" &&
+        nameKey(action.name) !== nameKey(rule.name)
+      )
+        ensureUniqueJarName(
+          action.name,
+          [action.month, clock.today.slice(0, 7)],
+          jar.id,
+        );
       const updated: JarRule =
         action.type === "stopJar"
           ? { ...rule, month: action.month, active: false }

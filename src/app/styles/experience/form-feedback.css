@@ -211,6 +211,16 @@ textarea[aria-invalid="true"],
   border-left: 4px solid var(--warning);
   background: color-mix(in srgb, var(--warning-soft) 45%, var(--surface));
 }
+/* Fixed income rows: not yet due (info, quieter), due but empty (warning, above), filled (success). */
+.income-item.is-upcoming {
+  border-left: 4px solid var(--badge-info-ink);
+  border-style: dashed dashed dashed solid;
+  background: color-mix(in srgb, var(--badge-info-fill) 55%, var(--surface));
+}
+.income-item.is-filled {
+  border-left: 4px solid var(--badge-success-ink);
+  background: color-mix(in srgb, var(--badge-success-fill) 40%, var(--surface));
+}
 .income-item.is-oneoff {
   border-left: 4px solid var(--accent);
   background: color-mix(in srgb, var(--accent-soft) 50%, var(--surface));
@@ -262,15 +272,33 @@ textarea[aria-invalid="true"],
   width: fit-content;
   text-align: left;
 }
+/*
+ * A compact marker that sits on the same right edge and baseline as the amounts
+ * around it. The 44px touch target comes from the ::after area, so the visible
+ * box does not stretch the cell or the row.
+ */
 .income-missing-cell {
-  width: 100%;
-  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  min-height: 28px;
+  padding: 0 0.625rem;
+  vertical-align: middle;
+  /* Keeps the line box as tall as the plain amounts so rows stay equal. */
+  margin-block: -4px;
   color: var(--warning);
   border: 1px dashed var(--warning);
   border-radius: 8px;
   background: var(--warning-soft);
   font: inherit;
   font-weight: var(--weight-strong);
+  line-height: 1;
+}
+.income-missing-cell::after {
+  content: "";
+  position: absolute;
+  inset: -8px -6px;
 }
 .income-missing-cell:hover {
   background: color-mix(in srgb, var(--warning) 15%, var(--warning-soft));

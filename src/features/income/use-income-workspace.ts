@@ -7,6 +7,7 @@ import { useMoney } from "@/components/privacy";
 import { useToast } from "@/components/toast";
 import { useForegroundRefresh } from "@/components/use-foreground-refresh";
 
+import { isIncomeDue } from "@/domain/income/engine";
 import {
   buildReport,
   reportFilterSchema,
@@ -164,7 +165,12 @@ export function useIncomeWorkspace({
     : null;
   const missing = future
     ? 0
-    : fixedRows.filter((r) => r.amount === null).length;
+    : fixedRows.filter((r) => r.amount === null && isIncomeDue(r, today))
+        .length;
+  const upcoming = future
+    ? 0
+    : fixedRows.filter((r) => r.amount === null && !isIncomeDue(r, today))
+        .length;
   const categories = view?.book?.categories.filter((c) => !c.deleted) ?? [];
   function open(mode: EditorMode) {
     setEditor(mode);
@@ -245,6 +251,7 @@ export function useIncomeWorkspace({
     displayMoney,
     total,
     missing,
+    upcoming,
     fixedRows,
     oneOffRows,
     today,

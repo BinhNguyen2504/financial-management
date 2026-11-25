@@ -3,6 +3,8 @@ import { incomeJSON } from "../src/features/income/api";
 import {
   applyAction,
   hasMonthlyIncome,
+  incomeDueDay,
+  isIncomeDue,
   toView,
 } from "../src/domain/income/engine";
 import type { IncomeBook } from "../src/domain/income/types";
@@ -170,6 +172,7 @@ describe("Income monthly domain and reports", () => {
     const b = book(set("2026-12", "0"), set("2027-01", "10"), {
       ...create,
       id: other,
+      name: "Lương khác",
     });
     expect(hasMonthlyIncome(b, id)).toBe(true);
     expect(hasMonthlyIncome(b, other)).toBe(false);
@@ -308,6 +311,213 @@ describe("Income monthly domain and reports", () => {
       undefined,
     ])
       expect(safeReturnPath(s)).toBe("/overview");
+  });
+});
+describe("Income receive day", () => {
+  const fixedRows = (b: IncomeBook, year = 2027) =>
+    toView(b, year, clock).rows.filter((r) => r.kind === "fixed");
+  const withDay = (receiveDay: number): IncomeAction => ({
+    ...create,
+    receiveDay,
+  });
+  const configure = (month: string, receiveDay?: number): IncomeAction => ({
+    type: "configureCategory",
+    categoryId: id,
+    month,
+    name: "Lương",
+    description: "Công việc",
+    ...(receiveDay === undefined ? {} : { receiveDay }),
+  });
+  it("treats rules without a receive day as day 1 and stores nothing for them", () => {
+    const legacy = book();
+    expect(legacy.categories[0].rules[0]).not.toHaveProperty("receiveDay");
+    expect(fixedRows(legacy).every((r) => r.receiveDay === 1)).toBe(true);
+  });
+  it("stores the day, applies a change only from its effective month and survives stop", () => {
+    const b = [withDay(10), configure("2027-02", 20)].reduce<IncomeBook | null>(
+      (acc, a) => applyAction(acc, a, clock),
+      null,
+    )!;
+    const days = Object.fromEntries(
+      fixedRows(b).map((r) => [r.month, r.receiveDay]),
+    );
+    expect(days).toMatchObject({
+      "2027-01": 10,
+      "2027-02": 20,
+      "2027-03": 20,
+    });
+    const stopped = applyAction(
+      b,
+      { type: "stopCategory", categoryId: id, month: "2027-03" },
+      clock,
+    );
+    expect(
+      stopped.categories[0].rules.find((r) => r.month === "2027-03"),
+    ).toMatchObject({ active: false, receiveDay: 20 });
+    // Renaming without a day keeps the previous one.
+    const renamed = applyAction(b, configure("2027-03"), clock);
+    expect(
+      fixedRows(renamed).find((r) => r.month === "2027-04")?.receiveDay,
+    ).toBe(20);
+  });
+  it("rejects days outside 1-31", () => {
+    for (const day of [0, 32, 1.5, -1])
+      expect(() => applyAction(null, withDay(day), clock)).toThrow();
+  });
+  it("only prompts from the receive day in the current month and clamps to short months", () => {
+    expect(incomeDueDay("2027-02", 31)).toBe(28);
+    expect(incomeDueDay("2028-02", 31)).toBe(29);
+    expect(incomeDueDay("2027-04", 31)).toBe(30);
+    const row = (month: string, receiveDay: number) => ({ month, receiveDay });
+    expect(isIncomeDue(row("2027-03", 15), "2027-03-15")).toBe(true);
+    expect(isIncomeDue(row("2027-03", 16), "2027-03-15")).toBe(false);
+    expect(isIncomeDue(row("2027-02", 31), "2027-03-01")).toBe(true);
+    expect(isIncomeDue(row("2027-04", 1), "2027-03-31")).toBe(false);
+    // Day 31 in February is due on the 28th.
+    expect(isIncomeDue(row("2027-02", 31), "2027-02-27")).toBe(false);
+    expect(isIncomeDue(row("2027-02", 31), "2027-02-28")).toBe(true);
+  });
+  it("keeps not-yet-due rows out of the missing counts but still lists past months", () => {
+    const month = (b: IncomeBook, m: string) =>
+      report(b).months.find((x) => x.month === m)!.missing;
+    const early = book();
+    expect(month(early, "2027-03")).toBe(1);
+    const late = [withDay(20)].reduce<IncomeBook | null>(
+      (acc, a) => applyAction(acc, a, clock),
+      null,
+    )!;
+    expect(month(late, "2027-03")).toBe(0);
+    expect(month(late, "2027-02")).toBe(1);
+    expect(
+      isIncomeDue(
+        fixedRows(late).find((r) => r.month === "2027-03")!,
+        clock.today,
+      ),
+    ).toBe(false);
+  });
+  it("shows the receive day in command previews", async () => {
+    const stored = new Map<string, StoredCommand>();
+    let value: IncomeBook | null = applyAction(null, create, clock);
+    const repository: IncomeRepository = {
+      async transaction(_owner, fn) {
+        return fn({
+          read: async () => structuredClone(value),
+          command: async (key) => stored.get(key) ?? null,
+          save: async (b) => {
+            value = structuredClone(b);
+          },
+          remember: async (key, result) => {
+            stored.set(key, result);
+          },
+        });
+      },
+    };
+    const preview = await runIncomeCommand(
+      repository,
+      id,
+      { id: request, expectedVersion: 1, action: configure("2027-02", 25) },
+      clock,
+      true,
+    );
+    expect(preview.changes).toContainEqual(
+      expect.objectContaining({
+        month: "2027-02",
+        beforeReceiveDay: 1,
+        afterReceiveDay: 25,
+      }),
+    );
+  });
+});
+describe("Income source names", () => {
+  const other = "10000000-0000-4000-8000-000000000009";
+  const named = (name: string, categoryId = other): IncomeAction => ({
+    ...create,
+    id: categoryId,
+    name,
+  });
+  const rename = (categoryId: string, name: string): IncomeAction => ({
+    type: "configureCategory",
+    categoryId,
+    month: "2027-01",
+    name,
+    description: "Công việc",
+  });
+  it("rejects a new source whose name only differs by case or spacing, with a field error", () => {
+    for (const name of ["lương", "  LƯƠNG  ", "Lương"])
+      expect(() => applyAction(book(), named(name), clock)).toThrow(
+        expect.objectContaining({
+          code: "DUPLICATE_NAME",
+          fieldErrors: { name: "Tên nguồn thu đã tồn tại." },
+        }),
+      );
+    expect(() => applyAction(book(), named("Lương 2"), clock)).not.toThrow();
+  });
+  it("keeps diacritics significant", () => {
+    expect(() => applyAction(book(), named("Luong"), clock)).not.toThrow();
+  });
+  it("rejects renaming onto another source but allows keeping or re-casing its own name", () => {
+    const two = applyAction(book(), named("Tiền nhà"), clock);
+    expect(() => applyAction(two, rename(other, "lương"), clock)).toThrow(
+      /đã tồn tại/,
+    );
+    expect(() => applyAction(two, rename(id, "LƯƠNG"), clock)).not.toThrow();
+    expect(() =>
+      applyAction(two, rename(other, "Tiền nhà mới"), clock),
+    ).not.toThrow();
+  });
+  it("still counts a stopped source but not a deleted one", () => {
+    const stopped = applyAction(
+      book(),
+      { type: "stopCategory", categoryId: id, month: "2027-01" },
+      clock,
+    );
+    expect(() => applyAction(stopped, named("Lương"), clock)).toThrow(
+      /đã tồn tại/,
+    );
+    const deleted = applyAction(
+      book(),
+      { type: "deleteCategory", categoryId: id },
+      clock,
+    );
+    expect(() => applyAction(deleted, named("Lương"), clock)).not.toThrow();
+  });
+  it("lets sources that already share a name keep being edited when the name is unchanged", () => {
+    const legacy = structuredClone(book());
+    legacy.categories.push({
+      ...structuredClone(legacy.categories[0]),
+      id: other,
+    });
+    expect(() =>
+      applyAction(
+        legacy,
+        {
+          type: "configureCategory",
+          categoryId: other,
+          month: "2027-01",
+          name: "Lương",
+          description: "Mô tả mới",
+          receiveDay: 20,
+        },
+        clock,
+      ),
+    ).not.toThrow();
+    expect(() => applyAction(legacy, set("2027-01", "5"), clock)).not.toThrow();
+  });
+  it("allows one-off income to repeat a name", () => {
+    const oneOff = (oneOffId: string): IncomeAction => ({
+      type: "upsertOneOff",
+      id: oneOffId,
+      month: "2027-01",
+      name: "Thưởng",
+      description: "",
+      amount: "100",
+    });
+    const b = applyAction(
+      applyAction(null, oneOff(id), clock),
+      oneOff(other),
+      clock,
+    );
+    expect(b.oneOffs).toHaveLength(2);
   });
 });
 describe("Income command transaction contract", () => {

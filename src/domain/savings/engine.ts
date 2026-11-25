@@ -25,6 +25,7 @@ export {
   emptyBook,
 } from "./model";
 export { savingsClock } from "../shared/clock";
+import { nameKey, nameTaken } from "../shared/names";
 export { endOfMonth, previousDate, nextMonth } from "../shared/dates";
 /** Validate and apply commands; calculations live in replay. */
 export function applyAction(
@@ -41,6 +42,17 @@ export function applyAction(
       fail("Danh mục không tồn tại.")
     );
   }
+  /**
+   * A new or renamed category may not reuse another category's name; archived
+   * ones still count while they appear in history. Only the actions that set a
+   * name call this, so older duplicates stay readable and editable.
+   */
+  function ensureUniqueName(name: string, months: string[], exceptId?: string) {
+    const taken = book.categories
+      .filter((c) => c.id !== exceptId)
+      .flatMap((c) => months.map((m) => ruleAt(c, m)?.name));
+    if (nameTaken(name, taken)) fail("Tên danh mục đã tồn tại.");
+  }
   function dateAllowed(date: string) {
     if (date > clock.today)
       fail("Không ghi giao dịch hoặc giá trong tương lai.");
@@ -51,6 +63,7 @@ export function applyAction(
       ensureOpen(book, action.start);
       if (book.categories.some((c) => c.id === action.id))
         fail("Mã danh mục đã tồn tại.");
+      ensureUniqueName(action.name, [action.start, clock.today.slice(0, 7)]);
       if (action.kind === "gold" && !action.unit) fail("Cần chọn đơn vị vàng.");
       if (action.kind !== "gold" && action.unit)
         fail("Chỉ vàng có đơn vị số lượng.");
@@ -77,6 +90,15 @@ export function applyAction(
       const c = cat(action.categoryId);
       if (action.month < c.start) fail("Tháng hiệu lực trước tháng bắt đầu.");
       const old = ruleAt(c, action.month)!;
+      if (
+        action.type === "configureCategory" &&
+        nameKey(action.name) !== nameKey(old.name)
+      )
+        ensureUniqueName(
+          action.name,
+          [action.month, clock.today.slice(0, 7)],
+          c.id,
+        );
       const r = {
         ...old,
         month: action.month,

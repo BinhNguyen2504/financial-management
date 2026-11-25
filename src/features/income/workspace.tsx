@@ -2,7 +2,7 @@
 import { EmptyState } from "@/components/empty-state";
 import { PageGuide } from "@/features/help/page-guide";
 import { useUser } from "@/features/profile/user-provider";
-import { ViewControls } from "@/components/view-controls";
+import { CurrentPeriodButton, ViewControls } from "@/components/view-controls";
 import { generationOf } from "@/lib/data-generation";
 import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
@@ -12,7 +12,13 @@ import { Garden } from "@/components/garden";
 import { LoadingSpinner, LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
 
-import { hasMonthlyIncome, ruleAt } from "@/domain/income/engine";
+import {
+  DEFAULT_RECEIVE_DAY,
+  hasMonthlyIncome,
+  incomeDueDay,
+  isIncomeDue,
+  ruleAt,
+} from "@/domain/income/engine";
 import { type ReportFilter } from "@/domain/income/reports";
 import type { IncomeRow } from "@/domain/income/types";
 import { formatMonth as monthName } from "@/i18n/format";
@@ -67,6 +73,7 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
     displayMoney,
     total,
     missing,
+    upcoming,
     fixedRows,
     oneOffRows,
     today,
@@ -212,7 +219,16 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                     setYear(Number(period.slice(0, 4)));
                     setMonth(Number(period.slice(5, 7)));
                   }}
-                />
+                >
+                  {selectedMonth !== today.slice(0, 7) && (
+                    <CurrentPeriodButton
+                      onClick={() => {
+                        setYear(Number(today.slice(0, 4)));
+                        setMonth(Number(today.slice(5, 7)));
+                      }}
+                    />
+                  )}
+                </MonthYearSelect>
                 <button
                   className="expense-primary"
                   onClick={() => open({ type: "oneoff" })}
@@ -223,11 +239,6 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                 </button>
               </div>
               <ViewControls
-                past={selectedMonth !== today.slice(0, 7)}
-                onCurrent={() => {
-                  setYear(Number(today.slice(0, 4)));
-                  setMonth(Number(today.slice(5, 7)));
-                }}
                 count={
                   tab === "reports"
                     ? [
@@ -286,7 +297,12 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                                 0: missing,
                                 1: monthName(selectedMonth, locale),
                               })
-                            : tr("Đã ghi nhận đủ các danh mục đến hạn.")}
+                            : upcoming
+                              ? tr(
+                                  "Đã ghi nhận đủ các danh mục đến ngày nhận. Còn {0} danh mục chưa đến ngày nhận.",
+                                  { 0: upcoming },
+                                )
+                              : tr("Đã ghi nhận đủ các danh mục đến hạn.")}
                       </p>
                     </article>
                     <article>
@@ -353,75 +369,93 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                     />
                   )}
                   <div className="income-list">
-                    {fixedRows.map((r) => (
-                      <article
-                        key={r.key}
-                        className={`income-item${!r.active ? " is-inactive" : r.amount === null && !future ? " is-missing" : ""}`}
-                      >
-                        <div>
-                          <div className="status-heading">
-                            <h3>{r.name}</h3>
-                            {!r.active && (
-                              <StatusBadge size="compact">
-                                {tr("Đã ngừng")}
-                              </StatusBadge>
+                    {fixedRows.map((r) => {
+                      const upcomingRow =
+                        r.active &&
+                        r.amount === null &&
+                        !future &&
+                        !isIncomeDue(r, today);
+                      return (
+                        <article
+                          key={r.key}
+                          className={`income-item${!r.active ? " is-inactive" : r.amount !== null ? " is-filled" : future ? "" : upcomingRow ? " is-upcoming" : " is-missing"}`}
+                        >
+                          <div>
+                            <div className="status-heading">
+                              <h3>{r.name}</h3>
+                              {!r.active && (
+                                <StatusBadge size="compact">
+                                  {tr("Đã ngừng")}
+                                </StatusBadge>
+                              )}
+                            </div>
+                            {r.description && (
+                              <p className="expense-muted">{r.description}</p>
+                            )}
+                            {r.active && (
+                              <p className="expense-muted income-receive-day">
+                                {tr("Nhận ngày {0} hằng tháng", {
+                                  0: incomeDueDay(r.month, r.receiveDay),
+                                })}
+                              </p>
                             )}
                           </div>
-                          {r.description && (
-                            <p className="expense-muted">{r.description}</p>
-                          )}
-                        </div>
-                        <div className="income-receipt">
-                          <p className="income-amount">
-                            {r.amount === null ? (
-                              <StatusBadge
-                                tone={future ? "info" : "warning"}
-                                size="compact"
-                              >
-                                {future
-                                  ? tr("Chưa đến kỳ nhập")
-                                  : tr("Chưa nhập")}
-                              </StatusBadge>
-                            ) : (
-                              money(r.amount)
+                          <div className="income-receipt">
+                            <p className="income-amount">
+                              {r.amount === null ? (
+                                <StatusBadge
+                                  tone={
+                                    future || upcomingRow ? "info" : "warning"
+                                  }
+                                  size="compact"
+                                >
+                                  {future
+                                    ? tr("Chưa đến kỳ nhập")
+                                    : upcomingRow
+                                      ? tr("Chưa đến ngày nhận")
+                                      : tr("Chưa nhập")}
+                                </StatusBadge>
+                              ) : (
+                                money(r.amount)
+                              )}
+                            </p>
+                            {r.note && r.note !== r.description && (
+                              <p className="expense-muted">{r.note}</p>
                             )}
-                          </p>
-                          {r.note && r.note !== r.description && (
-                            <p className="expense-muted">{r.note}</p>
-                          )}
-                        </div>
-                        <div className="expense-actions">
-                          <button
-                            className="expense-secondary"
-                            disabled={future}
-                            aria-label={tr("Nhập {0}", { 0: r.name })}
-                            onClick={() => open({ type: "monthly", row: r })}
-                          >
-                            {r.amount === null ? (
-                              <Plus size={17} aria-hidden="true" />
-                            ) : (
-                              <Pencil size={17} aria-hidden="true" />
-                            )}
-                            {r.amount === null
-                              ? tr("Nhập tiền")
-                              : tr("Sửa số thu")}
-                          </button>
-                          {r.amount !== null && (
+                          </div>
+                          <div className="expense-actions">
                             <button
                               className="expense-secondary"
-                              aria-label={tr("Xóa số thu {0}", { 0: r.name })}
-                              onClick={() => open({ type: "clear", row: r })}
+                              disabled={future}
+                              aria-label={tr("Nhập {0}", { 0: r.name })}
+                              onClick={() => open({ type: "monthly", row: r })}
                             >
-                              <DeleteCommandGlyph
-                                size={17}
-                                aria-hidden="true"
-                              />
-                              {tr("Xóa số thu")}
+                              {r.amount === null ? (
+                                <Plus size={17} aria-hidden="true" />
+                              ) : (
+                                <Pencil size={17} aria-hidden="true" />
+                              )}
+                              {r.amount === null
+                                ? tr("Nhập tiền")
+                                : tr("Sửa số thu")}
                             </button>
-                          )}
-                        </div>
-                      </article>
-                    ))}
+                            {r.amount !== null && (
+                              <button
+                                className="expense-secondary"
+                                aria-label={tr("Xóa số thu {0}", { 0: r.name })}
+                                onClick={() => open({ type: "clear", row: r })}
+                              >
+                                <DeleteCommandGlyph
+                                  size={17}
+                                  aria-hidden="true"
+                                />
+                                {tr("Xóa số thu")}
+                              </button>
+                            )}
+                          </div>
+                        </article>
+                      );
+                    })}
                   </div>
                   <div className="expense-section-heading">
                     <h2>
@@ -489,21 +523,25 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                             </div>
                             <p className="expense-muted">
                               {tr("Từ")} {monthName(c.start, locale)}
+                              {" · "}
+                              {tr("Nhận ngày {0} hằng tháng", {
+                                0: rule.receiveDay ?? DEFAULT_RECEIVE_DAY,
+                              })}
                             </p>
                             {rule.description && <p>{rule.description}</p>}
                           </div>
                           <div className="expense-actions">
                             <button
-                              className="expense-secondary icon-action action-edit"
+                              className="expense-secondary"
                               onClick={() =>
                                 open({ type: "configure", category: c })
                               }
                               aria-label={tr("Sửa danh mục {0}", {
                                 0: rule.name,
                               })}
-                              title={tr("Sửa")}
                             >
-                              <EditActionIcon size={18} aria-hidden="true" />
+                              <EditActionIcon size={17} aria-hidden="true" />
+                              {tr("Sửa")}
                             </button>
                             {(!hasReceipts ||
                               (selectedMonth >= c.start && rule.active)) && (
@@ -526,8 +564,13 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                                   1: rule.name,
                                 })}
                               >
-                                {hasReceipts && (
+                                {hasReceipts ? (
                                   <Archive size={17} aria-hidden="true" />
+                                ) : (
+                                  <DeleteCommandGlyph
+                                    size={17}
+                                    aria-hidden="true"
+                                  />
                                 )}
                                 {hasReceipts
                                   ? tr("Ngừng từ tháng…")

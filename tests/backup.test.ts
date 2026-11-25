@@ -68,6 +68,29 @@ describe("portable full backup validation", () => {
     ];
     expect(() => validateBackup(injected)).toThrow();
   });
+  it("still restores income sources that already share a name", () => {
+    // New sources can no longer reuse a name, but older backups may hold two.
+    const b = empty();
+    b.tables.income_books.push({ version: 1 });
+    b.tables.income_audit.push({
+      version: 1,
+      at: b.exportedAt,
+      action: "seedReviewData",
+      detail: {},
+    });
+    for (const id of [randomUUID(), randomUUID()])
+      b.tables.income_categories.push({
+        id,
+        start_month: "2026-10",
+        deleted: false,
+        rules: [
+          { month: "2026-10", name: "Lương", description: "", active: true },
+        ],
+      });
+    expect(
+      validateBackup(b).tables.income_categories.map((c) => c.rules[0].name),
+    ).toEqual(["Lương", "Lương"]);
+  });
   it("preserves exact money strings and rejects numeric or duplicated money rows", () => {
     const b = empty();
     b.tables.income_books.push({ version: 1 });
@@ -93,6 +116,31 @@ describe("portable full backup validation", () => {
     b.tables.income_oneoffs.pop();
     (b.tables.income_oneoffs[0] as unknown as { amount: number }).amount = 100;
     expect(() => validateBackup(b)).toThrow();
+  });
+  it("reads income rules written before the receive day unchanged and validates an explicit day", () => {
+    const category = {
+      id: randomUUID(),
+      start_month: "2026-10",
+      deleted: false,
+      rules: [
+        { month: "2026-10", name: "Lương", description: "", active: true },
+      ],
+    };
+    // No default is added: the restored jsonb must equal what the backup holds.
+    const legacy = tableSchemas.income_categories.parse(category);
+    expect(legacy.rules[0]).not.toHaveProperty("receiveDay");
+    const dated = tableSchemas.income_categories.parse({
+      ...category,
+      rules: [{ ...category.rules[0], receiveDay: 25 }],
+    });
+    expect(dated.rules[0].receiveDay).toBe(25);
+    for (const bad of [0, 32, 2.5, "5"])
+      expect(() =>
+        tableSchemas.income_categories.parse({
+          ...category,
+          rules: [{ ...category.rules[0], receiveDay: bad }],
+        }),
+      ).toThrow();
   });
   it("reads a jar saved before soft deletion as not deleted and keeps the flag in the expense book", () => {
     const jar = {

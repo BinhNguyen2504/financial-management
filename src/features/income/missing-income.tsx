@@ -3,6 +3,7 @@ import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
 import { useI18n } from "@/i18n/provider";
 
+import { isIncomeDue } from "@/domain/income/engine";
 import type { IncomeRow } from "@/domain/income/types";
 import { formatMonth as monthName } from "@/i18n/format";
 import { AlertCircle, PlusCircle } from "lucide-react";
@@ -13,7 +14,7 @@ export function missingIncomeRows(rows: IncomeRow[], today: string) {
       row.kind === "fixed" &&
       row.active &&
       row.amount === null &&
-      row.month <= today.slice(0, 7),
+      isIncomeDue(row, today),
   );
 }
 export function MissingIncome({

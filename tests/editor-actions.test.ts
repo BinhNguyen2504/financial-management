@@ -79,6 +79,7 @@ describe("editor draft to action compatibility", () => {
         description: "",
         amount: `00${large}`,
         note: "",
+        receiveDay: "1",
       }),
     ).toEqual({
       type: "upsertOneOff",
@@ -87,6 +88,26 @@ describe("editor draft to action compatibility", () => {
       name: "Income",
       description: "",
       amount: large,
+    });
+  });
+
+  it("builds category actions with the receive day as a number", () => {
+    const base = {
+      id,
+      period: "2026-10",
+      name: "Lương",
+      description: "",
+      amount: "",
+      note: "",
+      receiveDay: "25",
+    };
+    expect(buildIncomeAction({ ...base, mode: { type: "create" } })).toEqual({
+      type: "createCategory",
+      id,
+      start: "2026-10",
+      name: "Lương",
+      description: "",
+      receiveDay: 25,
     });
   });
 

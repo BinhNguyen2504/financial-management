@@ -266,10 +266,43 @@ test("income geometry: direct period selects, whole labels, equal rows and stati
       ).toBeLessThanOrEqual(1);
       expect((await filled.boundingBox())!.height).toBeGreaterThanOrEqual(48);
       const target = missing.locator(".income-missing-cell").first();
-      // Firefox can report a 44px target a fraction below its CSS height.
-      expect((await target.boundingBox())!.height).toBeGreaterThanOrEqual(
-        43.99,
+      // Hover scrolls the horizontal table and the page until the button is actually hittable.
+      await target.hover();
+      const marker = await target.evaluate((button) => {
+        const box = button.getBoundingClientRect();
+        const cell = button.closest("td")!;
+        const index = [...cell.parentElement!.children].indexOf(cell);
+        // An amount in the same column of another row, for edge comparison.
+        const amount = [...document.querySelectorAll(".income-table tbody tr")]
+          .map((row) => row.children[index]?.querySelector("span"))
+          .find((span) => span && !span.closest("button"));
+        return {
+          height: box.height,
+          cellHeight: cell.getBoundingClientRect().height,
+          rightGap: amount
+            ? Math.abs(box.right - amount.getBoundingClientRect().right)
+            : 0,
+        };
+      });
+      // Compact like the surrounding values instead of stretching the cell.
+      expect(marker.height).toBeLessThanOrEqual(36);
+      expect(marker.cellHeight).toBeLessThanOrEqual(
+        (await filled.boundingBox())!.height + 1,
       );
+      // Same right edge as the amounts in its column.
+      expect(marker.rightGap).toBeLessThanOrEqual(1);
+      // The visible box is compact, but the 44px touch target still works:
+      // a real click just outside the box (above and below) opens the entry dialog.
+      for (const side of ["above", "below"]) {
+        const box = (await target.boundingBox())!;
+        await page.mouse.click(
+          box.x + box.width / 2,
+          side === "above" ? box.y - 5 : box.y + box.height + 5,
+        );
+        await expect(page.locator(".expense-dialog[open]")).toBeVisible();
+        await page.keyboard.press("Escape");
+        await expect(page.locator(".expense-dialog[open]")).toBeHidden();
+      }
       await stationaryPickers(page, width < 768);
       await fit(page);
     }

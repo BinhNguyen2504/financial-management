@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isIncomeDue } from "./engine";
 import { yearSchema } from "./schema";
 import type { IncomeRow, IncomeView } from "./types";
 export const reportFilterSchema = z
@@ -37,9 +38,7 @@ export function buildReport(view: IncomeView, input: ReportFilter) {
       oneoff: value(group.filter((r) => r.kind === "oneoff")),
       missing: group.filter(
         (r) =>
-          r.kind === "fixed" &&
-          r.amount === null &&
-          r.month <= view.today.slice(0, 7),
+          r.kind === "fixed" && r.amount === null && isIncomeDue(r, view.today),
       ).length,
     };
   });

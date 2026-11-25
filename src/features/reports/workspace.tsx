@@ -1,7 +1,7 @@
 "use client";
 import { PageGuide } from "@/features/help/page-guide";
 import { useViewState } from "@/components/use-view-state";
-import { ViewControls } from "@/components/view-controls";
+import { CurrentPeriodButton } from "@/components/view-controls";
 import { ActionOptions } from "@/components/action-options";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -258,17 +258,16 @@ function AccountReports({ configured }: { configured: boolean }) {
             </select>
           </label>
         )}
-      </section>
-      <ViewControls
-        past={
-          query.period !== "month" ||
+        {(query.period !== "month" ||
           query.year !== Number(vietnamClock().today.slice(0, 4)) ||
-          query.month !== Number(vietnamClock().today.slice(5, 7))
-        }
-        onCurrent={() =>
-          change({ ...parseQuery({}, vietnamClock()), tab: query.tab })
-        }
-      />
+          query.month !== Number(vietnamClock().today.slice(5, 7))) && (
+          <CurrentPeriodButton
+            onClick={() =>
+              change({ ...parseQuery({}, vietnamClock()), tab: query.tab })
+            }
+          />
+        )}
+      </section>
       <ScrollTabs as="nav" className="reports-tabs" aria-label={t("Báo cáo")}>
         {tabs.map((tab) => (
           <button
