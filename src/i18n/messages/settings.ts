@@ -69,6 +69,28 @@ export const settings = {
     "I have saved the backup and checked the file.",
   "2. Kiểm tra và xác nhận xóa": "2. Review and confirm deletion",
   "Nhập XÓA TOÀN BỘ để xác nhận": "Type XÓA TOÀN BỘ to confirm",
+  "Nhập XÓA DỮ LIỆU để xác nhận": "Type XÓA DỮ LIỆU to confirm",
+  "Xóa toàn bộ dữ liệu tài chính, hoặc chỉ một số trang, để bắt đầu lại hoặc nhập bản sao lưu vào tài khoản hiện tại. Bạn phải lưu bản sao lưu trước khi xóa.":
+    "Delete all financial data, or only some pages, to start over or import a backup into the current account. You must save a backup before deleting.",
+  "Đã làm trống:": "Cleared:",
+  "Các trang khác được giữ nguyên. Khôi phục chỉ dùng được cho tài khoản trống hoàn toàn.":
+    "Other pages are unchanged. Restore only works for a completely empty account.",
+  "Xóa dữ liệu các trang đã chọn": "Delete data of the selected pages",
+  "Phạm vi làm trống": "What to clear",
+  "Toàn bộ tài khoản": "The whole account",
+  "Chỉ một số trang": "Only some pages",
+  "Làm trống theo từng trang chưa được bật trên hệ thống này. Bạn vẫn có thể làm trống toàn bộ tài khoản.":
+    "Clearing by page is not enabled on this system. You can still clear the whole account.",
+  "Đi kèm vì Mục tiêu liên kết với trang này":
+    "Included because Goals link to this page",
+  "Mục tiêu được làm trống cùng Tiết kiệm, Đầu tư hoặc Quỹ an toàn vì chúng liên kết với nhau.":
+    "Goals are cleared together with Savings, Investments or Safety Funds because they are linked.",
+  "Xóa toàn bộ năm, sổ, danh mục, cấu hình, giao dịch, lịch sử và kỳ đã chốt của các trang đã chọn. Các trang khác được giữ nguyên.":
+    "Delete every year, book, category, setting, transaction, history entry and closed period of the selected pages. Other pages are unchanged.",
+  "Dữ liệu của các trang không được chọn cũng được giữ nguyên.":
+    "Data on pages you did not select is also kept.",
+  "File sao lưu luôn gồm toàn bộ tài khoản, không chỉ các trang đã chọn.":
+    "The backup file always covers the whole account, not only the selected pages.",
   "Chưa xác nhận được kết quả làm trống. Bấm lại để kiểm tra cùng yêu cầu; không tạo yêu cầu xóa mới.":
     "The clearing result is unconfirmed. Retry to check the same request; do not create a new deletion request.",
   "Dữ liệu tài chính đã được làm trống ở tab khác. Hãy tải lại trang trước khi tiếp tục; bản nháp chưa được gửi lại.":
@@ -81,6 +103,13 @@ export const settings = {
     "This confirmation has expired. Create a new backup before clearing.",
   "Dữ liệu đã thay đổi từ lúc sao lưu. Hãy tạo bản sao lưu mới trước khi làm trống.":
     "Data has changed since the backup. Create a new backup before clearing.",
+  "Cụm xác nhận không đúng.": "The confirmation phrase is incorrect.",
+  "Làm trống theo từng trang chưa được bật trên hệ thống này. Bạn vẫn có thể làm trống toàn bộ tài khoản hoặc tải bản sao lưu.":
+    "Clearing by page is not enabled on this system. You can still clear the whole account or download a backup.",
+  "Phạm vi làm trống khác với bước sao lưu đã chuẩn bị. Hãy tạo bản sao lưu mới.":
+    "The clearing scope differs from the prepared backup step. Create a new backup.",
+  "Phạm vi làm trống không hợp lệ. Mục tiêu phải được làm trống cùng Tiết kiệm, Đầu tư hoặc Quỹ an toàn.":
+    "The clearing scope is invalid. Goals must be cleared together with Savings, Investments or Safety Funds.",
   "Mã xác nhận đã được dùng. Hãy kiểm tra lại trạng thái dữ liệu.":
     "This confirmation has already been used. Check the data status again.",
   "Chưa làm trống được dữ liệu. Toàn bộ thao tác đã được hủy.":

@@ -185,6 +185,110 @@ describe("Monthly jars and exact VND arithmetic", () => {
     expect(JSON.stringify(b)).toBe(original);
   });
 });
+describe("Deleting a jar", () => {
+  const deleteJar = (value: ExpenseBook, time = clock) =>
+    applyAction(value, { type: "deleteJar", jarId: id }, time);
+  it("hides the jar from every month, keeps the record and audits the command", () => {
+    const b = book("accumulation", "500000");
+    const next = deleteJar(b);
+    expect(materialize(next, clock)).toEqual([]);
+    expect(next.jars).toHaveLength(1);
+    expect(next.jars[0].deleted).toBe(true);
+    expect(next.version).toBe(b.version + 1);
+    expect(next.audit.at(-1)?.action).toBe("deleteJar");
+    expect(materialize(b, clock).length).toBeGreaterThan(0);
+  });
+  it("previews every removed month as a removed row without mutating the input", () => {
+    const b = book();
+    const original = JSON.stringify(b);
+    const removed = changes(b, deleteJar(b), clock);
+    expect(removed.map((c) => c.month)).toEqual(
+      materialize(b, clock).map((r) => r.month),
+    );
+    expect(removed.every((c) => c.before !== null && c.after === null)).toBe(
+      true,
+    );
+    expect(JSON.stringify(b)).toBe(original);
+  });
+  it("rejects further actions on a deleted jar and double deletion", () => {
+    const next = deleteJar(book("accumulation"));
+    expect(() => deleteJar(next)).toThrow(/Không tìm thấy hũ/);
+    expect(() => edit(next, "2026-10")).toThrow(/Không tìm thấy hũ/);
+    expect(() =>
+      applyAction(
+        next,
+        {
+          type: "upsertSpend",
+          id: spendId,
+          jarId: id,
+          date: clock.today,
+          amount: "1",
+          note: "",
+        },
+        clock,
+      ),
+    ).toThrow(/Không tìm thấy hũ/);
+  });
+  it("hides a deleted jar's usages with it instead of letting them be changed", () => {
+    const withSpend = applyAction(
+      book("accumulation", "500000"),
+      {
+        type: "upsertSpend",
+        id: spendId,
+        jarId: id,
+        date: clock.today,
+        amount: "1000",
+        note: "",
+      },
+      clock,
+    );
+    const next = deleteJar(withSpend);
+    expect(() =>
+      applyAction(next, { type: "deleteSpend", id: spendId }, clock),
+    ).toThrow(/Không tìm thấy hũ/);
+    expect(next.spends).toHaveLength(1);
+    expect(next.spends[0].deleted).toBeFalsy();
+  });
+  it("excludes a deleted jar from reports", () => {
+    const next = deleteJar(book());
+    const report = buildReport(
+      materialize(next, clock),
+      { year: 2026, from: 1, to: 12 },
+      2026,
+    );
+    expect(report.totals).toBeNull();
+  });
+  it("is refused when the jar has rows in a closed year, and the book is unchanged", () => {
+    const december = {
+      today: "2026-12-15",
+      now: "2026-12-15T09:00:00.000Z",
+    };
+    const january = { today: "2027-01-05", now: "2027-01-05T09:00:00.000Z" };
+    const sealed = applyAction(
+      book("accumulation", "0", "2026-12", december),
+      { type: "closeYear", year: 2026 },
+      january,
+    );
+    const before = JSON.stringify(sealed);
+    try {
+      deleteJar(sealed, january);
+      throw new Error("expected deleteJar to be refused");
+    } catch (error) {
+      expect(error).toMatchObject({ code: "JAR_IN_CLOSED_YEAR", status: 409 });
+    }
+    expect(JSON.stringify(sealed)).toBe(before);
+  });
+  it("is refused once the current year itself is closed", () => {
+    const closed = book();
+    closed.years.find((y) => y.year === 2026)!.closedAt = clock.now;
+    expect(() => deleteJar(closed)).toThrow(/Năm đã chốt/);
+  });
+  it("strict schema rejects extra fields", () => {
+    expect(() =>
+      expenseActionSchema.parse({ type: "deleteJar", jarId: id, month: "x" }),
+    ).toThrow();
+  });
+});
 describe("Accumulation", () => {
   it("contributes the full default every month rather than topping up to the target", () => {
     const r = row(book("accumulation", "300000"));
@@ -490,6 +594,29 @@ describe("Reports reconcile without double counting", () => {
       );
     expect(
       buildReport(rows, { ...filter, method: "Không có" }, 2026).totals,
+    ).toBe(null);
+  });
+  it("accepts several kinds, methods and groups and treats an empty list as no filter", () => {
+    const rows = materialize(book(), clock);
+    const filter = { year: 2026, from: 9, to: 10 };
+    const all = buildReport(rows, filter, 2026);
+    const methods = [...new Set(rows.map((r) => r.method))];
+    const kinds = [...new Set(rows.map((r) => r.kind))];
+    expect(
+      buildReport(rows, { ...filter, kind: [], method: [], group: [] }, 2026)
+        .totals,
+    ).toEqual(all.totals);
+    expect(
+      buildReport(rows, { ...filter, kind: kinds, method: methods }, 2026)
+        .totals,
+    ).toEqual(all.totals);
+    expect(
+      buildReport(rows, { ...filter, method: [...methods, "Không có"] }, 2026)
+        .totals,
+    ).toEqual(all.totals);
+    expect(
+      buildReport(rows, { ...filter, method: ["Không có", "Cũng không"] }, 2026)
+        .totals,
     ).toBe(null);
   });
   it("does not merge same-named jars or offset overspending with another month's underspending", () => {

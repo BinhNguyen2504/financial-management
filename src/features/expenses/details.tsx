@@ -31,6 +31,7 @@ const actionNames: Record<string, string> = {
   configureJar: "Đổi cấu hình",
   editMonth: "Điều chỉnh tháng",
   stopJar: "Ngừng cấp tiền",
+  deleteJar: "Xóa hũ",
   upsertSpend: "Ghi / sửa lần sử dụng",
   deleteSpend: "Xóa lần sử dụng",
 };
@@ -63,6 +64,10 @@ export function ExpenseDetails({
     .filter((s) => s.jarId === row.jarId && s.date.startsWith(String(year)))
     .slice()
     .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  // The engine refuses to delete a jar that appears in a closed year; say so before the user tries.
+  const inClosedYear = book.years.some((y) =>
+    y.snapshot?.some((r) => r.jarId === row.jarId),
+  );
   const audit = book.audit
     .filter((a) => {
       const detail = a.detail as Record<string, unknown>;
@@ -335,6 +340,23 @@ export function ExpenseDetails({
                 <Archive size={18} aria-hidden="true" />
                 {tr("Ngừng cấp tiền")}
               </button>
+            )}
+            <button
+              type="button"
+              className="expense-secondary action-delete"
+              disabled={inClosedYear}
+              aria-describedby={inClosedYear ? "delete-jar-closed" : undefined}
+              onClick={() => onEdit({ mode: "deleteJar", row })}
+            >
+              <DeleteActionIcon size={18} aria-hidden="true" />
+              {tr("Xóa hũ")}
+            </button>
+            {inClosedYear && (
+              <p id="delete-jar-closed" className="expense-muted">
+                {tr(
+                  "Hũ có dữ liệu trong năm đã chốt nên không thể xóa. Dùng “Ngừng cấp tiền” để giữ lịch sử.",
+                )}
+              </p>
             )}
           </div>
         )}

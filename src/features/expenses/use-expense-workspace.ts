@@ -1,4 +1,11 @@
 "use client";
+import { validStringList } from "@/components/multi-select-filter";
+import {
+  defaultExpenseSort,
+  sortExpenseRows,
+  validExpenseSort,
+  type ExpenseSort,
+} from "./sort";
 import { useViewState } from "@/components/use-view-state";
 
 import { useI18n } from "@/i18n/provider";
@@ -46,10 +53,31 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
       v === null ||
       (typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12),
   );
-  const [kind, setKind] = useViewState("expenses", "kind", "");
-  const [method, setMethod] = useViewState("expenses", "method", "");
-  const [group, setGroup] = useViewState("expenses", "group", "");
+  const [kind, setKind] = useViewState<string[]>(
+    "expenses",
+    "kinds",
+    [],
+    validStringList,
+  );
+  const [storedMethod, setMethod] = useViewState<string[]>(
+    "expenses",
+    "methods",
+    [],
+    validStringList,
+  );
+  const [storedGroup, setGroup] = useViewState<string[]>(
+    "expenses",
+    "groups",
+    [],
+    validStringList,
+  );
   const [inactive, setInactive] = useViewState("expenses", "inactive", false);
+  const [sort, setSort] = useViewState<ExpenseSort>(
+    "expenses",
+    "sort",
+    defaultExpenseSort,
+    validExpenseSort,
+  );
   const [tab, setTab] = useViewState<string>(
     "expenses",
     "tab",
@@ -159,6 +187,7 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     setLoading(false);
   }
   async function saved(next?: ExpenseView) {
+    if (editor?.mode === "deleteJar") setDetail(null);
     setEditor(null);
     setNotice("");
     if (next) {
@@ -184,17 +213,30 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     (selectedYear < Number(view.book.start.slice(0, 4)) ||
       selectedYear > currentYear);
   const readonly = outsideYears || Boolean(period?.closedAt);
-  const rows =
+  const yearRows =
+    view?.rows.filter((r) => r.month.startsWith(String(selectedYear))) ?? [];
+  const methods = [...new Set(yearRows.map((r) => r.method))].sort();
+  const groups = [
+    ...new Set(yearRows.map((r) => r.group).filter(Boolean)),
+  ].sort();
+  // A stored choice that no longer exists (renamed or removed label, another year) must not keep
+  // filtering invisibly, so only the values still on offer count. The stored list itself is untouched.
+  const method = storedMethod.filter((item) => methods.includes(item));
+  const group = storedGroup.filter((item) => groups.includes(item));
+  const rows = sortExpenseRows(
     view?.rows.filter(
       (r) =>
         r.month === selectedMonth &&
-        (!kind || r.kind === kind) &&
-        (!method || r.method === method) &&
-        (!group || r.group === group) &&
+        (!kind.length || kind.includes(r.kind)) &&
+        (!method.length || method.includes(r.method)) &&
+        (!group.length || group.includes(r.group)) &&
         (inactive || r.active),
-    ) ?? [];
-  const yearRows =
-    view?.rows.filter((r) => r.month.startsWith(String(selectedYear))) ?? [];
+    ) ?? [],
+    sort,
+    locale,
+  );
+  const filtered =
+    kind.length > 0 || method.length > 0 || group.length > 0 || inactive;
   const detail = detailSelection
     ? (view?.rows.find(
         (r) =>
@@ -206,10 +248,6 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     selectedYear < currentYear ? summarize(yearRows, () => "year")[0] : null;
   const archivedMonths =
     selectedYear < currentYear ? summarize(yearRows, (r) => r.month) : [];
-  const methods = [...new Set(yearRows.map((r) => r.method))].sort();
-  const groups = [
-    ...new Set(yearRows.map((r) => r.group).filter(Boolean)),
-  ].sort();
   const total = (field: "target" | "required" | "spent" | "closing") =>
     sum(rows.map((r) => r[field]));
   const future = view ? selectedMonth > view.today.slice(0, 7) : false;
@@ -245,6 +283,9 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     archivedMonths,
     kind,
     setKind,
+    filtered,
+    sort,
+    setSort,
     method,
     methods,
     group,

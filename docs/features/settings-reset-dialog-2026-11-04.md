@@ -26,3 +26,7 @@ README, tài liệu backup/UX và Help Việt/Anh đã cập nhật. Catalog, c�
 - Log: `artifacts/reset-dialog-verified.log`, `artifacts/reset-dialog-verified-build.log`; ảnh trong `artifacts/reset-dialog-verified/`. `artifacts/reset-dialog-source-manifest.json` xác nhận năm file sản phẩm khớp snapshot build và ghi hash hai bộ browser. Các lượt trước giữ riêng trong `reset-dialog-before`, `reset-dialog-after` và `reset-dialog-final`; lượt cuối nêu trên là bằng chứng sau sửa căn hàng/khoảng cuộn.
 
 Bộ browser dùng production build cô lập, PostgreSQL local và Auth contract double với dữ liệu tổng hợp. Không ghi/reset dữ liệu tài khoản thật, không áp dụng migration hoặc deploy. Browser mobile không thay bằng chứng bàn phím/thiết bị vật lý hay Auth/RLS cloud. Lịch sử kiểm chứng ở [validation](../07-validation.md).
+
+## Cập nhật 24/11/2026: chọn phạm vi
+
+Bước 1 có nhóm **Phạm vi làm trống**: Toàn bộ tài khoản (mặc định, hành vi cũ) hoặc Chỉ một số trang với ô chọn từng trang (kèm số bản ghi; trang không có dữ liệu bị khóa; trang đi kèm do liên kết Mục tiêu được đánh dấu). Đổi phạm vi xóa bản sao lưu đã chuẩn bị. Số bản ghi, mô tả và nhãn nút theo phạm vi; cụm xác nhận `XÓA TOÀN BỘ` hoặc `XÓA DỮ LIỆU`. Thành công một phần hiện thông báo "Đã làm trống: …" và không đưa nút khôi phục. Test "clears only the chosen pages…" trong `tests/browser/reset.spec.ts` chạy qua trên Chromium desktop; chưa chụp ảnh đủ năm theme/320px cho phần chọn trang.

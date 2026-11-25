@@ -298,3 +298,7 @@ Goals tái sử dụng DialogTabs (tab/scroll/state), DialogNote và DialogPrevi
 ## Trình bày Ví tiền chờ — 05/11/2026
 
 `src/features/investments/wallet-actions.tsx` giữ trạng thái tooltip và phần thao tác phụ trong từng ví; `details.tsx` đặt nút tạo ví ở tiêu đề. Các nút tiếp tục phát `EditorMode` hiện có tới editor, không thay domain, HTTP, schema, Auth hoặc RLS. Catalog/landing/preview được rà, giữ phạm vi module và dữ liệu minh họa cố định.
+
+### Làm trống theo từng trang — 24/11/2026
+
+Phạm vi reset là `ResetModule` (tiền tố bảng backup) trong `domain/backup/reset-modules.ts`, thuần TypeScript và dùng chung giữa giao diện, route và repository. Server giải quyết phụ thuộc (Mục tiêu theo Tiết kiệm/Đầu tư/Quỹ), lưu phạm vi trong `data_resets.modules` ở bước chuẩn bị và hàm SQL chỉ xóa theo giá trị đã lưu; khóa advisory vẫn lấy đủ và theo thứ tự cũ. Fingerprint/generation/idempotency không đổi. Xem [backup](features/backup.md#làm-trống-theo-từng-trang--24112026).

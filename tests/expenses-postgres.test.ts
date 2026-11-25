@@ -606,3 +606,42 @@ it("persists emoji metadata across reads without altering balances or overrides"
   expect(after.rows.find((r) => r.month === "2026-12")?.emoji).toBeNull();
   expect(after.book?.audit.at(-1)?.action).toBe("setJarEmoji");
 });
+
+it("soft-deletes a jar: hidden after reload, row kept, idempotent retry, owner isolated", async () => {
+  const user = await initialized();
+  const other = await initialized();
+  const id = await jar(user);
+  const otherId = await jar(other);
+  const action = { type: "deleteJar" as const, jarId: id };
+  const requestId = randomUUID();
+  await execute(user, 2, action, requestId);
+  await execute(user, 2, action, requestId);
+  const view = await readExpenseView(repository, user, clock);
+  expect(view.book?.version).toBe(3);
+  expect(view.rows).toEqual([]);
+  expect(view.book?.jars.find((j) => j.id === id)?.deleted).toBe(true);
+  expect(view.book?.audit.at(-1)?.action).toBe("deleteJar");
+  const [stored] =
+    await admin`select deleted from public.expense_jars where owner_id=${user} and id=${id}`;
+  expect(stored.deleted).toBe(true);
+  const untouched = await readExpenseView(repository, other, clock);
+  expect(untouched.rows.length).toBeGreaterThan(0);
+  expect(untouched.book?.jars.find((j) => j.id === otherId)?.deleted).toBe(
+    false,
+  );
+  await expect(execute(user, 3, action)).rejects.toMatchObject({
+    status: 404,
+  });
+});
+
+it("refuses to delete a jar that appears in a closed year", async () => {
+  const user = await initialized();
+  const id = await jar(user);
+  await execute(user, 2, { type: "closeYear", year: 2026 });
+  await expect(
+    execute(user, 3, { type: "deleteJar", jarId: id }),
+  ).rejects.toMatchObject({ code: "JAR_IN_CLOSED_YEAR", status: 409 });
+  const view = await readExpenseView(repository, user, clock);
+  expect(view.book?.version).toBe(3);
+  expect(view.book?.jars.find((j) => j.id === id)?.deleted).toBe(false);
+});

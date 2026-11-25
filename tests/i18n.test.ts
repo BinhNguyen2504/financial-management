@@ -190,6 +190,7 @@ describe("product messages and contextual content", () => {
         JSON.stringify(article)
           .replaceAll("Tiếng Việt", "")
           .replaceAll("XÓA TOÀN BỘ", "")
+          .replaceAll("XÓA DỮ LIỆU", "")
           .normalize("NFD"),
         page,
       ).not.toMatch(/[ĂăÂâĐđÊêÔôƠơƯư\u0300-\u036f]/u);

@@ -19,6 +19,12 @@ export interface FinancialBooks {
 type DB = Pick<postgres.Sql, "unsafe">;
 
 // Identifiers and expressions below are internal constants. Values stay bound.
+/**
+ * One expression for every expense-jar read. `deleted` is read through to_jsonb so a database that
+ * has not applied the jar-delete migration still returns every jar as not deleted.
+ */
+export const expenseJarsTable = "expense_jars j";
+export const expenseJarExpression = `jsonb_build_object('id',id,'kind',kind,'start',start_month,'opening',opening::text,'rules',rules,'deleted',coalesce((to_jsonb(j)->>'deleted')::boolean,false))`;
 const rows = (table: string, expression: string, order: string) =>
   `(select coalesce(jsonb_agg(${expression} order by ${order}), '[]'::jsonb)
     from public.${table} where owner_id=$1)`;
@@ -35,7 +41,7 @@ export function bookProjection(kind: keyof FinancialBooks, history = true) {
   switch (kind) {
     case "expenses":
       return `select jsonb_build_object('version',version,'start',start_month,
-        'jars',${rows("expense_jars", "jsonb_build_object('id',id,'kind',kind,'start',start_month,'opening',opening::text,'rules',rules)", "start_month,id")},
+        'jars',${rows(expenseJarsTable, expenseJarExpression, "start_month,id")},
         'inputs',${rows("expense_month_inputs", "jsonb_build_object('jarId',jar_id,'month',month,'target',target::text,'funding',funding::text,'extra',extra::text,'closing',closing::text)", "month,jar_id")},
         'spends',${rows("expense_spends", "jsonb_build_object('id',id,'jarId',jar_id,'date',to_char(date,'YYYY-MM-DD'),'amount',amount::text,'note',note,'deleted',deleted)", "date,id")},
         'years',${rows("expense_years", "jsonb_build_object('year',year,'closedAt',case when closed_at is null then null else to_char(closed_at at time zone 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') end,'snapshot',snapshot)", "year")},
@@ -93,7 +99,7 @@ export async function readBook<K extends keyof FinancialBooks>(
 export async function readLivingSource(db: DB, owner: string, month: string) {
   const [row] = await timePhase("sql", () =>
     db.unsafe<{ version: number; jars: ExpenseBook["jars"] }[]>(
-      `select version,${rows("expense_jars", "jsonb_build_object('id',id,'kind',kind,'start',start_month,'opening',opening::text,'rules',rules)", "start_month,id")} as jars
+      `select version,${rows(expenseJarsTable, expenseJarExpression, "start_month,id")} as jars
      from public.expense_books where owner_id=$1`,
       [owner],
     ),

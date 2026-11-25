@@ -68,7 +68,11 @@ function Editor(props: Parameters<typeof useInvestmentEditor>[0]) {
         onClose={close}
         busy={busy || uncertain}
         size={
-          mode.type === "cancel" || mode.type === "archive" ? "confirm" : "form"
+          mode.type === "cancel" || mode.type === "archive"
+            ? preview
+              ? "review"
+              : "confirm"
+            : "form"
         }
         footer={
           <>

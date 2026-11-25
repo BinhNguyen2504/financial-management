@@ -5,11 +5,16 @@ export interface ReportFilter {
   year: number;
   from: number;
   to: number;
-  kind?: string;
+  /** A single value or several; an empty list means no restriction. */
+  kind?: string | string[];
   jarId?: string;
-  method?: string;
-  group?: string;
+  method?: string | string[];
+  group?: string | string[];
 }
+const matches = (selected: string | string[] | undefined, value: string) =>
+  Array.isArray(selected)
+    ? selected.length === 0 || selected.includes(value)
+    : !selected || selected === value;
 export interface ReportItem {
   key: string;
   label: string;
@@ -33,10 +38,10 @@ export function selectRows(
       Number(r.month.slice(0, 4)) === filter.year &&
       Number(r.month.slice(5)) >= filter.from &&
       Number(r.month.slice(5)) <= filter.to &&
-      (!filter.kind || r.kind === filter.kind) &&
+      matches(filter.kind, r.kind) &&
       (!filter.jarId || r.jarId === filter.jarId) &&
-      (!filter.method || r.method === filter.method) &&
-      (!filter.group || r.group === filter.group),
+      matches(filter.method, r.method) &&
+      matches(filter.group, r.group),
   );
 }
 export function summarize(

@@ -356,6 +356,8 @@ export const tableSchemas = {
     start_month: month,
     opening: money,
     rules: z.array(expenseRule).min(1),
+    // Backups written before jar deletion have no flag; they restore as not deleted.
+    deleted: z.boolean().optional().default(false),
   }),
   expense_month_inputs: z.strictObject({
     jar_id: uuid,

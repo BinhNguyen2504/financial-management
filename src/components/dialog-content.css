@@ -26,6 +26,10 @@
 .expense-dialog.dialog-confirm {
   width: min(480px, calc(100vw - 32px));
 }
+/* A confirmation that also shows a before/after table: wider than a plain confirm, but sized by its content. */
+.expense-dialog.dialog-review {
+  width: min(720px, calc(100vw - 32px));
+}
 .dialog-shell > .expense-dialog-heading {
   flex: none;
   margin: 0;

@@ -2,6 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import postgres from "postgres";
 import { completeTestEmailLogin } from "./helpers/test-email-login";
+import { closeMultiFilter, openMultiFilter } from "./helpers/multi-filter";
 import {
   buildReviewData,
   buildReviewSQL,
@@ -141,22 +142,33 @@ test("periods tabs and filters survive navigation and reset without crossing acc
   const filters = page.locator(".filter-options");
   if (await filters.getByRole("button", { name: /^Bộ lọc/ }).isVisible())
     await filters.getByRole("button", { name: /^Bộ lọc/ }).click();
-  await filters
-    .getByRole("combobox", { name: "Loại hũ", exact: true })
-    .selectOption("accumulation");
+  let kindGroup = await openMultiFilter(page, "Loại hũ");
+  await kindGroup
+    .getByRole("checkbox", { name: "Tích lũy", exact: true })
+    .check();
+  await kindGroup
+    .getByRole("checkbox", { name: "Chi trong tháng", exact: true })
+    .check();
+  await closeMultiFilter(page);
   await go(page, "overview");
   await go(page, "budgets");
   if (await filters.getByRole("button", { name: /^Bộ lọc/ }).isVisible())
     await filters.getByRole("button", { name: /^Bộ lọc/ }).click();
+  // Both choices survive leaving and returning to the page.
+  const kindTrigger = page.getByRole("button", { name: /^Loại hũ/ });
+  await expect(kindTrigger).toContainText("2 đã chọn");
+  kindGroup = await openMultiFilter(page, "Loại hũ");
   await expect(
-    filters.getByRole("combobox", { name: "Loại hũ", exact: true }),
-  ).toHaveValue("accumulation");
+    kindGroup.getByRole("checkbox", { name: "Tích lũy", exact: true }),
+  ).toBeChecked();
+  await expect(
+    kindGroup.getByRole("checkbox", { name: "Chi trong tháng", exact: true }),
+  ).toBeChecked();
+  await closeMultiFilter(page);
   await filters
     .getByRole("button", { name: "Đặt lại bộ lọc", exact: true })
     .click();
-  await expect(
-    filters.getByRole("combobox", { name: "Loại hũ", exact: true }),
-  ).toHaveValue("");
+  await expect(kindTrigger).toContainText("Tất cả");
   await go(page, "income");
   await page
     .locator("main .month-year-field select")

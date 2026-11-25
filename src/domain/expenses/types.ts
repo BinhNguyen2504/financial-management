@@ -18,6 +18,8 @@ export interface Jar {
   start: Month;
   opening: Money;
   rules: JarRule[];
+  /** Soft delete: hidden from every view and report; audit history keeps the jar's id. */
+  deleted?: boolean;
 }
 export interface MonthInput {
   jarId: string;

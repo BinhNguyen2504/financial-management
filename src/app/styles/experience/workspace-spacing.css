@@ -86,3 +86,12 @@
     display: flex;
   }
 }
+
+/* Desktop only: the mobile trigger and its reset button stay above the collapsed filters. */
+@media (min-width: 701px) {
+  .app-shell
+    .filter-options[data-reset-placement="after"]
+    > .filter-options-tools {
+    order: 2;
+  }
+}

@@ -231,7 +231,7 @@ export function ExpenseEditorFields({
           )}
         </MonthYearSelect>
       )}
-      {(editor.mode === "create" || editor.mode === "emoji") && (
+      {["create", "configure", "emoji"].includes(editor.mode) && (
         <EmojiPicker
           value={emoji}
           onChange={changeEmoji}
@@ -529,6 +529,13 @@ export function ExpenseEditorFields({
               {tr("Dùng logo")} {suggestedBrand(name)!.name}
             </button>
           )}
+          {labelKind === "method" && brandKey && (
+            <p className="expense-muted">
+              {tr(
+                "Đang dùng logo thương hiệu. Chọn “Không chọn thương hiệu” để đổi sang biểu tượng khác.",
+              )}
+            </p>
+          )}
           {!brandKey && (
             <label>
               {tr("Biểu tượng")}
@@ -573,6 +580,22 @@ export function ExpenseEditorFields({
             "Ngừng tự cấp tiền từ tháng đã chọn. Số dư, lịch sử và các lần sử dụng vẫn được giữ; có thể khôi phục bằng cách sửa cấu hình từ một tháng chưa chốt.",
           )}
         </p>
+      )}
+      {editor.mode === "deleteJar" && (
+        <>
+          <p>
+            {tr("Xóa hũ “")}
+            {editor.row.name}
+            {tr(
+              "”. Hũ và các lần sử dụng của hũ sẽ biến mất khỏi mọi tháng và báo cáo; lịch sử thay đổi vẫn được giữ.",
+            )}
+          </p>
+          <p className="expense-muted">
+            {tr(
+              "Hũ có dữ liệu trong năm đã chốt không thể xóa. Nếu chỉ muốn dừng cấp tiền, hãy dùng “Ngừng cấp tiền”.",
+            )}
+          </p>
+        </>
       )}
       {editor.mode === "deleteSpend" && (
         <p>

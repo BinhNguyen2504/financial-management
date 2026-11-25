@@ -147,6 +147,10 @@ describe("Fund living expense and target", () => {
     expect(() => selectLiving(livingSource(e, "2026-10"), [id])).toThrow(
       /ngừng/,
     );
+    // A deleted jar is no longer offered as a living-expense source.
+    e.jars[0].rules[0].active = true;
+    e.jars[0].deleted = true;
+    expect(livingSource(e, "2026-10").items).toEqual([]);
   });
   it("rejects empty, zero and missing sources and rounds decimal x upward without float", () => {
     expect(targetAmount("101", "0.01")).toBe("2");

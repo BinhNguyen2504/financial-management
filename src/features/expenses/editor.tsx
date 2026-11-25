@@ -59,8 +59,13 @@ function ExpenseEditorForm(props: Parameters<typeof useExpenseEditor>[0]) {
         onClose={onClose}
         busy={busy || uncertain}
         size={
-          ["deleteSpend", "deleteLabel", "closeYear"].includes(editor.mode)
-            ? "confirm"
+          ["deleteSpend", "deleteLabel", "deleteJar", "closeYear"].includes(
+            editor.mode,
+          )
+            ? // The preview table does not fit the narrow confirm width, so it gets its own wider size.
+              preview?.changes.length
+              ? "review"
+              : "confirm"
             : preview?.changes.length && editor.mode !== "emoji"
               ? "detail"
               : "form"
@@ -82,7 +87,7 @@ function ExpenseEditorForm(props: Parameters<typeof useExpenseEditor>[0]) {
                 form={formId}
                 aria-busy={busy}
                 type="button"
-                className={`expense-primary ${["deleteSpend", "deleteLabel"].includes(editor.mode) ? "expense-danger" : editor.mode === "stop" ? "expense-warning" : ""}`}
+                className={`expense-primary ${["deleteSpend", "deleteLabel", "deleteJar"].includes(editor.mode) ? "expense-danger" : editor.mode === "stop" ? "expense-warning" : ""}`}
                 disabled={
                   busy || conflict || unchanged || (moneyForm && hidden)
                 }
@@ -104,7 +109,7 @@ function ExpenseEditorForm(props: Parameters<typeof useExpenseEditor>[0]) {
               <button
                 form={formId}
                 aria-busy={busy}
-                className={`expense-primary ${["deleteSpend", "deleteLabel"].includes(editor.mode) ? "expense-danger" : editor.mode === "stop" ? "expense-warning" : ""}`}
+                className={`expense-primary ${["deleteSpend", "deleteLabel", "deleteJar"].includes(editor.mode) ? "expense-danger" : editor.mode === "stop" ? "expense-warning" : ""}`}
                 disabled={busy || unchanged || (moneyForm && hidden)}
               >
                 {busy ? (

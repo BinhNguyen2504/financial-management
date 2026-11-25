@@ -1,0 +1,174 @@
+/* The field looks like the page's other selects; the panel is a native popover with a checkbox per row. */
+.multi-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 360px;
+  font-size: var(--font-size-14);
+}
+.multi-filter .multi-filter-label {
+  color: var(--text);
+  font-weight: var(--weight-medium);
+}
+.multi-filter .multi-filter-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-regular, 400);
+  text-align: left;
+  cursor: pointer;
+}
+.multi-filter[data-active="true"] .multi-filter-trigger {
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: var(--weight-medium);
+}
+.multi-filter .multi-filter-trigger:is(:hover, [aria-expanded="true"]) {
+  border-color: var(--primary);
+}
+.multi-filter .multi-filter-trigger:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.multi-filter .multi-filter-trigger svg {
+  flex: none;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+.multi-filter .multi-filter-trigger[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+.multi-filter .multi-filter-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.multi-filter .multi-filter-options {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  padding: 0;
+  width: min(320px, calc(100vw - 24px));
+  visibility: hidden;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow:
+    0 12px 40px #0003,
+    0 2px 8px #0001;
+  font-size: var(--font-size-14);
+}
+.multi-filter .multi-filter-options:popover-open {
+  display: flex;
+  flex-direction: column;
+}
+.multi-filter .multi-filter-options[data-positioned] {
+  visibility: visible;
+}
+.multi-filter .multi-filter-list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 6px;
+}
+/* These rows sit inside `.expense-filters`, whose label and input rules must not reach them. */
+.multi-filter .multi-filter-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-regular, 400);
+  cursor: pointer;
+}
+.multi-filter .multi-filter-row:hover {
+  background: var(--surface-alt);
+}
+.multi-filter .multi-filter-row:has(input:checked) {
+  color: var(--primary);
+  font-weight: var(--weight-medium);
+}
+.multi-filter .multi-filter-row:has(input:focus-visible) {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+.multi-filter .multi-filter-row input {
+  all: revert;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.multi-filter .multi-filter-row input:focus-visible {
+  outline: none;
+}
+.multi-filter .multi-filter-row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.multi-filter .multi-filter-footer {
+  display: flex;
+  justify-content: flex-end;
+  flex: none;
+  padding: 6px;
+  border-top: 1px solid var(--border);
+}
+.multi-filter .multi-filter-clear {
+  min-height: 40px;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--primary);
+  font: inherit;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-strong);
+  cursor: pointer;
+}
+.multi-filter .multi-filter-clear:hover:not(:disabled) {
+  background: var(--surface-alt);
+}
+.multi-filter .multi-filter-clear:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.multi-filter .multi-filter-clear:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .multi-filter .multi-filter-trigger svg {
+    transition: none;
+  }
+}
+@media (max-width: 600px) {
+  .multi-filter {
+    flex-basis: 100%;
+    max-width: none;
+  }
+}

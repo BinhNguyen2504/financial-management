@@ -95,6 +95,27 @@ describe("Jar emoji metadata", () => {
       materialize(reset, clock).find((r) => r.month === "2027-01")?.emoji,
     ).toBeNull();
   });
+  it("changes the icon together with the jar information when configureJar carries an emoji", () => {
+    const base = {
+      type: "configureJar" as const,
+      jarId: id,
+      month: "2027-01",
+      name: "Nhà ở",
+      description: "",
+      method: "Ví",
+      group: "",
+      amount: "2000000",
+    };
+    const emojiOf = (b: ReturnType<typeof initial>) =>
+      materialize(b, clock).find((r) => r.month === "2027-01")?.emoji;
+    expect(
+      emojiOf(applyAction(initial(), { ...base, emoji: "🎁" }, clock)),
+    ).toBe("🎁");
+    expect(
+      emojiOf(applyAction(initial(), { ...base, emoji: null }, clock)),
+    ).toBeNull();
+    expect(emojiOf(applyAction(initial(), base, clock))).toBe("🍜");
+  });
   it("leaves closed snapshots unchanged and rejects closed-year edits", () => {
     const closed = applyAction(
       initial(),
@@ -167,9 +188,13 @@ describe("Jar emoji metadata", () => {
       opening: jar.opening,
       rules: jar.rules,
     };
+    // Backups written before jar deletion carry no flag and restore as not deleted.
     expect(
       tableSchemas.expense_jars.parse(JSON.parse(JSON.stringify(record))),
-    ).toEqual(record);
+    ).toEqual({ ...record, deleted: false });
+    expect(
+      tableSchemas.expense_jars.parse({ ...record, deleted: true }).deleted,
+    ).toBe(true);
     const closed = {
       year: 2027,
       closed_at: clock.now,

@@ -632,8 +632,8 @@ export const help = {
     "Import a valid backup into an **account with no financial data**. In Settings, see which sections have data or are empty, then expand a section to review its books and history. Deleting or cancelling individual transactions retains books and history. Use another empty account or choose Clear financial data after saving a backup and confirming deletion of all financial data.",
   "Khôi phục hồ sơ tùy chọn": "Optional profile restore",
   "Làm trống dữ liệu tài chính": "Clear financial data",
-  "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** trước khi xóa. Tạo file không có nghĩa là bạn đã lưu file.":
-    "The dialog has two steps: create a backup, then review and confirm. Check the account email, save the JSON file and confirm you have checked it; type **XÓA TOÀN BỘ** exactly before deleting. Creating a file does not mean you have saved it.",
+  "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Chọn làm trống toàn bộ tài khoản hoặc chỉ một số trang (Mục tiêu đi kèm Tiết kiệm, Đầu tư và Quỹ an toàn). Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** (cả tài khoản) hoặc **XÓA DỮ LIỆU** (một số trang) trước khi xóa. File sao lưu luôn đầy đủ. Tạo file không có nghĩa là bạn đã lưu file.":
+    "The dialog has two steps: create a backup, then review and confirm. Choose to clear the whole account or only some pages (Goals go together with Savings, Investments and Safety Funds). Check the account email, save the JSON file and confirm you have checked it; type **XÓA TOÀN BỘ** (whole account) or **XÓA DỮ LIỆU** (some pages) exactly before deleting. The backup file always covers everything. Creating a file does not mean you have saved it.",
   "Có thể nhập lại họ tên, ngày sinh và giới tính nếu chọn. Mặc định tắt; không thay email, token hoặc tài khoản đăng nhập.":
     "Optionally import full name, date of birth and gender. Off by default; email, tokens and sign-in identity do not change.",
   "Giao diện và tùy chọn trên trình duyệt":

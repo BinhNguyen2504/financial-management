@@ -35,7 +35,10 @@ export function livingSource(
     items: (expenses?.jars ?? [])
       .flatMap((jar) => {
         const rule = ruleAt(jar.rules, month);
-        return jar.kind === "monthly" && jar.start <= month && rule?.active
+        return !jar.deleted &&
+          jar.kind === "monthly" &&
+          jar.start <= month &&
+          rule?.active
           ? [{ jarId: jar.id, name: rule.name, amount: rule.amount }]
           : [];
       })

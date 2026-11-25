@@ -70,16 +70,47 @@ export function transactionAdapter(
         on conflict(owner_id) do update set version=excluded.version`,
         [owner, book.start, book.version],
       );
-      for (const jar of changedRecords(
+      const changedJars = changedRecords(
         baseline?.jars,
         book.jars,
         (jar) => jar.id,
-      ))
-        await query(
-          `insert into public.expense_jars(owner_id,id,kind,start_month,opening,rules) values($1,$2,$3,$4,$5,$6::text::jsonb)
-        on conflict(owner_id,id) do update set rules=excluded.rules where expense_jars.rules is distinct from excluded.rules`,
-          [owner, jar.id, jar.kind, jar.start, jar.opening, json(jar.rules)],
+      );
+      let hasJarDelete = false;
+      if (changedJars.length) {
+        const [schema] = await query<{ ready: boolean }>(
+          `select count(*) = 1 as ready from information_schema.columns
+          where table_schema='public' and table_name='expense_jars' and column_name='deleted'`,
         );
+        hasJarDelete = schema.ready;
+        if (!hasJarDelete && changedJars.some((jar) => jar.deleted))
+          throw new ExpenseError(
+            "Chưa thể xóa hũ vì hệ thống cần được cập nhật. Dữ liệu hiện tại không bị thay đổi.",
+            503,
+            "JAR_DELETE_MIGRATION_REQUIRED",
+          );
+      }
+      for (const jar of changedJars)
+        if (hasJarDelete)
+          await query(
+            `insert into public.expense_jars(owner_id,id,kind,start_month,opening,rules,deleted) values($1,$2,$3,$4,$5,$6::text::jsonb,$7)
+        on conflict(owner_id,id) do update set rules=excluded.rules,deleted=excluded.deleted
+        where (expense_jars.rules,expense_jars.deleted) is distinct from (excluded.rules,excluded.deleted)`,
+            [
+              owner,
+              jar.id,
+              jar.kind,
+              jar.start,
+              jar.opening,
+              json(jar.rules),
+              jar.deleted === true,
+            ],
+          );
+        else
+          await query(
+            `insert into public.expense_jars(owner_id,id,kind,start_month,opening,rules) values($1,$2,$3,$4,$5,$6::text::jsonb)
+        on conflict(owner_id,id) do update set rules=excluded.rules where expense_jars.rules is distinct from excluded.rules`,
+            [owner, jar.id, jar.kind, jar.start, jar.opening, json(jar.rules)],
+          );
       for (const i of changedRecords(
         baseline?.inputs,
         book.inputs,

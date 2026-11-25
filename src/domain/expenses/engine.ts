@@ -51,6 +51,7 @@ export function materialize(
   const rows: ExpenseRow[] = [];
   const inputs = new Map(book.inputs.map((i) => [`${i.jarId}/${i.month}`, i]));
   for (const jar of book.jars) {
+    if (jar.deleted) continue;
     let balance = BigInt(jar.opening);
     for (const month of monthRange(jar.start, onlyMonth ?? `${year}-12`)) {
       const sealed = book.years.find(
@@ -213,7 +214,7 @@ export function applyAction(
   const book = structuredClone(previous);
   ensureYears(book, clock);
   const findJar = (id: string) => {
-    const jar = book.jars.find((j) => j.id === id);
+    const jar = book.jars.find((j) => j.id === id && !j.deleted);
     if (!jar) throw new ExpenseError("Không tìm thấy hũ chi tiêu.", 404);
     return jar;
   };
@@ -278,6 +279,21 @@ export function applyAction(
       ].sort((a, b) => a.month.localeCompare(b.month));
       break;
     }
+    case "deleteJar": {
+      const jar = findJar(action.jarId);
+      editable(book, clock.today.slice(0, 7), clock);
+      const sealed = book.years.find((y) =>
+        y.snapshot?.some((r) => r.jarId === jar.id),
+      );
+      if (sealed)
+        throw new ExpenseError(
+          "Hũ có dữ liệu trong năm đã chốt nên không thể xóa. Hãy dùng “Ngừng cấp tiền” để giữ lịch sử.",
+          409,
+          "JAR_IN_CLOSED_YEAR",
+        );
+      jar.deleted = true;
+      break;
+    }
     case "configureJar":
     case "stopJar": {
       editable(book, action.month, clock);
@@ -290,7 +306,10 @@ export function applyAction(
           : {
               month: action.month,
               name: action.name,
-              emoji: rule.emoji ?? null,
+              emoji:
+                action.emoji === undefined
+                  ? (rule.emoji ?? null)
+                  : action.emoji,
               description: action.description,
               method: action.method,
               group: action.group,
@@ -357,6 +376,8 @@ export function applyAction(
     case "deleteSpend": {
       const spend = book.spends.find((s) => s.id === action.id && !s.deleted);
       if (!spend) throw new ExpenseError("Không tìm thấy lần sử dụng.", 404);
+      // A deleted jar's usages are hidden with it, so they cannot be changed separately.
+      findJar(spend.jarId);
       editable(book, spend.date.slice(0, 7), clock);
       spend.deleted = true;
       break;
@@ -433,7 +454,22 @@ export function changes(
       r,
     ]),
   );
-  return materialize(after, clock).flatMap((row) => {
+  const rows = materialize(after, clock);
+  const kept = new Set(rows.map((r) => `${r.jarId}/${r.month}`));
+  const removed = [...original]
+    .filter(([key]) => !kept.has(key))
+    .map(([, prev]) => ({
+      jarId: prev.jarId,
+      name: prev.name,
+      month: prev.month,
+      before: {
+        funding: (BigInt(prev.funding) + BigInt(prev.extra)).toString(),
+        closing: prev.closing,
+        spent: prev.spent,
+      },
+      after: null,
+    }));
+  const updated = rows.flatMap((row) => {
     const prev = original.get(`${row.jarId}/${row.month}`);
     const pick = (r: ExpenseRow) => ({
       funding: (BigInt(r.funding) + BigInt(r.extra)).toString(),
@@ -452,4 +488,5 @@ export function changes(
         ]
       : [];
   });
+  return [...updated, ...removed];
 }

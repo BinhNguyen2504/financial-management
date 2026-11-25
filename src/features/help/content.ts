@@ -763,7 +763,7 @@ export const articles: HelpArticles = {
       term(
         "clear-financial-data",
         "Làm trống dữ liệu tài chính",
-        "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** trước khi xóa. Tạo file không có nghĩa là bạn đã lưu file.",
+        "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Chọn làm trống toàn bộ tài khoản hoặc chỉ một số trang (Mục tiêu đi kèm Tiết kiệm, Đầu tư và Quỹ an toàn). Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** (cả tài khoản) hoặc **XÓA DỮ LIỆU** (một số trang) trước khi xóa. File sao lưu luôn đầy đủ. Tạo file không có nghĩa là bạn đã lưu file.",
       ),
       term(
         "profile-restore",

@@ -84,10 +84,13 @@ export function buildExpenseAction({
         type: "configureJar",
         jarId: editor.row.jarId,
         month: period,
+        emoji,
         ...config,
       };
     case "stop":
       return { type: "stopJar", jarId: editor.row.jarId, month: period };
+    case "deleteJar":
+      return { type: "deleteJar", jarId: editor.row.jarId };
     case "month":
       return {
         type: "editMonth",

@@ -37,7 +37,7 @@ export function Modal({
   children: ReactNode;
   onClose: () => void;
   busy?: boolean;
-  size?: "form" | "detail" | "confirm" | "help";
+  size?: "form" | "detail" | "confirm" | "review" | "help";
   description?: ReactNode;
   footer?: ReactNode;
   stableTabs?: boolean;

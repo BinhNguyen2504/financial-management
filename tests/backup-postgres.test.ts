@@ -226,6 +226,80 @@ describe("full-account transfer via runtime RLS", () => {
       admin`update expense_years set snapshot='[]'::jsonb where owner_id=${target} and year=${sealed[0].year}`,
     ).rejects.toThrow(/immutable/);
   });
+  it("round trips a deleted jar, and refuses to restore one into a database without the delete column", async () => {
+    const { id } = await fixture(),
+      er = postgresExpenseRepository(sql),
+      jarId = randomUUID();
+    const before = (await readExpenseView(er, id, clock)).book!;
+    const method = before.labels.find((l) => l.kind === "method")!.name;
+    let version = before.version;
+    for (const action of [
+      {
+        type: "createJar" as const,
+        id: jarId,
+        kind: "monthly" as const,
+        start: "2026-10",
+        opening: "0",
+        name: "Hũ sẽ xóa",
+        description: "",
+        method,
+        group: "",
+        amount: "1000000",
+      },
+      { type: "deleteJar" as const, jarId },
+    ])
+      await runExpenseCommand(
+        er,
+        id,
+        { id: randomUUID(), expectedVersion: version++, action },
+        clock,
+      );
+    const exported = await repo.backup(id, profile);
+    expect(
+      exported.tables.expense_jars.find((j) => j.id === jarId),
+    ).toMatchObject({ deleted: true });
+    const target = await owner();
+    await repo.import(target, randomUUID(), exported);
+    const copy = await repo.backup(target, profile);
+    expect(copy.tables).toEqual(exported.tables);
+    expect(
+      (await readExpenseView(er, target, clock)).rows.some(
+        (r) => r.jarId === jarId,
+      ),
+    ).toBe(false);
+    // Reads keep working, and a deleted jar is refused rather than silently revived, before the migration.
+    await admin.unsafe(
+      "alter table public.expense_jars rename column deleted to test_missing_deleted",
+    );
+    try {
+      const blocked = await owner();
+      await expect(
+        repo.import(blocked, randomUUID(), exported),
+      ).rejects.toMatchObject({ code: "SCHEMA_NOT_READY" });
+      expect((await repo.status(blocked)).empty).toBe(true);
+      expect(
+        (await repo.backup(id, profile)).tables.expense_jars.every(
+          (j) => j.deleted === false,
+        ),
+      ).toBe(true);
+      await expect(
+        runExpenseCommand(
+          er,
+          id,
+          {
+            id: randomUUID(),
+            expectedVersion: version,
+            action: { type: "deleteJar", jarId: before.jars[0].id },
+          },
+          clock,
+        ),
+      ).rejects.toThrow();
+    } finally {
+      await admin.unsafe(
+        "alter table public.expense_jars rename column test_missing_deleted to deleted",
+      );
+    }
+  });
   it("serializes competing imports, replays a lost response, and rejects a reused request id with different contents", async () => {
     const { backup } = await fixture(),
       target = await owner(),

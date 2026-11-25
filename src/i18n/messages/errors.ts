@@ -251,6 +251,12 @@ export const errors = {
     "Start month cannot be in the future.",
   "Hãy chọn tháng bắt đầu trước.": "Choose a start month first.",
   "Không tìm thấy hũ chi tiêu.": "Spending jar not found.",
+  "Hũ có dữ liệu trong năm đã chốt nên không thể xóa. Hãy dùng “Ngừng cấp tiền” để giữ lịch sử.":
+    "A jar with data in a closed year cannot be deleted. Use “Stop funding” to keep its history.",
+  "Chưa thể xóa hũ vì hệ thống cần được cập nhật. Dữ liệu hiện tại không bị thay đổi.":
+    "The jar cannot be deleted until the system is updated. Your data has not changed.",
+  "Một phần dữ liệu chưa sẵn sàng. Chưa thể khôi phục các hũ đã xóa; hãy kiểm tra lại thiết lập hệ thống.":
+    "Part of the data is not ready. Deleted jars cannot be restored yet; check the system setup.",
   "Chọn một phương thức có sẵn trong Phân loại.":
     "Choose an existing holding method from Categories.",
   "Chọn một nhóm mục đích có sẵn hoặc để trống.":

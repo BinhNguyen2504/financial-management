@@ -59,7 +59,7 @@ function EditorForm(props: Parameters<typeof useSavingsEditor>[0]) {
         }
         onClose={onClose}
         busy={busy || uncertain}
-        size={mode.type === "void" ? "confirm" : "form"}
+        size={mode.type === "void" ? (preview ? "review" : "confirm") : "form"}
         footer={
           <>
             <button

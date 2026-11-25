@@ -3,6 +3,8 @@ import { EmptyState } from "@/components/empty-state";
 import { PageGuide } from "@/features/help/page-guide";
 import { useUser } from "@/features/profile/user-provider";
 import { FilterOptions } from "@/components/filter-options";
+import { MultiSelectFilter } from "@/components/multi-select-filter";
+import { expenseSortKeys, nextSort, type ExpenseSortKey } from "./sort";
 import { ViewControls } from "@/components/view-controls";
 import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
@@ -105,6 +107,9 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
     archivedMonths,
     kind,
     setKind,
+    filtered,
+    sort,
+    setSort,
     method,
     methods,
     group,
@@ -127,6 +132,47 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
     yearRows,
     labelsOpen,
   } = controller;
+  const multiLabels = {
+    all: tr("Tất cả"),
+    count: (selected: number) => tr("{0} đã chọn", { 0: selected }),
+    clear: tr("Bỏ chọn tất cả"),
+  };
+  const sortNames: Record<ExpenseSortKey, string> = {
+    name: tr("Khoản chi"),
+    target: tr("Mức tháng"),
+    opening: tr("Chuyển sang"),
+    required: tr("Cần thêm"),
+    funded: future ? tr("Dự kiến bỏ") : tr("Đã bỏ hũ"),
+    spent: tr("Thực chi"),
+    closing: tr("Còn lại"),
+  };
+  // A plain function (not a component) so ColumnTable can still read the header text.
+  const sortHeader = (key: ExpenseSortKey) => {
+    const active = sort.key === key;
+    return (
+      <th
+        scope="col"
+        aria-sort={
+          active
+            ? sort.direction === "asc"
+              ? "ascending"
+              : "descending"
+            : "none"
+        }
+      >
+        <button
+          type="button"
+          className="expense-sort-button"
+          onClick={() => setSort(nextSort(sort, key))}
+        >
+          {sortNames[key]}
+          <span aria-hidden="true">
+            {active ? (sort.direction === "asc" ? "↑" : "↓") : "↕"}
+          </span>
+        </button>
+      </th>
+    );
+  };
 
   return (
     <div
@@ -249,8 +295,8 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                     onChange={(period) => {
                       const nextYear = Number(period.slice(0, 4));
                       if (nextYear !== selectedYear) {
-                        setMethod("");
-                        setGroup("");
+                        setMethod([]);
+                        setGroup([]);
                         setTab("month");
                       }
                       setYear(nextYear);
@@ -430,50 +476,47 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                 </section>
               )}
               <FilterOptions
-                count={[kind, method, group, inactive].filter(Boolean).length}
+                resetPlacement="after"
+                count={
+                  [
+                    kind.length > 0,
+                    method.length > 0,
+                    group.length > 0,
+                    inactive,
+                  ].filter(Boolean).length
+                }
                 onReset={() => {
-                  setKind("");
-                  setMethod("");
-                  setGroup("");
+                  setKind([]);
+                  setMethod([]);
+                  setGroup([]);
                   setInactive(false);
                 }}
               >
                 <div className="expense-filters expense-filter-panel">
-                  <label>
-                    {tr("Loại hũ")}
-                    <select
-                      value={kind}
-                      onChange={(e) => setKind(e.target.value)}
-                    >
-                      <option value="">{tr("Tất cả")}</option>
-                      <option value="monthly">{tr("Chi trong tháng")}</option>
-                      <option value="accumulation">{tr("Tích lũy")}</option>
-                    </select>
-                  </label>
-                  <label>
-                    {tr("Phương thức")}
-                    <select
-                      value={method}
-                      onChange={(e) => setMethod(e.target.value)}
-                    >
-                      <option value="">{tr("Tất cả")}</option>
-                      {methods.map((m) => (
-                        <option key={m}>{m}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <label>
-                    {tr("Nhóm mục đích")}
-                    <select
-                      value={group}
-                      onChange={(e) => setGroup(e.target.value)}
-                    >
-                      <option value="">{tr("Tất cả")}</option>
-                      {groups.map((g) => (
-                        <option key={g}>{g}</option>
-                      ))}
-                    </select>
-                  </label>
+                  <MultiSelectFilter
+                    labels={multiLabels}
+                    legend={tr("Loại hũ")}
+                    value={kind}
+                    onChange={setKind}
+                    options={[
+                      { value: "monthly", label: tr("Chi trong tháng") },
+                      { value: "accumulation", label: tr("Tích lũy") },
+                    ]}
+                  />
+                  <MultiSelectFilter
+                    labels={multiLabels}
+                    legend={tr("Phương thức")}
+                    value={method}
+                    onChange={setMethod}
+                    options={methods.map((m) => ({ value: m, label: m }))}
+                  />
+                  <MultiSelectFilter
+                    labels={multiLabels}
+                    legend={tr("Nhóm mục đích")}
+                    value={group}
+                    onChange={setGroup}
+                    options={groups.map((g) => ({ value: g, label: g }))}
+                  />
                   <label className="expense-checkbox">
                     <input
                       type="checkbox"
@@ -496,6 +539,45 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                         {future ? tr(" · Kế hoạch") : ""}
                         {readonly ? tr(" · Chỉ xem") : ""}
                       </span>
+                      {rows.length > 1 && (
+                        <div className="expense-sort-control">
+                          <label>
+                            <span>{tr("Sắp xếp theo")}</span>
+                            <select
+                              value={sort.key}
+                              onChange={(e) =>
+                                setSort({
+                                  ...sort,
+                                  key: e.target.value as ExpenseSortKey | "",
+                                })
+                              }
+                            >
+                              <option value="">{tr("Mặc định")}</option>
+                              {expenseSortKeys.map((key) => (
+                                <option key={key} value={key}>
+                                  {sortNames[key]}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <button
+                            type="button"
+                            className="expense-secondary"
+                            disabled={!sort.key}
+                            onClick={() =>
+                              setSort({
+                                ...sort,
+                                direction:
+                                  sort.direction === "asc" ? "desc" : "asc",
+                              })
+                            }
+                          >
+                            {sort.direction === "asc"
+                              ? tr("Tăng dần")
+                              : tr("Giảm dần")}
+                          </button>
+                        </div>
+                      )}
                       {rows.length > 0 && (
                         <ColumnPicker
                           tableId="expenses-workspace-2"
@@ -536,15 +618,13 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                           </caption>
                           <thead>
                             <tr>
-                              <th>{tr("Khoản chi")}</th>
-                              <th>{tr("Mức tháng")}</th>
-                              <th>{tr("Chuyển sang")}</th>
-                              <th>{tr("Cần thêm")}</th>
-                              <th>
-                                {future ? tr("Dự kiến bỏ") : tr("Đã bỏ hũ")}
-                              </th>
-                              <th>{tr("Thực chi")}</th>
-                              <th>{tr("Còn lại")}</th>
+                              {sortHeader("name")}
+                              {sortHeader("target")}
+                              {sortHeader("opening")}
+                              {sortHeader("required")}
+                              {sortHeader("funded")}
+                              {sortHeader("spent")}
+                              {sortHeader("closing")}
                               <th>{tr("Thao tác")}</th>
                             </tr>
                           </thead>
@@ -726,23 +806,23 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                     <section className="panel expense-empty">
                       <EmptyState
                         title={tr(
-                          kind || method || group || inactive
+                          filtered
                             ? "Không có hũ phù hợp bộ lọc"
                             : "Chưa có hũ trong tháng này",
                         )}
                         description={tr(
-                          kind || method || group || inactive
+                          filtered
                             ? "Bỏ điều kiện lọc để xem lại các hũ trong tháng đang chọn."
                             : "Tạo hũ đầu tiên theo mục đích như sinh hoạt. Nếu đã tạo hũ ở kỳ khác, kiểm tra lại tháng đang xem.",
                         )}
                       >
-                        {kind || method || group || inactive ? (
+                        {filtered ? (
                           <button
                             className="expense-secondary"
                             onClick={() => {
-                              setKind("");
-                              setMethod("");
-                              setGroup("");
+                              setKind([]);
+                              setMethod([]);
+                              setGroup([]);
                               setInactive(false);
                             }}
                           >
