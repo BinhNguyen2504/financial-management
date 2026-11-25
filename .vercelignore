@@ -5,3 +5,6 @@ backups/
 artifacts/
 .env*
 .git/
+.claude/
+.mcp.json
+CLAUDE.md

@@ -116,6 +116,16 @@ MCP dùng Google Chrome đã cài trên máy, chạy headless ở kích thước
 
 Chạy ứng dụng bằng `npm run dev`, sau đó yêu cầu Codex mở `http://127.0.0.1:3000` qua Playwright MCP. MCP client tự khởi động server bằng `npm run --silent mcp:playwright`; không cần chạy lệnh này riêng trong terminal. Có thể kiểm tra CLI bằng `npm run --silent mcp:playwright -- --help`.
 
+## Claude Code
+
+Ngoài artifact cho Codex (`AGENTS.md`, `.codex/`, `.agents/skills/`), source có lớp cấu hình cho Claude Code; hai bên không ghi đè nhau và dùng chung `AGENTS.md` làm bộ quy tắc gốc.
+
+- `CLAUDE.md` nhập `AGENTS.md` bằng `@AGENTS.md`, bổ sung lệnh (kèm yêu cầu `nvm use 22`), lớp kiến trúc, các bất biến cần giữ và ranh giới an toàn.
+- `.claude/settings.json` cho phép các lệnh kiểm tra chỉ đọc, chặn đọc `.env.local`, `Notion/`, `imports/`, `backups/` và các lệnh nạp dữ liệu chạm cloud; hook định dạng Prettier cho file `src`, `tests`, `scripts` vừa sửa.
+- `.mcp.json` khai báo cùng server Playwright MCP như `.codex/config.toml`; cần Google Chrome và `npm ci`.
+- `.claude/skills/`: skill thiết kế trong `.agents/skills/` được liên kết (symlink) để không nhân đôi nội dung; skill riêng `check`, `docs-sync`, `new-module`, `ui-verify`. `.claude/rules/` nạp quy tắc theo đường dẫn; `.claude/agents/invariant-reviewer.md` rà diff theo các bất biến.
+- Cấu hình cá nhân đặt ở `.claude/settings.local.json` và `CLAUDE.local.md` (đã loại khỏi Git). Đây là công cụ phát triển, không đổi tính năng, catalog hay landing.
+
 ## Cấu trúc
 
 ```text
@@ -218,7 +228,7 @@ Mặc định mới gồm năm thẻ số chính và cảnh báo; vẫn tùy ch�
 
 ## Khôi phục và làm trống dữ liệu — 29/10/2026
 
-Cài đặt giải thích từng phân hệ và loại bản ghi đang chặn khôi phục, kể cả cấu hình, sổ, dữ liệu đã xóa/hủy và lịch sử. Xóa giao dịch hoặc số dư bằng 0 không làm tài khoản đủ trống. Có thao tác **Làm trống dữ liệu tài chính** riêng: tải JSON hiện tại, xác nhận đã lưu, nhập `XÓA TOÀN BỘ`, rồi xóa toàn bộ năm phân hệ trong một transaction. Dữ liệu thay đổi từ lúc sao lưu thì phải tạo bản mới. Hồ sơ, tài khoản và bố cục Tổng quan được giữ. Sau đó người dùng tự chọn nhập file hoặc bắt đầu lại. Cần migration `202610290002_financial_data_reset.sql`; chưa áp dụng thì reset bị khóa, backup vẫn dùng được. Xem [đặc tả backup](docs/features/backup.md). Kiểm chứng local không thay thế triển khai cloud.
+Cài đặt giải thích từng phân hệ và loại bản ghi đang chặn khôi phục, kể cả cấu hình, sổ, dữ liệu đã xóa/hủy và lịch sử. Xóa giao dịch hoặc số dư bằng 0 không làm tài khoản đủ trống. Có thao tác **Làm trống dữ liệu tài chính** riêng: tải JSON hiện tại, xác nhận đã lưu, nhập `XÓA TOÀN BỘ`, rồi xóa toàn bộ năm phân hệ trong một transaction; hoặc chọn **Chỉ một số trang** (nhập `XÓA DỮ LIỆU`, Mục tiêu đi kèm Tiết kiệm/Đầu tư/Quỹ, cần migration `202611240002_financial_data_reset_modules.sql`). Dữ liệu thay đổi từ lúc sao lưu thì phải tạo bản mới. Hồ sơ, tài khoản và bố cục Tổng quan được giữ. Sau đó người dùng tự chọn nhập file hoặc bắt đầu lại. Cần migration `202610290002_financial_data_reset.sql`; chưa áp dụng thì reset bị khóa, backup vẫn dùng được. Xem [đặc tả backup](docs/features/backup.md). Kiểm chứng local không thay thế triển khai cloud.
 
 ## Bố cục Quỹ an toàn — 30/10/2026
 
