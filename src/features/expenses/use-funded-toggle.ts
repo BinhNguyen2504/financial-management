@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/toast";
 import type { ExpenseCommand } from "@/domain/expenses/schema";
 import type { ExpenseRow, ExpenseView } from "@/domain/expenses/types";
@@ -13,10 +13,12 @@ export const isFunded = (row: ExpenseRow) => row.funded !== false;
 /** Planned months and stopped jars cannot be marked (the engine rejects them too). */
 export const canMarkFunded = (row: ExpenseRow) =>
   row.status !== "planned" && row.active;
+const keyOf = (row: ExpenseRow) => `${row.jarId}/${row.month}`;
 
 /**
  * One-tap "đã bỏ hũ" mark. It commits straight away, so a second tap undoes it.
- * Only one command runs at a time because every command carries the book version.
+ * Taps on different jars are queued and sent one after another because every
+ * command carries the book version; each jar shows its own pending state.
  */
 export function useFundedToggle({
   view,
@@ -30,17 +32,25 @@ export function useFundedToggle({
   const { t: tr } = useI18n("expenses");
   const toast = useToast();
   const router = useRouter();
-  const [busyKey, setBusyKey] = useState<string | null>(null);
-  const running = useRef(false);
-  async function toggle(row: ExpenseRow) {
-    if (!view?.book || running.current) return;
-    running.current = true;
-    const funded = !isFunded(row);
-    const key = `${row.jarId}/${row.month}`;
-    setBusyKey(key);
+  const [pending, setPending] = useState<ReadonlySet<string>>(new Set());
+  const queued = useRef(new Set<string>());
+  const chain = useRef<Promise<void>>(Promise.resolve());
+  // The newest view this hook knows, so queued commands carry the latest version.
+  const latest = useRef(view);
+  const signedOut = useRef(false);
+  useEffect(() => {
+    latest.current = view;
+  }, [view]);
+  function settle(key: string) {
+    queued.current.delete(key);
+    setPending(new Set(queued.current));
+  }
+  async function send(row: ExpenseRow, funded: boolean) {
+    const current = latest.current;
+    if (!current?.book || signedOut.current) return;
     const command: ExpenseCommand = {
       id: crypto.randomUUID(),
-      expectedVersion: view.book.version,
+      expectedVersion: current.book.version,
       action: {
         type: "setJarFunded",
         jarId: row.jarId,
@@ -53,12 +63,14 @@ export function useFundedToggle({
         "/commands?return=view",
         {
           method: "POST",
-          headers: generationHeaders(generationOf(view)),
+          headers: generationHeaders(generationOf(current)),
           body: JSON.stringify(command),
         },
       );
-      if (result.view) acceptView(result.view);
-      else await reload();
+      if (result.view) {
+        latest.current = result.view;
+        acceptView(result.view);
+      } else latest.current = await reload();
       toast(
         "success",
         funded
@@ -67,6 +79,7 @@ export function useFundedToggle({
       );
     } catch (e) {
       if (e instanceof RequestError && e.status === 401) {
+        signedOut.current = true;
         router.replace("/login?next=%2Fbudgets");
         return;
       }
@@ -90,11 +103,25 @@ export function useFundedToggle({
             : e.message,
         );
       }
-      await reload().catch(() => {});
-    } finally {
-      running.current = false;
-      setBusyKey(null);
+      await reload()
+        .then((next) => (latest.current = next))
+        .catch(() => {});
     }
   }
-  return { toggle, busyKey, busy: busyKey !== null };
+  function toggle(row: ExpenseRow) {
+    const key = keyOf(row);
+    if (!latest.current?.book || queued.current.has(key)) return;
+    const funded = !isFunded(row);
+    queued.current.add(key);
+    setPending(new Set(queued.current));
+    chain.current = chain.current
+      .then(() => send(row, funded))
+      .finally(() => settle(key));
+  }
+  return {
+    toggle,
+    isPending: (row: ExpenseRow) => pending.has(keyOf(row)),
+    /** True while any mark is being saved; for the screen-reader status. */
+    saving: pending.size > 0,
+  };
 }

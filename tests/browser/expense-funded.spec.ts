@@ -190,3 +190,61 @@ test("marking a future month through the API is rejected", async ({ page }) => {
   });
   expect(response.status()).toBe(422);
 });
+
+test("shows progress while saving, queues quick taps and keeps every action on one line", async ({
+  page,
+}) => {
+  await seed(page);
+  // An accumulation jar has a third action (Dùng tiền) that used to wrap onto a second line.
+  await command(page, {
+    type: "createJar",
+    id: randomUUID(),
+    kind: "accumulation",
+    start: current,
+    opening: "0",
+    description: "",
+    group: "",
+    method: "Tiền mặt",
+    name: "Delta",
+    amount: "500000",
+  });
+  await page.reload();
+  await expect(page.locator(".expense-name-button:visible")).toHaveCount(4);
+  if ((page.viewportSize()?.width ?? 0) >= 900) {
+    const lines = await page
+      .locator(".expense-row-actions:visible")
+      .evaluateAll((groups) =>
+        groups.map(
+          (group) =>
+            new Set(
+              [...group.children].map((child) =>
+                Math.round(child.getBoundingClientRect().top),
+              ),
+            ).size,
+        ),
+      );
+    expect(lines).toHaveLength(4);
+    expect(lines.every((count) => count === 1)).toBe(true);
+  }
+  await page.route("**/api/v1/expenses/commands*", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    await route.continue();
+  });
+  const alpha = markButton(page, "Alpha");
+  const beta = markButton(page, "Beta");
+  await alpha.click();
+  await expect(alpha).toHaveAttribute("aria-busy", "true");
+  await expect(alpha).toBeDisabled();
+  await expect(page.locator(".is-updating:visible").first()).toBeVisible();
+  // Another jar can be tapped while the first is still saving; both end up marked.
+  await beta.click();
+  await expect(beta).toHaveAttribute("aria-busy", "true");
+  await expect(alpha).toHaveAttribute("aria-pressed", "true");
+  await expect(beta).toHaveAttribute("aria-pressed", "true");
+  await expect(alpha).toHaveAttribute("aria-busy", "false");
+  await expect(beta).toHaveAttribute("aria-busy", "false");
+  await expect(page.locator(".is-updating")).toHaveCount(0);
+  expect(await rowOf(page, "Alpha")).toMatchObject({ funded: true });
+  expect(await rowOf(page, "Beta")).toMatchObject({ funded: true });
+  expect(await rowOf(page, "Gamma")).toMatchObject({ funded: false });
+});

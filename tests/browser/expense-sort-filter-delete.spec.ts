@@ -134,6 +134,8 @@ test("filters by several payment methods at once and resets", async ({
   expect((await names(page)).sort()).toEqual(["Alpha", "Beta"]);
   await closeMultiFilter(page);
   await page.reload();
+  // The filter panel only exists once the jars have loaded; opening it earlier is a no-op.
+  await expect(page.locator(".expense-name-button:visible")).toHaveCount(2);
   await openFilters(page);
   await expect(trigger).toContainText("2 đã chọn");
   await expect(
@@ -311,6 +313,8 @@ test("the filter fields stay aligned, the dropdown stays in view and choosing a 
   ]) {
     await page.setViewportSize(viewport);
     await page.reload();
+    // The filter panel only exists once the jars have loaded; opening it earlier is a no-op.
+    await expect(page.locator(".expense-name-button:visible")).toHaveCount(3);
     await openFilters(page);
     const triggers = page.locator(".multi-filter-trigger");
     // Loại hũ, Phương thức, Nhóm mục đích and Tình trạng bỏ hũ.

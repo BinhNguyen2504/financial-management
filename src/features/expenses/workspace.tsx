@@ -182,24 +182,32 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
   };
 
   // One-tap mark; the label stays constant and aria-pressed carries the state.
-  const fundedButton = (row: ExpenseRow) =>
-    !readonly && canMarkFunded(row) ? (
+  // While its command is saving the icon becomes a spinner and the button stays
+  // in place, so the row does not jump.
+  const fundedButton = (row: ExpenseRow) => {
+    if (readonly || !canMarkFunded(row)) return null;
+    const saving = fundedToggle.isPending(row);
+    return (
       <button
         type="button"
         className="expense-fund-button"
         aria-pressed={isFunded(row)}
+        aria-busy={saving}
         aria-label={tr("Đánh dấu {0} đã bỏ hũ", { 0: row.name })}
-        disabled={fundedToggle.busy}
-        onClick={() => void fundedToggle.toggle(row)}
+        disabled={saving}
+        onClick={() => fundedToggle.toggle(row)}
       >
-        {isFunded(row) ? (
+        {saving ? (
+          <LoadingSpinner />
+        ) : isFunded(row) ? (
           <Check size={16} aria-hidden="true" />
         ) : (
           <CircleDashed size={16} aria-hidden="true" />
         )}
         {tr("Đã bỏ hũ")}
       </button>
-    ) : null;
+    );
+  };
   const fundedBadge = (row: ExpenseRow) =>
     canMarkFunded(row) ? (
       <StatusBadge tone={isFunded(row) ? "success" : "warning"} size="compact">
@@ -207,7 +215,12 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
       </StatusBadge>
     ) : null;
   const fundedClass = (row: ExpenseRow) =>
-    canMarkFunded(row) ? (isFunded(row) ? "is-funded" : "is-unfunded") : "";
+    [
+      canMarkFunded(row) ? (isFunded(row) ? "is-funded" : "is-unfunded") : "",
+      fundedToggle.isPending(row) ? "is-updating" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
   return (
     <div
       className="expenses-workspace"
@@ -591,6 +604,15 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                         {future ? tr(" · Kế hoạch") : ""}
                         {readonly ? tr(" · Chỉ xem") : ""}
                       </span>
+                      <span
+                        className={`expense-saving ${fundedToggle.saving ? "is-active" : ""}`}
+                      >
+                        {fundedToggle.saving && (
+                          <>
+                            <LoadingSpinner /> {tr("Đang lưu thay đổi…")}
+                          </>
+                        )}
+                      </span>
                       {rows.length > 1 && (
                         <div className="expense-sort-control">
                           <label>
@@ -740,7 +762,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                                     {fundedButton(row)}
                                     {!readonly && (
                                       <button
-                                        className="expense-icon-button"
+                                        className="expense-icon-button expense-edit-action"
                                         aria-label={tr("Điều chỉnh {0}", {
                                           0: row.name,
                                         })}
@@ -758,7 +780,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                                       !future &&
                                       row.kind === "accumulation" && (
                                         <button
-                                          className="expense-icon-button"
+                                          className="expense-icon-button expense-spend-action"
                                           aria-label={tr("Dùng tiền")}
                                           title={tr("Dùng tiền")}
                                           onClick={() =>
