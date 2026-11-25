@@ -86,9 +86,13 @@ test("a new month starts unfunded and one tap marks and unmarks a jar", async ({
   expect(alpha.required).toBe("3000000");
   const button = markButton(page, "Alpha");
   await expect(button).toHaveAttribute("aria-pressed", "false");
+  // The row itself marks the state; the desktop table carries no status tag.
   await expect(
-    page.locator("[data-size]:visible", { hasText: "Chưa bỏ hũ" }).first(),
+    page.locator(".is-unfunded:visible", { hasText: "Alpha" }).first(),
   ).toBeVisible();
+  await expect(
+    page.locator(".expense-desktop-table tbody td [data-size]"),
+  ).toHaveCount(0);
   await button.click();
   await expect(button).toHaveAttribute("aria-pressed", "true");
   await expect
@@ -156,11 +160,22 @@ test("a funded and an unfunded jar look different without relying on colour alon
   const unfunded = page.locator(".is-unfunded:visible", { hasText: "Beta" });
   await expect(funded.first()).toContainText("Đã bỏ hũ");
   await expect(unfunded.first()).toContainText("Chưa bỏ hũ");
+  // Table rows paint their cells, cards paint themselves.
+  const paint = (el: Element) =>
+    getComputedStyle(el.matches("tr") ? el.children[1] : el).backgroundColor;
   const [a, b] = await Promise.all([
-    funded.first().evaluate((el) => getComputedStyle(el).backgroundColor),
-    unfunded.first().evaluate((el) => getComputedStyle(el).backgroundColor),
+    funded.first().evaluate(paint),
+    unfunded.first().evaluate(paint),
   ]);
   expect(a).not.toBe(b);
+  // And the first cell carries a thicker edge bar on a waiting row than on a funded one.
+  if ((page.viewportSize()?.width ?? 0) >= 900) {
+    const bar = (el: Element) =>
+      getComputedStyle(el.children[0]).boxShadow.match(/([\d.]+)px/)?.[1] ?? "";
+    expect(await unfunded.first().evaluate(bar)).not.toBe(
+      await funded.first().evaluate(bar),
+    );
+  }
   expect(
     await page.evaluate(
       () =>

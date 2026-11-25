@@ -424,17 +424,26 @@
     transition: none;
   }
 }
-.expense-table-scroll td > [data-size] {
-  display: flex;
-  width: fit-content;
-  margin: 6px 0 0 auto;
+/* Desktop table: the row itself shows whether the money is in the jar yet.
+   Waiting rows are warm and loud with a thick edge bar; funded rows are cool and quiet. */
+.expense-desktop-table tr.is-funded > * {
+  background: color-mix(in srgb, var(--primary-soft) 45%, var(--surface));
 }
-/* Jars still waiting for money stand out; funded ones stay calm. */
+.expense-desktop-table tr.is-funded > :first-child {
+  box-shadow: inset 3px 0 0 var(--primary);
+}
 .expense-desktop-table tr.is-unfunded > * {
   background: var(--accent-soft);
 }
 .expense-desktop-table tr.is-unfunded > :first-child {
-  box-shadow: inset 4px 0 0 var(--accent);
+  box-shadow: inset 6px 0 0 var(--accent);
+}
+.expense-desktop-table td.expense-figure-pending {
+  color: var(--muted);
+}
+.expense-table-scroll small.expense-fund-need {
+  color: var(--accent);
+  font-weight: var(--weight-medium);
 }
 .expense-jar-card.is-unfunded {
   border-left: 4px solid var(--accent);

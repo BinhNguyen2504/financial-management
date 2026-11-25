@@ -214,6 +214,9 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
         {isFunded(row) ? tr("Đã bỏ hũ") : tr("Chưa bỏ hũ")}
       </StatusBadge>
     ) : null;
+  // Figures that are still zero only because the money has not been put in yet.
+  const pendingFigure = (row: ExpenseRow) =>
+    canMarkFunded(row) && !isFunded(row) ? "expense-figure-pending" : undefined;
   const fundedClass = (row: ExpenseRow) =>
     [
       canMarkFunded(row) ? (isFunded(row) ? "is-funded" : "is-unfunded") : "",
@@ -731,24 +734,32 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                                 <td>{money(row.target)}</td>
                                 <td>{money(row.opening)}</td>
                                 <td>{money(row.required)}</td>
-                                <td>
+                                {/* The row itself (background, edge bar, muted figures) shows the state; the text is for assistive tech. */}
+                                <td className={pendingFigure(row)}>
                                   {money(
                                     (
                                       BigInt(row.funding) + BigInt(row.extra)
                                     ).toString(),
                                   )}
-                                  {fundedBadge(row)}
+                                  {canMarkFunded(row) && (
+                                    <span className="sr-only">
+                                      {" "}
+                                      {isFunded(row)
+                                        ? tr("Đã bỏ hũ")
+                                        : tr("Chưa bỏ hũ")}
+                                    </span>
+                                  )}
                                   {canMarkFunded(row) &&
                                     !isFunded(row) &&
                                     BigInt(row.required) > 0n && (
-                                      <small>
+                                      <small className="expense-fund-need">
                                         {tr("Cần bỏ {0}", {
                                           0: money(row.required),
                                         })}
                                       </small>
                                     )}
                                 </td>
-                                <td>
+                                <td className={pendingFigure(row)}>
                                   {money(row.spent)}
                                   {BigInt(row.over) > 0n && (
                                     <small className="expense-over">
