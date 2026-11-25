@@ -231,8 +231,20 @@ describe("combined financial reports", () => {
   });
   it("keeps exact integer totals and does not count accumulation funding as spending", () => {
     const amount = "999999999999999999999999";
+    // November 2026 starts unfunded: mark both jars as put in so the plan counts.
+    const ledger = expenses();
+    for (const jarId of ["rent", "travel"])
+      ledger.inputs.push({
+        jarId,
+        month: "2026-11",
+        target: null,
+        funding: null,
+        extra: "0",
+        closing: null,
+        funded: true,
+      });
     const result = buildReport(
-      base({ income: income(amount), expenses: expenses() }),
+      base({ income: income(amount), expenses: ledger }),
       query({ tab: "cashflow" }),
       clock,
     );

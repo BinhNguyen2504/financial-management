@@ -61,6 +61,10 @@ ESLint dùng flat config của Next.js và TypeScript. Các ngoại lệ cục b
 6. Cập nhật catalog, landing/preview minh họa, README và đặc tả tương ứng. Preview dùng dữ liệu cố định; trạng thái source không chứng minh cloud hoặc thiết bị thật.
 7. Kiểm nghiệp vụ, API, RLS/idempotency và browser flow liên quan; chạy toàn bộ bộ kiểm tra trước khi hoàn tất. So sánh hình học/ảnh khi DOM hoặc CSS thay đổi.
 
+## Cấu hình cho agent lập trình
+
+`AGENTS.md` là bộ quy tắc chung cho mọi agent và do `next dev` tạo lại, nên không thêm hướng dẫn riêng của một công cụ vào đó. Codex dùng `.codex/config.toml` và `.agents/skills/`. Claude Code dùng `CLAUDE.md` (nhập `AGENTS.md`), `.claude/` (settings, rules theo đường dẫn, skill, subagent, hook) và `.mcp.json`; skill thiết kế trong `.claude/skills/` là symlink tới `.agents/skills/` để có một nguồn duy nhất. Hai cấu hình MCP Playwright phải giữ cùng lệnh `npm run --silent mcp:playwright`. Các thư mục này chỉ phục vụ phát triển: không nằm trong lint/typecheck/format và bị loại khỏi deploy bằng `.vercelignore`. Khi đổi quy tắc kiến trúc hoặc quy trình tài liệu, cập nhật `AGENTS.md` hoặc tài liệu này trước rồi mới chỉnh `CLAUDE.md`/rules để tránh lệch.
+
 ## Bằng chứng và vấn đề có trước
 
 Chi tiết lượt kiểm tra nằm trong [validation](07-validation.md). Artifacts đợt này ở `artifacts/refactor/`, đã loại khỏi Git. Baseline source là commit `d795ad7`; working tree sạch tại thời điểm bắt đầu.

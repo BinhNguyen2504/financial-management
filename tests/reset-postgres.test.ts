@@ -199,7 +199,8 @@ describe("explicit financial reset through runtime RLS", () => {
           (file) =>
             file.endsWith(".sql") &&
             file !== repairFile &&
-            file !== "202610300002_goals.sql",
+            file !== "202610300002_goals.sql" &&
+            file !== "202611240002_financial_data_reset_modules.sql",
         )
         .sort())
         await isolated.unsafe(
@@ -229,6 +230,11 @@ describe("explicit financial reset through runtime RLS", () => {
       const data = postgresDataRepository(runtimeSql),
         prepared = await data.prepareReset(id, profile),
         request = randomUUID();
+      // Without the module migration only the whole-account scope exists.
+      await expect(
+        data.prepareReset(id, profile, ["income"]),
+      ).rejects.toMatchObject({ code: "RESET_MODULES_NOT_READY", status: 503 });
+      expect((await data.status(id)).resetModulesReady).toBe(false);
       await expect(
         data.reset(id, prepared.operationId, request),
       ).rejects.toMatchObject({
@@ -376,6 +382,7 @@ describe("explicit financial reset through runtime RLS", () => {
               fileName,
               "202610300001_reset_owner_claims.sql",
               "202610300002_goals.sql",
+              "202611240002_financial_data_reset_modules.sql",
             ].includes(file),
         )
         .sort())
@@ -513,6 +520,7 @@ describe("explicit financial reset through runtime RLS", () => {
               receiptsFile,
               "202610300002_goals.sql",
               "202610300001_reset_owner_claims.sql",
+              "202611240002_financial_data_reset_modules.sql",
             ].includes(file),
         )
         .sort())
@@ -589,6 +597,75 @@ describe("explicit financial reset through runtime RLS", () => {
     expect((await repo.backup(id, profile)).tables).toEqual(
       prepared.backup.tables,
     );
+  });
+  it("clears only the chosen module, keeps every other table and owner, and is idempotent", async () => {
+    const id = await fixture(),
+      other = await fixture();
+    const untouched = await repo.backup(other, profile),
+      before = await repo.status(id),
+      prepared = await repo.prepareReset(id, profile, ["income"]);
+    expect(prepared.modules).toEqual(["income"]);
+    expect(
+      (
+        await admin`select modules from data_resets where owner_id=${id} and id=${prepared.operationId}`
+      )[0].modules,
+    ).toEqual(["income"]);
+    const request = randomUUID();
+    const result = await repo.reset(id, prepared.operationId, request, [
+      "income",
+    ]);
+    expect(result).toMatchObject({
+      empty: false,
+      modules: ["income"],
+      dataGeneration: 1,
+    });
+    expect(
+      await repo.reset(id, prepared.operationId, request, ["income"]),
+    ).toEqual(result);
+    const after = await repo.status(id);
+    expect(after.empty).toBe(false);
+    for (const table of backupTables)
+      expect(after.counts[table], table).toBe(
+        table.startsWith("income_") ? 0 : before.counts[table],
+      );
+    expect((await repo.backup(other, profile)).tables).toEqual(
+      untouched.tables,
+    );
+  });
+  it("clears Goals together with Savings and rejects a scope that differs from the preparation", async () => {
+    const id = await fixture(),
+      before = await repo.status(id),
+      prepared = await repo.prepareReset(id, profile, ["savings"]);
+    expect(prepared.modules).toEqual(["savings", "goals"]);
+    await expect(
+      repo.reset(id, prepared.operationId, randomUUID(), ["income"]),
+    ).rejects.toMatchObject({ status: 409, code: "RESET_SCOPE_CHANGED" });
+    expect((await repo.status(id)).counts).toEqual(before.counts);
+    await repo.reset(id, prepared.operationId, randomUUID(), ["savings"]);
+    const after = await repo.status(id);
+    for (const table of backupTables)
+      expect(after.counts[table], table).toBe(
+        table.startsWith("savings_") || table.startsWith("goals_")
+          ? 0
+          : before.counts[table],
+      );
+  });
+  it("refuses in SQL a stored scope that would leave Goals without their sources, and keeps the whole-account reset unscoped", async () => {
+    const id = await fixture(),
+      before = await repo.status(id),
+      prepared = await repo.prepareReset(id, profile, ["funds"]);
+    await admin`update data_resets set modules=array['funds'] where owner_id=${id} and id=${prepared.operationId}`;
+    await expect(
+      repo.reset(id, prepared.operationId, randomUUID(), ["funds"]),
+    ).rejects.toMatchObject({ status: 409, code: "RESET_MODULES_INVALID" });
+    expect((await repo.status(id)).counts).toEqual(before.counts);
+    const whole = await repo.prepareReset(id, profile);
+    expect(
+      (
+        await admin`select modules from data_resets where owner_id=${id} and id=${whole.operationId}`
+      )[0].modules,
+    ).toBeNull();
+    expect((await repo.status(id)).resetModulesReady).toBe(true);
   });
   it("rejects stale/expired preparations and cross-owner operations without changing data", async () => {
     const id = await fixture(),

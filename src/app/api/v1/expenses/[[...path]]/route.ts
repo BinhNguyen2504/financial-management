@@ -19,6 +19,11 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/** Repeated query parameters (?kind=a&kind=b) select several values; none means no restriction. */
+function searchList(url: URL, name: string) {
+  const values = url.searchParams.getAll(name).filter(Boolean);
+  return values.length ? values : undefined;
+}
 function failure(error: unknown) {
   return financialFailure(error, {
     accepts: (error): error is ExpenseError => error instanceof ExpenseError,
@@ -46,10 +51,10 @@ export async function GET(request: Request, context: Context) {
             year: Number(url.searchParams.get("year") ?? view.currentYear),
             from: Number(url.searchParams.get("from") ?? 1),
             to: Number(url.searchParams.get("to") ?? 12),
-            kind: url.searchParams.get("kind") || undefined,
+            kind: searchList(url, "kind"),
             jarId: url.searchParams.get("jarId") || undefined,
-            method: url.searchParams.get("method") || undefined,
-            group: url.searchParams.get("group") || undefined,
+            method: searchList(url, "method"),
+            group: searchList(url, "group"),
           },
           view.currentYear,
         );
@@ -62,6 +67,10 @@ export async function GET(request: Request, context: Context) {
           throw new ExpenseError("Không tìm thấy năm.", 404);
         const rows = view.rows.filter(
           (r) => Number(r.month.slice(0, 4)) === year,
+        );
+        // Deleted jars have no rows, so their inputs and usages are left out to keep the file self-consistent.
+        const deletedJars = new Set(
+          view.book.jars.filter((j) => j.deleted).map((j) => j.id),
         );
         const backup = {
           schemaVersion: 1,
@@ -80,10 +89,12 @@ export async function GET(request: Request, context: Context) {
               rules: j.rules.filter((r) => r.month <= `${year}-12`),
             })),
           inputs: view.book.inputs.filter(
-            (i) => Number(i.month.slice(0, 4)) === year,
+            (i) =>
+              Number(i.month.slice(0, 4)) === year && !deletedJars.has(i.jarId),
           ),
           spends: view.book.spends.filter(
-            (s) => Number(s.date.slice(0, 4)) === year,
+            (s) =>
+              Number(s.date.slice(0, 4)) === year && !deletedJars.has(s.jarId),
           ),
           audit: view.book.audit.filter((a) => {
             const d = a.detail as Record<string, unknown>;

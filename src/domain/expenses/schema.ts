@@ -45,12 +45,15 @@ export const expenseActionSchema = z.discriminatedUnion("type", [
       type: z.literal("configureJar"),
       jarId: id,
       month: monthSchema,
+      /** Omitted keeps the current icon; null returns to the automatic icon. */
+      emoji: jarEmojiSchema.nullable().optional(),
       ...config,
     })
     .strict(),
   z
     .object({ type: z.literal("stopJar"), jarId: id, month: monthSchema })
     .strict(),
+  z.object({ type: z.literal("deleteJar"), jarId: id }).strict(),
   z
     .object({
       type: z.literal("editMonth"),
@@ -60,6 +63,14 @@ export const expenseActionSchema = z.discriminatedUnion("type", [
       funding: moneySchema.nullable(),
       extra: moneySchema,
       closing: moneySchema.nullable(),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("setJarFunded"),
+      jarId: id,
+      month: monthSchema,
+      funded: z.boolean(),
     })
     .strict(),
   z

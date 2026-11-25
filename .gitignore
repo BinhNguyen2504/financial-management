@@ -14,3 +14,5 @@ artifacts/
 /Notion/
 /imports/
 /backups/
+.claude/settings.local.json
+CLAUDE.local.md

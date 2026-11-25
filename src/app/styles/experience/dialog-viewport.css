@@ -31,6 +31,9 @@
     height: fit-content;
     max-width: 480px;
   }
+  .expense-dialog.dialog-shell.dialog-review {
+    max-width: 720px;
+  }
   .expense-dialog.dialog-shell.dialog-help {
     max-width: 640px;
   }

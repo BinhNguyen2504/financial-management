@@ -68,6 +68,7 @@ export const modules = [
       "Đặt số tiền dự kiến dành cho từng hũ",
       "Theo dõi hũ chi tháng và hũ tích lũy",
       "Kiểm tra hũ vượt mức và tiền cần bổ sung",
+      "Đánh dấu hũ đã bỏ tiền và lọc hũ còn chưa bỏ",
     ],
     questions: [
       "Tiền chưa chi có được cộng dồn sang tháng tiếp theo?",

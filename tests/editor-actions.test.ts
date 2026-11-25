@@ -52,6 +52,24 @@ describe("editor draft to action compatibility", () => {
       buildExpenseAction({ ...draft, editor: { mode: "create" } }),
     ).toMatchObject({ type: "createJar", id, amount: large });
     expect(newId).toHaveBeenCalledOnce();
+    const row = { jarId: id } as Extract<
+      ExpenseActionInput["editor"],
+      { mode: "configure" }
+    >["row"];
+    expect(
+      buildExpenseAction({
+        ...draft,
+        emoji: "🎁",
+        editor: { mode: "configure", row },
+      }),
+    ).toMatchObject({ type: "configureJar", jarId: id, emoji: "🎁" });
+    expect(
+      buildExpenseAction({
+        ...draft,
+        emoji: null,
+        editor: { mode: "configure", row },
+      }),
+    ).toMatchObject({ type: "configureJar", emoji: null });
     expect(
       buildIncomeAction({
         mode: { type: "oneoff" },

@@ -60,4 +60,4 @@ Bổ sung nhãn nhóm nhập, lỗi tiền ngắn và hai hành động Tiếp t
 
 ### Chẩn đoán khôi phục/reset — 29/10/2026
 
-Tên loại dữ liệu, số bản ghi, thông báo lỗi snapshot/generation và luồng sao lưu/xác nhận xóa có vi/en. Cụm xác nhận `XÓA TOÀN BỘ` cố định ở cả hai ngôn ngữ và được ghi rõ trong label. Nội dung file và số tiền chuẩn không đổi.
+Tên loại dữ liệu, số bản ghi, thông báo lỗi snapshot/generation và luồng sao lưu/xác nhận xóa có vi/en. Cụm xác nhận `XÓA TOÀN BỘ` (cả tài khoản) và `XÓA DỮ LIỆU` (một số trang) cố định ở cả hai ngôn ngữ và được ghi rõ trong label. Nội dung file và số tiền chuẩn không đổi.

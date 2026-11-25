@@ -76,6 +76,8 @@ const expenseRow = z.strictObject({
   closing: signed,
   over: signed,
   status: z.enum(["actual", "provisional", "planned"]),
+  // Rows sealed before the funded mark have no flag; they count as funded.
+  funded: z.boolean().optional(),
 });
 const savingsCategory = z.strictObject({
   id: uuid,
@@ -356,6 +358,8 @@ export const tableSchemas = {
     start_month: month,
     opening: money,
     rules: z.array(expenseRule).min(1),
+    // Backups written before jar deletion have no flag; they restore as not deleted.
+    deleted: z.boolean().optional().default(false),
   }),
   expense_month_inputs: z.strictObject({
     jar_id: uuid,
@@ -364,6 +368,8 @@ export const tableSchemas = {
     funding: money.nullable(),
     extra: money,
     closing: money.nullable(),
+    // Backups written before the funded mark have no flag; null keeps the default rule.
+    funded: z.boolean().nullable().default(null),
   }),
   expense_spends: z.strictObject({
     id: uuid,

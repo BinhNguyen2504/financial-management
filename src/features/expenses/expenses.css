@@ -346,6 +346,61 @@
   color: var(--accent) !important;
   font-size: var(--font-size-12);
 }
+/* One-tap "đã bỏ hũ" mark: dashed while pending, solid when put in the jar. */
+.expense-fund-button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
+  line-height: 1.4;
+  border: 1px dashed var(--accent);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.expense-fund-button:hover {
+  background: var(--primary-soft);
+}
+.expense-fund-button[aria-pressed="true"] {
+  border-style: solid;
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+.expense-row-actions > .expense-fund-button {
+  flex: 0 0 auto;
+}
+.expense-row-actions {
+  flex-wrap: wrap;
+}
+.expense-desktop-table td:last-child {
+  width: 220px;
+}
+.expense-table-scroll td > [data-size] {
+  display: flex;
+  width: fit-content;
+  margin: 6px 0 0 auto;
+}
+/* Jars still waiting for money stand out; funded ones stay calm. */
+.expense-desktop-table tr.is-unfunded > * {
+  background: var(--accent-soft);
+}
+.expense-desktop-table tr.is-unfunded > :first-child {
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+.expense-jar-card.is-unfunded {
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+}
+.expense-jar-card [data-size] {
+  margin-top: 6px;
+}
 .expense-dialog {
   width: min(760px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
@@ -713,4 +768,47 @@
   width: 44px;
   height: 44px;
   padding: 0;
+}
+
+.expense-sort-control {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.expense-sort-control label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-medium);
+}
+.expense-sort-control select {
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-size-14);
+}
+.expense-table-scroll th .expense-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.expense-table-scroll th .expense-sort-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }

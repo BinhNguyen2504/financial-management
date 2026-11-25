@@ -195,7 +195,7 @@ const data = {
   budgets: {
     title: "Chăm chút cho tháng của bạn.",
     subtitle:
-      "Hũ chi tháng và tích lũy, có emoji riêng, phân loại ngân hàng/ví và bộ lọc hũ đã ngừng.",
+      "Hũ chi tháng và tích lũy, có emoji riêng, phân loại ngân hàng/ví, đánh dấu hũ đã bỏ tiền và bộ lọc hũ.",
     label: "Kế hoạch tháng",
     value: "12000000",
     secondary: "Số còn trong hũ",

@@ -2,7 +2,10 @@ import type { ExpenseRow, Label, Spend } from "@/domain/expenses/types";
 
 export type EditorMode =
   | { mode: "initialize" | "create" }
-  | { mode: "month" | "configure" | "stop" | "emoji"; row: ExpenseRow }
+  | {
+      mode: "month" | "configure" | "stop" | "emoji" | "deleteJar";
+      row: ExpenseRow;
+    }
   | { mode: "spend"; row: ExpenseRow; spend?: Spend }
   | { mode: "deleteSpend"; spend: Spend }
   | { mode: "label"; label?: Label }
@@ -15,6 +18,7 @@ export const titles: Record<EditorMode["mode"], string> = {
   month: "Điều chỉnh tháng",
   configure: "Sửa hũ và mức mặc định",
   stop: "Ngừng cấp tiền cho hũ",
+  deleteJar: "Xóa hũ chi tiêu",
   spend: "Sử dụng tiền tích lũy",
   deleteSpend: "Xóa lần sử dụng",
   label: "Phương thức và nhóm",

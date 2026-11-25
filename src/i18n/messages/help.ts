@@ -223,8 +223,8 @@ export const help = {
     "The app records and calculates; it **does not transfer real money** or verify that you spent from the agreed bank.",
   "Ghi Thu nhập **không tự cấp tiền vào hũ**. Phương thức có tên ngân hàng không phải kết nối ngân hàng.":
     "Recording Income **does not automatically fund jars**. A bank name in a holding method is not a bank connection.",
-  "Mức mặc định có thể được suy ra thành tiền thêm; hãy điều chỉnh khi thực tế khác. Thực chi tháng hiện tại có thể thay đổi khi cập nhật dư.":
-    "Defaults can determine funding; adjust when reality differs. Current-month spending can change as balances are updated.",
+  "Mức mặc định có thể được suy ra thành tiền thêm; hãy điều chỉnh khi thực tế khác. Từ tháng 11/2026, mỗi hũ bắt đầu ở trạng thái **chưa bỏ hũ** (Đã bỏ hũ và Thực chi bằng 0) cho đến khi bạn đánh dấu đã bỏ tiền vào hũ. Thực chi tháng hiện tại có thể thay đổi khi cập nhật dư.":
+    "Defaults can determine funding; adjust when reality differs. From November 2026 each jar starts as **not funded yet** (Contributed and Actual spending are 0) until you mark that you have put the money in. Current-month spending can change as balances are updated.",
   "Sao lưu/khôi phục toàn tài khoản ở Cài đặt; bản xuất theo năm không dùng cho khôi phục toàn tài khoản.":
     "Whole-account backup/restore is in Settings; a yearly export cannot restore a whole account.",
   "Dành cho người muốn biết thực tế đã nhận bao nhiêu theo tháng và nguồn thu, đồng thời nhận ra những khoản chưa nhập. Theo dõi riêng nguồn lặp lại và khoản thu một lần.":
@@ -632,8 +632,8 @@ export const help = {
     "Import a valid backup into an **account with no financial data**. In Settings, see which sections have data or are empty, then expand a section to review its books and history. Deleting or cancelling individual transactions retains books and history. Use another empty account or choose Clear financial data after saving a backup and confirming deletion of all financial data.",
   "Khôi phục hồ sơ tùy chọn": "Optional profile restore",
   "Làm trống dữ liệu tài chính": "Clear financial data",
-  "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** trước khi xóa. Tạo file không có nghĩa là bạn đã lưu file.":
-    "The dialog has two steps: create a backup, then review and confirm. Check the account email, save the JSON file and confirm you have checked it; type **XÓA TOÀN BỘ** exactly before deleting. Creating a file does not mean you have saved it.",
+  "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Chọn làm trống toàn bộ tài khoản hoặc chỉ một số trang (Mục tiêu đi kèm Tiết kiệm, Đầu tư và Quỹ an toàn). Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** (cả tài khoản) hoặc **XÓA DỮ LIỆU** (một số trang) trước khi xóa. File sao lưu luôn đầy đủ. Tạo file không có nghĩa là bạn đã lưu file.":
+    "The dialog has two steps: create a backup, then review and confirm. Choose to clear the whole account or only some pages (Goals go together with Savings, Investments and Safety Funds). Check the account email, save the JSON file and confirm you have checked it; type **XÓA TOÀN BỘ** (whole account) or **XÓA DỮ LIỆU** (some pages) exactly before deleting. The backup file always covers everything. Creating a file does not mean you have saved it.",
   "Có thể nhập lại họ tên, ngày sinh và giới tính nếu chọn. Mặc định tắt; không thay email, token hoặc tài khoản đăng nhập.":
     "Optionally import full name, date of birth and gender. Off by default; email, tokens and sign-in identity do not change.",
   "Giao diện và tùy chọn trên trình duyệt":

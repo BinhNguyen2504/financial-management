@@ -1,4 +1,11 @@
 "use client";
+import { validStringList } from "@/components/multi-select-filter";
+import {
+  defaultExpenseSort,
+  sortExpenseRows,
+  validExpenseSort,
+  type ExpenseSort,
+} from "./sort";
 import { useViewState } from "@/components/use-view-state";
 
 import { useI18n } from "@/i18n/provider";
@@ -18,6 +25,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { apiJSON } from "./api";
 
 import { type EditorMode } from "./editor-config";
+import { isFunded, useFundedToggle } from "./use-funded-toggle";
 import { sum } from "./format";
 
 export function useExpenseWorkspace({ configured }: { configured: boolean }) {
@@ -46,10 +54,39 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
       v === null ||
       (typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 12),
   );
-  const [kind, setKind] = useViewState("expenses", "kind", "");
-  const [method, setMethod] = useViewState("expenses", "method", "");
-  const [group, setGroup] = useViewState("expenses", "group", "");
+  const [kind, setKind] = useViewState<string[]>(
+    "expenses",
+    "kinds",
+    [],
+    validStringList,
+  );
+  const [storedMethod, setMethod] = useViewState<string[]>(
+    "expenses",
+    "methods",
+    [],
+    validStringList,
+  );
+  const [storedGroup, setGroup] = useViewState<string[]>(
+    "expenses",
+    "groups",
+    [],
+    validStringList,
+  );
+  const [funded, setFunded] = useViewState<string[]>(
+    "expenses",
+    "funded",
+    [],
+    (v) =>
+      validStringList(v) &&
+      (v as string[]).every((item) => item === "funded" || item === "unfunded"),
+  );
   const [inactive, setInactive] = useViewState("expenses", "inactive", false);
+  const [sort, setSort] = useViewState<ExpenseSort>(
+    "expenses",
+    "sort",
+    defaultExpenseSort,
+    validExpenseSort,
+  );
   const [tab, setTab] = useViewState<string>(
     "expenses",
     "tab",
@@ -158,7 +195,9 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     setNeedsLogin(false);
     setLoading(false);
   }
+  const fundedToggle = useFundedToggle({ view, acceptView, reload });
   async function saved(next?: ExpenseView) {
+    if (editor?.mode === "deleteJar") setDetail(null);
     setEditor(null);
     setNotice("");
     if (next) {
@@ -184,17 +223,44 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     (selectedYear < Number(view.book.start.slice(0, 4)) ||
       selectedYear > currentYear);
   const readonly = outsideYears || Boolean(period?.closedAt);
-  const rows =
+  const yearRows =
+    view?.rows.filter((r) => r.month.startsWith(String(selectedYear))) ?? [];
+  const methods = [...new Set(yearRows.map((r) => r.method))].sort();
+  const groups = [
+    ...new Set(yearRows.map((r) => r.group).filter(Boolean)),
+  ].sort();
+  // A stored choice that no longer exists (renamed or removed label, another year) must not keep
+  // filtering invisibly, so only the values still on offer count. The stored list itself is untouched.
+  const method = storedMethod.filter((item) => methods.includes(item));
+  const group = storedGroup.filter((item) => groups.includes(item));
+  const monthRows =
     view?.rows.filter(
       (r) =>
         r.month === selectedMonth &&
-        (!kind || r.kind === kind) &&
-        (!method || r.method === method) &&
-        (!group || r.group === group) &&
+        (!kind.length || kind.includes(r.kind)) &&
+        (!method.length || method.includes(r.method)) &&
+        (!group.length || group.includes(r.group)) &&
         (inactive || r.active),
     ) ?? [];
-  const yearRows =
-    view?.rows.filter((r) => r.month.startsWith(String(selectedYear))) ?? [];
+  // Counts ignore the funded filter itself so each option shows what it would reveal.
+  const fundedCounts = {
+    funded: monthRows.filter(isFunded).length,
+    unfunded: monthRows.filter((r) => !isFunded(r)).length,
+  };
+  const rows = sortExpenseRows(
+    monthRows.filter(
+      (r) =>
+        !funded.length || funded.includes(isFunded(r) ? "funded" : "unfunded"),
+    ),
+    sort,
+    locale,
+  );
+  const filtered =
+    kind.length > 0 ||
+    method.length > 0 ||
+    group.length > 0 ||
+    funded.length > 0 ||
+    inactive;
   const detail = detailSelection
     ? (view?.rows.find(
         (r) =>
@@ -206,10 +272,6 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     selectedYear < currentYear ? summarize(yearRows, () => "year")[0] : null;
   const archivedMonths =
     selectedYear < currentYear ? summarize(yearRows, (r) => r.month) : [];
-  const methods = [...new Set(yearRows.map((r) => r.method))].sort();
-  const groups = [
-    ...new Set(yearRows.map((r) => r.group).filter(Boolean)),
-  ].sort();
   const total = (field: "target" | "required" | "spent" | "closing") =>
     sum(rows.map((r) => r[field]));
   const future = view ? selectedMonth > view.today.slice(0, 7) : false;
@@ -245,12 +307,19 @@ export function useExpenseWorkspace({ configured }: { configured: boolean }) {
     archivedMonths,
     kind,
     setKind,
+    filtered,
+    sort,
+    setSort,
     method,
     methods,
     group,
     groups,
     inactive,
     setInactive,
+    funded,
+    setFunded,
+    fundedCounts,
+    fundedToggle,
     selectedMonth,
     total,
     future,

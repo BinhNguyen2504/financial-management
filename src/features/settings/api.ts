@@ -43,6 +43,8 @@ export interface DataStatus {
   maxBytes: number;
   importReady: boolean;
   resetReady: boolean;
+  /** Partial (per-page) reset needs the module migration; undefined on older servers. */
+  resetModulesReady?: boolean;
   dataGeneration: number;
   blockers: RestoreBlocker[];
   reasons: string[];

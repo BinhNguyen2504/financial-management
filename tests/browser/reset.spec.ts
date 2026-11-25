@@ -690,3 +690,78 @@ test("shows system and account blockers together, localizes diagnosis, and keeps
   await expect(translated).toContainText("Saved processing records");
   await expect(translated).toContainText("Restore is not enabled");
 });
+
+test("clears only the chosen pages with their own phrase and keeps the account usable", async ({
+  page,
+}) => {
+  await login(page);
+  await income(page);
+  await page.reload();
+  const dialog = await openReset(page);
+  await dialog.getByRole("radio", { name: "Chỉ một số trang" }).check();
+  // Nothing is chosen yet, and pages without data cannot be picked.
+  await expect(
+    dialog.getByRole("button", {
+      name: "Tải bản sao lưu trước khi xóa",
+      exact: true,
+    }),
+  ).toBeDisabled();
+  await expect(
+    dialog.getByRole("checkbox", { name: /^Tiết kiệm/ }),
+  ).toBeDisabled();
+  await dialog.getByRole("checkbox", { name: /^Thu nhập/ }).check();
+  const download = page.waitForEvent("download");
+  await dialog
+    .getByRole("button", { name: "Tải bản sao lưu trước khi xóa", exact: true })
+    .click();
+  const backup = JSON.parse(
+    await readFile((await (await download).path())!, "utf8"),
+  );
+  // The file is always the whole account, whatever pages are cleared.
+  expect(Object.keys(backup.tables)).toHaveLength(41);
+  await dialog
+    .getByRole("checkbox", { name: "Tôi đã lưu bản sao lưu và kiểm tra file." })
+    .check();
+  const phrase = dialog.getByLabel("Nhập XÓA DỮ LIỆU để xác nhận", {
+    exact: true,
+  });
+  const remove = dialog.getByRole("button", {
+    name: "Xóa dữ liệu các trang đã chọn",
+    exact: true,
+  });
+  // The whole-account phrase must not unlock a partial reset.
+  await phrase.fill("XÓA TOÀN BỘ");
+  await expect(remove).toBeDisabled();
+  await phrase.fill("XÓA DỮ LIỆU");
+  await expect(remove).toBeEnabled();
+  // Changing the scope discards the prepared backup so it cannot be confirmed for another scope.
+  await dialog.getByRole("radio", { name: "Toàn bộ tài khoản" }).check();
+  await expect(remove).toHaveCount(0);
+  await dialog.getByRole("radio", { name: "Chỉ một số trang" }).check();
+  await dialog.getByRole("checkbox", { name: /^Thu nhập/ }).check();
+  const second = page.waitForEvent("download");
+  await dialog
+    .getByRole("button", { name: "Tải bản sao lưu trước khi xóa", exact: true })
+    .click();
+  await second;
+  await dialog
+    .getByRole("checkbox", { name: "Tôi đã lưu bản sao lưu và kiểm tra file." })
+    .check();
+  await phrase.fill("XÓA DỮ LIỆU");
+  await remove.click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator("#reset-data [role=status]")).toContainText(
+    "Đã làm trống: Thu nhập",
+  );
+  // A successful partial reset is not an error and does not offer a restore into a non-empty account.
+  await expect(page.locator("#reset-data [role=alert]")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Chọn bản sao lưu để khôi phục" }),
+  ).toHaveCount(0);
+  const status = await (await page.request.get("/api/v1/data/status")).json();
+  const incomeBlocker = status.blockers.find(
+    (item: { key: string }) => item.key === "income",
+  );
+  expect(incomeBlocker.count).toBe(0);
+  expect(status.dataGeneration).toBe(1);
+});

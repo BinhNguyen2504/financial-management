@@ -70,27 +70,90 @@ export function transactionAdapter(
         on conflict(owner_id) do update set version=excluded.version`,
         [owner, book.start, book.version],
       );
-      for (const jar of changedRecords(
+      const changedJars = changedRecords(
         baseline?.jars,
         book.jars,
         (jar) => jar.id,
-      ))
-        await query(
-          `insert into public.expense_jars(owner_id,id,kind,start_month,opening,rules) values($1,$2,$3,$4,$5,$6::text::jsonb)
-        on conflict(owner_id,id) do update set rules=excluded.rules where expense_jars.rules is distinct from excluded.rules`,
-          [owner, jar.id, jar.kind, jar.start, jar.opening, json(jar.rules)],
+      );
+      let hasJarDelete = false;
+      if (changedJars.length) {
+        const [schema] = await query<{ ready: boolean }>(
+          `select count(*) = 1 as ready from information_schema.columns
+          where table_schema='public' and table_name='expense_jars' and column_name='deleted'`,
         );
-      for (const i of changedRecords(
+        hasJarDelete = schema.ready;
+        if (!hasJarDelete && changedJars.some((jar) => jar.deleted))
+          throw new ExpenseError(
+            "Chưa thể xóa hũ vì hệ thống cần được cập nhật. Dữ liệu hiện tại không bị thay đổi.",
+            503,
+            "JAR_DELETE_MIGRATION_REQUIRED",
+          );
+      }
+      for (const jar of changedJars)
+        if (hasJarDelete)
+          await query(
+            `insert into public.expense_jars(owner_id,id,kind,start_month,opening,rules,deleted) values($1,$2,$3,$4,$5,$6::text::jsonb,$7)
+        on conflict(owner_id,id) do update set rules=excluded.rules,deleted=excluded.deleted
+        where (expense_jars.rules,expense_jars.deleted) is distinct from (excluded.rules,excluded.deleted)`,
+            [
+              owner,
+              jar.id,
+              jar.kind,
+              jar.start,
+              jar.opening,
+              json(jar.rules),
+              jar.deleted === true,
+            ],
+          );
+        else
+          await query(
+            `insert into public.expense_jars(owner_id,id,kind,start_month,opening,rules) values($1,$2,$3,$4,$5,$6::text::jsonb)
+        on conflict(owner_id,id) do update set rules=excluded.rules where expense_jars.rules is distinct from excluded.rules`,
+            [owner, jar.id, jar.kind, jar.start, jar.opening, json(jar.rules)],
+          );
+      const changedInputs = changedRecords(
         baseline?.inputs,
         book.inputs,
         (i) => `${i.jarId}/${i.month}`,
-      ))
-        await query(
-          `insert into public.expense_month_inputs(owner_id,jar_id,month,target,funding,extra,closing) values($1,$2,$3,$4,$5,$6,$7)
+      );
+      let hasFundedMark = false;
+      if (changedInputs.length) {
+        const [schema] = await query<{ ready: boolean }>(
+          `select count(*) = 1 as ready from information_schema.columns
+          where table_schema='public' and table_name='expense_month_inputs' and column_name='funded'`,
+        );
+        hasFundedMark = schema.ready;
+        if (!hasFundedMark && changedInputs.some((i) => i.funded != null))
+          throw new ExpenseError(
+            "Chưa thể đánh dấu đã bỏ hũ vì hệ thống cần được cập nhật. Dữ liệu hiện tại không bị thay đổi.",
+            503,
+            "FUNDED_MIGRATION_REQUIRED",
+          );
+      }
+      for (const i of changedInputs)
+        if (hasFundedMark)
+          await query(
+            `insert into public.expense_month_inputs(owner_id,jar_id,month,target,funding,extra,closing,funded) values($1,$2,$3,$4,$5,$6,$7,$8)
+        on conflict(owner_id,jar_id,month) do update set target=excluded.target,funding=excluded.funding,extra=excluded.extra,closing=excluded.closing,funded=excluded.funded
+        where (expense_month_inputs.target,expense_month_inputs.funding,expense_month_inputs.extra,expense_month_inputs.closing,expense_month_inputs.funded) is distinct from (excluded.target,excluded.funding,excluded.extra,excluded.closing,excluded.funded)`,
+            [
+              owner,
+              i.jarId,
+              i.month,
+              i.target,
+              i.funding,
+              i.extra,
+              i.closing,
+              i.funded ?? null,
+            ],
+          );
+        else
+          await query(
+            `insert into public.expense_month_inputs(owner_id,jar_id,month,target,funding,extra,closing) values($1,$2,$3,$4,$5,$6,$7)
         on conflict(owner_id,jar_id,month) do update set target=excluded.target,funding=excluded.funding,extra=excluded.extra,closing=excluded.closing
         where (expense_month_inputs.target,expense_month_inputs.funding,expense_month_inputs.extra,expense_month_inputs.closing) is distinct from (excluded.target,excluded.funding,excluded.extra,excluded.closing)`,
-          [owner, i.jarId, i.month, i.target, i.funding, i.extra, i.closing],
-        );
+            [owner, i.jarId, i.month, i.target, i.funding, i.extra, i.closing],
+          );
       for (const s of changedRecords(
         baseline?.spends,
         book.spends,

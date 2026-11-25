@@ -15,7 +15,7 @@ export function ExpenseReports({
   filters,
 }: {
   view: ExpenseView;
-  filters: { kind: string; method: string; group: string };
+  filters: { kind: string[]; method: string[]; group: string[] };
 }) {
   const { t: tr } = useI18n("expenses");
 

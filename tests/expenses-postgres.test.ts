@@ -60,6 +60,9 @@ async function jar(user: string, kind: "monthly" | "accumulation" = "monthly") {
   });
   return id;
 }
+// Months from 2026-11 start unfunded; tests that check contribution amounts mark the month first.
+const fund = (user: string, version: number, jarId: string, month: string) =>
+  execute(user, version, { type: "setJarFunded", jarId, month, funded: true });
 async function asUser<T>(
   user: string,
   fn: (tx: postgres.TransactionSql) => Promise<T>,
@@ -330,8 +333,9 @@ describe("PostgreSQL transactions, retry, concurrency and owner isolation", () =
   it("persists exact amounts and audit across independent connections", async () => {
     const user = await initialized();
     const id = await jar(user);
+    await fund(user, 2, id, "2026-12");
     await expect(
-      execute(user, 2, {
+      execute(user, 3, {
         type: "editMonth",
         jarId: id,
         month: "2026-12",
@@ -342,9 +346,9 @@ describe("PostgreSQL transactions, retry, concurrency and owner isolation", () =
       }),
     ).rejects.toThrow(/giới hạn/);
     expect((await readExpenseView(repository, user, clock)).book?.version).toBe(
-      2,
+      3,
     );
-    await execute(user, 2, {
+    await execute(user, 3, {
       type: "editMonth",
       jarId: id,
       month: "2026-12",
@@ -361,7 +365,8 @@ describe("PostgreSQL transactions, retry, concurrency and owner isolation", () =
         clock,
       );
       expect(view.book?.inputs[0].funding).toBe("9007199254740993");
-      expect(view.book?.audit).toHaveLength(3);
+      expect(view.book?.inputs[0].funded).toBe(true);
+      expect(view.book?.audit).toHaveLength(4);
       expect(view.rows.find((r) => r.month === "2027-01")?.opening).toBe(
         "100000",
       );
@@ -372,9 +377,10 @@ describe("PostgreSQL transactions, retry, concurrency and owner isolation", () =
   it("previews without writing tables or changing the version", async () => {
     const user = await initialized();
     const id = await jar(user);
+    await fund(user, 2, id, "2026-12");
     const result = await execute(
       user,
-      2,
+      3,
       {
         type: "editMonth",
         jarId: id,
@@ -389,8 +395,54 @@ describe("PostgreSQL transactions, retry, concurrency and owner isolation", () =
     );
     expect(result.changes.some((r) => r.month === "2027-01")).toBe(true);
     const view = await readExpenseView(repository, user, clock);
-    expect(view.book?.version).toBe(2);
-    expect(view.book?.inputs).toHaveLength(0);
+    expect(view.book?.version).toBe(3);
+    expect(view.book?.inputs).toHaveLength(1);
+    expect(view.book?.inputs[0].closing).toBeNull();
+  });
+  it("stores the funded mark, replays a retried command once, and keeps it private to its owner", async () => {
+    const user = await initialized();
+    const other = await initialized();
+    const id = await jar(user);
+    const key = randomUUID();
+    const mark = (funded: boolean, version: number, requestId = randomUUID()) =>
+      execute(
+        user,
+        version,
+        { type: "setJarFunded", jarId: id, month: "2026-12", funded },
+        requestId,
+      );
+    // Default rule for 2026-12 is unfunded: nothing contributed, nothing spent.
+    const initial = (await readExpenseView(repository, user, clock)).rows.find(
+      (r) => r.month === "2026-12",
+    );
+    expect(initial).toMatchObject({ funded: false, funding: "0", spent: "0" });
+    const first = await mark(true, 2, key);
+    expect(await mark(true, 2, key)).toEqual(first);
+    const view = await readExpenseView(repository, user, clock);
+    expect(view.book?.version).toBe(3);
+    expect(view.book?.inputs).toHaveLength(1);
+    expect(view.rows.find((r) => r.month === "2026-12")).toMatchObject({
+      funded: true,
+      funding: "1700000",
+    });
+    const [stored] =
+      await admin`select funded from expense_month_inputs where owner_id=${user} and jar_id=${id} and month='2026-12'`;
+    expect(stored.funded).toBe(true);
+    await mark(false, 3);
+    const [cleared] =
+      await admin`select funded from expense_month_inputs where owner_id=${user} and jar_id=${id} and month='2026-12'`;
+    expect(cleared.funded).toBe(false);
+    expect(
+      (await readExpenseView(repository, other, clock)).book?.inputs,
+    ).toHaveLength(0);
+    await expect(
+      execute(other, 1, {
+        type: "setJarFunded",
+        jarId: id,
+        month: "2026-12",
+        funded: true,
+      }),
+    ).rejects.toThrow();
   });
   it("returns the original result for retries and rejects another payload under the same key", async () => {
     const user = await initialized();
@@ -605,4 +657,43 @@ it("persists emoji metadata across reads without altering balances or overrides"
   expect(after.rows.find((r) => r.month === "2027-01")?.emoji).toBe("👨‍👩‍👧‍👦");
   expect(after.rows.find((r) => r.month === "2026-12")?.emoji).toBeNull();
   expect(after.book?.audit.at(-1)?.action).toBe("setJarEmoji");
+});
+
+it("soft-deletes a jar: hidden after reload, row kept, idempotent retry, owner isolated", async () => {
+  const user = await initialized();
+  const other = await initialized();
+  const id = await jar(user);
+  const otherId = await jar(other);
+  const action = { type: "deleteJar" as const, jarId: id };
+  const requestId = randomUUID();
+  await execute(user, 2, action, requestId);
+  await execute(user, 2, action, requestId);
+  const view = await readExpenseView(repository, user, clock);
+  expect(view.book?.version).toBe(3);
+  expect(view.rows).toEqual([]);
+  expect(view.book?.jars.find((j) => j.id === id)?.deleted).toBe(true);
+  expect(view.book?.audit.at(-1)?.action).toBe("deleteJar");
+  const [stored] =
+    await admin`select deleted from public.expense_jars where owner_id=${user} and id=${id}`;
+  expect(stored.deleted).toBe(true);
+  const untouched = await readExpenseView(repository, other, clock);
+  expect(untouched.rows.length).toBeGreaterThan(0);
+  expect(untouched.book?.jars.find((j) => j.id === otherId)?.deleted).toBe(
+    false,
+  );
+  await expect(execute(user, 3, action)).rejects.toMatchObject({
+    status: 404,
+  });
+});
+
+it("refuses to delete a jar that appears in a closed year", async () => {
+  const user = await initialized();
+  const id = await jar(user);
+  await execute(user, 2, { type: "closeYear", year: 2026 });
+  await expect(
+    execute(user, 3, { type: "deleteJar", jarId: id }),
+  ).rejects.toMatchObject({ code: "JAR_IN_CLOSED_YEAR", status: 409 });
+  const view = await readExpenseView(repository, user, clock);
+  expect(view.book?.version).toBe(3);
+  expect(view.book?.jars.find((j) => j.id === id)?.deleted).toBe(false);
 });

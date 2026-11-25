@@ -4,6 +4,12 @@ import {
   type FinancialRouteContext as Context,
 } from "@/server/financial-api";
 import { BackupError, summarizeBackup } from "@/domain/backup/format";
+import {
+  resetConfirmationFor,
+  resetModuleSchema,
+  resetModules,
+  resolveResetModules,
+} from "@/domain/backup/reset-modules";
 import { validateBackup } from "@/domain/backup/validate";
 import { ExpenseError } from "@/domain/expenses/engine";
 import { profileFields } from "@/features/profile/fields";
@@ -121,10 +127,15 @@ export async function POST(request: Request, context: Context) {
         throw new BackupError("Đường dẫn không tồn tại.", 404);
       const body = await readBody(request);
       if (path === "reset/prepare") {
-        z.strictObject({}).parse(body);
+        const { modules } = z
+          .strictObject({
+            modules: z.array(resetModuleSchema).min(1).max(6).optional(),
+          })
+          .parse(body);
         const prepared = await dataRepository().prepareReset(
           user.id,
           profileFields(user.user_metadata),
+          modules,
         );
         return new NextResponse(checkBackupSize(prepared.backup), {
           headers: {
@@ -133,6 +144,7 @@ export async function POST(request: Request, context: Context) {
             "Content-Disposition": `attachment; filename="financial-manager-before-reset-${prepared.operationId}.json"`,
             "X-Reset-Operation-Id": prepared.operationId,
             "X-Reset-Expires-At": prepared.expiresAt,
+            "X-Reset-Modules": prepared.modules.join(","),
           },
         });
       }
@@ -143,9 +155,18 @@ export async function POST(request: Request, context: Context) {
             requestId: z.uuid(),
             targetOwnerId: z.uuid(),
             backupSaved: z.literal(true),
-            confirmation: z.literal("XÓA TOÀN BỘ"),
+            modules: z.array(resetModuleSchema).min(1).max(6).optional(),
+            confirmation: z.string().max(40),
           })
           .parse(body);
+        const modules = resolveResetModules(parsed.modules ?? resetModules);
+        // Choosing a few pages needs its own phrase so the whole-account phrase is never reused for them.
+        if (parsed.confirmation !== resetConfirmationFor(modules))
+          throw new BackupError(
+            "Cụm xác nhận không đúng.",
+            422,
+            "INVALID_CONFIRMATION",
+          );
         if (parsed.targetOwnerId !== user.id)
           throw new BackupError(
             "Phiên đăng nhập đã thay đổi. Hãy tải lại trang.",
@@ -157,6 +178,7 @@ export async function POST(request: Request, context: Context) {
             user.id,
             parsed.operationId,
             parsed.requestId,
+            modules,
           ),
           { headers },
         );

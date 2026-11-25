@@ -243,6 +243,7 @@ test("English covers workspaces, Help and the public home while account names st
       (await help.innerText())
         .replaceAll("Tiếng Việt", "")
         .replaceAll("XÓA TOÀN BỘ", "")
+        .replaceAll("XÓA DỮ LIỆU", "")
         .normalize("NFD"),
       route,
     ).not.toMatch(/[ĂăÂâĐđÊêÔôƠơƯư\u0300-\u036f]/u);

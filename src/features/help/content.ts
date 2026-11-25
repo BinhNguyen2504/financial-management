@@ -266,7 +266,7 @@ export const articles: HelpArticles = {
     [
       "App ghi nhận và tính toán; **không chuyển tiền thật** hoặc kiểm tra bạn có chi đúng ngân hàng đã quy ước không.",
       "Ghi Thu nhập **không tự cấp tiền vào hũ**. Phương thức có tên ngân hàng không phải kết nối ngân hàng.",
-      "Mức mặc định có thể được suy ra thành tiền thêm; hãy điều chỉnh khi thực tế khác. Thực chi tháng hiện tại có thể thay đổi khi cập nhật dư.",
+      "Mức mặc định có thể được suy ra thành tiền thêm; hãy điều chỉnh khi thực tế khác. Từ tháng 11/2026, mỗi hũ bắt đầu ở trạng thái **chưa bỏ hũ** (Đã bỏ hũ và Thực chi bằng 0) cho đến khi bạn đánh dấu đã bỏ tiền vào hũ. Thực chi tháng hiện tại có thể thay đổi khi cập nhật dư.",
       "Sao lưu/khôi phục toàn tài khoản ở Cài đặt; bản xuất theo năm không dùng cho khôi phục toàn tài khoản.",
     ],
   ),
@@ -763,7 +763,7 @@ export const articles: HelpArticles = {
       term(
         "clear-financial-data",
         "Làm trống dữ liệu tài chính",
-        "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** trước khi xóa. Tạo file không có nghĩa là bạn đã lưu file.",
+        "Hộp thoại có hai bước: tạo bản sao lưu, rồi kiểm tra và xác nhận. Chọn làm trống toàn bộ tài khoản hoặc chỉ một số trang (Mục tiêu đi kèm Tiết kiệm, Đầu tư và Quỹ an toàn). Kiểm tra email tài khoản, lưu file JSON và đánh dấu đã kiểm tra file; nhập đúng **XÓA TOÀN BỘ** (cả tài khoản) hoặc **XÓA DỮ LIỆU** (một số trang) trước khi xóa. File sao lưu luôn đầy đủ. Tạo file không có nghĩa là bạn đã lưu file.",
       ),
       term(
         "profile-restore",

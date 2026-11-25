@@ -2,6 +2,12 @@ import { timePhase } from "./performance";
 import { setTransactionOwner, lockOwner } from "./owner-transaction";
 import { dataGeneration, withDataGeneration } from "./data-generation";
 import { restoreBlockers, restoreReasons } from "../domain/backup/status";
+import {
+  isFullReset,
+  resetModules,
+  resolveResetModules,
+  type ResetModule,
+} from "../domain/backup/reset-modules";
 import type postgres from "postgres";
 import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
@@ -80,6 +86,15 @@ async function resetReady(db: DB) {
   );
   return row.ready;
 }
+async function resetModulesReady(db: DB) {
+  const [row] = await timePhase("sql", () =>
+    db.unsafe<{ ready: boolean }[]>(
+      `select count(*) = 1 as ready from information_schema.columns
+      where table_schema='public' and table_name='data_resets' and column_name='modules'`,
+    ),
+  );
+  return row.ready;
+}
 const ownerLocks = (owner: string) => [
   owner,
   `income:${owner}`,
@@ -125,6 +140,12 @@ async function readTables(db: DB, owner: string): Promise<BackupTables> {
           labelVisualColumns.some((v) => v === c)
         )
           return `to_jsonb(expense_labels)->>'${c}' as ${c}`;
+        // Pre-delete schemas have no column: every jar is simply not deleted.
+        if (table === "expense_jars" && c === "deleted")
+          return "coalesce((to_jsonb(expense_jars)->>'deleted')::boolean,false) as deleted";
+        // Pre-funded-mark schemas have no column: every month keeps the default.
+        if (table === "expense_month_inputs" && c === "funded")
+          return "(to_jsonb(expense_month_inputs)->>'funded')::boolean as funded";
         if (numericColumns.has(c)) return `${c}::text as ${c}`;
         if (c === "date") return "to_char(date,'YYYY-MM-DD') as date";
         if (c === "at" || c === "closed_at")
@@ -191,6 +212,7 @@ export function postgresDataRepository(sql: postgres.Sql) {
             ownerId: owner,
             importReady: ready,
             resetReady: await resetReady(db),
+            resetModulesReady: await resetModulesReady(db),
             dataGeneration: await dataGeneration(db, owner),
             blockers: restoreBlockers(c),
             reasons: restoreReasons(empty, ready),
@@ -216,7 +238,13 @@ export function postgresDataRepository(sql: postgres.Sql) {
         true,
       );
     },
-    async prepareReset(owner: string, profile: FullBackup["profile"]) {
+    async prepareReset(
+      owner: string,
+      profile: FullBackup["profile"],
+      requested: readonly ResetModule[] = resetModules,
+    ) {
+      // The server resolves dependencies itself; the client's list is never trusted as complete.
+      const modules = resolveResetModules(requested);
       return transaction(owner, async (db) => {
         if (!(await resetReady(db)))
           throw new BackupError(
@@ -224,33 +252,73 @@ export function postgresDataRepository(sql: postgres.Sql) {
             503,
             "RESET_NOT_READY",
           );
+        const partial = !isFullReset(modules);
+        if (partial && !(await resetModulesReady(db)))
+          throw new BackupError(
+            "Làm trống theo từng trang chưa được bật trên hệ thống này. Bạn vẫn có thể làm trống toàn bộ tài khoản hoặc tải bản sao lưu.",
+            503,
+            "RESET_MODULES_NOT_READY",
+          );
         await lockOwner(db, ownerLocks(owner));
         const backup = makeBackup(await readTables(db, owner), profile);
         const operationId = randomUUID();
         const generation = await dataGeneration(db, owner);
+        // A whole-account reset keeps the original statement, so it works before the module migration.
         const [operation] = await timePhase("sql", () =>
-          db.unsafe<{ expires_at: string }[]>(
-            "insert into public.data_resets(owner_id,id,generation,fingerprint) values($1,$2,$3,public.financial_data_fingerprint()) returning expires_at::text",
-            [owner, operationId, generation],
-          ),
+          partial
+            ? db.unsafe<{ expires_at: string }[]>(
+                "insert into public.data_resets(owner_id,id,generation,fingerprint,modules) values($1,$2,$3,public.financial_data_fingerprint(),$4::text[]) returning expires_at::text",
+                [owner, operationId, generation, `{${modules.join(",")}}`],
+              )
+            : db.unsafe<{ expires_at: string }[]>(
+                "insert into public.data_resets(owner_id,id,generation,fingerprint) values($1,$2,$3,public.financial_data_fingerprint()) returning expires_at::text",
+                [owner, operationId, generation],
+              ),
         );
         return {
           backup,
           operationId,
           expiresAt: operation.expires_at,
           dataGeneration: generation,
+          modules,
         };
       });
     },
-    async reset(owner: string, operationId: string, requestId: string) {
+    async reset(
+      owner: string,
+      operationId: string,
+      requestId: string,
+      confirmed: readonly ResetModule[] = resetModules,
+    ) {
       z.uuid().parse(operationId);
       z.uuid().parse(requestId);
+      const modules = resolveResetModules(confirmed);
       return transaction(owner, async (db) => {
         if (!(await resetReady(db)))
           throw new BackupError(
             "Làm trống dữ liệu chưa được bật trên hệ thống này. Bạn vẫn có thể tải bản sao lưu.",
             503,
             "RESET_NOT_READY",
+          );
+        // The scope was fixed when the backup step prepared the operation; confirming can only repeat it.
+        const [prepared] = await timePhase("sql", () =>
+          db.unsafe<{ modules: string[] | null }[]>(
+            "select to_jsonb(r)->'modules' as modules from public.data_resets r where owner_id=$1 and id=$2",
+            [owner, operationId],
+          ),
+        );
+        if (
+          prepared &&
+          JSON.stringify(
+            resolveResetModules(
+              (prepared.modules as ResetModule[] | null) ?? resetModules,
+            ),
+          ) !== JSON.stringify(modules)
+        )
+          throw new BackupError(
+            "Phạm vi làm trống khác với bước sao lưu đã chuẩn bị. Hãy tạo bản sao lưu mới.",
+            409,
+            "RESET_SCOPE_CHANGED",
           );
         try {
           const [row] = await timePhase("sql", () =>
@@ -260,6 +328,7 @@ export function postgresDataRepository(sql: postgres.Sql) {
                   empty: boolean;
                   dataGeneration: number;
                   operationId: string;
+                  modules?: ResetModule[];
                 };
               }[]
             >("select public.reset_financial_data($1,$2) as result", [
@@ -291,6 +360,8 @@ export function postgresDataRepository(sql: postgres.Sql) {
               "Mã xác nhận đã được dùng. Hãy kiểm tra lại trạng thái dữ liệu.",
             RESET_MISMATCH:
               "Chưa làm trống được dữ liệu. Toàn bộ thao tác đã được hủy.",
+            RESET_MODULES_INVALID:
+              "Phạm vi làm trống không hợp lệ. Mục tiêu phải được làm trống cùng Tiết kiệm, Đầu tư hoặc Quỹ an toàn.",
           };
           if (messages[code]) throw new BackupError(messages[code], 409, code);
           throw error;
@@ -378,12 +449,48 @@ export function postgresDataRepository(sql: postgres.Sql) {
             503,
             "SCHEMA_NOT_READY",
           );
+        const [jarDelete] = await timePhase("sql", () =>
+          db.unsafe<{ ready: boolean }[]>(
+            `select count(*) = 1 as ready from information_schema.columns
+          where table_schema='public' and table_name='expense_jars' and column_name='deleted'`,
+          ),
+        );
+        if (
+          !jarDelete.ready &&
+          backup.tables.expense_jars.some((j) => j.deleted)
+        )
+          throw new BackupError(
+            "Một phần dữ liệu chưa sẵn sàng. Chưa thể khôi phục các hũ đã xóa; hãy kiểm tra lại thiết lập hệ thống.",
+            503,
+            "SCHEMA_NOT_READY",
+          );
+        const [fundedMark] = await timePhase("sql", () =>
+          db.unsafe<{ ready: boolean }[]>(
+            `select count(*) = 1 as ready from information_schema.columns
+          where table_schema='public' and table_name='expense_month_inputs' and column_name='funded'`,
+          ),
+        );
+        if (
+          !fundedMark.ready &&
+          backup.tables.expense_month_inputs.some((i) => i.funded != null)
+        )
+          throw new BackupError(
+            "Một phần dữ liệu chưa sẵn sàng. Chưa thể khôi phục trạng thái đã bỏ hũ; hãy kiểm tra lại thiết lập hệ thống.",
+            503,
+            "SCHEMA_NOT_READY",
+          );
         for (const table of backupTables) {
           if (!backup.tables[table].length) continue;
           const columns = Object.keys(tableSchemas[table].shape).filter(
             (column) =>
-              table !== "expense_labels" ||
-              !missingVisuals.some((missing) => missing === column),
+              (table !== "expense_labels" ||
+                !missingVisuals.some((missing) => missing === column)) &&
+              (table !== "expense_jars" ||
+                column !== "deleted" ||
+                jarDelete.ready) &&
+              (table !== "expense_month_inputs" ||
+                column !== "funded" ||
+                fundedMark.ready),
           );
           // PostgreSQL checks self-referencing FKs after the entire INSERT statement.
           // Only allowlisted columns are read; owner is exclusively server supplied.

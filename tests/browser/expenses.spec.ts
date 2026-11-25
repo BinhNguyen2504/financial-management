@@ -111,6 +111,17 @@ test("monthly balances, accumulation uses, reports, responsive light/dark", asyn
       })
     ).ok(),
   ).toBe(true);
+  // From November 2026 a month starts unfunded; mark it before checking the figures.
+  expect(
+    (
+      await command(page, {
+        type: "setJarFunded",
+        jarId: jar.id,
+        month: current,
+        funded: true,
+      })
+    ).ok(),
+  ).toBe(true);
   await page.reload();
   data = await view(page);
   expect(
@@ -129,6 +140,18 @@ test("monthly balances, accumulation uses, reports, responsive light/dark", asyn
     data.rows.find((r) => r.jarId === jar.id && r.month === current)?.spent,
   ).toBe("2300000");
   await create(page, "Học phí kiểm thử", "accumulation");
+  data = await view(page);
+  expect(
+    (
+      await command(page, {
+        type: "setJarFunded",
+        jarId: data.book!.jars.find((j) => j.id !== jar.id)!.id,
+        month: current,
+        funded: true,
+      })
+    ).ok(),
+  ).toBe(true);
+  await page.reload();
   await page.getByRole("button", { name: "Dùng tiền", exact: true }).click();
   await page.getByLabel("Số tiền sử dụng").fill("1500000");
   await page.getByLabel("Ghi chú").fill("Đợt học phí");

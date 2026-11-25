@@ -60,6 +60,19 @@ export const expenses = {
   "Chăm sóc da": "Skincare",
   "Biểu tượng của hũ": "Jar icon",
   "Tự động theo tên": "Automatic from name",
+  "Xóa hũ chi tiêu": "Delete spending jar",
+  "Xóa hũ": "Delete jar",
+  "Xóa hũ “": "Delete jar “",
+  "”. Hũ và các lần sử dụng của hũ sẽ biến mất khỏi mọi tháng và báo cáo; lịch sử thay đổi vẫn được giữ.":
+    "”. The jar and its uses disappear from every month and report; the change history is kept.",
+  "Hũ có dữ liệu trong năm đã chốt không thể xóa. Nếu chỉ muốn dừng cấp tiền, hãy dùng “Ngừng cấp tiền”.":
+    "A jar with data in a closed year cannot be deleted. To only stop funding it, use “Stop funding”.",
+  "Sắp xếp theo": "Sort by",
+  "Mặc định": "Default",
+  "Tăng dần": "Ascending",
+  "Giảm dần": "Descending",
+  "Đang dùng logo thương hiệu. Chọn “Không chọn thương hiệu” để đổi sang biểu tượng khác.":
+    "A brand logo is in use. Choose “No brand selected” to pick another icon.",
   "Tìm biểu tượng": "Find an icon",
   "Ăn uống, xe, học tập…": "Food, transport, study…",
   Đóng: "Close",
@@ -160,6 +173,8 @@ export const expenses = {
   "Bỏ hũ": "Contributions",
   "Loại hũ": "Jar type",
   "Tất cả": "All",
+  "{0} đã chọn": "{0} selected",
+  "Bỏ chọn tất cả": "Clear all",
   "Chi trong tháng": "Monthly spending",
   "Tích lũy": "Accumulation",
   "Phương thức": "Holding method",
@@ -253,6 +268,8 @@ export const expenses = {
   "Ngừng cấp tiền cho hũ": "Stop funding jar",
   "Sử dụng tiền tích lũy": "Use accumulated money",
   "Xóa lần sử dụng": "Delete usage entry",
+  "Hũ có dữ liệu trong năm đã chốt nên không thể xóa. Dùng “Ngừng cấp tiền” để giữ lịch sử.":
+    "A jar with data in a closed year cannot be deleted. Use “Stop funding” to keep its history.",
   "Phương thức và nhóm": "Methods and groups",
   "Xóa phân loại": "Delete category",
   "Chốt và lưu năm": "Close and save year",
@@ -419,4 +436,15 @@ export const expenses = {
   "Danh sách lựa chọn khi thêm hũ. Các hũ giữ phân loại theo từng tháng.":
     "Choices when adding jars. Jars retain their categories by month.",
   "Thêm phân loại": "Add category",
+  "Chưa bỏ hũ": "Not funded yet",
+  "Tình trạng bỏ hũ": "Funding status",
+  "Cần bỏ {0}": "Needs {0}",
+  "Đánh dấu {0} đã bỏ hũ": "Mark {0} as funded",
+  "Đã đánh dấu {0} đã bỏ hũ.": "{0} marked as funded.",
+  "Đã bỏ đánh dấu bỏ hũ của {0}.": "Funded mark removed from {0}.",
+  "Chưa xác nhận được kết quả lưu. Đã tải lại dữ liệu để kiểm tra.":
+    "The save result is not confirmed. Data was reloaded so you can check.",
+  "Dữ liệu đã thay đổi ở nơi khác. Đã tải lại, hãy thử lại.":
+    "The data changed elsewhere. It was reloaded; please try again.",
+  "Đánh dấu bỏ hũ": "Funded mark",
 } as const;

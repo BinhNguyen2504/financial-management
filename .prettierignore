@@ -10,3 +10,4 @@ Notion/
 imports/
 backups/
 package-lock.json
+.claude/

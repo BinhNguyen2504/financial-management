@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { vietnamClock } from "../../src/domain/shared/clock";
 import { completeTestEmailLogin } from "./helpers/test-email-login";
+import { closeMultiFilter, openMultiFilter } from "./helpers/multi-filter";
 
 test("empty expenses distinguish first entry from filtered results and recover without writing", async ({
   page,
@@ -30,11 +31,15 @@ test("empty expenses distinguish first entry from filtered results and recover w
       writes.push(request.url());
   });
   await page.waitForLoadState("networkidle");
-  const kind = page.getByRole("combobox", { name: "Loại hũ", exact: true });
   if (await page.locator(".filter-options-trigger").isVisible())
     await page.locator(".filter-options-trigger").click();
+  const kind = (await openMultiFilter(page, "Loại hũ")).getByRole("checkbox", {
+    name: "Chi trong tháng",
+    exact: true,
+  });
   await expect(kind).toBeVisible();
-  await kind.selectOption("monthly");
+  await kind.check();
+  await closeMultiFilter(page);
   await expect(empty).toContainText("Không có hũ phù hợp bộ lọc");
   await expect(
     empty.getByRole("button", { name: "Thêm hũ chi tiêu", exact: true }),
@@ -42,7 +47,9 @@ test("empty expenses distinguish first entry from filtered results and recover w
   await empty
     .getByRole("button", { name: "Đặt lại bộ lọc", exact: true })
     .click();
-  await expect(kind).toHaveValue("");
+  await expect(page.getByRole("button", { name: /^Loại hũ/ })).toContainText(
+    "Tất cả",
+  );
   await expect(empty).toContainText("Chưa có hũ trong tháng này");
   expect(writes).toEqual([]);
   await empty

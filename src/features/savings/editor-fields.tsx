@@ -199,9 +199,20 @@ export function SavingsEditorFields({
           {select(
             "emoji",
             tr("Biểu tượng"),
-            ["🌱", "💰", "🏦", "🪙", "💛", "🏡", "✈️", "🎯"].map((v) => (
-              <option key={v}>{v}</option>
-            )),
+            // A restored or earlier icon outside the preset list must stay selectable.
+            [
+              ...new Set([
+                "🌱",
+                "💰",
+                "🏦",
+                "🪙",
+                "💛",
+                "🏡",
+                "✈️",
+                "🎯",
+                ...(f.emoji ? [f.emoji] : []),
+              ]),
+            ].map((v) => <option key={v}>{v}</option>),
           )}
           {mode.type === "create" && (
             <>
