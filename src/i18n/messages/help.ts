@@ -223,8 +223,8 @@ export const help = {
     "The app records and calculates; it **does not transfer real money** or verify that you spent from the agreed bank.",
   "Ghi Thu nhập **không tự cấp tiền vào hũ**. Phương thức có tên ngân hàng không phải kết nối ngân hàng.":
     "Recording Income **does not automatically fund jars**. A bank name in a holding method is not a bank connection.",
-  "Mức mặc định có thể được suy ra thành tiền thêm; hãy điều chỉnh khi thực tế khác. Thực chi tháng hiện tại có thể thay đổi khi cập nhật dư.":
-    "Defaults can determine funding; adjust when reality differs. Current-month spending can change as balances are updated.",
+  "Mức mặc định có thể được suy ra thành tiền thêm; hãy điều chỉnh khi thực tế khác. Từ tháng 11/2026, mỗi hũ bắt đầu ở trạng thái **chưa bỏ hũ** (Đã bỏ hũ và Thực chi bằng 0) cho đến khi bạn đánh dấu đã bỏ tiền vào hũ. Thực chi tháng hiện tại có thể thay đổi khi cập nhật dư.":
+    "Defaults can determine funding; adjust when reality differs. From November 2026 each jar starts as **not funded yet** (Contributed and Actual spending are 0) until you mark that you have put the money in. Current-month spending can change as balances are updated.",
   "Sao lưu/khôi phục toàn tài khoản ở Cài đặt; bản xuất theo năm không dùng cho khôi phục toàn tài khoản.":
     "Whole-account backup/restore is in Settings; a yearly export cannot restore a whole account.",
   "Dành cho người muốn biết thực tế đã nhận bao nhiêu theo tháng và nguồn thu, đồng thời nhận ra những khoản chưa nhập. Theo dõi riêng nguồn lặp lại và khoản thu một lần.":

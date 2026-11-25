@@ -67,6 +67,14 @@ export const expenseActionSchema = z.discriminatedUnion("type", [
     .strict(),
   z
     .object({
+      type: z.literal("setJarFunded"),
+      jarId: id,
+      month: monthSchema,
+      funded: z.boolean(),
+    })
+    .strict(),
+  z
+    .object({
       type: z.literal("upsertSpend"),
       id,
       jarId: id,

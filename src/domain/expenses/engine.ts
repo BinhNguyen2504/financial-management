@@ -5,6 +5,7 @@ import type {
   ExpenseView,
   JarRule,
   Month,
+  MonthInput,
   RowChange,
 } from "./types";
 import { expenseActionSchema, type ExpenseAction } from "./schema";
@@ -41,6 +42,26 @@ function bounded(n: bigint, label: string): string {
     throw new ExpenseError(`${label}: số tiền ngoài giới hạn.`);
   return n.toString();
 }
+/**
+ * First month in which a jar starts as "not funded yet" until the user marks
+ * it. Earlier months keep their historical figures (counted as funded).
+ */
+export const FUNDING_MARK_START: Month = "2026-11";
+/**
+ * Whether the month's contribution counts as already put in the jar. Planned
+ * (future) months and stopped jars keep the plan, and an accumulation jar that
+ * already has recorded usages that month must have received its money.
+ */
+function isFunded(
+  input: MonthInput | undefined,
+  active: boolean,
+  month: Month,
+  future: boolean,
+  usages: number,
+): boolean {
+  if (future || !active) return true;
+  return input?.funded ?? (month < FUNDING_MARK_START || usages > 0);
+}
 export function materialize(
   book: ExpenseBook,
   clock: Clock,
@@ -74,31 +95,46 @@ export function materialize(
           ? positive(target - balance)
           : target
         : 0n;
-      const funding = BigInt(input?.funding ?? required.toString());
+      const future = month > current;
+      // Contributions occur at the start of each month. Same-day spends share that balance.
+      const spends =
+        jar.kind === "accumulation"
+          ? book.spends
+              .filter(
+                (s) =>
+                  s.jarId === jar.id &&
+                  !s.deleted &&
+                  s.date.slice(0, 7) === month,
+              )
+              .sort(
+                (a, b) =>
+                  a.date.localeCompare(b.date) || a.id.localeCompare(b.id),
+              )
+          : [];
+      const funded = isFunded(input, rule.active, month, future, spends.length);
+      // Until the user marks the jar as funded, nothing has entered it yet.
+      const funding = funded
+        ? BigInt(input?.funding ?? required.toString())
+        : 0n;
       const extra = BigInt(input?.extra ?? "0");
       const available = balance + funding + extra;
       let spent = 0n;
       let closing = available;
-      const future = month > current;
       if (jar.kind === "monthly") {
         closing = BigInt(
-          input?.closing ?? (rule.active ? "0" : available.toString()),
+          input?.closing ??
+            (rule.active && funded ? "0" : available.toString()),
         );
-        if (closing > available)
-          throw new ExpenseError(
-            `${rule.name}, ${month}: số dư lớn hơn tiền có trong hũ.`,
-          );
+        if (closing > available) {
+          // A closing typed while the jar was funded must not break an unfunded month.
+          if (funded)
+            throw new ExpenseError(
+              `${rule.name}, ${month}: số dư lớn hơn tiền có trong hũ.`,
+            );
+          closing = available;
+        }
         if (!future) spent = available - closing;
       } else {
-        // Contributions occur at the start of each month. Same-day spends share that balance.
-        const spends = book.spends
-          .filter(
-            (s) =>
-              s.jarId === jar.id && !s.deleted && s.date.slice(0, 7) === month,
-          )
-          .sort(
-            (a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id),
-          );
         for (const spend of spends) {
           const value = BigInt(spend.amount);
           if (closing < value)
@@ -137,6 +173,7 @@ export function materialize(
             : month === current
               ? "provisional"
               : "actual",
+          funded,
         });
       balance = closing;
     }
@@ -342,13 +379,48 @@ export function applyAction(
           action.closing !== null)
       )
         throw new ExpenseError("Tháng tương lai chỉ điều chỉnh mức kế hoạch.");
-      const { type: _, ...input } = action;
+      const { type: _, ...fields } = action;
+      const previous = book.inputs.find(
+        (i) => i.jarId === action.jarId && i.month === action.month,
+      );
+      // Editing amounts must not erase the user's funded mark.
+      const input: MonthInput =
+        previous?.funded == null
+          ? fields
+          : { ...fields, funded: previous.funded };
       book.inputs = [
         ...book.inputs.filter(
           (i) => i.jarId !== action.jarId || i.month !== action.month,
         ),
         input,
       ];
+      break;
+    }
+    case "setJarFunded": {
+      editable(book, action.month, clock);
+      const jar = findJar(action.jarId);
+      if (action.month < jar.start)
+        throw new ExpenseError("Hũ chưa bắt đầu trong tháng này.");
+      if (action.month > clock.today.slice(0, 7))
+        throw new ExpenseError(
+          "Chỉ đánh dấu bỏ hũ cho tháng hiện tại hoặc đã qua.",
+        );
+      if (!ruleAt(jar.rules, action.month)?.active)
+        throw new ExpenseError("Hũ đã ngừng không cần đánh dấu bỏ hũ.");
+      const existing = book.inputs.find(
+        (i) => i.jarId === action.jarId && i.month === action.month,
+      );
+      if (existing) existing.funded = action.funded;
+      else
+        book.inputs.push({
+          jarId: action.jarId,
+          month: action.month,
+          target: null,
+          funding: null,
+          extra: "0",
+          closing: null,
+          funded: action.funded,
+        });
       break;
     }
     case "upsertSpend": {

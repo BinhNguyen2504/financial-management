@@ -313,7 +313,8 @@ test("the filter fields stay aligned, the dropdown stays in view and choosing a 
     await page.reload();
     await openFilters(page);
     const triggers = page.locator(".multi-filter-trigger");
-    await expect(triggers).toHaveCount(3);
+    // Loại hũ, Phương thức, Nhóm mục đích and Tình trạng bỏ hũ.
+    await expect(triggers).toHaveCount(4);
     const boxes = await triggers.evaluateAll((items) =>
       items.map((item) => {
         const { x, y, width, height } = item.getBoundingClientRect();

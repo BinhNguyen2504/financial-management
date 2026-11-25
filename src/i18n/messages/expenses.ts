@@ -436,4 +436,15 @@ export const expenses = {
   "Danh sách lựa chọn khi thêm hũ. Các hũ giữ phân loại theo từng tháng.":
     "Choices when adding jars. Jars retain their categories by month.",
   "Thêm phân loại": "Add category",
+  "Chưa bỏ hũ": "Not funded yet",
+  "Tình trạng bỏ hũ": "Funding status",
+  "Cần bỏ {0}": "Needs {0}",
+  "Đánh dấu {0} đã bỏ hũ": "Mark {0} as funded",
+  "Đã đánh dấu {0} đã bỏ hũ.": "{0} marked as funded.",
+  "Đã bỏ đánh dấu bỏ hũ của {0}.": "Funded mark removed from {0}.",
+  "Chưa xác nhận được kết quả lưu. Đã tải lại dữ liệu để kiểm tra.":
+    "The save result is not confirmed. Data was reloaded so you can check.",
+  "Dữ liệu đã thay đổi ở nơi khác. Đã tải lại, hãy thử lại.":
+    "The data changed elsewhere. It was reloaded; please try again.",
+  "Đánh dấu bỏ hũ": "Funded mark",
 } as const;

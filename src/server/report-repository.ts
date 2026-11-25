@@ -1,6 +1,11 @@
 import { timePhase } from "./performance";
 import type postgres from "postgres";
-import { expenseJarExpression, expenseJarsTable } from "./book-projections";
+import {
+  expenseInputExpression,
+  expenseInputsTable,
+  expenseJarExpression,
+  expenseJarsTable,
+} from "./book-projections";
 import { z } from "zod";
 import type { ReportRepository } from "../application/reports";
 import type { Books, ReportInput, SourceId } from "../domain/reports/model";
@@ -14,7 +19,7 @@ const data = (table: string, order = "id") => rows(table, "data", order);
 const queries: Record<SourceId, string> = {
   expenses: `select jsonb_build_object('version',version,'start',start_month,
     'jars',${rows(expenseJarsTable, expenseJarExpression, "start_month,id")},
-    'inputs',${rows("expense_month_inputs", "jsonb_build_object('jarId',jar_id,'month',month,'target',target::text,'funding',funding::text,'extra',extra::text,'closing',closing::text)", "month,jar_id")},
+    'inputs',${rows(expenseInputsTable, expenseInputExpression, "month,jar_id")},
     'spends',${rows("expense_spends", "jsonb_build_object('id',id,'jarId',jar_id,'date',to_char(date,'YYYY-MM-DD'),'amount',amount::text,'note',note,'deleted',deleted)", "date,id")},
     'years',${rows("expense_years", "jsonb_build_object('year',year,'closedAt',closed_at,'snapshot',snapshot)", "year")},
     'labels','[]'::jsonb,'audit','[]'::jsonb) as book from public.expense_books where owner_id=$1`,

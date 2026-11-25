@@ -25,6 +25,8 @@ import { HelpPageTitle } from "@/features/help/provider";
 import {
   Archive,
   ArrowUpRight,
+  Check,
+  CircleDashed,
   Pencil,
   Plus,
   Settings2,
@@ -39,6 +41,7 @@ import { monthName, ratio } from "./format";
 import { JarClassification } from "./label-visual";
 import { ExpenseReports } from "./report-panel";
 import { useExpenseWorkspace } from "./use-expense-workspace";
+import { canMarkFunded, isFunded } from "./use-funded-toggle";
 function JarProgress({ row }: { row: ExpenseRow }) {
   const { t: tr, numberLocale } = useI18n("expenses");
 
@@ -116,6 +119,10 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
     groups,
     inactive,
     setInactive,
+    funded,
+    setFunded,
+    fundedCounts,
+    fundedToggle,
     selectedMonth,
     total,
     future,
@@ -174,6 +181,33 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
     );
   };
 
+  // One-tap mark; the label stays constant and aria-pressed carries the state.
+  const fundedButton = (row: ExpenseRow) =>
+    !readonly && canMarkFunded(row) ? (
+      <button
+        type="button"
+        className="expense-fund-button"
+        aria-pressed={isFunded(row)}
+        aria-label={tr("Đánh dấu {0} đã bỏ hũ", { 0: row.name })}
+        disabled={fundedToggle.busy}
+        onClick={() => void fundedToggle.toggle(row)}
+      >
+        {isFunded(row) ? (
+          <Check size={16} aria-hidden="true" />
+        ) : (
+          <CircleDashed size={16} aria-hidden="true" />
+        )}
+        {tr("Đã bỏ hũ")}
+      </button>
+    ) : null;
+  const fundedBadge = (row: ExpenseRow) =>
+    canMarkFunded(row) ? (
+      <StatusBadge tone={isFunded(row) ? "success" : "warning"} size="compact">
+        {isFunded(row) ? tr("Đã bỏ hũ") : tr("Chưa bỏ hũ")}
+      </StatusBadge>
+    ) : null;
+  const fundedClass = (row: ExpenseRow) =>
+    canMarkFunded(row) ? (isFunded(row) ? "is-funded" : "is-unfunded") : "";
   return (
     <div
       className="expenses-workspace"
@@ -482,6 +516,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                     kind.length > 0,
                     method.length > 0,
                     group.length > 0,
+                    funded.length > 0,
                     inactive,
                   ].filter(Boolean).length
                 }
@@ -489,6 +524,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                   setKind([]);
                   setMethod([]);
                   setGroup([]);
+                  setFunded([]);
                   setInactive(false);
                 }}
               >
@@ -516,6 +552,22 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                     value={group}
                     onChange={setGroup}
                     options={groups.map((g) => ({ value: g, label: g }))}
+                  />
+                  <MultiSelectFilter
+                    labels={multiLabels}
+                    legend={tr("Tình trạng bỏ hũ")}
+                    value={funded}
+                    onChange={setFunded}
+                    options={[
+                      {
+                        value: "unfunded",
+                        label: `${tr("Chưa bỏ hũ")} (${fundedCounts.unfunded})`,
+                      },
+                      {
+                        value: "funded",
+                        label: `${tr("Đã bỏ hũ")} (${fundedCounts.funded})`,
+                      },
+                    ]}
                   />
                   <label className="expense-checkbox">
                     <input
@@ -630,7 +682,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                           </thead>
                           <tbody>
                             {rows.map((row) => (
-                              <tr key={row.jarId}>
+                              <tr key={row.jarId} className={fundedClass(row)}>
                                 <th>
                                   <button
                                     className="expense-name-button"
@@ -663,6 +715,16 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                                       BigInt(row.funding) + BigInt(row.extra)
                                     ).toString(),
                                   )}
+                                  {fundedBadge(row)}
+                                  {canMarkFunded(row) &&
+                                    !isFunded(row) &&
+                                    BigInt(row.required) > 0n && (
+                                      <small>
+                                        {tr("Cần bỏ {0}", {
+                                          0: money(row.required),
+                                        })}
+                                      </small>
+                                    )}
                                 </td>
                                 <td>
                                   {money(row.spent)}
@@ -675,6 +737,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                                 <td>{money(row.closing)}</td>
                                 <td>
                                   <div className="expense-row-actions">
+                                    {fundedButton(row)}
                                     {!readonly && (
                                       <button
                                         className="expense-icon-button"
@@ -719,7 +782,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                         {rows.map((row) => (
                           <article
                             key={row.jarId}
-                            className="panel expense-jar-card"
+                            className={`panel expense-jar-card ${fundedClass(row)}`}
                           >
                             <div>
                               <button
@@ -736,6 +799,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                                 row={row}
                                 labels={view.book?.labels}
                               />
+                              {fundedBadge(row)}
                             </div>
                             <div className="jar-balance">
                               <span>
@@ -778,6 +842,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                             )}
                             {!readonly && (
                               <div className="expense-actions">
+                                {fundedButton(row)}
                                 <button
                                   className="expense-secondary"
                                   onClick={() =>
@@ -823,6 +888,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                               setKind([]);
                               setMethod([]);
                               setGroup([]);
+                              setFunded([]);
                               setInactive(false);
                             }}
                           >

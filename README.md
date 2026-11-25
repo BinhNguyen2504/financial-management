@@ -14,7 +14,7 @@ Tinh chỉnh 02/11/2026: [bố cục thao tác toàn ứng dụng](docs/features
 
 **Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu đã được triển khai trong source**. Có Auth email, HTTP API v1 và migration PostgreSQL/RLS. Cài đặt có sao lưu/khôi phục toàn tài khoản; các khu vực dự kiến còn lại vẫn là bộ khung P0.
 
-**Chi tiêu:** hũ chi tháng/tích lũy, tự tính tiền bỏ hũ, nhập số dư, sử dụng tích lũy, cấu hình có hiệu lực, báo cáo bảng/biểu đồ và chốt từng năm. Sao lưu toàn tài khoản trong Cài đặt.
+**Chi tiêu:** hũ chi tháng/tích lũy, tự tính tiền bỏ hũ, đánh dấu từng hũ đã bỏ tiền (từ 11/2026 hũ mới mặc định chưa bỏ; có bộ lọc theo tình trạng), nhập số dư, sử dụng tích lũy, cấu hình có hiệu lực, báo cáo bảng/biểu đồ và chốt từng năm. Sao lưu toàn tài khoản trong Cài đặt.
 
 **Sao lưu và khôi phục:** Cài đặt cho phép xuất JSON V3 đầy đủ sáu module (nhận cả bản V1/V2) cùng lịch sử và hồ sơ, nhập sang tài khoản trống với tùy chọn khôi phục hồ sơ. File không mật khẩu, không chứa thông tin đăng nhập. Xuất file không phụ thuộc migration biên nhận import; khôi phục cần migration này. Schema cũ thiếu cột logo/icon phân loại vẫn xuất được; khôi phục chỉ được bỏ qua cột còn thiếu khi giá trị trong file là null, tránh mất metadata. Cấu hình giới hạn truyền file phù hợp hosting; xem [đặc tả backup](docs/features/backup.md). Chưa áp dụng migration mới lên cloud.
 

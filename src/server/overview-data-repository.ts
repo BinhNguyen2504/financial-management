@@ -1,6 +1,11 @@
 import { timePhase } from "./performance";
 import type postgres from "postgres";
-import { expenseJarExpression, expenseJarsTable } from "./book-projections";
+import {
+  expenseInputExpression,
+  expenseInputsTable,
+  expenseJarExpression,
+  expenseJarsTable,
+} from "./book-projections";
 import { z } from "zod";
 import type { Clock } from "../domain/shared/types";
 import type { WidgetId } from "../domain/overview/layout";
@@ -53,7 +58,7 @@ export function postgresOverviewDataRepository(sql: postgres.Sql) {
           `
         select jsonb_build_object('start',start_month,'version',version,
           'jars',${rows(expenseJarsTable, expenseJarExpression, "start_month,id")},
-          'inputs',${needsExpenses ? rows("expense_month_inputs", "jsonb_build_object('jarId',jar_id,'month',month,'target',target::text,'funding',funding::text,'extra',extra::text,'closing',closing::text)", "month,jar_id", "and month <= $2") : "'[]'::jsonb"},
+          'inputs',${needsExpenses ? rows(expenseInputsTable, expenseInputExpression, "month,jar_id", "and month <= $2") : "'[]'::jsonb"},
           'spends',${needsExpenses ? rows("expense_spends", "jsonb_build_object('id',id,'jarId',jar_id,'date',to_char(date,'YYYY-MM-DD'),'amount',amount::text,'note','','deleted',false)", "date,id", "and not deleted and to_char(date,'YYYY-MM') <= $2") : "'[]'::jsonb"},
           'years',${needsExpenses ? rows("expense_years", "jsonb_build_object('year',year,'closedAt',closed_at,'snapshot',snapshot)", "year", "and year <= left($2,4)::integer") : "'[]'::jsonb"},
           'labels','[]'::jsonb,'audit','[]'::jsonb) as book

@@ -25,6 +25,12 @@ type DB = Pick<postgres.Sql, "unsafe">;
  */
 export const expenseJarsTable = "expense_jars j";
 export const expenseJarExpression = `jsonb_build_object('id',id,'kind',kind,'start',start_month,'opening',opening::text,'rules',rules,'deleted',coalesce((to_jsonb(j)->>'deleted')::boolean,false))`;
+/**
+ * One expression for every month-input read. `funded` is read through to_jsonb so a database that
+ * has not applied the funded-mark migration still returns null (the default rule).
+ */
+export const expenseInputsTable = "expense_month_inputs i";
+export const expenseInputExpression = `jsonb_build_object('jarId',jar_id,'month',month,'target',target::text,'funding',funding::text,'extra',extra::text,'closing',closing::text,'funded',(to_jsonb(i)->>'funded')::boolean)`;
 const rows = (table: string, expression: string, order: string) =>
   `(select coalesce(jsonb_agg(${expression} order by ${order}), '[]'::jsonb)
     from public.${table} where owner_id=$1)`;
@@ -42,7 +48,7 @@ export function bookProjection(kind: keyof FinancialBooks, history = true) {
     case "expenses":
       return `select jsonb_build_object('version',version,'start',start_month,
         'jars',${rows(expenseJarsTable, expenseJarExpression, "start_month,id")},
-        'inputs',${rows("expense_month_inputs", "jsonb_build_object('jarId',jar_id,'month',month,'target',target::text,'funding',funding::text,'extra',extra::text,'closing',closing::text)", "month,jar_id")},
+        'inputs',${rows(expenseInputsTable, expenseInputExpression, "month,jar_id")},
         'spends',${rows("expense_spends", "jsonb_build_object('id',id,'jarId',jar_id,'date',to_char(date,'YYYY-MM-DD'),'amount',amount::text,'note',note,'deleted',deleted)", "date,id")},
         'years',${rows("expense_years", "jsonb_build_object('year',year,'closedAt',case when closed_at is null then null else to_char(closed_at at time zone 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') end,'snapshot',snapshot)", "year")},
         'labels',${historyRows(rows("expense_labels l", "jsonb_build_object('id',id,'kind',kind,'name',name,'brandKey',to_jsonb(l)->>'brand_key','iconKey',to_jsonb(l)->>'icon_key')", "kind,name"))},

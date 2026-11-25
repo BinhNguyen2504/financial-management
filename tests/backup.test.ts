@@ -124,6 +124,24 @@ describe("portable full backup validation", () => {
     );
     expect(backupBooks(b).expenses?.jars[0].deleted).toBe(true);
   });
+  it("reads a month input saved before the funded mark with the default rule, and keeps an explicit mark", () => {
+    const input = {
+      jar_id: randomUUID(),
+      month: "2026-11",
+      target: null,
+      funding: null,
+      extra: "0",
+      closing: null,
+    };
+    expect(tableSchemas.expense_month_inputs.parse(input).funded).toBeNull();
+    expect(
+      tableSchemas.expense_month_inputs.parse({ ...input, funded: false })
+        .funded,
+    ).toBe(false);
+    expect(() =>
+      tableSchemas.expense_month_inputs.parse({ ...input, funded: "yes" }),
+    ).toThrow();
+  });
   it("includes Fund business dates in the Vietnamese timezone in the preview period", () => {
     const b = empty();
     b.tables.funds_transactions.push({

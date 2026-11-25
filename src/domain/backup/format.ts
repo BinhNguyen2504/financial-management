@@ -76,6 +76,8 @@ const expenseRow = z.strictObject({
   closing: signed,
   over: signed,
   status: z.enum(["actual", "provisional", "planned"]),
+  // Rows sealed before the funded mark have no flag; they count as funded.
+  funded: z.boolean().optional(),
 });
 const savingsCategory = z.strictObject({
   id: uuid,
@@ -366,6 +368,8 @@ export const tableSchemas = {
     funding: money.nullable(),
     extra: money,
     closing: money.nullable(),
+    // Backups written before the funded mark have no flag; null keeps the default rule.
+    funded: z.boolean().nullable().default(null),
   }),
   expense_spends: z.strictObject({
     id: uuid,

@@ -143,6 +143,9 @@ async function readTables(db: DB, owner: string): Promise<BackupTables> {
         // Pre-delete schemas have no column: every jar is simply not deleted.
         if (table === "expense_jars" && c === "deleted")
           return "coalesce((to_jsonb(expense_jars)->>'deleted')::boolean,false) as deleted";
+        // Pre-funded-mark schemas have no column: every month keeps the default.
+        if (table === "expense_month_inputs" && c === "funded")
+          return "(to_jsonb(expense_month_inputs)->>'funded')::boolean as funded";
         if (numericColumns.has(c)) return `${c}::text as ${c}`;
         if (c === "date") return "to_char(date,'YYYY-MM-DD') as date";
         if (c === "at" || c === "closed_at")
@@ -461,6 +464,21 @@ export function postgresDataRepository(sql: postgres.Sql) {
             503,
             "SCHEMA_NOT_READY",
           );
+        const [fundedMark] = await timePhase("sql", () =>
+          db.unsafe<{ ready: boolean }[]>(
+            `select count(*) = 1 as ready from information_schema.columns
+          where table_schema='public' and table_name='expense_month_inputs' and column_name='funded'`,
+          ),
+        );
+        if (
+          !fundedMark.ready &&
+          backup.tables.expense_month_inputs.some((i) => i.funded != null)
+        )
+          throw new BackupError(
+            "Một phần dữ liệu chưa sẵn sàng. Chưa thể khôi phục trạng thái đã bỏ hũ; hãy kiểm tra lại thiết lập hệ thống.",
+            503,
+            "SCHEMA_NOT_READY",
+          );
         for (const table of backupTables) {
           if (!backup.tables[table].length) continue;
           const columns = Object.keys(tableSchemas[table].shape).filter(
@@ -469,7 +487,10 @@ export function postgresDataRepository(sql: postgres.Sql) {
                 !missingVisuals.some((missing) => missing === column)) &&
               (table !== "expense_jars" ||
                 column !== "deleted" ||
-                jarDelete.ready),
+                jarDelete.ready) &&
+              (table !== "expense_month_inputs" ||
+                column !== "funded" ||
+                fundedMark.ready),
           );
           // PostgreSQL checks self-referencing FKs after the entire INSERT statement.
           // Only allowlisted columns are read; owner is exclusively server supplied.

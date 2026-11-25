@@ -28,6 +28,11 @@ export interface MonthInput {
   funding: Money | null;
   extra: Money;
   closing: Money | null;
+  /**
+   * User's mark that the month's contribution has really been put in the jar.
+   * null/undefined = default (see FUNDING_MARK_START in engine.ts).
+   */
+  funded?: boolean | null;
 }
 export interface Spend {
   id: string;
@@ -57,6 +62,8 @@ export interface ExpenseRow {
   closing: Money;
   over: Money;
   status: "actual" | "provisional" | "planned";
+  /** Absent in rows sealed before the funded mark existed: treat as funded. */
+  funded?: boolean;
 }
 export interface ExpenseYear {
   year: number;

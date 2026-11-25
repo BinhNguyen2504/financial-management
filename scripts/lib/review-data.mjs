@@ -110,6 +110,8 @@ export function buildReviewData({
           funding: null,
           extra: over ? String(amount / 2) : "0",
           closing: String(Math.floor(amount * (over ? 0.1 : remaining / 100))),
+          // Leave a few jars of the current month unfunded so the preview shows both states.
+          funded: !(n === currentMonth && index % 4 === 3 && !over),
         });
       } else {
         expenses.inputs.push({
@@ -119,6 +121,7 @@ export function buildReviewData({
           funding: null,
           extra: "0",
           closing: null,
+          funded: true,
         });
         if (n % 3 === 0 || n === currentMonth)
           expenses.spends.push({
@@ -314,7 +317,20 @@ export function buildReviewSQL(data, { runtime = false } = {}) {
       ["id", "kind", "start_month", "opening", "rules"],
       e.jars.map((j) => [j.id, j.kind, j.start, j.opening, j.rules]),
     ),
-    insert(
+    // The funded mark needs its migration; older schemas seed the same rows without it.
+    `if exists (select 1 from information_schema.columns where table_schema='public' and table_name='expense_month_inputs' and column_name='funded') then\n${insert(
+      "expense_month_inputs",
+      ["jar_id", "month", "target", "funding", "extra", "closing", "funded"],
+      e.inputs.map((r) => [
+        r.jarId,
+        r.month,
+        r.target,
+        r.funding,
+        r.extra,
+        r.closing,
+        r.funded ?? null,
+      ]),
+    )}\nelse\n${insert(
       "expense_month_inputs",
       ["jar_id", "month", "target", "funding", "extra", "closing"],
       e.inputs.map((r) => [
@@ -325,7 +341,7 @@ export function buildReviewSQL(data, { runtime = false } = {}) {
         r.extra,
         r.closing,
       ]),
-    ),
+    )}\nend if;`,
     insert(
       "expense_spends",
       ["id", "jar_id", "date", "amount", "note", "deleted"],

@@ -30,6 +30,7 @@ const actionNames: Record<string, string> = {
   setJarEmoji: "Đổi biểu tượng",
   configureJar: "Đổi cấu hình",
   editMonth: "Điều chỉnh tháng",
+  setJarFunded: "Đánh dấu bỏ hũ",
   stopJar: "Ngừng cấp tiền",
   deleteJar: "Xóa hũ",
   upsertSpend: "Ghi / sửa lần sử dụng",
@@ -148,6 +149,11 @@ export function ExpenseDetails({
                             {r.status === "planned"
                               ? tr("Kế hoạch")
                               : tr("Tạm tính")}
+                          </StatusBadge>
+                        )}
+                        {r.funded === false && (
+                          <StatusBadge size="compact" tone="warning">
+                            {tr("Chưa bỏ hũ")}
                           </StatusBadge>
                         )}
                       </span>

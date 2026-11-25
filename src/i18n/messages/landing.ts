@@ -23,8 +23,8 @@ export const landing = {
   "Tìm câu trả lời để bắt đầu tự tin hơn.":
     "Find the answers you need to get started with confidence.",
   "Kỳ minh họa cố định": "Fixed illustrative period",
-  "Hũ chi tháng và tích lũy, có emoji riêng, phân loại ngân hàng/ví và bộ lọc hũ đã ngừng.":
-    "Monthly and accumulation jars, with custom emoji, bank and wallet categories, and stopped-jar filtering.",
+  "Hũ chi tháng và tích lũy, có emoji riêng, phân loại ngân hàng/ví, đánh dấu hũ đã bỏ tiền và bộ lọc hũ.":
+    "Monthly and accumulation jars, with custom emoji, bank and wallet categories, a funded mark per jar and jar filtering.",
   "Vào ứng dụng": "Open app",
   "Bắt đầu hành trình của bạn": "Start your journey",
   "Bắt đầu sử dụng": "Get started",

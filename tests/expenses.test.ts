@@ -41,6 +41,13 @@ function book(
     time,
   );
 }
+function fund(value: ExpenseBook, month: string, time = clock, funded = true) {
+  return applyAction(
+    value,
+    { type: "setJarFunded", jarId: id, month, funded },
+    time,
+  );
+}
 function edit(
   value: ExpenseBook,
   month: string,
@@ -422,15 +429,196 @@ describe("Accumulation", () => {
     ).toThrow(/Chỉ hũ tích lũy/);
   });
 });
+describe("Funded mark", () => {
+  const november = { today: "2026-11-20", now: "2026-11-20T09:00:00.000Z" };
+  const setFunded = (
+    value: ExpenseBook,
+    month: string,
+    funded: boolean,
+    time = november,
+  ) =>
+    applyAction(
+      value,
+      { type: "setJarFunded", jarId: id, month, funded },
+      time,
+    );
+  const monthly = (opening = "0") =>
+    book("monthly", opening, "2026-10", november);
+  it("keeps months before November 2026 funded by default", () => {
+    const r = row(monthly(), "2026-10", november);
+    expect(r.funded).toBe(true);
+    expect(r.funding).toBe("2000000");
+    expect(r.spent).toBe("2000000");
+  });
+  it("starts the current month unfunded: nothing contributed and nothing spent", () => {
+    const r = row(monthly(), "2026-11", november);
+    expect(r.funded).toBe(false);
+    expect(r.required).toBe("2000000");
+    expect(r.funding).toBe("0");
+    expect(r.extra).toBe("0");
+    expect(r.spent).toBe("0");
+    expect(r.closing).toBe("0");
+  });
+  it("matches the previous figures once marked, and reverts when unmarked", () => {
+    const marked = setFunded(monthly(), "2026-11", true);
+    const r = row(marked, "2026-11", november);
+    expect(r.funded).toBe(true);
+    expect(r.funding).toBe("2000000");
+    expect(r.spent).toBe("2000000");
+    expect(r.closing).toBe("0");
+    const reverted = row(
+      setFunded(marked, "2026-11", false),
+      "2026-11",
+      november,
+    );
+    expect(reverted.funding).toBe("0");
+    expect(reverted.spent).toBe("0");
+  });
+  it("carries the unspent opening forward so next month needs more money", () => {
+    const b = book("monthly", "500000", "2026-11", november);
+    const r = row(b, "2026-11", november);
+    expect(r.opening).toBe("500000");
+    expect(r.funding).toBe("0");
+    expect(r.spent).toBe("0");
+    expect(r.closing).toBe("500000");
+    expect(row(b, "2026-12", november).required).toBe("1500000");
+  });
+  it("counts an explicit extra deposit even while the jar is unfunded", () => {
+    const b = edit(monthly(), "2026-11", { extra: "100000" }, november);
+    const r = row(b, "2026-11", november);
+    expect(r.funding).toBe("0");
+    expect(r.extra).toBe("100000");
+    expect(r.spent).toBe("0");
+    expect(r.closing).toBe("100000");
+  });
+  it("remembers a custom funding amount across unmark and remark", () => {
+    let b = edit(monthly(), "2026-11", { funding: "1000000" }, november);
+    b = setFunded(b, "2026-11", true);
+    expect(row(b, "2026-11", november).funding).toBe("1000000");
+    b = setFunded(b, "2026-11", false);
+    expect(row(b, "2026-11", november).funding).toBe("0");
+    b = setFunded(b, "2026-11", true);
+    expect(row(b, "2026-11", november).funding).toBe("1000000");
+  });
+  it("editing a month keeps the mark", () => {
+    const b = edit(
+      setFunded(monthly(), "2026-11", true),
+      "2026-11",
+      { extra: "50000" },
+      november,
+    );
+    expect(row(b, "2026-11", november).funded).toBe(true);
+    expect(b.inputs.find((i) => i.month === "2026-11")?.funded).toBe(true);
+  });
+  it("does not break an unfunded month that already has a typed closing balance", () => {
+    let b = setFunded(monthly(), "2026-11", true);
+    b = edit(b, "2026-11", { closing: "300000" }, november);
+    b = setFunded(b, "2026-11", false);
+    const r = row(b, "2026-11", november);
+    expect(r.closing).toBe("0");
+    expect(r.spent).toBe("0");
+  });
+  it("previews the change and records an audit entry", () => {
+    const b = monthly();
+    const next = setFunded(b, "2026-11", true);
+    const change = changes(b, next, november).find(
+      (c) => c.month === "2026-11",
+    );
+    expect(change?.before?.funding).toBe("0");
+    expect(change?.after?.funding).toBe("2000000");
+    expect(next.audit.at(-1)?.action).toBe("setJarFunded");
+    expect(next.version).toBe(b.version + 1);
+  });
+  it("rejects future months, stopped jars, months before the jar and hidden jars", () => {
+    const b = monthly();
+    expect(() => setFunded(b, "2026-12", true)).toThrow(/hiện tại hoặc đã qua/);
+    const late = applyAction(
+      applyAction(null, { type: "initialize", start: "2026-09" }, november),
+      {
+        type: "createJar",
+        id,
+        kind: "monthly",
+        start: "2026-10",
+        opening: "0",
+        name: "Sinh hoạt",
+        description: "",
+        method: "Tiền mặt",
+        group: "",
+        amount: "2000000",
+      },
+      november,
+    );
+    expect(() => setFunded(late, "2026-09", true)).toThrow(/chưa bắt đầu/);
+    const stopped = applyAction(
+      b,
+      { type: "stopJar", jarId: id, month: "2026-11" },
+      november,
+    );
+    expect(() => setFunded(stopped, "2026-11", true)).toThrow(/đã ngừng/);
+    expect(row(stopped, "2026-11", november).funded).toBe(true);
+    const deleted = applyAction(b, { type: "deleteJar", jarId: id }, november);
+    expect(() => setFunded(deleted, "2026-11", true)).toThrow(/Không tìm thấy/);
+  });
+  it("rejects years that are already closed", () => {
+    const december = { today: "2026-12-31", now: "2026-12-31T12:00:00.000Z" };
+    const january = { today: "2027-01-05", now: "2027-01-05T12:00:00.000Z" };
+    const sealed = applyAction(
+      book("monthly", "0", "2026-12", december),
+      { type: "closeYear", year: 2026 },
+      january,
+    );
+    expect(() => setFunded(sealed, "2026-12", true, january)).toThrow(
+      /đã chốt/,
+    );
+  });
+  it("accepts only the strict action shape", () => {
+    const base = { type: "setJarFunded", jarId: id, month: "2026-11" };
+    expect(() =>
+      expenseActionSchema.parse({ ...base, funded: true }),
+    ).not.toThrow();
+    expect(() => expenseActionSchema.parse({ ...base })).toThrow();
+    expect(() =>
+      expenseActionSchema.parse({ ...base, funded: true, extra: 1 }),
+    ).toThrow();
+  });
+  it("treats an accumulation jar with recorded usage as funded, and protects it", () => {
+    const base = book("accumulation", "0", "2026-11", november);
+    expect(row(base, "2026-11", november).funded).toBe(false);
+    expect(row(base, "2026-11", november).closing).toBe("0");
+    const marked = setFunded(base, "2026-11", true);
+    const used = applyAction(
+      marked,
+      {
+        type: "upsertSpend",
+        id: spendId,
+        jarId: id,
+        date: "2026-11-10",
+        amount: "500000",
+        note: "",
+      },
+      november,
+    );
+    expect(row(used, "2026-11", november).spent).toBe("500000");
+    expect(row(used, "2026-11", november).closing).toBe("1500000");
+    expect(() => setFunded(used, "2026-11", false)).toThrow(/không đủ tiền/);
+    // Without an explicit mark, a month that already has usage counts as funded.
+    const unmarkedUsed = { ...used, inputs: [] };
+    expect(row(unmarkedUsed, "2026-11", november).funded).toBe(true);
+  });
+});
 describe("Years, archives, and labels", () => {
   const december = { today: "2026-12-31", now: "2026-12-31T12:00:00.000Z" };
   const january = { today: "2027-01-05", now: "2027-01-05T12:00:00.000Z" };
   it("carries monthly balances into January, once, with no extra income", () => {
-    const b = edit(
-      book("monthly", "0", "2026-12", december),
-      "2026-12",
-      { closing: "300000" },
-      december,
+    const b = fund(
+      edit(
+        fund(book("monthly", "0", "2026-12", december), "2026-12", december),
+        "2026-12",
+        { closing: "300000" },
+        december,
+      ),
+      "2027-01",
+      january,
     );
     expect(row(b, "2027-01", january).opening).toBe("300000");
     expect(row(b, "2027-01", january).funding).toBe("1700000");
@@ -440,7 +628,11 @@ describe("Years, archives, and labels", () => {
     expect(toView(b, january).book?.years).toHaveLength(2);
   });
   it("carries accumulated funds and permits December completion before sealing", () => {
-    let b = book("accumulation", "500000", "2026-12", december);
+    let b = fund(
+      book("accumulation", "500000", "2026-12", december),
+      "2026-12",
+      december,
+    );
     expect(row(b, "2027-01", january).opening).toBe("2500000");
     b = applyAction(
       b,
@@ -454,11 +646,16 @@ describe("Years, archives, and labels", () => {
       },
       january,
     );
+    b = fund(b, "2027-01", january);
     expect(row(b, "2027-01", january).opening).toBe("1500000");
     expect(row(b, "2027-01", january).funding).toBe("2000000");
   });
   it("seals an immutable snapshot and rejects old-year inputs, uses, and configuration", () => {
-    let b = book("accumulation", "0", "2026-12", december);
+    let b = fund(
+      book("accumulation", "0", "2026-12", december),
+      "2026-12",
+      december,
+    );
     b = applyAction(b, { type: "closeYear", year: 2026 }, january);
     const snapshot = JSON.stringify(b.years[0].snapshot);
     expect(() => edit(b, "2026-12", { funding: "1" }, january)).toThrow(
