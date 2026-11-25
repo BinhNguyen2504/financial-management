@@ -285,6 +285,7 @@ export const expenses = {
     "We could not confirm whether your changes were saved. Save again to check.",
   Hủy: "Cancel",
   "Đang lưu…": "Saving…",
+  "Đang lưu thay đổi…": "Saving changes…",
   "Xác nhận chốt năm": "Confirm year close",
   "Xác nhận lưu": "Confirm save",
   "Đang kiểm tra…": "Checking…",

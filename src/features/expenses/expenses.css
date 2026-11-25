@@ -373,26 +373,77 @@
   background: var(--primary-soft);
   color: var(--primary);
 }
-.expense-row-actions > .expense-fund-button {
-  flex: 0 0 auto;
-}
+/* Three fixed slots keep every row's buttons on one line and in the same columns. */
 .expense-row-actions {
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 112px 44px 44px;
+  justify-content: center;
+}
+.expense-row-actions > .expense-fund-button {
+  grid-column: 1;
+  white-space: nowrap;
+}
+.expense-row-actions > .expense-edit-action {
+  grid-column: 2;
+}
+.expense-row-actions > .expense-spend-action {
+  grid-column: 3;
 }
 .expense-desktop-table td:last-child {
-  width: 220px;
+  width: 240px;
+  min-width: 240px;
 }
-.expense-table-scroll td > [data-size] {
-  display: flex;
-  width: fit-content;
-  margin: 6px 0 0 auto;
+.expense-fund-button[aria-busy="true"]:disabled {
+  opacity: 1;
+  cursor: progress;
 }
-/* Jars still waiting for money stand out; funded ones stay calm. */
+.expense-fund-button .loading-spinner {
+  width: 16px;
+  height: 16px;
+}
+/* A row waiting for the server keeps its layout but its figures look provisional. */
+.expense-desktop-table tr.is-updating > td:not(:last-child),
+.expense-jar-card.is-updating > :not(.expense-actions) {
+  opacity: 0.55;
+  transition: opacity 150ms ease;
+}
+.expense-saving {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  color: var(--primary);
+  font-size: var(--font-size-14);
+}
+.expense-saving.is-active {
+  display: inline-flex;
+}
+@media (prefers-reduced-motion: reduce) {
+  .expense-desktop-table tr.is-updating > td:not(:last-child),
+  .expense-jar-card.is-updating > :not(.expense-actions) {
+    transition: none;
+  }
+}
+/* Desktop table: the row itself shows whether the money is in the jar yet.
+   Waiting rows are warm and loud with a thick edge bar; funded rows are cool and quiet. */
+.expense-desktop-table tr.is-funded > * {
+  background: color-mix(in srgb, var(--primary-soft) 45%, var(--surface));
+}
+.expense-desktop-table tr.is-funded > :first-child {
+  box-shadow: inset 3px 0 0 var(--primary);
+}
 .expense-desktop-table tr.is-unfunded > * {
   background: var(--accent-soft);
 }
 .expense-desktop-table tr.is-unfunded > :first-child {
-  box-shadow: inset 4px 0 0 var(--accent);
+  box-shadow: inset 6px 0 0 var(--accent);
+}
+.expense-desktop-table td.expense-figure-pending {
+  color: var(--muted);
+}
+.expense-table-scroll small.expense-fund-need {
+  color: var(--accent);
+  font-weight: var(--weight-medium);
 }
 .expense-jar-card.is-unfunded {
   border-left: 4px solid var(--accent);

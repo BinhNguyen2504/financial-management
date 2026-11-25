@@ -184,3 +184,15 @@ Tiền cần thêm được tính từ đầu tháng, nhưng tiền thật chỉ
 - **Phạm vi ảnh hưởng.** Báo cáo, Tổng quan và nguồn Chi tiêu cho báo cáo đều đọc cùng `materialize`, nên số "Tiền đã bỏ hũ" và Thực chi theo dấu. Quỹ an toàn chỉ đọc mức cấu hình nên không đổi. Bộ dữ liệu review (`npm run data:preview`) gán dấu cho các tháng và để vài hũ ở tháng hiện tại chưa bỏ; seed tự bỏ cột `funded` khi schema chưa có migration.
 
 Kiểm chứng: unit test domain (mặc định, đánh dấu/bỏ, dư chuyển tháng, tiền cấp tùy chỉnh, từ chối tháng tương lai/hũ ngừng/năm chốt, hũ tích lũy, schema strict), backup (đọc bản cũ, round trip, thiếu cột) và PostgreSQL cô lập (lưu cột, retry idempotent, cách ly owner). Spec browser `tests/browser/expense-funded.spec.ts`. Một số test cũ dùng đồng hồ từ 11/2026 trở đi đã được cập nhật để đánh dấu đã bỏ hũ trước khi kiểm tiền cấp. Môi trường và giới hạn xem [validation](../07-validation.md).
+
+### Tinh chỉnh giao diện nút đánh dấu — 25/11/2026
+
+Sau khi dùng thử có hai vấn đề: bấm không có phản hồi nào trong lúc lưu, và ở hũ tích lũy ba nút của cột Thao tác bị xuống dòng làm hàng cao lệch nhau. Đã sửa, không đổi nghiệp vụ, API hay dữ liệu:
+
+- **Chỉ báo đang lưu.** Trong lúc lệnh đang gửi, icon của nút thành spinner (`aria-busy`, nút tạm khóa để không gửi trùng), các con số của hàng/thẻ đó mờ đi và dòng tiêu đề tháng hiện "Đang lưu thay đổi…"; xong thì toast kết quả như trước. Nút giữ nguyên chiều rộng nên hàng không nhảy. Hiệu ứng mờ tắt chuyển động khi hệ thống bật giảm chuyển động.
+- **Hàng đợi.** Mỗi hũ có trạng thái chờ riêng và có thể bấm tiếp hũ khác khi hũ trước chưa lưu xong (ngày có lương thường đánh dấu hàng loạt). Các lệnh được gửi lần lượt, mỗi lệnh dùng version mới nhất vừa nhận; lỗi (mất phản hồi, xung đột version) tải lại dữ liệu rồi tiếp tục, hết phiên đăng nhập thì dừng hàng đợi và chuyển về đăng nhập.
+- **Cột Thao tác.** Ba ô cố định (nút Đã bỏ hũ 112px, Điều chỉnh 44px, Dùng tiền 44px, cách nhau 8px, cột 240px) nên mọi nút nằm một dòng và thẳng cột giữa các hũ; hàng hũ tích lũy không còn cao hơn hàng khác. Thẻ mobile giữ hai nút cạnh nhau.
+
+- **Bảng desktop không dùng nhãn.** Trạng thái thể hiện bằng chính dòng: hũ chưa bỏ có nền ấm (`--accent-soft`), vạch trái dày 6px màu nhấn, số "Đã bỏ hũ"/"Thực chi" 0 được làm nhạt và dòng "Cần bỏ …" màu nhấn; hũ đã bỏ có nền xanh nhạt (pha `--primary-soft` với `--surface`) và vạch trái mảnh 3px màu chính. Trình đọc màn hình vẫn nhận "Đã bỏ hũ"/"Chưa bỏ hũ" qua văn bản ẩn trong ô và `aria-pressed` của nút. Thẻ mobile giữ nhãn vì không có cột để đọc trạng thái.
+
+Kiểm chứng bằng Playwright MCP trên bản preview local (dữ liệu review, Chromium 1440px và 390px, giao diện sáng và tối ở desktop, tiếng Việt): đo vị trí nút ở cả 18 hàng, chụp trạng thái đang lưu (giả lập mạng chậm 4 giây) ở desktop và mobile, không tràn ngang. Spec browser `expense-funded.spec.ts` có thêm ca kiểm spinner/`aria-busy`, bấm nhanh hai hũ liên tiếp và các nút cùng một dòng (gồm hũ tích lũy). Chưa chụp đủ năm theme, chế độ tối, tiếng Anh hay thiết bị thật.
