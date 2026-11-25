@@ -194,6 +194,10 @@ export const errors = {
   "Nhập số tiền VND nguyên không âm, tối đa 24 chữ số.":
     "Enter a non-negative whole VND amount, up to 24 digits.",
   "Cần nhập tên.": "Name is required.",
+  "Tên nguồn thu đã tồn tại.":
+    "An income source with this name already exists.",
+  "Tên hũ đã tồn tại.": "A jar with this name already exists.",
+  "Tên danh mục đã tồn tại.": "A category with this name already exists.",
   "Ngày nhận phải từ 1 đến 31.": "The receive day must be from 1 to 31.",
   "Ngày nhận phải là số nguyên từ 1 đến 31.":
     "The receive day must be a whole number from 1 to 31.",

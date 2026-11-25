@@ -3,7 +3,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PageGuide } from "@/features/help/page-guide";
 import { FilterOptions } from "@/components/filter-options";
 import { useUser } from "@/features/profile/user-provider";
-import { ViewControls } from "@/components/view-controls";
+import { CurrentPeriodButton, ViewControls } from "@/components/view-controls";
 import { ActionOptions } from "@/components/action-options";
 import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
@@ -193,7 +193,13 @@ function AccountSavings(props: Parameters<typeof useSavingsWorkspace>[0]) {
                   min="2000-01"
                   max={today.slice(0, 7)}
                   onChange={setMonth}
-                />
+                >
+                  {month !== today.slice(0, 7) && (
+                    <CurrentPeriodButton
+                      onClick={() => setMonth(today.slice(0, 7))}
+                    />
+                  )}
+                </MonthYearSelect>
               </div>
               <div className="expense-actions savings-main-actions">
                 <button
@@ -241,8 +247,6 @@ function AccountSavings(props: Parameters<typeof useSavingsWorkspace>[0]) {
                 </ActionOptions>
               </div>
               <ViewControls
-                past={month !== today.slice(0, 7)}
-                onCurrent={() => setMonth(today.slice(0, 7))}
                 count={
                   tab === "reports"
                     ? [

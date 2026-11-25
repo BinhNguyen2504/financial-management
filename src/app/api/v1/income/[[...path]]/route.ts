@@ -26,6 +26,7 @@ function failure(error: unknown) {
     accepts: (error): error is IncomeError =>
       error instanceof IncomeError || error instanceof ExpenseError,
     log: "Income API failed",
+    exposeDomainFields: true,
     unavailable:
       "Không thể truy cập dữ liệu. Kiểm tra kết nối và thử lại; nội dung đang nhập vẫn được giữ.",
   });

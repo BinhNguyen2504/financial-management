@@ -5,7 +5,7 @@ import { useUser } from "@/features/profile/user-provider";
 import { FilterOptions } from "@/components/filter-options";
 import { MultiSelectFilter } from "@/components/multi-select-filter";
 import { expenseSortKeys, nextSort, type ExpenseSortKey } from "./sort";
-import { ViewControls } from "@/components/view-controls";
+import { CurrentPeriodButton } from "@/components/view-controls";
 import { AnimatedDetails } from "@/components/animated-details";
 import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
@@ -363,7 +363,16 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                       );
                       return `${value}${entry?.closedAt ? tr(" · Đã chốt") : !entry ? tr(" · Chưa có dữ liệu") : value === currentYear ? tr(" · Hiện tại") : tr(" · Chưa chốt")}`;
                     }}
-                  />
+                  >
+                    {selectedMonth !== view.today.slice(0, 7) && (
+                      <CurrentPeriodButton
+                        onClick={() => {
+                          setYear(currentYear);
+                          setMonth(Number(view.today.slice(5, 7)));
+                        }}
+                      />
+                    )}
+                  </MonthYearSelect>
                 </div>
                 <ScrollTabs
                   className="expense-segment"
@@ -479,13 +488,6 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                   </div>
                 </AnimatedDetails>
               )}
-              <ViewControls
-                past={selectedMonth !== view.today.slice(0, 7)}
-                onCurrent={() => {
-                  setYear(currentYear);
-                  setMonth(Number(view.today.slice(5, 7)));
-                }}
-              />
               {tab === "month" && (
                 <section
                   className="expense-metrics"

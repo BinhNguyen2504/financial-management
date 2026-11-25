@@ -1,5 +1,14 @@
 # Xác minh
 
+## Chống trùng tên, nút danh mục và vị trí Về kỳ hiện tại — 25/11/2026
+
+- Thay đổi: kiểm tra trùng tên khi tạo/đổi tên nguồn thu, hũ Chi tiêu, danh mục Tiết kiệm và danh mục Đầu tư (không phân biệt hoa/thường và khoảng trắng, giữ dấu; mục đã ngừng vẫn tính; chỉ khi tạo mới hoặc tên đổi); ô “—” trong Bảng thu nhập gọn và thẳng cột; nút Sửa/Xóa/Ngừng ở tab Nguồn thu đều đặn cùng kiểu chữ + icon; nút “Về kỳ hiện tại” chuyển sát bộ chọn kỳ ở Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Báo cáo. Không migration; không đổi `validate.ts` của backup.
+- `npm run check` (Node 22.12.0): lint, kiến trúc (334 source files / 0 violations), format, `npm test` **407/407**, typecheck và build qua. Test mới: `names.test.ts`, trùng tên cho Thu nhập/Chi tiêu/Tiết kiệm/Đầu tư (hoa/thường, khoảng trắng, giữ dấu, mục đã ngừng/đã xóa, đổi mô tả khi dữ liệu đã trùng), thu phát sinh lặp tên, backup chứa tên trùng vẫn qua `validateBackup`. Các fixture cũ tạo hai danh mục cùng tên đã được đổi tên; test báo cáo Chi tiêu “không gộp hũ trùng tên” dựng dữ liệu trùng trực tiếp vì action không còn cho tạo.
+- `npm run test:db` (PostgreSQL 14 tạm, local): **131/131**, gồm ca lỗi trùng tên không ghi dữ liệu, không đổi version/audit.
+- `npm run test:e2e` (Chromium desktop + mobile iPhone 13 emulation, Auth double local): `income.spec.ts` (kể cả ca mới trùng tên/nút chữ+icon/Về kỳ hiện tại) và `layout-scroll.spec.ts` (hàng bằng nhau, dấu “—” thẳng mép phải với số, bấm thật vào vùng 44px ngay ngoài mép nút) qua. Ca `layout-scroll` cũ yêu cầu nút “—” cao ≥44px đã đổi thành kiểm vùng bấm, vì nút nay gọn có chủ đích. Các suite `interface-feedback`, `status-badges`, `workspace-comfort`, `workspace-spacing`, `usability`, `expense-*`, `savings`, `investments`, `reports`, `overview`, `backup` đã được khởi chạy nhưng **kết quả chưa được ghi ở mục này**; chưa có ảnh chụp trước/sau của năm trang.
+- Giới hạn: chưa chạy Firefox/WebKit, chữ lớn 200% hoặc thiết bị thật; chưa áp dụng hay đọc cloud.
+- Đã cập nhật docs Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư và `docs/04-ux-direction.md`. README, catalog và landing/preview không đổi vì không thay đổi phạm vi tính năng hay dữ liệu minh họa.
+
 ## Ngày nhận tiền hằng tháng cho Thu nhập — 25/11/2026
 
 - Thay đổi: mỗi nguồn thu cố định có ngày nhận trong tháng (`receiveDay`, 1–31, mặc định ngày 1); chỉ nhắc/tính “chưa nhập” từ ngày đó, không chặn nhập sớm; dòng chưa đến ngày có nhãn, viền và nền riêng so với dòng chưa nhập và đã nhập. Lưu trong cột jsonb `rules`, **không có migration** và không đổi dữ liệu đã nhập; rule cũ đọc là ngày 1. Backup giữ `schemaVersion` 3, trường tùy chọn không có giá trị mặc định.

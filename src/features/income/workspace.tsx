@@ -2,7 +2,7 @@
 import { EmptyState } from "@/components/empty-state";
 import { PageGuide } from "@/features/help/page-guide";
 import { useUser } from "@/features/profile/user-provider";
-import { ViewControls } from "@/components/view-controls";
+import { CurrentPeriodButton, ViewControls } from "@/components/view-controls";
 import { generationOf } from "@/lib/data-generation";
 import { StatusBadge } from "@/components/status-badge";
 import { MonthYearSelect } from "@/components/month-year-select";
@@ -219,7 +219,16 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                     setYear(Number(period.slice(0, 4)));
                     setMonth(Number(period.slice(5, 7)));
                   }}
-                />
+                >
+                  {selectedMonth !== today.slice(0, 7) && (
+                    <CurrentPeriodButton
+                      onClick={() => {
+                        setYear(Number(today.slice(0, 4)));
+                        setMonth(Number(today.slice(5, 7)));
+                      }}
+                    />
+                  )}
+                </MonthYearSelect>
                 <button
                   className="expense-primary"
                   onClick={() => open({ type: "oneoff" })}
@@ -230,11 +239,6 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                 </button>
               </div>
               <ViewControls
-                past={selectedMonth !== today.slice(0, 7)}
-                onCurrent={() => {
-                  setYear(Number(today.slice(0, 4)));
-                  setMonth(Number(today.slice(5, 7)));
-                }}
                 count={
                   tab === "reports"
                     ? [
@@ -528,16 +532,16 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                           </div>
                           <div className="expense-actions">
                             <button
-                              className="expense-secondary icon-action action-edit"
+                              className="expense-secondary"
                               onClick={() =>
                                 open({ type: "configure", category: c })
                               }
                               aria-label={tr("Sửa danh mục {0}", {
                                 0: rule.name,
                               })}
-                              title={tr("Sửa")}
                             >
-                              <EditActionIcon size={18} aria-hidden="true" />
+                              <EditActionIcon size={17} aria-hidden="true" />
+                              {tr("Sửa")}
                             </button>
                             {(!hasReceipts ||
                               (selectedMonth >= c.start && rule.active)) && (
@@ -560,8 +564,13 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                                   1: rule.name,
                                 })}
                               >
-                                {hasReceipts && (
+                                {hasReceipts ? (
                                   <Archive size={17} aria-hidden="true" />
+                                ) : (
+                                  <DeleteCommandGlyph
+                                    size={17}
+                                    aria-hidden="true"
+                                  />
                                 )}
                                 {hasReceipts
                                   ? tr("Ngừng từ tháng…")

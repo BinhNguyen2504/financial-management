@@ -38,7 +38,7 @@ function category(id: string, kind = "cash", name = "Ví", start = "2026-12") {
 }
 function setup() {
   let b = add(null, category(cash));
-  b = add(b, category(other));
+  b = add(b, category(other, "cash", "Ví khác"));
   b = add(b, category(gold, "gold", "Vàng"));
   return add(b, category(deposit, "deposit", "Ngân hàng"));
 }
@@ -295,6 +295,38 @@ describe("Savings accounting", () => {
         }),
       ),
     ).toThrow();
+  });
+});
+describe("Savings category names", () => {
+  it("rejects a new or renamed category that reuses a name, ignoring case and spacing but not diacritics", () => {
+    const b = setup();
+    for (const name of ["ví", "  VÍ  ", "Ngân hàng"])
+      expect(() => add(b, category(randomUUID(), "cash", name))).toThrow(
+        /Tên danh mục đã tồn tại/,
+      );
+    expect(() => add(b, category(randomUUID(), "cash", "Vi"))).not.toThrow();
+    const rename = (categoryId: string, name: string) =>
+      add(b, {
+        type: "configureCategory",
+        categoryId,
+        month: "2027-01",
+        name,
+        description: "",
+        emoji: "🌱",
+      });
+    expect(() => rename(other, "ví")).toThrow(/Tên danh mục đã tồn tại/);
+    expect(() => rename(cash, "VÍ")).not.toThrow();
+    expect(() => rename(other, "Ví thứ hai")).not.toThrow();
+  });
+  it("still counts an archived category", () => {
+    const b = add(setup(), {
+      type: "archiveCategory",
+      categoryId: other,
+      month: "2027-01",
+    });
+    expect(() => add(b, category(randomUUID(), "cash", "Ví khác"))).toThrow(
+      /Tên danh mục đã tồn tại/,
+    );
   });
 });
 describe("Savings history, valuation, reports", () => {

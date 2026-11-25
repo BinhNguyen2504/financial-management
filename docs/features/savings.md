@@ -140,3 +140,7 @@ Bảng diễn biến, hướng dẫn và ghi chú dài dùng thành phần mở 
 ### Cập nhật 05/11/2026
 
 Danh mục dùng icon lưu trữ/khôi phục với tên truy cập đầy đủ. Vàng mở đầu có hướng dẫn tổng giá vốn và đơn giá bán lại theo đơn vị danh mục; mua/bán cũng ghi rõ đơn vị. Không thay đổi phép tính. Xem [chi tiết](feedback-2026-11-05.md).
+
+## Tên danh mục không trùng — 25/11/2026
+
+Tạo danh mục mới hoặc đổi tên không được trùng tên danh mục khác (không phân biệt hoa/thường và khoảng trắng thừa, giữ dấu; danh mục đã lưu trữ vẫn tính). Chỉ kiểm tra khi tạo mới hoặc tên đổi; dữ liệu và backup cũ đã trùng vẫn đọc, sửa và khôi phục được. Tên sổ tiền gửi không bị kiểm tra vì có thể lặp hợp lệ. Nút “Về kỳ hiện tại” nằm ngay dưới ô chọn tháng.

@@ -133,9 +133,6 @@
 .income-table tbody tr {
   height: 48px;
 }
-.income-table td:has(.income-missing-cell) {
-  padding-block: 0;
-}
 .income-table th:first-child {
   position: sticky;
   left: 0;

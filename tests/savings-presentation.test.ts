@@ -26,7 +26,7 @@ describe("Savings details show the selected asset's actual movement", () => {
           id,
           kind,
           start: "2026-01",
-          name: kind,
+          name: id === other ? "cash 2" : kind,
           unit: kind === "gold" ? "chỉ" : null,
         }),
         clock,

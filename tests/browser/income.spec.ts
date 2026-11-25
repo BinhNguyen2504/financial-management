@@ -746,3 +746,62 @@ test("fixed income is only reminded from its receive day and shows three states"
     )?.receiveDay,
   ).toBe(31);
 });
+
+test("duplicate source names are rejected, category actions show text with icons and the current-period button sits by the pickers", async ({
+  page,
+}) => {
+  await login(page);
+  await addCategory(page, "Lương trùng");
+  // The same name with different case and spacing is refused under the field.
+  await page
+    .getByRole("button", { name: "Thêm danh mục", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByLabel("Tên", { exact: true }).fill("  LƯƠNG   trùng ");
+  await selectMonthYear(page, "Tháng bắt đầu", january);
+  await dialog.getByRole("button", { name: "Lưu", exact: true }).click();
+  await expect(dialog.locator("#income-error-name")).toHaveText(
+    "Tên nguồn thu đã tồn tại.",
+  );
+  await expect(dialog).toBeVisible();
+  // Changing the name clears the error and saves.
+  await dialog.getByLabel("Tên", { exact: true }).fill("Lương khác");
+  await save(page);
+  expect(
+    (await view(page, history)).rows.filter((r) => r.kind === "fixed"),
+  ).toHaveLength(24);
+
+  // Every action in the source list is text plus an icon.
+  await page
+    .getByRole("button", { name: "Nguồn thu đều đặn", exact: true })
+    .click();
+  for (const label of [/^Sửa danh mục /, /^Xóa danh mục /]) {
+    const buttons = page.getByRole("button", { name: label });
+    await expect(buttons).toHaveCount(2);
+    for (const button of await buttons.all()) {
+      await expect(button.locator("svg")).toHaveCount(1);
+      expect((await button.innerText()).trim().length).toBeGreaterThan(0);
+    }
+  }
+
+  // "Về kỳ hiện tại" is part of the period picker, not below the main actions.
+  await page
+    .getByRole("button", { name: "Nhập thu nhập", exact: true })
+    .click();
+  await selectHistory(page);
+  const field = page.locator(".expense-toolbar .month-year-field");
+  const current = field.getByRole("button", {
+    name: "Về kỳ hiện tại",
+    exact: true,
+  });
+  await expect(current).toBeVisible();
+  const selects = await field.locator("select").last().boundingBox();
+  const target = await current.boundingBox();
+  expect(target!.y).toBeGreaterThanOrEqual(selects!.y + selects!.height - 1);
+  expect(target!.y - (selects!.y + selects!.height)).toBeLessThan(24);
+  await current.click();
+  await expect(current).toBeHidden();
+  await expect(
+    page.getByRole("combobox", { name: "Năm", exact: true }),
+  ).toHaveValue(String(year));
+});

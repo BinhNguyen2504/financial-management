@@ -386,3 +386,7 @@ Thanh Chọn file → Kiểm tra → Khôi phục dùng `gap` cho khoảng cách
 ## Trạng thái nguồn thu theo ngày nhận — 25/11/2026
 
 Dòng nguồn thu cố định ở tab Tháng của Thu nhập có ba trạng thái phân biệt bằng nhãn, viền trái và nền, không chỉ bằng màu: **chưa đến ngày nhận** (`StatusBadge` thông tin, viền nét đứt), **đã đến ngày nhưng chưa nhập** (cảnh báo, như trước) và **đã ghi số tiền** (viền xanh lá, hiện số). Các lớp `.income-item.is-upcoming` / `.is-filled` nằm cạnh `.is-missing` trong `form-feedback.css` và dùng token của badge theo theme sáng/tối; badge vẫn dùng `components/status-badge`. Nguồn nhận ngày 29–31 hiển thị ngày cuối tháng ở tháng ngắn. Xem [Thu nhập](features/income.md#ngày-nhận-tiền-hằng-tháng--25112026).
+
+## Nút hành động, ô thiếu và Về kỳ hiện tại — 25/11/2026
+
+Danh sách nguồn thu dùng một kiểu nút: icon 17px kèm chữ (`expense-secondary`, thêm `expense-warning`/`expense-danger` cho Ngừng/Xóa), không trộn nút chỉ icon với nút chữ trong cùng hàng. Ô “—” trong bảng thu nhập là dấu gọn căn mép phải như số, hàng không cao thêm; vùng bấm 44px nằm ở phần tử giả `::after`. Nút “Về kỳ hiện tại” dùng chung (`CurrentPeriodButton`) và đặt sát bộ chọn kỳ: dưới hai ô năm/tháng ở Thu nhập, Chi tiêu, Tiết kiệm; cùng hàng sau ô ngày ở Đầu tư và sau ô chọn kỳ ở Báo cáo. `ViewControls` chỉ còn nút “Đặt lại bộ lọc”.

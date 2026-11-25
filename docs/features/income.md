@@ -129,3 +129,10 @@ Mỗi nguồn thu đều đặn có **ngày nhận trong tháng** (`receiveDay`,
 - **Không chặn nhập:** trước ngày nhận app không nhắc nhưng vẫn cho ghi số thực nhận (phòng tiền về sớm). Tháng tương lai vẫn chỉ xem.
 - **Ba trạng thái trên tab Tháng:** *Chưa đến ngày nhận* (nhãn thông tin, viền nét đứt, không tính vào “thiếu”), *Chưa nhập* (nhãn cam, viền cam, khi đã đến ngày) và đã ghi số tiền (viền xanh lá). Mỗi dòng ghi “Nhận ngày N hằng tháng”; tab Nguồn thu đều đặn cũng hiện ngày. Câu tóm tắt nêu số khoản chưa đến ngày nhận.
 - **Backup:** `receiveDay` là trường tùy chọn, không có giá trị mặc định trong schema backup (jsonb được so sánh nguyên văn sau khôi phục). Backup cũ khôi phục bình thường; `schemaVersion` giữ 3. Bản sao lưu xuất sau khi đặt ngày không đọc được bằng bản code cũ.
+
+## Chống trùng tên, thao tác danh mục và ô thiếu trong bảng — 25/11/2026
+
+- **Chống trùng tên:** tạo nguồn thu mới hoặc đổi tên nguồn không được trùng tên nguồn khác chưa xóa. So sánh không phân biệt hoa/thường và khoảng trắng thừa, **giữ dấu** (“Lương” khác “Luong”); so với tên có hiệu lực ở tháng hiệu lực và ở tháng hiện tại. Nguồn đã Ngừng vẫn tính vì còn hiện trong báo cáo và lịch sử; muốn dùng lại tên thì đổi tên nguồn cũ. Lỗi `DUPLICATE_NAME` (422) hiện ngay dưới ô Tên, không ghi dữ liệu, không tăng version, không thêm audit. Chỉ kiểm tra khi tạo mới hoặc **tên thay đổi**: sửa mô tả/ngày nhận mà giữ tên thì không kiểm tra, nên dữ liệu cũ đã trùng vẫn sửa và nhập số được; backup cũ chứa tên trùng vẫn khôi phục. Thu phát sinh được lặp tên (ví dụ “Thưởng”).
+- **Tab Nguồn thu đều đặn:** Sửa, Ngừng từ tháng và Xóa đều là nút chữ kèm icon (như Nhập tiền/Sửa số thu); `aria-label` giữ nguyên.
+- **Bảng thu nhập:** ô “—” (chưa nhập) là dấu gọn cao khoảng 28px, căn cùng mép phải với số trong cột và không làm hàng cao hơn; vùng bấm vẫn 44px nhờ vùng mở rộng trong suốt quanh nút.
+- **Về kỳ hiện tại:** nút nằm ngay dưới hai ô chọn năm/tháng, hiện khi đang xem kỳ khác; “Đặt lại bộ lọc” của Báo cáo vẫn ở hàng riêng.

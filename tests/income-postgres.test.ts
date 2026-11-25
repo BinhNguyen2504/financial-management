@@ -147,6 +147,32 @@ describe("Income PostgreSQL persistence and isolation", () => {
       receiveDay: 25,
     });
   });
+  it("rejects a duplicate source name without writing, versioning or auditing anything", async () => {
+    const { user } = await initialized();
+    const before =
+      await admin`select count(*)::int as n from income_audit where owner_id=${user}`;
+    await expect(
+      execute(user, 1, {
+        type: "createCategory",
+        id: randomUUID(),
+        start: "2026-12",
+        name: "  lương ",
+        description: "",
+      }),
+    ).rejects.toMatchObject({
+      code: "DUPLICATE_NAME",
+      fieldErrors: { name: "Tên nguồn thu đã tồn tại." },
+    });
+    expect(
+      (await readIncomeView(repository, user, 2027, clock)).book!.version,
+    ).toBe(1);
+    const categories =
+      await admin`select count(*)::int as n from income_categories where owner_id=${user}`;
+    const after =
+      await admin`select count(*)::int as n from income_audit where owner_id=${user}`;
+    expect(categories[0].n).toBe(1);
+    expect(after[0].n).toBe(before[0].n);
+  });
   it("serializes concurrent writes and retries the same command once", async () => {
     const { user, id } = await initialized();
     const commandId = randomUUID();

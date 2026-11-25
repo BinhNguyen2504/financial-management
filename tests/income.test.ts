@@ -172,6 +172,7 @@ describe("Income monthly domain and reports", () => {
     const b = book(set("2026-12", "0"), set("2027-01", "10"), {
       ...create,
       id: other,
+      name: "Lương khác",
     });
     expect(hasMonthlyIncome(b, id)).toBe(true);
     expect(hasMonthlyIncome(b, other)).toBe(false);
@@ -425,6 +426,98 @@ describe("Income receive day", () => {
         afterReceiveDay: 25,
       }),
     );
+  });
+});
+describe("Income source names", () => {
+  const other = "10000000-0000-4000-8000-000000000009";
+  const named = (name: string, categoryId = other): IncomeAction => ({
+    ...create,
+    id: categoryId,
+    name,
+  });
+  const rename = (categoryId: string, name: string): IncomeAction => ({
+    type: "configureCategory",
+    categoryId,
+    month: "2027-01",
+    name,
+    description: "Công việc",
+  });
+  it("rejects a new source whose name only differs by case or spacing, with a field error", () => {
+    for (const name of ["lương", "  LƯƠNG  ", "Lương"])
+      expect(() => applyAction(book(), named(name), clock)).toThrow(
+        expect.objectContaining({
+          code: "DUPLICATE_NAME",
+          fieldErrors: { name: "Tên nguồn thu đã tồn tại." },
+        }),
+      );
+    expect(() => applyAction(book(), named("Lương 2"), clock)).not.toThrow();
+  });
+  it("keeps diacritics significant", () => {
+    expect(() => applyAction(book(), named("Luong"), clock)).not.toThrow();
+  });
+  it("rejects renaming onto another source but allows keeping or re-casing its own name", () => {
+    const two = applyAction(book(), named("Tiền nhà"), clock);
+    expect(() => applyAction(two, rename(other, "lương"), clock)).toThrow(
+      /đã tồn tại/,
+    );
+    expect(() => applyAction(two, rename(id, "LƯƠNG"), clock)).not.toThrow();
+    expect(() =>
+      applyAction(two, rename(other, "Tiền nhà mới"), clock),
+    ).not.toThrow();
+  });
+  it("still counts a stopped source but not a deleted one", () => {
+    const stopped = applyAction(
+      book(),
+      { type: "stopCategory", categoryId: id, month: "2027-01" },
+      clock,
+    );
+    expect(() => applyAction(stopped, named("Lương"), clock)).toThrow(
+      /đã tồn tại/,
+    );
+    const deleted = applyAction(
+      book(),
+      { type: "deleteCategory", categoryId: id },
+      clock,
+    );
+    expect(() => applyAction(deleted, named("Lương"), clock)).not.toThrow();
+  });
+  it("lets sources that already share a name keep being edited when the name is unchanged", () => {
+    const legacy = structuredClone(book());
+    legacy.categories.push({
+      ...structuredClone(legacy.categories[0]),
+      id: other,
+    });
+    expect(() =>
+      applyAction(
+        legacy,
+        {
+          type: "configureCategory",
+          categoryId: other,
+          month: "2027-01",
+          name: "Lương",
+          description: "Mô tả mới",
+          receiveDay: 20,
+        },
+        clock,
+      ),
+    ).not.toThrow();
+    expect(() => applyAction(legacy, set("2027-01", "5"), clock)).not.toThrow();
+  });
+  it("allows one-off income to repeat a name", () => {
+    const oneOff = (oneOffId: string): IncomeAction => ({
+      type: "upsertOneOff",
+      id: oneOffId,
+      month: "2027-01",
+      name: "Thưởng",
+      description: "",
+      amount: "100",
+    });
+    const b = applyAction(
+      applyAction(null, oneOff(id), clock),
+      oneOff(other),
+      clock,
+    );
+    expect(b.oneOffs).toHaveLength(2);
   });
 });
 describe("Income command transaction contract", () => {

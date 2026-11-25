@@ -272,15 +272,33 @@ textarea[aria-invalid="true"],
   width: fit-content;
   text-align: left;
 }
+/*
+ * A compact marker that sits on the same right edge and baseline as the amounts
+ * around it. The 44px touch target comes from the ::after area, so the visible
+ * box does not stretch the cell or the row.
+ */
 .income-missing-cell {
-  width: 100%;
-  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  min-height: 28px;
+  padding: 0 0.625rem;
+  vertical-align: middle;
+  /* Keeps the line box as tall as the plain amounts so rows stay equal. */
+  margin-block: -4px;
   color: var(--warning);
   border: 1px dashed var(--warning);
   border-radius: 8px;
   background: var(--warning-soft);
   font: inherit;
   font-weight: var(--weight-strong);
+  line-height: 1;
+}
+.income-missing-cell::after {
+  content: "";
+  position: absolute;
+  inset: -8px -6px;
 }
 .income-missing-cell:hover {
   background: color-mix(in srgb, var(--warning) 15%, var(--warning-soft));

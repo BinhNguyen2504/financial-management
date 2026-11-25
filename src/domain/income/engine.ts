@@ -1,10 +1,12 @@
 import { incomeActionSchema, yearSchema, type IncomeAction } from "./schema";
+import { nameKey, nameTaken } from "../shared/names";
 import type { Clock, IncomeBook, IncomeCategory, IncomeView } from "./types";
 export class IncomeError extends Error {
   constructor(
     message: string,
     public status = 422,
     public code = "INVALID_ACTION",
+    public fieldErrors?: Record<string, string>,
   ) {
     super(message);
   }
@@ -43,6 +45,27 @@ export function ruleAt(category: IncomeCategory, month: string) {
     .filter((r) => r.month <= month)
     .sort((a, b) => b.month.localeCompare(a.month))[0];
 }
+/**
+ * A new or renamed source may not reuse the name of another source that is
+ * not deleted, including stopped ones that still appear in history. Names are
+ * compared as they read in the effective month and in the current month.
+ * Only the actions that set a name call this, so older duplicates stay readable
+ * and editable.
+ */
+function ensureUniqueName(
+  book: IncomeBook,
+  name: string,
+  months: string[],
+  exceptId?: string,
+) {
+  const taken = book.categories
+    .filter((c) => !c.deleted && c.id !== exceptId)
+    .flatMap((c) => months.map((m) => ruleAt(c, m)?.name));
+  if (nameTaken(name, taken)) {
+    const message = "Tên nguồn thu đã tồn tại.";
+    throw new IncomeError(message, 422, "DUPLICATE_NAME", { name: message });
+  }
+}
 /** Existing receipts across every month/year, including an explicit zero. */
 export function hasMonthlyIncome(
   book: IncomeBook,
@@ -78,6 +101,7 @@ export function applyAction(
     case "createCategory": {
       if (book.categories.some((c) => c.id === action.id))
         throw new IncomeError("Danh mục đã tồn tại.", 409);
+      ensureUniqueName(book, action.name, [action.start, current]);
       book.categories.push({
         id: action.id,
         start: action.start,
@@ -101,6 +125,13 @@ export function applyAction(
       if (!previous?.active)
         throw new IncomeError(
           "Danh mục đã ngừng ở tháng này. Chọn tháng trước khi ngừng.",
+        );
+      if (nameKey(action.name) !== nameKey(previous.name))
+        ensureUniqueName(
+          book,
+          action.name,
+          [action.month, current],
+          category!.id,
         );
       category!.rules = category!.rules.filter((r) => r.month !== action.month);
       const receiveDay = action.receiveDay ?? previous.receiveDay;

@@ -2,27 +2,37 @@
 
 import { useI18n } from "@/i18n/provider";
 
+/**
+ * Jumps back to the current period. Render it next to the period picker (as a
+ * child of `MonthYearSelect`, or right after a date/period field) and only
+ * while another period is being viewed.
+ */
+export function CurrentPeriodButton({ onClick }: { onClick(): void }) {
+  const { t } = useI18n();
+  return (
+    <button
+      type="button"
+      className="expense-secondary period-current"
+      onClick={onClick}
+    >
+      {t("Về kỳ hiện tại")}
+    </button>
+  );
+}
+
+/** Clears the active report filters; hidden when none are set. */
 export function ViewControls({
-  past,
-  onCurrent,
   count = 0,
   onReset,
 }: {
-  past?: boolean;
-  onCurrent?(): void;
   count?: number;
   onReset?(): void;
 }) {
   const { t } = useI18n();
-  if (!past && !count) return null;
+  if (!count) return null;
   return (
     <div className="view-controls">
-      {past && onCurrent && (
-        <button type="button" className="expense-secondary" onClick={onCurrent}>
-          {t("Về kỳ hiện tại")}
-        </button>
-      )}
-      {count > 0 && onReset && (
+      {onReset && (
         <button type="button" className="expense-secondary" onClick={onReset}>
           {t("Đặt lại bộ lọc")} · {count}
         </button>

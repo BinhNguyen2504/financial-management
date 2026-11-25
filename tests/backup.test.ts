@@ -68,6 +68,29 @@ describe("portable full backup validation", () => {
     ];
     expect(() => validateBackup(injected)).toThrow();
   });
+  it("still restores income sources that already share a name", () => {
+    // New sources can no longer reuse a name, but older backups may hold two.
+    const b = empty();
+    b.tables.income_books.push({ version: 1 });
+    b.tables.income_audit.push({
+      version: 1,
+      at: b.exportedAt,
+      action: "seedReviewData",
+      detail: {},
+    });
+    for (const id of [randomUUID(), randomUUID()])
+      b.tables.income_categories.push({
+        id,
+        start_month: "2026-10",
+        deleted: false,
+        rules: [
+          { month: "2026-10", name: "Lương", description: "", active: true },
+        ],
+      });
+    expect(
+      validateBackup(b).tables.income_categories.map((c) => c.rules[0].name),
+    ).toEqual(["Lương", "Lương"]);
+  });
   it("preserves exact money strings and rejects numeric or duplicated money rows", () => {
     const b = empty();
     b.tables.income_books.push({ version: 1 });
