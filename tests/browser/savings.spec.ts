@@ -557,6 +557,23 @@ test("transaction dialog picks the category first and explains each type", async
   await expect(kind).toHaveValue("buyGold");
   await expect(hint).toContainText("Mua thêm vàng");
   await expect(categorySelect.locator("option")).toHaveCount(4);
+
+  // Each required mark shares the last line of its label text.
+  const markOffsets = await dialog
+    .locator("label:has(> .required-mark)")
+    .evaluateAll((labels) =>
+      labels.map((label) => {
+        const range = document.createRange();
+        range.selectNode(label.firstChild!);
+        const text = [...range.getClientRects()].at(-1)!;
+        const mark = label
+          .querySelector(".required-mark")!
+          .getBoundingClientRect();
+        return Math.abs(mark.top - text.top);
+      }),
+    );
+  expect(markOffsets.length).toBeGreaterThan(3);
+  expect(Math.max(...markOffsets)).toBeLessThan(6);
 });
 test("savings schema validation keeps oversized amounts out of technical toasts", async ({
   page,

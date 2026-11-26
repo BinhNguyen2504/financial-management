@@ -22,6 +22,15 @@
   color: var(--muted);
   min-width: 0;
 }
+/* The grid above would put the required mark on its own row. Must stay after it:
+   both selectors have the same specificity. */
+.savings-workspace label:has(> .required-mark) {
+  display: block;
+}
+.savings-workspace label:has(> .required-mark) > .expense-muted {
+  display: block;
+  margin-top: 6px;
+}
 .savings-workspace input:not([type="checkbox"]):not([type="radio"]),
 .savings-workspace select,
 .savings-form input:not([type="checkbox"]):not([type="radio"]),

@@ -6,6 +6,7 @@
 - `npm run check` (Node 22.12.0): lint, kiến trúc (334 source files / 0 violations), format, `npm test` **410/410**, typecheck và build qua. Test mới `savings-editor-kinds.test.ts`: mỗi loại giao dịch thuộc đúng một loại tài sản và có giải thích vi/en.
 - `npm run test:e2e -- savings.spec.ts` (Chromium desktop + mobile iPhone 13 emulation, PostgreSQL tạm và Auth double local): **22/22** qua, gồm ca mới kiểm thứ tự hai select, danh sách loại theo ba loại tài sản và câu giải thích. Xem ảnh chụp dialog desktop và mobile.
 - `select-controls`, `action-layout`, `interface-feedback`, `workspace-comfort`, `layout-scroll`: **49 qua, 7 lỗi**, đều trong `select-controls.spec.ts` ở bộ lọc trang Đầu tư. Chạy `select-controls.spec.ts` trên bản source gốc chưa có thay đổi cũng lỗi đúng 7 ca này (thêm một ca ngôn ngữ trang công khai trên mobile, ở lượt có thay đổi thì qua); chưa xử lý trong đợt này.
+- Bổ sung cùng ngày: sửa dấu `*` bị xuống hàng riêng trong form Tiết kiệm (`savings.css`). Assertion mới trong `savings.spec.ts` lỗi trước khi sửa (lệch 27,7px, desktop và mobile); sau khi sửa chạy lại toàn bộ spec **22/22** qua, `npm run check` qua. Xem ảnh dialog Ghi giao dịch và Thêm danh mục. Năm spec rộng ở bullet trên chạy trước bản sửa CSS này.
 - Giới hạn: chưa chạy Firefox/WebKit, bộ năm theme, chữ lớn 200% hoặc thiết bị thật; chưa deploy.
 - Đã cập nhật `docs/features/savings.md`, Help vi/en và i18n. README, catalog và landing/preview giữ nguyên vì phạm vi tính năng và dữ liệu minh họa không đổi.
 

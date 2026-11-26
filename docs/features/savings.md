@@ -99,6 +99,8 @@ Dialog Ghi giao dịch (và sửa giao dịch) đặt **Danh mục** phía trên
 
 Ngay dưới select loại giao dịch có một câu giải thích ngắn theo loại đang chọn, vi/en, liên kết với select bằng `aria-describedby`. Câu giải thích thay cho khung ghi chú riêng của các giao dịch mở đầu. Đổi sang danh mục cùng loại tài sản giữ nguyên loại giao dịch; đổi danh mục hoặc loại giao dịch đều xóa ví, sổ và đợt bán đã chọn, giữ các ô số tiền, ngày và ghi chú. Không đổi quy tắc tính, schema, API hoặc dữ liệu.
 
+Dấu `*` trong các form Tiết kiệm nằm cùng dòng với nhãn: trước đó bố cục lưới của workspace đẩy dấu xuống hàng riêng, trái [quy chuẩn phản hồi](ui-feedback.md).
+
 ## Anh/Việt — 22/10/2026
 
 Giao diện, Help và thông báo dùng ngôn ngữ trong Cài đặt; định dạng vi-VN/en-GB, vẫn VND và giờ Việt Nam. Tên/ghi chú và dữ liệu tài chính giữ nguyên. CSV nhận `locale=vi|en` (mặc định vi), dịch tên cột/nhãn hệ thống nhưng giữ số/ngày dạng chuẩn và chống công thức CSV. Không có migration hay đổi cấu trúc backup. Xem [đặc tả ngôn ngữ](localization.md).
