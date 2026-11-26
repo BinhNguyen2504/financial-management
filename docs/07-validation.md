@@ -1,5 +1,11 @@
 # Xác minh
 
+## Sửa 26 ca e2e cũ — 27/11/2026
+
+- Khôi phục hình minh họa ở trạng thái trống của Tiết kiệm (mất sau refactor). 24 ca còn lại do test chưa theo giao diện hiện tại; chỉ sửa test. Sửa ghi chú phân trang Quỹ thành 10 dòng/trang.
+- `npm run check` qua (411/411, build). Chín spec từng lỗi đã qua trong các lượt chạy riêng.
+- Lượt `npm run test:e2e` đầy đủ sau đó: **551 qua, 4 lỗi, 1 bỏ qua**, cả 4 là quá thời gian trên mobile. Chạy lại `select-controls`, `status-badges`, `visual-themes`: **35 qua, 5 lỗi**. Máy đã ngủ nhiều lần khi dùng pin và có tiến trình test của worktree khác chạy song song; đây là nguyên nhân nghi ngờ, **chưa được chứng minh**. Chưa có lượt đầy đủ sạch.
+
 ## Rà soát trùng tên theo tháng sau và chạy toàn bộ e2e — 26/11/2026
 
 - Sửa sau rà soát: kiểm tra trùng tên nay tính cả nguồn thu, hũ, danh mục bắt đầu hoặc đổi tên sau tháng/ngày hiệu lực (kể cả hẹn trong tương lai); trước đó vẫn tạo được tên trùng trong trường hợp này. Hai test cũ nêu ở mục 25/11/2026 đã được sửa theo giao diện hiện tại (bộ lọc Chi tiêu chọn nhiều giá trị, hàng đặt lại nằm sau các ô; bộ lọc Đầu tư thu gọn sau nút “Bộ lọc” trên mobile), không đổi app.

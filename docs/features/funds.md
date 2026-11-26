@@ -22,7 +22,7 @@ Sổ độc lập với Tiết kiệm/Đầu tư/Chi tiêu. Nơi giữ dùng chu
 
 Thời điểm hiển thị Việt Nam, persist ISO timestamp; mặc định hiện tại và không nhận tương lai. Rút/chuyển cần lý do. Sửa/hủy cần lý do, giữ mọi revision; replay theo thời điểm và thứ tự ghi gốc khi trùng thời điểm. Mọi số dư phải không âm ở mọi bước. Nơi giữ chỉ ngừng khi mọi quỹ tại đó bằng 0; có thể khôi phục. Giao dịch cũ có thể đối soát tại nơi đã ngừng nếu kết quả vẫn bằng 0.
 
-Danh sách có tìm kiếm/lọc quỹ, loại, nơi giữ, ngày và 20 dòng/trang. Chi tiết có Hướng dẫn/Giao dịch/Nơi giữ tiền/Lịch sử; parent giữ tab, bộ lọc và vị trí khi dialog con lưu/đóng.
+Danh sách có tìm kiếm/lọc quỹ, loại, nơi giữ, ngày và 10 dòng/trang. Chi tiết có Hướng dẫn/Giao dịch/Nơi giữ tiền/Lịch sử; parent giữ tab, bộ lọc và vị trí khi dialog con lưu/đóng.
 
 ## API và bảo toàn dữ liệu
 
