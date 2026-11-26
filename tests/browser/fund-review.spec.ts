@@ -99,9 +99,12 @@ test("synthetic Fund review renders garden, pagination, archived locations, hist
   await sourceToggle.uncheck();
   await configure.getByRole("button", { name: "Đóng", exact: true }).click();
   const ledger = page.locator(".fund-workspace > .panel .fund-ledger");
-  await expect(ledger).toContainText("Trang 1/2");
+  // Ten transactions per page; the sample set spans several pages.
+  await expect(ledger).toContainText("1–10 /");
+  await expect(ledger).toContainText(/Trang 1\/[2-9]/);
   await ledger.getByRole("button", { name: "Trang sau", exact: true }).click();
-  await expect(ledger).toContainText("Trang 2/2");
+  await expect(ledger).toContainText("11–20 /");
+  await expect(ledger).toContainText(/Trang 2\/[2-9]/);
   await ledger.getByLabel("Tìm giao dịch", { exact: true }).fill("Sửa xe");
   await expect(ledger).toContainText("1 giao dịch");
   await ledger.getByLabel("Tìm giao dịch", { exact: true }).fill("");
@@ -219,7 +222,7 @@ test("synthetic Fund review renders garden, pagination, archived locations, hist
   await page
     .locator(".fund-card")
     .nth(1)
-    .getByRole("button", { name: /Rainy Day Fund/ })
+    .getByRole("button", { name: "View Rainy day fund", exact: true })
     .click();
   await page.getByRole("tab", { name: "History", exact: true }).click();
   const englishCorrection = page

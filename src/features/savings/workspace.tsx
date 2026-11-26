@@ -10,6 +10,7 @@ import { MonthYearSelect } from "@/components/month-year-select";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { formatDate } from "@/i18n/format";
 
+import { Garden } from "@/components/garden";
 import { AssetScene } from "@/components/asset-scene";
 import { LoadingStatus } from "@/components/loading";
 import { focusPointerControl } from "@/components/pointer-focus";
@@ -405,19 +406,22 @@ function AccountSavings(props: Parameters<typeof useSavingsWorkspace>[0]) {
                           ))}
                       </div>
                       {!categories.length && (
-                        <EmptyState
-                          title={tr("Bắt đầu bằng một khoản nhỏ")}
-                          description={tr(
-                            "Thêm danh mục, rồi ghi số dư mở đầu hoặc giao dịch đầu tiên.",
-                          )}
-                        >
-                          <button
-                            className="expense-secondary"
-                            onClick={() => setEditor({ type: "create" })}
+                        <div className="expense-empty">
+                          <Garden variant="jar" />
+                          <EmptyState
+                            title={tr("Bắt đầu bằng một khoản nhỏ")}
+                            description={tr(
+                              "Thêm danh mục, rồi ghi số dư mở đầu hoặc giao dịch đầu tiên.",
+                            )}
                           >
-                            {tr("Tạo danh mục đầu tiên")}
-                          </button>
-                        </EmptyState>
+                            <button
+                              className="expense-secondary"
+                              onClick={() => setEditor({ type: "create" })}
+                            >
+                              {tr("Tạo danh mục đầu tiên")}
+                            </button>
+                          </EmptyState>
+                        </div>
                       )}
                     </section>
                     <SavingsReports

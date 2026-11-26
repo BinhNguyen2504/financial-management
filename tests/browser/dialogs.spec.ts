@@ -34,8 +34,13 @@ async function login(page: Page, next = "savings") {
   await expect(page).toHaveURL(new RegExp(`/${next}$`));
   await expect(page.locator("main h1")).toBeVisible();
   if (next === "investments" || next === "savings")
+    // On narrow screens "Tải lại" sits inside the closed "Thao tác khác" menu.
     await expect(
-      page.getByRole("button", { name: "Tải lại", exact: true }),
+      page.getByRole("button", {
+        name: "Tải lại",
+        exact: true,
+        includeHidden: true,
+      }),
     ).toBeEnabled();
   else
     await expect(

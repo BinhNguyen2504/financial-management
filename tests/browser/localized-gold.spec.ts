@@ -57,7 +57,7 @@ test("English gold units keep canonical values and decimal drafts survive langua
     .fill("1,250,000");
   await dialog.getByLabel("Quantity (chi)", { exact: true }).fill("1.25");
   await dialog
-    .getByLabel("Resale price per unit (VND)", { exact: true })
+    .getByLabel("Estimated resale price (VND/chi)", { exact: true })
     .fill("1,000,000");
   await settings
     .getByRole("radio", { name: "Tiếng Việt", exact: true })

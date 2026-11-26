@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { vietnamClock } from "../../src/domain/expenses/engine";
+import { openFilters } from "./helpers/filters";
 
 for (const kind of ["method", "group"]) {
   test(`missing label migration keeps ${kind} editable and every close route available`, async ({
@@ -319,6 +320,8 @@ test("classification controls, row alignment, transparent PNG brands and semanti
     dialog.getByRole("combobox", { name: "Loại", exact: true }),
   ).toHaveValue("group");
   await dialog.getByRole("button", { name: "Hủy", exact: true }).click();
+  // The changed type is a draft, so closing asks before discarding it.
+  await page.getByRole("button", { name: "Bỏ thay đổi", exact: true }).click();
   await page.emulateMedia({ colorScheme: "dark" });
   const deleteButton = dialog.getByRole("button", { name: /^Xóa / }).first();
   const darkBackground = await deleteButton.evaluate((element) => {
@@ -343,6 +346,8 @@ test("stopped jars with a remaining balance follow the include-stopped filter", 
   page,
 }) => {
   await setup(page);
+  await expect(page.locator(".filter-options")).toBeAttached();
+  await openFilters(page);
   const toggle = page.getByRole("checkbox", {
     name: "Gồm hũ đã ngừng",
     exact: true,
