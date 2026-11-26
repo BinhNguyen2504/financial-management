@@ -162,4 +162,4 @@ Rà ảnh sau sửa: desktop/tablet giữ tên và số dư bên trái, nhóm ic
 
 ## Tên danh mục đầu tư không trùng — 25/11/2026
 
-Tạo hoặc đổi tên danh mục loại đầu tư không được trùng tên danh mục đầu tư khác (không phân biệt hoa/thường và khoảng trắng thừa, giữ dấu; danh mục đã lưu trữ vẫn tính). Ví tiền chờ không bị so sánh vì mỗi danh mục đầu tư tự tạo ví cùng tên. Chỉ kiểm tra khi tạo mới hoặc tên đổi nên dữ liệu và backup cũ vẫn dùng được. Nút “Về kỳ hiện tại” nằm ngay cạnh ô chọn ngày xem.
+Tạo hoặc đổi tên danh mục loại đầu tư không được trùng tên danh mục đầu tư khác (không phân biệt hoa/thường và khoảng trắng thừa, giữ dấu; danh mục đã lưu trữ vẫn tính; tên mà danh mục khác dùng ở bất kỳ ngày nào từ ngày hiệu lực đến nay cũng tính). Ví tiền chờ không bị so sánh vì mỗi danh mục đầu tư tự tạo ví cùng tên. Chỉ kiểm tra khi tạo mới hoặc tên đổi nên dữ liệu và backup cũ vẫn dùng được. Nút “Về kỳ hiện tại” nằm ngay cạnh ô chọn ngày xem.

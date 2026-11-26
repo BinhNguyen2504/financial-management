@@ -199,4 +199,4 @@ Kiểm chứng bằng Playwright MCP trên bản preview local (dữ liệu revi
 
 ## Tên hũ không trùng — 25/11/2026
 
-Tạo hũ mới hoặc đổi tên hũ không được trùng tên hũ khác chưa xóa (không phân biệt hoa/thường và khoảng trắng thừa, giữ dấu; hũ đã ngừng vẫn tính). Lỗi `DUPLICATE_NAME` hiện dưới ô Tên. Chỉ kiểm tra khi tạo mới hoặc tên đổi, nên hũ cũ đã trùng tên vẫn sửa được và báo cáo vẫn tách theo ID. Quy tắc nhãn Phương thức/Nhóm giữ nguyên. Nút “Về kỳ hiện tại” nằm ngay dưới ô chọn năm/tháng.
+Tạo hũ mới hoặc đổi tên hũ không được trùng tên hũ khác chưa xóa (không phân biệt hoa/thường và khoảng trắng thừa, giữ dấu; hũ đã ngừng vẫn tính; hũ bắt đầu hoặc đổi sang tên đó ở tháng sau, kể cả trong tương lai, cũng tính). Lỗi `DUPLICATE_NAME` hiện dưới ô Tên. Chỉ kiểm tra khi tạo mới hoặc tên đổi, nên hũ cũ đã trùng tên vẫn sửa được và báo cáo vẫn tách theo ID. Quy tắc nhãn Phương thức/Nhóm giữ nguyên. Nút “Về kỳ hiện tại” nằm ngay dưới ô chọn năm/tháng.
