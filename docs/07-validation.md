@@ -1,5 +1,13 @@
 # Xác minh
 
+## Rà soát trùng tên theo tháng sau và chạy toàn bộ e2e — 26/11/2026
+
+- Sửa sau rà soát: kiểm tra trùng tên nay tính cả nguồn thu, hũ, danh mục bắt đầu hoặc đổi tên sau tháng/ngày hiệu lực (kể cả hẹn trong tương lai); trước đó vẫn tạo được tên trùng trong trường hợp này. Hai test cũ nêu ở mục 25/11/2026 đã được sửa theo giao diện hiện tại (bộ lọc Chi tiêu chọn nhiều giá trị, hàng đặt lại nằm sau các ô; bộ lọc Đầu tư thu gọn sau nút “Bộ lọc” trên mobile), không đổi app.
+- `npm run check`: lint, kiến trúc (334 source files / 0 violations), format, `npm test` **411/411**, typecheck và build qua. `npm run test:db` (PostgreSQL 14 tạm): **131/131**.
+- `npm run test:e2e` đầy đủ (Chromium desktop + mobile iPhone 13 emulation, Auth double local), chạy trước bản sửa trùng tên: **529 qua, 26 lỗi, 1 bỏ qua**. 26 lỗi thuộc `asset-scenes` (2), `dialogs` (2, mobile), `expense-feedback` (3), `feedback-polish` (2), `fund-review` (2), `localized-gold` (2), `select-controls` (7), `ui-feedback` (2), `zen` (4). Chạy chín spec này trên `main` chưa có thay đổi của nhánh cho **đúng 26 lỗi đó, cùng dòng và cùng thông báo**; chưa xử lý trong đợt này. Mỗi ca dừng ở bước lỗi đầu tiên nên các bước sau của 26 ca này chưa được xác minh trên nhánh.
+- Sau bản sửa trùng tên, chạy lại `income`, `expenses`, `savings`, `investments`, `workspace-spacing`: **68/68**. Không chạy lại toàn bộ bộ e2e.
+- Giới hạn: chưa chạy Firefox/WebKit hoặc thiết bị thật; chưa áp dụng hay đọc cloud.
+
 ## Chống trùng tên, nút danh mục và vị trí Về kỳ hiện tại — 25/11/2026
 
 - Thay đổi: kiểm tra trùng tên khi tạo/đổi tên nguồn thu, hũ Chi tiêu, danh mục Tiết kiệm và danh mục Đầu tư (không phân biệt hoa/thường và khoảng trắng, giữ dấu; mục đã ngừng vẫn tính; chỉ khi tạo mới hoặc tên đổi); ô “—” trong Bảng thu nhập gọn và thẳng cột; nút Sửa/Xóa/Ngừng ở tab Nguồn thu đều đặn cùng kiểu chữ + icon; nút “Về kỳ hiện tại” chuyển sát bộ chọn kỳ ở Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Báo cáo. Không migration; không đổi `validate.ts` của backup.
