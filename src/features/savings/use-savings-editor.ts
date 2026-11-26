@@ -34,6 +34,10 @@ import { useRouter } from "next/navigation";
 import { ZodError } from "zod";
 import { SavingsAPIError, savingsJSON } from "./api";
 import {
+  assetOfTransaction,
+  defaultTransactionKinds,
+  transactionHints,
+  transactionKindsByAsset,
   transactionNames,
   kindNames,
   type EditorMode,
@@ -60,6 +64,7 @@ export function useSavingsEditor({
   const localizedTitles = localize(titles);
   const localizedKindNames = localize(kindNames);
   const localizedTransactionNames = localize(transactionNames);
+  const localizedTransactionHints = localize(transactionHints);
   const toast = useToast();
   const hidden = useMoneyHidden(),
     money = useMoney(),
@@ -72,6 +77,15 @@ export function useSavingsEditor({
     view.book?.categories.find(
       (c) => c.kind === (mode.type === "price" ? "gold" : "cash"),
     ) ?? view.book?.categories[0];
+  const initialCategoryId =
+    old?.categoryId ??
+    (mode.type === "transaction" ? mode.categoryId : undefined) ??
+    (mode.type === "price" ? mode.categoryId : undefined) ??
+    first?.id ??
+    "";
+  const initialAsset =
+    view.book?.categories.find((c) => c.id === initialCategoryId)?.kind ??
+    "cash";
   const [f, setF] = useState<Record<string, string>>(() => ({
     name: rule?.name ?? "",
     description: rule?.description ?? "",
@@ -82,17 +96,8 @@ export function useSavingsEditor({
     transactionKind:
       old?.kind ??
       (mode.type === "transaction" ? mode.kind : undefined) ??
-      (first?.kind === "gold"
-        ? "buyGold"
-        : first?.kind === "deposit"
-          ? "openDeposit"
-          : "deposit"),
-    categoryId:
-      old?.categoryId ??
-      (mode.type === "transaction" ? mode.categoryId : undefined) ??
-      (mode.type === "price" ? mode.categoryId : undefined) ??
-      first?.id ??
-      "",
+      defaultTransactionKinds[initialAsset],
+    categoryId: initialCategoryId,
     date:
       old?.date ??
       (month === view.today.slice(0, 7) ? view.today : `${month}-01`),
@@ -202,18 +207,28 @@ export function useSavingsEditor({
       );
     }
   }
-  const txAsset = txKind.includes("Gold")
-    ? "gold"
-    : [
-          "openingDeposit",
-          "openDeposit",
-          "withdrawDeposit",
-          "interest",
-          "rollover",
-        ].includes(txKind)
-      ? "deposit"
-      : "cash";
   const selectedCategory = categories.find((c) => c.id === f.categoryId);
+  const transactionKinds =
+    transactionKindsByAsset[
+      selectedCategory?.kind ?? assetOfTransaction(txKind)
+    ];
+  // The sổ, lots and wallet picked for one category or kind do not carry over.
+  function resetTransactionLinks() {
+    set("cashCategoryId", "");
+    set("contractId", "");
+    setAllocations({});
+  }
+  function changeCategory(id: string) {
+    set("categoryId", id);
+    const asset = categories.find((c) => c.id === id)?.kind;
+    if (asset && asset !== assetOfTransaction(txKind))
+      set("transactionKind", defaultTransactionKinds[asset]);
+    resetTransactionLinks();
+  }
+  function changeTransactionKind(kind: string) {
+    set("transactionKind", kind);
+    resetTransactionLinks();
+  }
   const hasWallet = [
     "transfer",
     "openDeposit",
@@ -399,7 +414,10 @@ export function useSavingsEditor({
     names,
     selectedCategory,
     localizedTransactionNames,
-    txAsset,
+    localizedTransactionHints,
+    transactionKinds,
+    changeCategory,
+    changeTransactionKind,
     txKind,
     hasAmount,
     hasContract,

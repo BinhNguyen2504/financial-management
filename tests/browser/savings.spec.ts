@@ -435,10 +435,15 @@ async function category(page: Page, name: string, kind = "cash") {
     await page.getByLabel("Đơn vị vàng", { exact: true }).selectOption("chỉ");
   await save(page);
 }
-async function openTx(page: Page, kind: string) {
+async function openTx(page: Page, kind: string, categoryName?: string) {
   await page
     .getByRole("button", { name: "Ghi giao dịch", exact: true })
     .click();
+  if (categoryName)
+    await page
+      .getByRole("dialog")
+      .getByLabel("Danh mục", { exact: true })
+      .selectOption({ label: categoryName });
   await page.getByLabel("Loại giao dịch", { exact: true }).selectOption(kind);
   await page.getByLabel("Ngày giao dịch", { exact: true }).fill(day);
 }
@@ -471,15 +476,15 @@ test("gold price labels follow the category unit in Vietnamese and English", asy
       })
       .click();
     const dialog = page.locator(".expense-dialog[open]:not([inert])");
-    await dialog
-      .getByLabel(locale === "vi" ? "Loại giao dịch" : "Transaction type", {
-        exact: true,
-      })
-      .selectOption("openingGold");
     for (const c of categories) {
       await dialog
         .getByLabel(locale === "vi" ? "Danh mục" : "Category", { exact: true })
         .selectOption(c.id);
+      await dialog
+        .getByLabel(locale === "vi" ? "Loại giao dịch" : "Transaction type", {
+          exact: true,
+        })
+        .selectOption("openingGold");
       const unit =
         locale === "vi" ? c.unit : c.unit === "chỉ" ? "chi" : "luong/tael";
       const label =
@@ -492,6 +497,66 @@ test("gold price labels follow the category unit in Vietnamese and English", asy
       );
     }
   }
+});
+test("transaction dialog picks the category first and explains each type", async ({
+  page,
+}) => {
+  await login(page);
+  await category(page, "Ví chọn trước");
+  await category(page, "Sổ chọn sau", "deposit");
+  await category(page, "Vàng chọn sau", "gold");
+  await page
+    .getByRole("button", { name: "Ghi giao dịch", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  const categorySelect = dialog.getByLabel("Danh mục", { exact: true });
+  const kind = dialog.getByLabel("Loại giao dịch", { exact: true });
+  const hint = dialog.locator("#savings-help-transactionKind");
+  const kinds = () =>
+    kind
+      .locator("option")
+      .evaluateAll((options) =>
+        options.map((o) => (o as HTMLOptionElement).value),
+      );
+
+  await categorySelect.selectOption({ label: "Ví chọn trước" });
+  const categoryBox = (await categorySelect.boundingBox())!;
+  const kindBox = (await kind.boundingBox())!;
+  expect(categoryBox.y + categoryBox.height).toBeLessThanOrEqual(kindBox.y);
+  expect((await hint.boundingBox())!.y).toBeGreaterThanOrEqual(
+    kindBox.y + kindBox.height,
+  );
+  expect(await kinds()).toEqual([
+    "openingCash",
+    "deposit",
+    "withdraw",
+    "transfer",
+    "fee",
+  ]);
+  await expect(kind).toHaveValue("deposit");
+  await expect(hint).toHaveText("Đưa tiền từ bên ngoài Tiết kiệm vào ví này.");
+  await expect(kind).toHaveAttribute(
+    "aria-describedby",
+    "savings-help-transactionKind",
+  );
+  await kind.selectOption("fee");
+  await expect(hint).toHaveText("Khoản phí bị trừ thẳng vào ví này.");
+
+  await categorySelect.selectOption({ label: "Sổ chọn sau" });
+  expect(await kinds()).toEqual([
+    "openingDeposit",
+    "openDeposit",
+    "withdrawDeposit",
+    "interest",
+    "rollover",
+  ]);
+  await expect(kind).toHaveValue("openDeposit");
+
+  await categorySelect.selectOption({ label: "Vàng chọn sau" });
+  expect(await kinds()).toEqual(["openingGold", "buyGold", "sellGold"]);
+  await expect(kind).toHaveValue("buyGold");
+  await expect(hint).toContainText("Mua thêm vàng");
+  await expect(categorySelect.locator("option")).toHaveCount(4);
 });
 test("savings schema validation keeps oversized amounts out of technical toasts", async ({
   page,
@@ -744,7 +809,7 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
   await expect(page.locator(".savings-toolbar .status-badge")).toContainText(
     "Chưa chốt",
   );
-  await openTx(page, "openingGold");
+  await openTx(page, "openingGold", "Vàng giữ lâu");
   await expect(page.getByLabel("Giá vốn mở đầu (VND)")).toHaveAttribute(
     "aria-describedby",
     /savings-help-amount/,
@@ -765,7 +830,7 @@ test("savings UI CRUD, gold sale, reports, exports and responsive privacy", asyn
     .click();
   await expect(page.getByRole("dialog")).toContainText("100.000.000 ₫");
   await page.getByRole("button", { name: "Đóng", exact: true }).click();
-  await openTx(page, "sellGold");
+  await openTx(page, "sellGold", "Vàng giữ lâu");
   await page.getByLabel("Giá bán (VND/chỉ)").fill("130000000");
   await page.getByLabel("Phí (VND)", { exact: true }).fill("1000000");
   const v = await view(page);
