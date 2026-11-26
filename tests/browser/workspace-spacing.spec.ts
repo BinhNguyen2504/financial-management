@@ -99,11 +99,24 @@ test("filters stay separated from metrics and tables when collapsed, expanded an
     };
     await check();
     if (await trigger.isVisible()) await trigger.click();
-    const select = filters.getByRole("combobox").first();
-    await expect(select).toBeVisible();
+    // Expenses filters accept several values (a button with a checkbox panel);
+    // Savings and Investments use native selects.
+    const first =
+      route === "budgets"
+        ? filters.getByRole("button", { name: /^Loại hũ/ })
+        : filters.getByRole("combobox").first();
+    await expect(first).toBeVisible();
     await check();
-    const option = await select.locator("option").nth(1).getAttribute("value");
-    await select.selectOption(option!);
+    if (route === "budgets") {
+      await first.click();
+      await filters
+        .getByRole("checkbox", { name: "Chi trong tháng", exact: true })
+        .check();
+      await page.keyboard.press("Escape");
+    } else {
+      const option = await first.locator("option").nth(1).getAttribute("value");
+      await first.selectOption(option!);
+    }
     await expect(
       filters.getByRole("button", { name: "Đặt lại bộ lọc", exact: true }),
     ).toBeVisible();
@@ -112,7 +125,13 @@ test("filters stay separated from metrics and tables when collapsed, expanded an
       .locator(".filter-options-tools")
       .boundingBox())!;
     const body = (await filters.locator(".filter-options-body").boundingBox())!;
-    expect(body.y - tools.y - tools.height).toBeGreaterThanOrEqual(11);
+    // Expenses places the reset row after the controls on desktop; measure
+    // the gap in whichever order the two blocks are shown.
+    const gap =
+      tools.y < body.y
+        ? body.y - tools.y - tools.height
+        : tools.y - body.y - body.height;
+    expect(gap, `${route}: reset row gap`).toBeGreaterThanOrEqual(11);
     await filters
       .getByRole("button", { name: "Đặt lại bộ lọc", exact: true })
       .click();

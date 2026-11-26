@@ -255,6 +255,10 @@ test("archive guard, sell all, restore and valuation correction history", async 
   await page.getByLabel("Giá trị định giá (VND)", { exact: true }).fill("100");
   await save(page);
   await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
+  // Narrow screens keep the filters behind the "Bộ lọc" button.
+  const trigger = page.getByRole("tabpanel").locator(".filter-options-trigger");
+  await expect(trigger).toBeAttached();
+  if (await trigger.isVisible()) await trigger.click();
   await page
     .getByRole("combobox", { name: "Loại giao dịch lọc", exact: true })
     .selectOption("valuation");
