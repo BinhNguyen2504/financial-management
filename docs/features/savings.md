@@ -6,7 +6,7 @@ Triển khai ngày 17/10/2026 tại `/savings`. Tiền/ví, sổ tiền gửi v�
 
 1. Thêm danh mục, chọn loại tài sản, emoji và tháng bắt đầu. Vàng phải chọn `chỉ`, `lượng/cây` hoặc `gram`; chưa chuyển đổi giữa các đơn vị.
 2. Nếu đã có tài sản, ghi giao dịch mở đầu tại ngày bắt đầu theo dõi: tiền, từng sổ gửi, hoặc từng đợt vàng với giá vốn và giá định giá riêng. Các khoản mở đầu cùng danh mục phải cùng ngày và trước mọi giao dịch của danh mục; không tính là nạp mới.
-3. Ghi nạp/rút/chuyển, mở sổ/nhận lãi/rút gốc/tái tục hoặc mua/bán vàng. Chọn nguồn/đích tiền là ví trong Tiết kiệm hoặc bên ngoài. Chuyển nội bộ không được ghi thêm như khoản Thu nhập hoặc Chi tiêu.
+3. Trong **Ghi giao dịch**, chọn **Danh mục** trước, rồi chọn **Loại giao dịch** của danh mục đó: ghi nạp/rút/chuyển, mở sổ/nhận lãi/rút gốc/tái tục hoặc mua/bán vàng. Chọn nguồn/đích tiền là ví trong Tiết kiệm hoặc bên ngoài. Chuyển nội bộ không được ghi thêm như khoản Thu nhập hoặc Chi tiêu.
 4. Xem trước ảnh hưởng rồi xác nhận lưu. Bản nháp giữ trong form nếu lỗi mạng, Auth tạm thời hoặc xung đột; bấm tải dữ liệu mới trong form để giữ nội dung và xem trước lại.
 5. Cập nhật giá bán lại dự kiến của vàng theo ngày. Giá mua và giá bán thực tế trong giao dịch không tự thay thế lịch sử giá, ngoại trừ giá định giá mở đầu được nhập rõ.
 6. Chốt tháng đã kết thúc theo thứ tự từ tháng bắt đầu sớm nhất. Cần đủ giá; giá mang từ tháng cũ phải xác nhận. Mở lại kèm lý do làm mất hiệu lực các lần chốt sau đó, vẫn giữ snapshot cũ trong backup.
@@ -86,6 +86,18 @@ Bảng rộng có lựa chọn cột lưu trên trình duyệt. Form có dấu b
 ## Dòng đọc tiền và kết quả ghi — 21/10/2026
 
 Dialog Ghi giao dịch cùng các form giá/phí/thuế đọc giá trị VND dưới từng ô; lượng vàng giữ đơn vị lượng, không định dạng thành tiền. Dấu `*` sát nhãn và lỗi tại trường có liên kết truy cập. Toast chỉ báo thành công sau ghi nhận, nêu riêng kết quả ghi chưa rõ hoặc lỗi tải lại; footer thao tác cố định khi cuộn nội dung.
+
+## Chọn danh mục trước loại giao dịch — 26/11/2026
+
+Dialog Ghi giao dịch (và sửa giao dịch) đặt **Danh mục** phía trên **Loại giao dịch**. Danh mục liệt kê mọi khoản tiết kiệm; loại giao dịch chỉ gồm các loại hợp lệ với loại tài sản đã chọn:
+
+| Loại tài sản | Loại giao dịch | Mặc định khi chuyển sang |
+|---|---|---|
+| Tiền / ví | Số dư tiền mở đầu, nạp từ ngoài, rút ra ngoài, chuyển nội bộ, phí từ ví | Nạp tiền từ ngoài |
+| Tiền gửi | Sổ mở đầu, mở sổ, rút gốc/tất toán, nhận lãi, tái tục | Mở sổ tiền gửi |
+| Vàng | Vàng mở đầu, mua vàng, bán vàng | Mua vàng |
+
+Ngay dưới select loại giao dịch có một câu giải thích ngắn theo loại đang chọn, vi/en, liên kết với select bằng `aria-describedby`. Câu giải thích thay cho khung ghi chú riêng của các giao dịch mở đầu. Đổi sang danh mục cùng loại tài sản giữ nguyên loại giao dịch; đổi danh mục hoặc loại giao dịch đều xóa ví, sổ và đợt bán đã chọn, giữ các ô số tiền, ngày và ghi chú. Không đổi quy tắc tính, schema, API hoặc dữ liệu.
 
 ## Anh/Việt — 22/10/2026
 

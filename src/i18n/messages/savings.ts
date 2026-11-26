@@ -257,8 +257,32 @@ export const savings = {
   "đơn vị": "unit",
   "Loại giao dịch": "Transaction type",
   "Ngày giao dịch": "Transaction date",
-  "Tài sản có sẵn tại ngày bắt đầu theo dõi, không tính là tiền nạp mới.":
-    "Assets held at the tracking start date; not new deposits.",
+  "Số tiền đã có trong ví khi bắt đầu theo dõi, không tính là tiền nạp mới.":
+    "Cash already in the wallet when tracking starts; not a new deposit.",
+  "Sổ đã gửi từ trước khi bắt đầu theo dõi, không tính là tiền nạp mới.":
+    "A term deposit opened before tracking starts; not a new deposit.",
+  "Vàng đã có từ trước khi bắt đầu theo dõi, không tính là tiền nạp mới.":
+    "Gold you already held when tracking starts; not a new deposit.",
+  "Đưa tiền từ bên ngoài Tiết kiệm vào ví này.":
+    "Add money from outside Savings to this wallet.",
+  "Lấy tiền từ ví này ra khỏi Tiết kiệm, ví dụ để chi tiêu.":
+    "Take money from this wallet out of Savings, for example to spend it.",
+  "Chuyển tiền từ ví này sang một ví khác trong Tiết kiệm.":
+    "Move money from this wallet to another wallet in Savings.",
+  "Gửi một sổ mới bằng tiền từ ví Tiết kiệm hoặc từ bên ngoài.":
+    "Open a new term deposit with money from a Savings wallet or from outside.",
+  "Rút một phần hoặc toàn bộ tiền gốc của sổ, kèm tiền lãi thực nhận.":
+    "Withdraw some or all of the deposit principal, with the interest received.",
+  "Ghi tiền lãi của sổ đang gửi: cộng vào gốc hoặc nhận tiền.":
+    "Record interest on an open deposit: add it to the principal or receive it.",
+  "Tất toán sổ cũ và mở sổ mới bằng tiền gốc, có thể gửi tiếp một phần lãi.":
+    "Close the old deposit and open a new one with its principal, optionally reinvesting some interest.",
+  "Mua thêm vàng; mỗi lần mua được theo dõi thành một đợt riêng.":
+    "Buy more gold; each purchase is tracked as a separate lot.",
+  "Bán vàng từ các đợt đang giữ và tính lãi/lỗ cho phần đã bán.":
+    "Sell gold from lots you hold and calculate the gain or loss on that part.",
+  "Khoản phí bị trừ thẳng vào ví này.":
+    "A fee deducted directly from this wallet.",
   "Giá vốn mở đầu (VND)": "Opening cost basis (VND)",
   "Gốc rút (VND)": "Principal withdrawn (VND)",
   "Số tiền (VND)": "Amount (VND)",

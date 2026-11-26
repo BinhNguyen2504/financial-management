@@ -1,5 +1,14 @@
 # Xác minh
 
+## Chọn danh mục trước loại giao dịch Tiết kiệm — 26/11/2026
+
+- Thay đổi: dialog Ghi/sửa giao dịch Tiết kiệm đặt Danh mục trên Loại giao dịch; loại giao dịch lọc theo loại tài sản của danh mục; thêm câu giải thích vi/en dưới select; bỏ khung ghi chú riêng của giao dịch mở đầu; cập nhật ba bước trong Help. Không đổi quy tắc tính, schema, API, migration.
+- `npm run check` (Node 22.12.0): lint, kiến trúc (334 source files / 0 violations), format, `npm test` **410/410**, typecheck và build qua. Test mới `savings-editor-kinds.test.ts`: mỗi loại giao dịch thuộc đúng một loại tài sản và có giải thích vi/en.
+- `npm run test:e2e -- savings.spec.ts` (Chromium desktop + mobile iPhone 13 emulation, PostgreSQL tạm và Auth double local): **22/22** qua, gồm ca mới kiểm thứ tự hai select, danh sách loại theo ba loại tài sản và câu giải thích. Xem ảnh chụp dialog desktop và mobile.
+- `select-controls`, `action-layout`, `interface-feedback`, `workspace-comfort`, `layout-scroll`: **49 qua, 7 lỗi**, đều trong `select-controls.spec.ts` ở bộ lọc trang Đầu tư. Chạy `select-controls.spec.ts` trên bản source gốc chưa có thay đổi cũng lỗi đúng 7 ca này (thêm một ca ngôn ngữ trang công khai trên mobile, ở lượt có thay đổi thì qua); chưa xử lý trong đợt này.
+- Giới hạn: chưa chạy Firefox/WebKit, bộ năm theme, chữ lớn 200% hoặc thiết bị thật; chưa deploy.
+- Đã cập nhật `docs/features/savings.md`, Help vi/en và i18n. README, catalog và landing/preview giữ nguyên vì phạm vi tính năng và dữ liệu minh họa không đổi.
+
 ## Chống trùng tên, nút danh mục và vị trí Về kỳ hiện tại — 25/11/2026
 
 - Thay đổi: kiểm tra trùng tên khi tạo/đổi tên nguồn thu, hũ Chi tiêu, danh mục Tiết kiệm và danh mục Đầu tư (không phân biệt hoa/thường và khoảng trắng, giữ dấu; mục đã ngừng vẫn tính; chỉ khi tạo mới hoặc tên đổi); ô “—” trong Bảng thu nhập gọn và thẳng cột; nút Sửa/Xóa/Ngừng ở tab Nguồn thu đều đặn cùng kiểu chữ + icon; nút “Về kỳ hiện tại” chuyển sát bộ chọn kỳ ở Thu nhập, Chi tiêu, Tiết kiệm, Đầu tư, Báo cáo. Không migration; không đổi `validate.ts` của backup.
