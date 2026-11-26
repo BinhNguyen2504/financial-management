@@ -123,7 +123,7 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                 className="expense-secondary icon-action action-edit"
                 onClick={() => open({ type: "oneoff", row: r })}
                 aria-label={tr("Sửa {0}", { 0: r.name })}
-                title={tr("Sửa")}
+                data-tooltip={tr("Sửa")}
               >
                 <EditActionIcon size={18} aria-hidden="true" />
               </button>
@@ -131,7 +131,7 @@ function AccountIncome(props: Parameters<typeof useIncomeWorkspace>[0]) {
                 className="expense-secondary icon-action action-delete"
                 onClick={() => open({ type: "deleteOneOff", row: r })}
                 aria-label={tr("Xóa {0}", { 0: r.name })}
-                title={tr("Xóa")}
+                data-tooltip={tr("Xóa")}
               >
                 <DeleteActionIcon size={18} aria-hidden="true" />
               </button>

@@ -345,6 +345,10 @@ export function ProductPreview({
           aria-label={tr(
             hidden ? "Hiện số tiền minh họa" : "Ẩn số tiền minh họa",
           )}
+          data-tooltip={tr(
+            hidden ? "Hiện số tiền minh họa" : "Ẩn số tiền minh họa",
+          )}
+          data-tooltip-placement="bottom"
           aria-pressed={hidden}
           onClick={() => setHidden(!hidden)}
         >
@@ -353,7 +357,7 @@ export function ProductPreview({
           ) : (
             <Eye size={18} aria-hidden="true" />
           )}
-          <span>{tr("Riêng tư")}</span>
+          <span data-tooltip-label>{tr("Riêng tư")}</span>
         </button>
       </div>
       <div className="preview-body">

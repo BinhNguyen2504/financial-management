@@ -259,7 +259,7 @@ export function GoalDetails({
                             <button
                               className="expense-icon-button"
                               aria-label={tr("Sửa giao dịch")}
-                              title={tr("Sửa giao dịch")}
+                              data-tooltip={tr("Sửa giao dịch")}
                               onClick={() =>
                                 onEdit({
                                   type: "reviseTransaction",
@@ -274,7 +274,7 @@ export function GoalDetails({
                             <button
                               className="expense-icon-button"
                               aria-label={tr("Hủy giao dịch")}
-                              title={tr("Hủy giao dịch")}
+                              data-tooltip={tr("Hủy giao dịch")}
                               onClick={() =>
                                 onEdit({
                                   type: "reviseTransaction",

@@ -363,8 +363,8 @@ for (const locale of ["vi", "en"] as const) {
       const cancel = detailLedger
         .getByRole("button", { name: voidName, exact: true })
         .first();
-      await expect(edit).toHaveAttribute("title", editName);
-      await expect(cancel).toHaveAttribute("title", voidName);
+      await expect(edit).toHaveAttribute("data-tooltip", editName);
+      await expect(cancel).toHaveAttribute("data-tooltip", voidName);
       for (const width of [1440, 768, 390, 320]) {
         await page.setViewportSize({ width, height: 1000 });
         await expectLedgerLayout(detailLedger);

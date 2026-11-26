@@ -163,3 +163,14 @@ Rà ảnh sau sửa: desktop/tablet giữ tên và số dư bên trái, nhóm ic
 ## Tên danh mục đầu tư không trùng — 25/11/2026
 
 Tạo hoặc đổi tên danh mục loại đầu tư không được trùng tên danh mục đầu tư khác (không phân biệt hoa/thường và khoảng trắng thừa, giữ dấu; danh mục đã lưu trữ vẫn tính). Ví tiền chờ không bị so sánh vì mỗi danh mục đầu tư tự tạo ví cùng tên. Chỉ kiểm tra khi tạo mới hoặc tên đổi nên dữ liệu và backup cũ vẫn dùng được. Nút “Về kỳ hiện tại” nằm ngay cạnh ô chọn ngày xem.
+
+## Thao tác danh mục và nhật ký giao dịch — 26/11/2026
+
+- **Danh mục đầu tư:** mỗi hàng còn hai thao tác Chi tiết và Giao dịch. Bảng desktop dùng nút icon 44px có tên truy cập kèm tên danh mục và tooltip (“Chi tiết”, “Ghi giao dịch”); thẻ từ 1100px trở xuống giữ icon kèm chữ. Bản tiếng Anh dùng chữ “Transactions”. Nút Định giá riêng ở hàng được bỏ; định giá vẫn chọn được trong form và trong chi tiết danh mục. Cột ngày định giá giữ nguyên.
+- **Giữ danh mục khi đổi loại:** Giao dịch mở form với danh mục đã chọn, loại mặc định Mua. Đổi sang Nạp, Rút, Chuyển ví hoặc Số dư ví mở đầu thì chọn ví tiền chờ của danh mục (ví thanh toán mặc định, hoặc ví vừa dùng); đổi về loại tài sản thì trở lại danh mục và ví đã dùng. Đích chuyển ví luôn do người dùng chọn. Tự chọn “Chọn danh mục / ví” sẽ bỏ ghi nhớ; ngày chưa hợp lệ thì để trống. Ngày giao dịch không tự đổi khi đổi loại. Chế độ sửa/hủy, command, preview và dữ liệu không đổi.
+- **Nhật ký giao dịch:** mỗi dòng là một thẻ gồm ô icon theo loại, tên danh mục, nhãn loại, ngày · ví · ghi chú, số tiền và “Xem giao dịch” trên một dòng chữ. Nạp xanh lá, Rút vàng cam, Mua xanh dương, Bán theo màu nhấn của theme, còn lại trung tính; icon và tên loại mang nghĩa, không chỉ dựa vào màu. Giao dịch đã hủy có viền đứt, icon cấm, nhãn “Đã hủy”, chữ mờ và số tiền đã nhập (chưa gồm phí/thuế) bị gạch ngang, hoặc giá trị đã nhập với loại không có số tiền. Từ 639px trở xuống nút nằm hàng riêng.
+- **Giới hạn đã biết (có từ trước):** giao dịch đã sửa rồi hủy hiển thị giá trị bản gốc trong nhật ký, còn chi tiết danh mục dùng bản mới nhất.
+- **Quản lý → Danh mục và ví:** Sửa, Mở đầu, Xóa / lưu trữ và Khôi phục đều có icon kèm chữ, cùng bộ icon với thao tác ví.
+- Danh sách “Giao dịch liên quan” (Đầu tư) và lịch sử trong chi tiết Tiết kiệm dùng cột thao tác rộng hơn để “Xem giao dịch” không rớt dòng; mobile giữ bố cục thẻ.
+
+Tooltip theo [quy ước chung](../04-ux-direction.md#tooltip-cho-nút-chỉ-có-icon--26112026). Bằng chứng và giới hạn ở [validation](../07-validation.md).

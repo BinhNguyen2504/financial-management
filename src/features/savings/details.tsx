@@ -278,6 +278,7 @@ export function SavingsDetails({
         { label: tr("Ảnh hưởng"), numeric: true, render: ({ t }) => impact(t) },
         {
           label: tr("Thao tác"),
+          kind: "wide-actions",
           render: ({ t }) => (
             <button
               className="expense-secondary"

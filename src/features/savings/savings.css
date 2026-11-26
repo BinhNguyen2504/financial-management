@@ -180,6 +180,9 @@
   flex-wrap: nowrap;
   gap: 8px;
 }
+.savings-ledger-table .expense-actions .expense-secondary {
+  white-space: nowrap;
+}
 .savings-ledger-table .is-numeric {
   font-variant-numeric: tabular-nums;
 }

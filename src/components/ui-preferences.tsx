@@ -134,7 +134,8 @@ export function SidebarToggle() {
       className="sidebar-toggle icon-action"
       tabIndex={0}
       aria-label={collapsed ? tr("Mở rộng menu") : tr("Thu gọn menu")}
-      title={collapsed ? tr("Mở rộng menu") : tr("Thu gọn menu")}
+      data-tooltip={collapsed ? tr("Mở rộng menu") : tr("Thu gọn menu")}
+      data-tooltip-placement="right"
       aria-expanded={!collapsed}
       aria-controls="app-sidebar"
       onClick={() => set(collapsed ? "expanded" : "collapsed")}

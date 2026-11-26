@@ -2,6 +2,7 @@ import { serverLocale } from "@/i18n/server";
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import { PwaRegistration } from "@/components/pwa-registration";
+import { TooltipLayer } from "@/components/tooltip";
 import { UserProvider } from "@/features/profile/user-provider";
 import { PreferenceSync, preferenceScript } from "@/components/ui-preferences";
 import { getSeoConfig } from "@/lib/seo";
@@ -13,6 +14,7 @@ import "./zen.css";
 import "@/features/profile/profile.css";
 import "./experience.css";
 import "@/components/status-badge.css";
+import "@/components/tooltip.css";
 import "@/components/scroll-tabs.css";
 import "./visual-themes.css";
 import "@/components/illustrated-heading.css";
@@ -60,6 +62,7 @@ export default async function RootLayout({
           {children}
           <PwaRegistration />
         </UserProvider>
+        <TooltipLayer />
       </body>
     </html>
   );

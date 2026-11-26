@@ -24,6 +24,8 @@ Tinh chỉnh 02/11/2026: [bố cục thao tác toàn ứng dụng](docs/features
 
 **Ví tiền chờ (05/11/2026):** nút thêm ví nằm cạnh tiêu đề; Nạp/Rút/Chuyển dùng icon có tooltip, các thao tác mở đầu/sửa/lưu trữ nằm trong “Thêm thao tác”. Xem [đặc tả](docs/features/investments.md).
 
+**Thao tác Đầu tư và tooltip (26/11/2026):** bảng danh mục còn hai nút Chi tiết/Giao dịch, đổi loại giao dịch vẫn giữ danh mục; nhật ký phân biệt từng loại và giao dịch đã hủy; mọi nút chỉ có icon dùng chung tooltip. Xem [đặc tả](docs/features/investments.md).
+
 **Đầu tư:** theo dõi vốn, giá trị tài sản đang giữ và tiền chờ riêng từng danh mục. Tổng giá trị gồm tài sản + tiền chờ; lãi/lỗ chỉ tính phần còn giữ. Nạp → mua → định giá → bán về ví → rút; xem trước rồi xác nhận, sửa/hủy có lịch sử, báo cáo nhiều năm và CSV. Lọc giao dịch theo ngày, danh mục/ví và loại; tùy chọn hiện cả giao dịch đã hủy nằm ở hàng riêng dưới bộ lọc. Bán hết không tự lưu trữ; chỉ lưu trữ khi hết vốn, giá trị và tiền chờ. Xem [đặc tả Đầu tư](docs/features/investments.md). Source/local và thay dữ liệu cloud được xác minh riêng.
 
 **Tiết kiệm:** bảng danh mục và giao dịch căn cột trên desktop, xếp dọc có nhãn trên mobile, tùy chọn cột; tiền/ví, từng sổ tiền gửi và đợt mua vàng; rút/bán, lãi thực nhận, tái tục, giá lịch sử, báo cáo xuyên năm, chốt/mở lại tháng và CSV/JSON. Lịch sử thay đổi trình bày theo dòng thời gian, tách nội dung, thời gian ghi nhận, lần ghi và lý do; hiển thị toàn bộ sổ, mới nhất trước. Xem [đặc tả và migration Tiết kiệm](docs/features/savings.md). Chưa tự đồng bộ số dư với Thu nhập/Chi tiêu. Đọc lại cloud ngày 18/10 xác nhận đã có schema và bộ mẫu Tiết kiệm; chưa dùng bằng chứng này để khẳng định đăng nhập/thiết bị thật.

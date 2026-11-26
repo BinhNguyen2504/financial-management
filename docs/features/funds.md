@@ -104,6 +104,8 @@ Mục tiêu đã có source. Từng Quỹ là nguồn chỉ đọc cho cột m�
 
 Danh sách ngoài trang và tab Giao dịch trong chi tiết cả ba quỹ dùng hai nút chỉ có icon: bút để sửa, thùng rác để hủy. Mỗi nút 44×44px, cách nhau 8px, có tên trợ năng và tooltip `title` đầy đủ bằng vi/en. Nút vẫn mở form sửa/hủy với lý do, xem trước và xác nhận; không hủy trực tiếp từ danh sách.
 
+Từ 26/11/2026, tooltip `title` được thay bằng [tooltip chung](../04-ux-direction.md#tooltip-cho-nút-chỉ-có-icon--26112026) (cùng nội dung, hiện khi rê chuột hoặc đến bằng Tab).
+
 Vùng nội dung trên 700px có ba cột thông tin, tiền và thao tác 96px; tiền và thao tác căn giữa dọc hàng, tiền căn phải với chữ số đều. Từ 481–700px, thao tác nằm ở hàng riêng; tối đa 480px, loại giao dịch và tiền ở hàng đầu, thông tin ở dưới, thao tác cuối. Hai nút luôn cạnh nhau. Ghi chú và tiền dài được xuống dòng trong phần riêng, không che nút hoặc làm tràn trang; Privacy Mode giữ cách che tiền hiện có.
 
 Đã đối chiếu README, catalog, landing copy/Help preview và hướng UX. Public preview vẫn chỉ minh họa số dư quỹ bằng dữ liệu cố định, không giả lập nút sửa/hủy trên dữ liệu preview và không gọi API tài chính. Không đổi API/schema, backup hoặc ranh giới Auth. Bằng chứng local xem [Validation](../07-validation.md).

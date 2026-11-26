@@ -251,7 +251,7 @@ export function FundLedger({
                       className="expense-icon-button"
                       onClick={() => onEdit({ type: "revise", transaction: t })}
                       aria-label={tr("Sửa giao dịch")}
-                      title={tr("Sửa giao dịch")}
+                      data-tooltip={tr("Sửa giao dịch")}
                     >
                       <EditActionIcon size={18} aria-hidden="true" />
                     </button>
@@ -259,7 +259,7 @@ export function FundLedger({
                       className="expense-icon-button"
                       onClick={() => onEdit({ type: "cancel", transaction: t })}
                       aria-label={tr("Hủy giao dịch")}
-                      title={tr("Hủy giao dịch")}
+                      data-tooltip={tr("Hủy giao dịch")}
                     >
                       <CancelEntryIcon size={17} aria-hidden="true" />
                     </button>

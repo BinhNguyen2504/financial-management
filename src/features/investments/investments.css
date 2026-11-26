@@ -198,9 +198,6 @@
 .investment-table .expense-actions {
   flex-wrap: nowrap;
 }
-.investment-table .expense-secondary {
-  padding: 9px 12px;
-}
 .investment-wallet,
 .investment-activity {
   display: flex;
@@ -229,6 +226,9 @@
 }
 .investment-activity strong {
   font-variant-numeric: tabular-nums;
+}
+.investment-card .investment-position-actions > button {
+  flex: 1 1 8rem;
 }
 .investment-card-grid {
   display: grid;
@@ -609,34 +609,6 @@
   justify-content: flex-end;
   gap: 8px;
 }
-.investment-wallet-action {
-  position: relative;
-  display: inline-flex;
-}
-.investment-wallet-tooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  width: max-content;
-  max-width: 180px;
-  padding: 7px 10px;
-  border-radius: 6px;
-  background: var(--text);
-  color: var(--surface);
-  font-size: var(--font-size-14);
-  line-height: 1.4;
-}
-.investment-wallet-action:first-child .investment-wallet-tooltip {
-  left: 0;
-  transform: none;
-}
-.investment-wallet-action:last-child .investment-wallet-tooltip {
-  left: auto;
-  right: 0;
-  transform: none;
-}
 .investment-wallet-more:not([hidden]) {
   display: flex;
   flex-wrap: wrap;
@@ -652,5 +624,92 @@
   .investment-wallet-quick-actions,
   .investment-wallet-more:not([hidden]) {
     justify-content: flex-start;
+  }
+}
+
+/* Journal rows differ by type (icon and name) and voided state (shape and text). */
+.investment-journal {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+.investment-journal .investment-journal-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.investment-journal-icon {
+  --journal-ink: var(--badge-neutral-ink);
+  --journal-fill: var(--badge-neutral-fill);
+  display: inline-grid;
+  place-items: center;
+  align-self: start;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--journal-fill);
+  color: var(--journal-ink);
+}
+.investment-journal-row[data-kind="deposit"] .investment-journal-icon {
+  --journal-ink: var(--badge-success-ink);
+  --journal-fill: var(--badge-success-fill);
+}
+.investment-journal-row[data-kind="withdraw"] .investment-journal-icon {
+  --journal-ink: var(--badge-warning-ink);
+  --journal-fill: var(--badge-warning-fill);
+}
+.investment-journal-row[data-kind="buy"] .investment-journal-icon {
+  --journal-ink: var(--badge-info-ink);
+  --journal-fill: var(--badge-info-fill);
+}
+.investment-journal-row[data-kind="sell"] .investment-journal-icon {
+  --journal-ink: var(--accent);
+  --journal-fill: var(--accent-soft);
+}
+.investment-journal-body {
+  min-width: 0;
+}
+.investment-journal-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.investment-journal-heading h3 {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.investment-journal-body > strong {
+  overflow-wrap: anywhere;
+}
+.investment-view-transaction {
+  flex: none;
+  white-space: nowrap;
+}
+.investment-journal .investment-journal-row[data-cancelled] {
+  border-style: dashed;
+  background: var(--surface-alt);
+}
+.investment-journal-row[data-cancelled] .investment-journal-icon {
+  --journal-ink: var(--badge-neutral-ink);
+  --journal-fill: var(--badge-neutral-fill);
+}
+.investment-journal-row[data-cancelled]
+  :is(h3, .investment-journal-body > strong) {
+  color: var(--muted);
+}
+@media (max-width: 639px) {
+  .investment-journal .investment-journal-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 14px;
+  }
+  .investment-journal .investment-view-transaction {
+    grid-column: 2;
+    justify-self: start;
   }
 }

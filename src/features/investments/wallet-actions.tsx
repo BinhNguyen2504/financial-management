@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type ComponentProps } from "react";
+import { useId, useRef, useState } from "react";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
@@ -13,50 +13,6 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/i18n/provider";
 import type { EditorMode } from "./editor-config";
-
-function WalletAction({
-  label,
-  children,
-  ...props
-}: ComponentProps<"button"> & { label: string }) {
-  const id = useId();
-  const [visible, setVisible] = useState(false);
-  return (
-    <span
-      className="investment-wallet-action"
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
-    >
-      <button
-        {...props}
-        type="button"
-        className="expense-icon-button"
-        aria-label={label}
-        aria-describedby={visible ? id : undefined}
-        onFocus={() => setVisible(true)}
-        onBlur={() => setVisible(false)}
-        onKeyDown={(event) => {
-          if (event.key === "Escape" && visible) {
-            event.preventDefault();
-            event.stopPropagation();
-            setVisible(false);
-          }
-        }}
-        onClick={(event) => {
-          setVisible(false);
-          props.onClick?.(event);
-        }}
-      >
-        {children}
-      </button>
-      {visible && (
-        <span id={id} role="tooltip" className="investment-wallet-tooltip">
-          {label}
-        </span>
-      )}
-    </span>
-  );
-}
 
 export function WalletActions({
   id,
@@ -102,24 +58,30 @@ export function WalletActions({
               ["transfer", "Chuyển ví", ArrowLeftRight],
             ] as const
           ).map(([kind, label, Icon]) => (
-            <WalletAction
+            <button
+              type="button"
               key={kind}
-              label={tr(label)}
+              className="expense-icon-button"
+              aria-label={tr(label)}
+              data-tooltip={tr(label)}
               onClick={() =>
                 edit({ type: "transaction", kind, categoryId: id })
               }
             >
               <Icon size={18} aria-hidden="true" />
-            </WalletAction>
+            </button>
           ))}
-        <WalletAction
-          label={tr("Thêm thao tác")}
+        <button
+          type="button"
+          className="expense-icon-button"
+          aria-label={tr("Thêm thao tác")}
+          data-tooltip={tr("Thêm thao tác")}
           aria-expanded={expanded}
           aria-controls={moreId}
           onClick={() => setExpanded(!expanded)}
         >
           <Ellipsis size={18} aria-hidden="true" />
-        </WalletAction>
+        </button>
       </div>
       <div id={moreId} hidden={!expanded} className="investment-wallet-more">
         {portfolioActive && active && (

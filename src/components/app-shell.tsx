@@ -30,11 +30,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <HelpProvider>
                 <aside className="sidebar" id="app-sidebar">
                   <div className="sidebar-header">
-                    <Link href="/" className="brand">
+                    <Link
+                      href="/"
+                      className="brand"
+                      aria-label="Financial Manager"
+                      data-tooltip="Financial Manager"
+                      data-tooltip-placement="right"
+                    >
                       <span className="brand-icon">
                         <AppLogo size={27} />
                       </span>
-                      <span>
+                      <span data-tooltip-label>
                         Financial<span className="brand-sub">Manager</span>
                       </span>
                     </Link>

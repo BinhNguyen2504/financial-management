@@ -242,7 +242,7 @@ export function ExpenseDetails({
                                     onEdit({ mode: "spend", row, spend: s })
                                   }
                                   aria-label={tr("Sửa")}
-                                  title={tr("Sửa")}
+                                  data-tooltip={tr("Sửa")}
                                 >
                                   <EditActionIcon
                                     size={18}
@@ -256,7 +256,7 @@ export function ExpenseDetails({
                                     onEdit({ mode: "deleteSpend", spend: s })
                                   }
                                   aria-label={tr("Xóa")}
-                                  title={tr("Xóa")}
+                                  data-tooltip={tr("Xóa")}
                                 >
                                   <DeleteActionIcon
                                     size={18}
@@ -431,7 +431,7 @@ export function ExpenseLabels({
                       className="expense-secondary icon-action action-edit"
                       onClick={() => onEdit({ mode: "label", label })}
                       aria-label={tr("Sửa {0}", { 0: label.name })}
-                      title={tr("Sửa")}
+                      data-tooltip={tr("Sửa")}
                     >
                       <EditActionIcon size={18} aria-hidden="true" />
                     </button>
@@ -440,7 +440,7 @@ export function ExpenseLabels({
                       className="expense-secondary icon-action action-delete"
                       onClick={() => onEdit({ mode: "deleteLabel", label })}
                       aria-label={tr("Xóa {0}", { 0: label.name })}
-                      title={tr("Xóa")}
+                      data-tooltip={tr("Xóa")}
                     >
                       <DeleteActionIcon size={18} aria-hidden="true" />
                     </button>

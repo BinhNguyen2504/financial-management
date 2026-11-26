@@ -333,6 +333,9 @@ export function FundEditorFields({
                       aria-label={tr("Ưu tiên {0} lên", {
                         0: tr(fundNames[k]),
                       })}
+                      data-tooltip={tr("Ưu tiên {0} lên", {
+                        0: tr(fundNames[k]),
+                      })}
                       disabled={i === 0}
                       onClick={() => {
                         setPriority((s) => {
@@ -343,11 +346,14 @@ export function FundEditorFields({
                         invalidate();
                       }}
                     >
-                      <ArrowUp size={18} />
+                      <ArrowUp size={18} aria-hidden="true" />
                     </button>
                     <button
                       className="expense-icon-button"
                       aria-label={tr("Ưu tiên {0} xuống", {
+                        0: tr(fundNames[k]),
+                      })}
+                      data-tooltip={tr("Ưu tiên {0} xuống", {
                         0: tr(fundNames[k]),
                       })}
                       disabled={i === 2}
@@ -360,7 +366,7 @@ export function FundEditorFields({
                         invalidate();
                       }}
                     >
-                      <ArrowDown size={18} />
+                      <ArrowDown size={18} aria-hidden="true" />
                     </button>
                   </li>
                 ))}

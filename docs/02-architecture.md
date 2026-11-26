@@ -302,3 +302,9 @@ Goals tái sử dụng DialogTabs (tab/scroll/state), DialogNote và DialogPrevi
 ### Làm trống theo từng trang — 24/11/2026
 
 Phạm vi reset là `ResetModule` (tiền tố bảng backup) trong `domain/backup/reset-modules.ts`, thuần TypeScript và dùng chung giữa giao diện, route và repository. Server giải quyết phụ thuộc (Mục tiêu theo Tiết kiệm/Đầu tư/Quỹ), lưu phạm vi trong `data_resets.modules` ở bước chuẩn bị và hàm SQL chỉ xóa theo giá trị đã lưu; khóa advisory vẫn lấy đủ và theo thứ tự cũ. Fingerprint/generation/idempotency không đổi. Xem [backup](features/backup.md#làm-trống-theo-từng-trang--24112026).
+
+## Tooltip dùng chung — 26/11/2026
+
+`components/tooltip.tsx` gắn một `TooltipLayer` ở root layout, lắng nghe theo thuộc tính `data-tooltip` (không bọc thêm phần tử), render `role="tooltip"` dạng popover trong dialog hoặc vỏ công khai gần nhất và quản lý `aria-describedby`; hàm vị trí thuần nằm ở `tooltip-position.ts`. Thay trạng thái tooltip riêng trước đây của `investments/wallet-actions.tsx`; file đó chỉ còn giữ phần thao tác phụ.
+
+`features/investments/transaction-selection.ts` (thuần, chỉ dùng domain) quyết định danh mục/ví của editor khi đổi loại giao dịch; `portfolioId` là trạng thái form, không nằm trong command. `activity-style.ts` ánh xạ loại giao dịch sang icon/tông của nhật ký. Không đổi domain, HTTP, schema, Auth hoặc RLS.

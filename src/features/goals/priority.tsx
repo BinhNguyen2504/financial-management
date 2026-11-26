@@ -100,7 +100,7 @@ export function GoalPriority({
                   data-direction="-1"
                   disabled={!sameGoals || index === 0}
                   aria-label={tr("Ưu tiên {0} lên", { 0: goal.name })}
-                  title={tr("Ưu tiên {0} lên", { 0: goal.name })}
+                  data-tooltip={tr("Ưu tiên {0} lên", { 0: goal.name })}
                   onClick={() => move(index, -1)}
                 >
                   <ArrowUp size={18} aria-hidden="true" />
@@ -111,7 +111,7 @@ export function GoalPriority({
                   data-direction="1"
                   disabled={!sameGoals || index === action.ids.length - 1}
                   aria-label={tr("Ưu tiên {0} xuống", { 0: goal.name })}
-                  title={tr("Ưu tiên {0} xuống", { 0: goal.name })}
+                  data-tooltip={tr("Ưu tiên {0} xuống", { 0: goal.name })}
                   onClick={() => move(index, 1)}
                 >
                   <ArrowDown size={18} aria-hidden="true" />

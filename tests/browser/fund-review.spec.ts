@@ -130,10 +130,10 @@ test("synthetic Fund review renders garden, pagination, archived locations, hist
   await filters.locator("summary").click();
   await expect(
     row.getByRole("button", { name: "Sửa giao dịch", exact: true }),
-  ).toHaveAttribute("title", "Sửa giao dịch");
+  ).toHaveAttribute("data-tooltip", "Sửa giao dịch");
   await expect(
     row.getByRole("button", { name: "Hủy giao dịch", exact: true }),
-  ).toHaveAttribute("title", "Hủy giao dịch");
+  ).toHaveAttribute("data-tooltip", "Hủy giao dịch");
   const rightEdges = await transactions
     .locator(".fund-transaction-amount")
     .evaluateAll((elements) =>

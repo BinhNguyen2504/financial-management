@@ -112,7 +112,7 @@ export function EmojiPicker({
             type="button"
             key={emoji}
             aria-label={name}
-            title={name}
+            data-tooltip={name}
             aria-pressed={value === emoji}
             onClick={() => choose(emoji)}
           >

@@ -578,7 +578,7 @@ export const articles: HelpArticles = {
         "Ghi mua hoặc bán",
         "Khi thực sự mua thêm hoặc bán bớt tài sản.",
         [
-          "Mở danh mục, chọn mua hoặc bán và ví tiền chờ thuộc danh mục đó. Cần nạp đủ tiền vào ví trước khi mua.",
+          "Bấm Giao dịch ở danh mục (hoặc mở chi tiết), chọn mua hoặc bán và ví tiền chờ thuộc danh mục đó. Cần nạp đủ tiền vào ví trước khi mua.",
           "Nhập ngày, tiền mua/bán, phí, thuế; khi bán nhập thêm giá vốn phần bán.",
           "Nhập giá trị phần tài sản còn giữ sau giao dịch. Với Bán hết, kiểm tra vốn được điền và giá trị còn lại bằng 0; tiền bán vẫn do bạn nhập.",
           "Xem trước thay đổi cả tài sản và ví rồi xác nhận.",
@@ -590,7 +590,7 @@ export const articles: HelpArticles = {
         "Cập nhật định giá",
         "Khi muốn cập nhật giá trị danh mục ở một ngày thực tế.",
         [
-          "Mở danh mục, chọn định giá và ngày không vượt hôm nay.",
+          "Bấm Giao dịch ở danh mục rồi chọn loại Định giá (hoặc mở chi tiết), với ngày không vượt hôm nay.",
           "Nhập tổng giá trị tài sản còn giữ, không cộng tiền chờ.",
           "**Xem trước** và lưu; đối chiếu ngày định giá hiển thị trên danh mục.",
         ],
