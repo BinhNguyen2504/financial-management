@@ -377,6 +377,23 @@ describe("Investment category names", () => {
       }),
     ).not.toThrow();
   });
+  it("also counts a name another category held between the start date and today", () => {
+    const s = setup();
+    for (const [date, name] of [
+      ["2027-01-10", "Trái phiếu"],
+      ["2027-02-10", "Chứng chỉ quỹ"],
+    ])
+      s.act({
+        type: "configureCategory",
+        categoryId: s.asset,
+        date,
+        kind: "investment",
+        name,
+      });
+    expect(() => s.act(create("Trái phiếu"))).toThrow(
+      /Tên danh mục đã tồn tại/,
+    );
+  });
   it("still counts an archived category", () => {
     const s = setup();
     s.act({ type: "archiveCategory", categoryId: s.asset, date: start });

@@ -48,7 +48,11 @@ export function applyAction(
   ) => {
     const taken = book.categories
       .filter((c) => c.kind === "investment" && c.id !== exceptId)
-      .flatMap((c) => dates.map((d) => ruleAt(c, d)?.name));
+      .flatMap((c) => [
+        ...dates.map((d) => ruleAt(c, d)?.name),
+        // Renames between the effective date and today count too.
+        ...c.rules.filter((r) => r.date > dates[0]).map((r) => r.name),
+      ]);
     if (nameTaken(name, taken)) fail("Tên danh mục đã tồn tại.");
   };
   switch (action.type) {

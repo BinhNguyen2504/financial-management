@@ -318,6 +318,26 @@ describe("Savings category names", () => {
     expect(() => rename(cash, "VÍ")).not.toThrow();
     expect(() => rename(other, "Ví thứ hai")).not.toThrow();
   });
+  it("also counts a category that starts or is renamed in a later month", () => {
+    const startsLater = add(
+      setup(),
+      category(randomUUID(), "cash", "Quỹ mới", "2027-06"),
+    );
+    expect(() =>
+      add(startsLater, category(randomUUID(), "cash", "Quỹ mới")),
+    ).toThrow(/Tên danh mục đã tồn tại/);
+    const renamedLater = add(setup(), {
+      type: "configureCategory",
+      categoryId: other,
+      month: "2027-08",
+      name: "Dự phòng",
+      description: "",
+      emoji: "🌱",
+    });
+    expect(() =>
+      add(renamedLater, category(randomUUID(), "cash", "Dự phòng")),
+    ).toThrow(/Tên danh mục đã tồn tại/);
+  });
   it("still counts an archived category", () => {
     const b = add(setup(), {
       type: "archiveCategory",

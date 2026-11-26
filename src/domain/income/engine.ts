@@ -48,7 +48,8 @@ export function ruleAt(category: IncomeCategory, month: string) {
 /**
  * A new or renamed source may not reuse the name of another source that is
  * not deleted, including stopped ones that still appear in history. Names are
- * compared as they read in the effective month and in the current month.
+ * compared as they read in the effective month (the first of `months`) and in
+ * the current month, plus every later start or rename, even a future one.
  * Only the actions that set a name call this, so older duplicates stay readable
  * and editable.
  */
@@ -60,7 +61,10 @@ function ensureUniqueName(
 ) {
   const taken = book.categories
     .filter((c) => !c.deleted && c.id !== exceptId)
-    .flatMap((c) => months.map((m) => ruleAt(c, m)?.name));
+    .flatMap((c) => [
+      ...months.map((m) => ruleAt(c, m)?.name),
+      ...c.rules.filter((r) => r.month > months[0]).map((r) => r.name),
+    ]);
   if (nameTaken(name, taken)) {
     const message = "Tên nguồn thu đã tồn tại.";
     throw new IncomeError(message, 422, "DUPLICATE_NAME", { name: message });
