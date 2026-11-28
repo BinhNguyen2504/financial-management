@@ -136,9 +136,9 @@ describe("explicit category choices", () => {
       const { book, asset, other, picked } = setup();
       const original = picked(asset, "");
       const moved = selectionForCategory(book, kind, other, original, date);
-      expect(
-        selectionForCategory(book, kind, asset, moved, date),
-      ).toEqual(original);
+      expect(selectionForCategory(book, kind, asset, moved, date)).toEqual(
+        original,
+      );
       expect(selectionForKind(book, "buy", moved, date).cashCategoryId).toBe(
         selectionForCategory(book, "buy", other, moved, date).cashCategoryId,
       );
