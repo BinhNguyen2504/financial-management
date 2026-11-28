@@ -360,8 +360,8 @@ export const help = {
   "Nạp, rút và chuyển tiền": "Deposit, withdraw and transfer",
   "Khi tiền tiết kiệm thật sự thay đổi nơi giữ hoặc ra/vào.":
     "When savings actually move between locations or into/out of the system.",
-  "Mở giao dịch hoặc chi tiết danh mục tiền, chọn nạp/rút/chuyển phù hợp.":
-    "Open Transactions or cash category details and choose deposit/withdraw/transfer.",
+  "Mở giao dịch hoặc chi tiết danh mục tiền; chọn danh mục trước, rồi chọn loại nạp/rút/chuyển phù hợp và đọc giải thích ngay bên dưới.":
+    "Open a transaction or cash category details; choose the category first, then deposit/withdraw/transfer and read the explanation below it.",
   "Chọn ngày, số tiền, nguồn/đích trong Tiết kiệm hoặc bên ngoài và ghi chú.":
     "Choose date, amount, internal or external source/destination and note.",
   "Xem trước và xác nhận; kiểm tra lịch sử và số dư sau giao dịch.":
@@ -372,8 +372,8 @@ export const help = {
     "Open deposits, receive interest, withdraw principal and renew",
   "Khi quản lý tiền gửi theo từng sổ.":
     "For managing individual term deposits.",
-  "Chọn mở sổ, nhập gốc, ngày, kỳ hạn và nguồn tiền.":
-    "Open a deposit and enter principal, date, term and source.",
+  "Chọn danh mục tiền gửi rồi loại mở sổ, nhập gốc, ngày, kỳ hạn và nguồn tiền.":
+    "Choose a term deposit category, then the open deposit type; enter principal, date, term and source.",
   "Khi nhận lãi, chọn nhập gốc sổ hiện tại hoặc nhận tiền về ví/bên ngoài.":
     "When receiving interest, choose to capitalise it or receive cash in a wallet/outside.",
   "Khi rút trước hạn, nhập gốc, lãi và phí thực tế. Khi tái tục, chọn phần lãi nhập sổ tiếp theo và phần nhận bằng tiền.":
@@ -385,8 +385,8 @@ export const help = {
   "Mua, bán và định giá vàng": "Buy, sell and value gold",
   "Khi khối lượng vàng hoặc giá trị theo dõi thay đổi.":
     "When gold quantities or tracked values change.",
-  "Ghi mua vàng với ngày, lượng, giá, phí/thuế và nguồn tiền.":
-    "Record a purchase with date, quantity, price, fees/taxes and funding source.",
+  "Chọn danh mục vàng rồi loại mua vàng; nhập ngày, lượng, giá, phí/thuế và nguồn tiền.":
+    "Choose a gold category, then the buy gold type; enter date, quantity, price, fees/taxes and funding source.",
   "Khi bán, chọn một hoặc nhiều đợt và lượng bán mỗi đợt; nhập giá bán, phí/thuế và nơi nhận tiền.":
     "To sell, choose lots and quantities, then sale price, fees/taxes and cash destination.",
   "Cập nhật giá bán lại dự kiến theo ngày trong phần định giá; dùng đúng đơn vị của danh mục.":

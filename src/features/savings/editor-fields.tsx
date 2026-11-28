@@ -33,7 +33,10 @@ export function SavingsEditorFields({
     names,
     selectedCategory,
     localizedTransactionNames,
-    txAsset,
+    localizedTransactionHints,
+    transactionKinds,
+    changeCategory,
+    changeTransactionKind,
     txKind,
     hasAmount,
     hasContract,
@@ -137,7 +140,13 @@ export function SavingsEditorFields({
       </label>
     );
   }
-  function select(key: string, label: string, options: ReactNode) {
+  function select(
+    key: string,
+    label: string,
+    options: ReactNode,
+    onChange: (value: string) => void = (value) => set(key, value),
+    help?: string,
+  ) {
     return (
       <label>
         {label}
@@ -149,38 +158,25 @@ export function SavingsEditorFields({
           required
           aria-invalid={!!fieldErrors[key]}
           aria-describedby={
-            fieldErrors[key] ? `savings-error-${key}` : undefined
+            [
+              help ? `savings-help-${key}` : "",
+              fieldErrors[key] ? `savings-error-${key}` : "",
+            ]
+              .filter(Boolean)
+              .join(" ") || undefined
           }
           aria-label={label}
           value={f[key]}
-          onChange={(e) => {
-            set(key, e.target.value);
-            if (key === "transactionKind") {
-              const k = e.target.value;
-              const asset = k.includes("Gold")
-                ? "gold"
-                : [
-                      "openingDeposit",
-                      "openDeposit",
-                      "withdrawDeposit",
-                      "interest",
-                      "rollover",
-                    ].includes(k)
-                  ? "deposit"
-                  : "cash";
-              set(
-                "categoryId",
-                categories.find((c) => c.kind === asset)?.id ?? "",
-              );
-              set("cashCategoryId", "");
-              set("contractId", "");
-              setAllocations({});
-            }
-          }}
+          onChange={(e) => onChange(e.target.value)}
           disabled={busy}
         >
           {options}
         </select>
+        {help && (
+          <small id={`savings-help-${key}`} className="expense-muted">
+            {help}
+          </small>
+        )}
         {fieldErrors[key] && (
           <small id={`savings-error-${key}`} className="field-error">
             {tr(fieldErrors[key])}
@@ -309,36 +305,30 @@ export function SavingsEditorFields({
       {mode.type === "transaction" && (
         <>
           {select(
-            "transactionKind",
-            tr("Loại giao dịch"),
-            Object.entries(localizedTransactionNames).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            )),
-          )}
-          {select(
             "categoryId",
             tr("Danh mục"),
             <>
               <option value="">{tr("Chọn danh mục")}</option>
-              {categories
-                .filter((c) => c.kind === txAsset)
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {names(c)}
-                  </option>
-                ))}
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {names(c)}
+                </option>
+              ))}
             </>,
+            changeCategory,
+          )}
+          {select(
+            "transactionKind",
+            tr("Loại giao dịch"),
+            transactionKinds.map((k) => (
+              <option key={k} value={k}>
+                {localizedTransactionNames[k]}
+              </option>
+            )),
+            changeTransactionKind,
+            localizedTransactionHints[txKind],
           )}
           {input("date", tr("Ngày giao dịch"), "date")}
-          {txKind.startsWith("opening") && (
-            <p className="expense-notice">
-              {tr(
-                "Tài sản có sẵn tại ngày bắt đầu theo dõi, không tính là tiền nạp mới.",
-              )}
-            </p>
-          )}
           {hasAmount &&
             input(
               "amount",

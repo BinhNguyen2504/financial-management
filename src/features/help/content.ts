@@ -438,7 +438,7 @@ export const articles: HelpArticles = {
         "Nạp, rút và chuyển tiền",
         "Khi tiền tiết kiệm thật sự thay đổi nơi giữ hoặc ra/vào.",
         [
-          "Mở giao dịch hoặc chi tiết danh mục tiền, chọn nạp/rút/chuyển phù hợp.",
+          "Mở giao dịch hoặc chi tiết danh mục tiền; chọn danh mục trước, rồi chọn loại nạp/rút/chuyển phù hợp và đọc giải thích ngay bên dưới.",
           "Chọn ngày, số tiền, nguồn/đích trong Tiết kiệm hoặc bên ngoài và ghi chú.",
           "Xem trước và xác nhận; kiểm tra lịch sử và số dư sau giao dịch.",
         ],
@@ -449,7 +449,7 @@ export const articles: HelpArticles = {
         "Mở sổ, nhận lãi, rút gốc và tái tục",
         "Khi quản lý tiền gửi theo từng sổ.",
         [
-          "Chọn mở sổ, nhập gốc, ngày, kỳ hạn và nguồn tiền.",
+          "Chọn danh mục tiền gửi rồi loại mở sổ, nhập gốc, ngày, kỳ hạn và nguồn tiền.",
           "Khi nhận lãi, chọn nhập gốc sổ hiện tại hoặc nhận tiền về ví/bên ngoài.",
           "Khi rút trước hạn, nhập gốc, lãi và phí thực tế. Khi tái tục, chọn phần lãi nhập sổ tiếp theo và phần nhận bằng tiền.",
           "**Xem trước** rồi xác nhận; xem tab Sổ tiền gửi và Giao dịch để đối chiếu.",
@@ -461,7 +461,7 @@ export const articles: HelpArticles = {
         "Mua, bán và định giá vàng",
         "Khi khối lượng vàng hoặc giá trị theo dõi thay đổi.",
         [
-          "Ghi mua vàng với ngày, lượng, giá, phí/thuế và nguồn tiền.",
+          "Chọn danh mục vàng rồi loại mua vàng; nhập ngày, lượng, giá, phí/thuế và nguồn tiền.",
           "Khi bán, chọn một hoặc nhiều đợt và lượng bán mỗi đợt; nhập giá bán, phí/thuế và nơi nhận tiền.",
           "Cập nhật giá bán lại dự kiến theo ngày trong phần định giá; dùng đúng đơn vị của danh mục.",
           "Xem trước, lưu và kiểm tra vốn, lượng còn lại cùng lãi/lỗ.",

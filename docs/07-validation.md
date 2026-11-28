@@ -1,5 +1,16 @@
 # Xác minh
 
+## Chọn danh mục trước loại giao dịch Tiết kiệm — 26/11/2026
+
+- Thay đổi: dialog Ghi/sửa giao dịch Tiết kiệm đặt Danh mục trên Loại giao dịch; loại giao dịch lọc theo loại tài sản của danh mục; thêm câu giải thích vi/en dưới select; bỏ khung ghi chú riêng của giao dịch mở đầu; cập nhật ba bước trong Help. Không đổi quy tắc tính, schema, API, migration.
+- `npm run check` (Node 22.12.0): lint, kiến trúc (334 source files / 0 violations), format, `npm test` **410/410**, typecheck và build qua. Test mới `savings-editor-kinds.test.ts`: mỗi loại giao dịch thuộc đúng một loại tài sản và có giải thích vi/en.
+- `npm run test:e2e -- savings.spec.ts` (Chromium desktop + mobile iPhone 13 emulation, PostgreSQL tạm và Auth double local): **22/22** qua, gồm ca mới kiểm thứ tự hai select, danh sách loại theo ba loại tài sản và câu giải thích. Xem ảnh chụp dialog desktop và mobile.
+- `select-controls`, `action-layout`, `interface-feedback`, `workspace-comfort`, `layout-scroll`: **49 qua, 7 lỗi**, đều trong `select-controls.spec.ts` ở bộ lọc trang Đầu tư. Chạy `select-controls.spec.ts` trên bản source gốc chưa có thay đổi cũng lỗi đúng 7 ca này (thêm một ca ngôn ngữ trang công khai trên mobile, ở lượt có thay đổi thì qua); chưa xử lý trong đợt này.
+- Bổ sung cùng ngày: sửa dấu `*` bị xuống hàng riêng trong form Tiết kiệm (`savings.css`). Assertion mới trong `savings.spec.ts` lỗi trước khi sửa (lệch 27,7px, desktop và mobile); sau khi sửa chạy lại toàn bộ spec **22/22** qua, `npm run check` qua. Xem ảnh dialog Ghi giao dịch và Thêm danh mục. Năm spec rộng ở bullet trên được chạy lại trên nhánh cuối (sau bản sửa CSS và đặt lên `main` mới): vẫn **49 qua, 7 lỗi** cùng danh sách.
+- Đặt lại hai commit lên `main` mới nhất (gồm bản sửa trùng tên và hai test bộ lọc): `npm run check` qua, `npm test` **414/414**; `savings.spec.ts` **22/22**.
+- Giới hạn: chưa chạy Firefox/WebKit, bộ năm theme, chữ lớn 200% hoặc thiết bị thật; chưa deploy.
+- Đã cập nhật `docs/features/savings.md`, Help vi/en và i18n. README, catalog và landing/preview giữ nguyên vì phạm vi tính năng và dữ liệu minh họa không đổi.
+
 ## Rà soát trùng tên theo tháng sau và chạy toàn bộ e2e — 26/11/2026
 
 - Sửa sau rà soát: kiểm tra trùng tên nay tính cả nguồn thu, hũ, danh mục bắt đầu hoặc đổi tên sau tháng/ngày hiệu lực (kể cả hẹn trong tương lai); trước đó vẫn tạo được tên trùng trong trường hợp này. Hai test cũ nêu ở mục 25/11/2026 đã được sửa theo giao diện hiện tại (bộ lọc Chi tiêu chọn nhiều giá trị, hàng đặt lại nằm sau các ô; bộ lọc Đầu tư thu gọn sau nút “Bộ lọc” trên mobile), không đổi app.
