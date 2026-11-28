@@ -503,6 +503,30 @@ describe("Income source names", () => {
     ).not.toThrow();
     expect(() => applyAction(legacy, set("2027-01", "5"), clock)).not.toThrow();
   });
+  it("also counts a source that starts or is renamed in a later month", () => {
+    const startsLater = applyAction(
+      null,
+      { ...create, start: "2027-06" },
+      clock,
+    );
+    expect(() => applyAction(startsLater, named("Lương"), clock)).toThrow(
+      /đã tồn tại/,
+    );
+    const renamedLater = applyAction(
+      book(),
+      {
+        type: "configureCategory",
+        categoryId: id,
+        month: "2027-08",
+        name: "Thù lao",
+        description: "",
+      },
+      clock,
+    );
+    expect(() => applyAction(renamedLater, named("Thù lao"), clock)).toThrow(
+      /đã tồn tại/,
+    );
+  });
   it("allows one-off income to repeat a name", () => {
     const oneOff = (oneOffId: string): IncomeAction => ({
       type: "upsertOneOff",

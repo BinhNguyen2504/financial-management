@@ -50,7 +50,11 @@ export function applyAction(
   function ensureUniqueName(name: string, months: string[], exceptId?: string) {
     const taken = book.categories
       .filter((c) => c.id !== exceptId)
-      .flatMap((c) => months.map((m) => ruleAt(c, m)?.name));
+      .flatMap((c) => [
+        ...months.map((m) => ruleAt(c, m)?.name),
+        // Later starts and renames count too, even future ones.
+        ...c.rules.filter((r) => r.month > months[0]).map((r) => r.name),
+      ]);
     if (nameTaken(name, taken)) fail("Tên danh mục đã tồn tại.");
   }
   function dateAllowed(date: string) {

@@ -817,6 +817,25 @@ describe("Jar names", () => {
       /Tên hũ đã tồn tại/,
     );
   });
+  it("also counts a jar that starts or is renamed in a later month", () => {
+    const startsLater = applyAction(
+      book(),
+      { ...jar("Du lịch"), start: "2026-12" },
+      clock,
+    );
+    const third = "20000000-0000-4000-8000-000000000003";
+    expect(() =>
+      applyAction(startsLater, jar("Du lịch", third), clock),
+    ).toThrow(/Tên hũ đã tồn tại/);
+    const renamedLater = applyAction(
+      book(),
+      { ...configure(id, "Nhà cửa"), month: "2026-12" },
+      clock,
+    );
+    expect(() => applyAction(renamedLater, jar("Nhà cửa"), clock)).toThrow(
+      /Tên hũ đã tồn tại/,
+    );
+  });
   it("lets jars that already share a name be edited while the name stays the same", () => {
     const legacy = structuredClone(applyAction(book(), jar("Đi lại"), clock));
     legacy.jars.find((j) => j.id === second)!.rules[0].name = "Sinh hoạt";

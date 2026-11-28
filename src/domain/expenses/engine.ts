@@ -268,7 +268,11 @@ export function applyAction(
   ) => {
     const taken = book.jars
       .filter((j) => !j.deleted && j.id !== exceptId)
-      .flatMap((j) => months.map((m) => ruleAt(j.rules, m)?.name));
+      .flatMap((j) => [
+        ...months.map((m) => ruleAt(j.rules, m)?.name),
+        // Later starts and renames count too, even future ones.
+        ...j.rules.filter((r) => r.month > months[0]).map((r) => r.name),
+      ]);
     if (nameTaken(name, taken)) {
       const message = "Tên hũ đã tồn tại.";
       throw new ExpenseError(message, 422, "DUPLICATE_NAME", { name: message });
