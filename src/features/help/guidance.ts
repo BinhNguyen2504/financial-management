@@ -50,7 +50,7 @@ export const pageGuidance: Record<
     start:
       "Chọn tháng, quý hoặc năm, rồi chọn nội dung muốn xem. Mở chi tiết để đối chiếu khoản tạo nên số tổng.",
     reading:
-      "So sánh luôn đi kèm kỳ tương ứng. Số tạm tính hoặc thiếu giá chưa phản ánh đầy đủ; số cuối kỳ của các sổ được trình bày riêng để tránh cộng trùng.",
+      "So sánh luôn đi kèm kỳ tương ứng. Số tạm tính hoặc thiếu giá chưa phản ánh đầy đủ. Tài sản đã ghi nhận chỉ tính một lần phần Quỹ lấy từ Tiết kiệm và chưa trừ nợ.",
   },
   settings: {
     start:

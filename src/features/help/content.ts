@@ -1026,9 +1026,10 @@ export const articles: HelpArticles = {
   reports: article(
     [
       "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
+      "Tab Tổng hợp mở đầu bằng tài sản đã ghi nhận và bốn chỉ số sức khỏe tài chính, rồi đến số liệu trong kỳ. Các bảng chi tiết được thu gọn.",
     ],
     [
-      "Không cộng số dư các chức năng hoặc tiến độ mục tiêu thành tài sản ròng; Quỹ an toàn có thể đã gồm tiền lấy từ Tiết kiệm.",
+      "Tài sản đã ghi nhận cộng Tiết kiệm, Đầu tư và Quỹ an toàn, trừ phần Quỹ lấy từ Tiết kiệm. Chưa trừ nợ nên không phải tài sản ròng; tiến độ mục tiêu không được cộng vào tổng.",
     ],
     [
       term(
@@ -1040,6 +1041,16 @@ export const articles: HelpArticles = {
         "balance-flow",
         "Số dư và dòng tiền",
         "Số dư là giá trị tại một thời điểm; dòng tiền là phần vào/ra trong một kỳ. Không cộng số dư cuối từng tháng thành tổng tài sản.",
+      ),
+      term(
+        "recorded-assets",
+        "Tài sản đã ghi nhận",
+        "Tổng giá trị đã ghi đến ngày chốt số, theo định giá bạn đã nhập. Thay đổi so đầu kỳ gồm cả tiền góp hoặc rút nên không phải lợi nhuận.",
+      ),
+      term(
+        "health",
+        "Sức khỏe tài chính",
+        "Mỗi chỉ số được xếp mức riêng, không có điểm tổng. Mở Cách tính để xem công thức và các tháng không được tính; Chưa đủ dữ liệu không có nghĩa là xấu.",
       ),
       term(
         "current-goals",
@@ -1066,6 +1077,7 @@ export const articles: HelpArticles = {
     [
       "Chi tiêu tháng hiện tại là số tạm tính từ sổ hũ.",
       "Kỳ trước có dữ liệu chưa đầy đủ, tạm tính hoặc định giá cũ; cần xem xét khi so sánh.",
+      "Tiền bạn tự nhập ở hai sổ vẫn có thể bị cộng trùng trong tài sản đã ghi nhận; hãy đối chiếu các nơi giữ tiền.",
     ],
   ),
 };

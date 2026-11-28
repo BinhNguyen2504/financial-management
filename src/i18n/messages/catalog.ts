@@ -201,4 +201,6 @@ export const catalog = {
     "Link a Savings cash or deposit category as a fund's source",
   "Cảnh báo và hỏi xác nhận khi giao dịch làm giảm Quỹ an toàn":
     "Warn and ask for confirmation when a transaction lowers a safety fund",
+  "Tài sản đã ghi nhận và sức khỏe tài chính theo từng chỉ số":
+    "Recorded assets and indicator-by-indicator financial health",
 } as const;

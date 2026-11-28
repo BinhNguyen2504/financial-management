@@ -159,6 +159,76 @@ test("reports reconcile active-tab CSV and source detail, retain periods and sho
   await overflow(page);
 });
 
+test("the summary leads with recorded assets and ratings, and keeps every note inside its card", async ({
+  page,
+}, testInfo) => {
+  await login(page, true);
+  await ready(page);
+  const assets = page.locator(".reports-assets");
+  await expect(
+    assets.getByRole("heading", { name: "Tài sản đã ghi nhận", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".reports-asset-total")).toContainText("₫");
+  await expect(assets).toContainText("không phải tài sản ròng");
+  await expect(assets.locator(".reports-metrics article")).toHaveCount(3);
+  await expect(page.locator(".reports-allocation li")).toHaveCount(5);
+  await expect(page.locator(".reports-indicators article")).toHaveCount(4);
+  await expect(page.locator(".reports-indicators .status-badge")).toHaveCount(
+    4,
+  );
+  await expect(page.locator(".reports-figures article")).toHaveCount(3);
+  const emergency = page.locator('[data-indicator="emergency"]');
+  await emergency.getByText("Cách tính", { exact: true }).click();
+  await expect(emergency).toContainText("Tốt từ 6 tháng");
+
+  const tables = page.locator(".reports-all-tables");
+  await expect(page.locator(".reports-table-section").first()).toBeHidden();
+  await tables.locator(":scope > summary").click();
+  await expect(page.locator(".reports-table-section")).toHaveCount(6);
+  await expect(page.locator(".reports-table-section").first()).toBeVisible();
+  await expect(
+    page.locator(".reports-table-section .reports-note"),
+  ).toContainText("độc lập với kỳ báo cáo");
+  await page
+    .getByRole("combobox", { name: "Chỉ số biểu đồ", exact: true })
+    .selectOption("goals.current:value");
+  await expect(page.locator(".reports-chart .reports-note")).toBeVisible();
+  const floating = () =>
+    page
+      .locator(".reports-note")
+      .evaluateAll(
+        (notes) =>
+          notes.filter((note) => !note.closest(".panel, .reports-metrics"))
+            .length,
+      );
+  expect(await floating()).toBe(0);
+  await overflow(page);
+  await mkdir("artifacts/reports/screenshots", { recursive: true });
+  await page.screenshot({
+    path: `artifacts/reports/screenshots/${testInfo.project.name}-summary.png`,
+    fullPage: true,
+  });
+
+  await page.locator(".privacy-toggle").click();
+  await expect(page.locator(".reports-asset-total")).toContainText("••••••");
+  await expect(emergency.locator(".reports-indicator-value")).toContainText(
+    "•••",
+  );
+  await expect(page.locator(".reports-bar-track > span")).toHaveCount(0);
+
+  for (const name of ["Thu–chi", "Quỹ an toàn", "Mục tiêu"]) {
+    await page
+      .locator(".reports-tabs")
+      .getByRole("button", { name, exact: true })
+      .click();
+    await ready(page);
+    await expect(assets).toHaveCount(0);
+    await expect(tables).toHaveCount(0);
+    expect(await floating()).toBe(0);
+  }
+  await expect(page.locator(".reports-note")).toHaveCount(1);
+});
+
 test("private report APIs reject guests and invalid filters; empty and failed modules stay distinct", async ({
   page,
 }) => {

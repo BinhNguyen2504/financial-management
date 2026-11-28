@@ -1,5 +1,14 @@
 # Xác minh
 
+## Báo cáo: chú thích trong card, tài sản đã ghi nhận và sức khỏe tài chính — 28/11/2026
+
+- Thay đổi theo phản hồi trang Báo cáo: chú thích chuyển vào trong card; tab Tổng hợp thêm Tài sản đã ghi nhận, bốn chỉ số sức khỏe và thu gọn sáu bảng ([đặc tả](features/reports.md#tổng-hợp-tài-sản-đã-ghi-nhận-và-sức-khỏe-tài-chính--28112026)). Sửa kèm: số trong thẻ chỉ số Báo cáo bị quy tắc cỡ chữ nút dùng chung thu nhỏ, nay về cỡ 18–26px ở mọi tab. Không migration, không đổi repository.
+- Trên source cuối (Node 22.12.0): `npm run check` qua (346 source files / 0 violations, **479/479** unit, typecheck, build); `npm run test:db` (PostgreSQL tạm, local) **132/132**; browser Chromium desktop + mô phỏng iPhone 13, build production cô lập, Auth double, 17 spec liên quan (Báo cáo, landing, Help, localization, theme, bố cục, liên kết Quỹ) **192/192**. Không chạy toàn bộ browser suite.
+- Xem bằng Playwright MCP trên dữ liệu review local: card tài sản và sức khỏe ở 1440px tiếng Việt sáng; chế độ tối một theme và tiếng Anh 390px có che tiền (xem ảnh); đo tự động năm theme × sáng/tối ở một trong ba bề rộng 390/768/1440 cùng 320px: không tràn ngang, không lỗi console; bản tiếng Anh không còn chữ có dấu tiếng Việt, che tiền không còn số tiền ở ba khối. Lượt xem này trước các bản sửa cuối; sau đó chỉ xem lại ảnh toàn trang desktop do browser test chụp trên source cuối (tiếng Việt, theme mặc định sáng).
+- Rà soát độc lập phát hiện và đã sửa: liên kết Quỹ tới danh mục chưa có giao dịch bị tính là đã ghi; quỹ khẩn cấp chưa ghi bị chấm theo quỹ khác; “0 mục tiêu đúng kế hoạch” khi không đánh giá được; CSV thiếu căn cứ tháng thay thế; cơ cấu hiện 0 khi chưa ghi gì.
+- Giới hạn: chưa kiểm Firefox/WebKit, thiết bị thật, bàn phím/screen reader thủ công cho phần mới hoặc Supabase cloud; chưa deploy.
+- Đã rà catalog, câu chữ landing/preview (số liệu cố định, vẫn ghi chưa có tổng tài sản ròng), README, Help và bản dịch vi/en, đặc tả Báo cáo, kiến trúc, mô hình dữ liệu và UX. Tổng quan không đổi: vẫn không cộng các sổ.
+
 ## Gộp hai nhánh test e2e và thao tác Đầu tư — 28/11/2026
 
 - Gộp `fix-stale-e2e-tests` và `worktree-investment-table-actions-ui` lên `main` sau thay đổi dialog Tiết kiệm. Giải quyết xung đột tài liệu (giữ cả hai mục kiểm chứng; đặc tả Đầu tư giữ quy tắc trùng tên mới hơn của `main`) và format một file unit test.

@@ -4,6 +4,7 @@ import { buildReport as incomeReport } from "../income/reports";
 import { buildReport as savingsReport } from "../savings/reports";
 import { buildReport as investmentReport } from "../investments/reports";
 import { activeTransactions } from "../funds/engine";
+import { activeTransactions as savingsTransactions } from "../savings/model";
 import { view as goalView } from "../goals/engine";
 import { goalSources } from "../goals/sources";
 import type { GoalSources } from "../goals/schema";
@@ -12,7 +13,9 @@ import { sumMoney } from "../shared/money";
 import { vietnamClock } from "../shared/clock";
 import type { Clock } from "../shared/types";
 import { fundsAt, fundBookAt, fundLinkedAt } from "./funds";
+import { buildOverview, type Snapshots } from "./health";
 import {
+  changePercent,
   detailColumns,
   moneyColumn as money,
   textColumn as text,
@@ -38,16 +41,11 @@ type Part = {
   /** Explains the current numbers; never marks a comparison period as incomplete. */
   notes: string[];
   unavailable: SourceId[];
+  /** Balances the summary overview is built from, so ledgers are replayed once. */
+  snapshot: Snapshots;
 };
 const sum = (values: Cell[]) =>
   values.some((v) => v === null) ? null : sumMoney(values as string[]);
-function changePercent(value: Cell, previous: Cell) {
-  if (value === null || previous === null || BigInt(previous) <= 0n)
-    return null;
-  const n = ((BigInt(value) - BigInt(previous)) * 10000n) / BigInt(previous);
-  const abs = n < 0n ? -n : n;
-  return `${n < 0n ? "-" : ""}${abs / 100n}.${String(abs % 100n).padStart(2, "0")}`;
-}
 const inPeriod = (value: string, p: Period) =>
   value >= p.from.slice(0, value.length) &&
   value <= p.asOf.slice(0, value.length);
@@ -59,6 +57,15 @@ const row = (
   amount: Cell,
   note = "",
 ): Row => ({ id, date, name, kind, amount, note });
+const holding = (state: {
+  effects: unknown[];
+  total: Cell;
+  positions: { stale: boolean }[];
+}) => ({
+  recorded: state.effects.length > 0,
+  value: state.total,
+  stale: state.positions.some((r) => r.stale),
+});
 function part(source: SourceId, details: boolean, selected?: string) {
   const result: Part = {
     metrics: [],
@@ -67,6 +74,7 @@ function part(source: SourceId, details: boolean, selected?: string) {
     warnings: [],
     notes: [],
     unavailable: [],
+    snapshot: {},
   };
   const metric = (
     id: string,
@@ -342,6 +350,19 @@ function buildSource(
       );
     if (report.after.positions.some((r) => r.stale))
       result.warnings.push("Tiết kiệm đang dùng định giá cũ.");
+    const kind = (id: "cash" | "deposit" | "gold") =>
+      sum(
+        report.after.positions.filter((r) => r.kind === id).map((r) => r.value),
+      );
+    result.snapshot.savings = {
+      closing: holding(report.after),
+      opening: holding(report.before),
+      kinds: {
+        cash: kind("cash"),
+        deposit: kind("deposit"),
+        gold: kind("gold"),
+      },
+    };
   } else if (source === "investments") {
     const report = investmentReport(
       books.investments ?? null,
@@ -450,6 +471,10 @@ function buildSource(
       result.warnings.push("Đầu tư thiếu định giá; chưa đủ dữ liệu tính tổng.");
     if (assets.some((r) => r.stale))
       result.warnings.push("Đầu tư đang dùng định giá cũ.");
+    result.snapshot.investments = {
+      closing: holding(report.after),
+      opening: holding(report.before),
+    };
   } else if (source === "funds") {
     const book = books.funds ?? null,
       savings = books.savings ?? null;
@@ -473,6 +498,50 @@ function buildSource(
       );
     const config = atEnd?.configurations.at(-1);
     const populated = Boolean(config || atEnd?.revisions.length);
+    const linkedTotal = sumMoney(Object.values(linked)),
+      openingLinked = sumMoney(Object.values(opening));
+    // A link alone records nothing: its Savings category needs an entry by that date.
+    const posted = savings ? savingsTransactions(savings) : [];
+    const funded = (date: string, emergencyOnly = false) => {
+      const at = fundBookAt(book, date);
+      return Boolean(
+        at?.revisions.some(
+          ({ transaction: t }) =>
+            !emergencyOnly ||
+            t?.fundId === "emergency" ||
+            (t?.kind === "transfer" && t.toFundId === "emergency"),
+        ) ||
+        at?.locations.some(
+          (l) =>
+            l.active &&
+            l.savings &&
+            (!emergencyOnly || l.savings.fundId === "emergency") &&
+            posted.some(
+              ({ transaction: t }) =>
+                t.date <= date &&
+                (t.categoryId === l.savings!.categoryId ||
+                  ("cashCategoryId" in t &&
+                    t.cashCategoryId === l.savings!.categoryId)),
+            ),
+        ),
+      );
+    };
+    result.snapshot.funds = {
+      closing: { recorded: funded(p.asOf), value: after.total, stale: false },
+      opening: {
+        recorded: funded(previousDate(p.from)),
+        value: before.total,
+        stale: false,
+      },
+      linked: linkedTotal,
+      openingLinked,
+      emergency: {
+        recorded: funded(p.asOf, true),
+        balance: after.funds.find((f) => f.id === "emergency")!.balance,
+        living: config?.living.total ?? null,
+        month: config?.living.month ?? null,
+      },
+    };
     const transactions = book
       ? activeTransactions(book).filter(({ transaction: t }) =>
           inPeriod(vietnamClock(new Date(t.occurredAt)).today, p),
@@ -641,6 +710,10 @@ function buildSource(
       }
     }
     const view = goalView(books.goals ?? null, sources, clock);
+    result.snapshot.goals = (books.goals?.goals ?? []).map((goal) => ({
+      goal,
+      state: view.states.find((s) => s.id === goal.id)!,
+    }));
     const rows = (books.goals?.goals ?? []).map((g) => {
       const state = view.states.find((s) => s.id === g.id)!;
       return {
@@ -739,6 +812,7 @@ export function buildReport(
     tables: [],
   };
   const details: Record<string, Row[]> = {};
+  const snapshots: Snapshots = {};
   const unavailable = new Set(input.errors);
   for (const source of reportSources(query.tab)) {
     const book = input.books[source];
@@ -809,6 +883,7 @@ export function buildReport(
       }
       report.tables.push(...current.tables);
       Object.assign(details, current.details);
+      Object.assign(snapshots, current.snapshot);
     } catch {
       unavailable.add(source);
       report.sources[source] = { status: "error", empty: false, version: null };
@@ -884,6 +959,15 @@ export function buildReport(
     ) || a.id.localeCompare(b.id);
   for (const table of report.tables) table.rows.sort(ordered);
   for (const rows of Object.values(details)) rows.sort(ordered);
+  // Detail requests read only the ledgers behind one number, so they get no overview.
+  if (query.tab === "summary" && !period.future && !options.metric)
+    report.overview = buildOverview(
+      input.books,
+      snapshots,
+      (source) => report.sources[source]?.status === "ready",
+      period,
+      clock,
+    );
   report.versions = JSON.stringify({
     generation: input.generation,
     today: clock.today,

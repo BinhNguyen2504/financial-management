@@ -77,6 +77,7 @@ Sửa giao dịch đã ghi sổ dùng entry đảo và entry thay thế liên k�
 | --- | --- |
 | Tổng tài sản | Tổng tiền/tài sản thuộc sở hữu, mỗi tài sản duy nhất tính một lần; holdings theo giá đã chọn |
 | Tài sản ròng | Tổng tài sản − nghĩa vụ nợ đã ghi nhận; nếu chưa nhập nợ thì cần phân biệt với tổng tài sản |
+| Tài sản đã ghi nhận (Báo cáo, 28/11/2026) | Tiết kiệm + Đầu tư + Quỹ an toàn − phần Quỹ liên kết từ Tiết kiệm. Chưa trừ nợ và không tự loại trùng khoản nhập tay ở hai sổ, nên chưa phải tổng tài sản đầy đủ hay tài sản ròng; xem [Báo cáo](features/reports.md#tổng-hợp-tài-sản-đã-ghi-nhận-và-sức-khỏe-tài-chính--28112026) |
 | Thực chi ngân sách | Chi đã ghi sổ đúng danh mục/kỳ; quy tắc hoàn tiền/đảo giao dịch phải trừ đúng |
 | Số còn lại của ngân sách | Số chuyển tiếp được chấp nhận + mức cấp trong kỳ − thực chi; thay kế hoạch có ngày hiệu lực |
 | Tiến độ mục tiêu | `current / target`, giữ dạng ratio; chỉ format % một lần; target = 0 trả “chưa đặt mục tiêu” |

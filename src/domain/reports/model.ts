@@ -109,6 +109,17 @@ export function periodFor(
   };
 }
 export type Cell = string | null;
+export function percentText(basisPoints: bigint) {
+  const abs = basisPoints < 0n ? -basisPoints : basisPoints;
+  return `${basisPoints < 0n ? "-" : ""}${abs / 100n}.${String(abs % 100n).padStart(2, "0")}`;
+}
+export function changePercent(value: Cell, previous: Cell) {
+  if (value === null || previous === null || BigInt(previous) <= 0n)
+    return null;
+  return percentText(
+    ((BigInt(value) - BigInt(previous)) * 10000n) / BigInt(previous),
+  );
+}
 export type Row = { id: string } & Record<string, Cell>;
 export interface Table {
   id: string;
@@ -125,6 +136,56 @@ export interface Metric {
   delta: Cell;
   percent: Cell;
 }
+export type Rating = "good" | "attention" | "improve" | "insufficient";
+export type AssetSourceId = "savings" | "investments" | "funds";
+export type AssetKind = "cash" | "deposit" | "gold" | "investments" | "funds";
+/** Recorded assets across ledgers. Debts are not tracked, so this is not net worth. */
+export interface Assets {
+  asOf: string;
+  openingDate: string;
+  total: Cell;
+  opening: Cell;
+  delta: Cell;
+  percent: Cell;
+  /** Safety fund money that follows Savings, removed once from the total. */
+  linked: Cell;
+  sources: {
+    id: AssetSourceId;
+    state: "recorded" | "unrecorded" | "missing" | "error";
+    stale: boolean;
+  }[];
+  composition: { id: AssetKind; label: string; value: Cell; share: Cell }[];
+  /** Ledgers with nothing posted, counted as zero in the total. */
+  notes: string[];
+  /** Why the total is unavailable. */
+  reasons: string[];
+  /** Why there is no comparison with the opening date. */
+  changeReason: string | null;
+  openingStale: boolean;
+}
+export interface Fact {
+  label: string;
+  type: "money" | "percent" | "count" | "months" | "month";
+  value: Cell;
+}
+export interface Indicator {
+  id: "emergency" | "savingsRate" | "budget" | "goals";
+  label: string;
+  rating: Rating;
+  value: Fact | null;
+  formula: string;
+  reason: string | null;
+  suggestion: string;
+  /** Completed months used by month-based indicators, with the reason for each skipped one. */
+  months: { month: string; excluded: string | null }[];
+  /** The selected period has no completed month, so the latest completed one is used. */
+  fallback: boolean;
+  facts: Fact[];
+}
+export interface Overview {
+  assets: Assets;
+  indicators: Indicator[];
+}
 export interface Report {
   query: ReportQuery;
   period: Period;
@@ -140,6 +201,8 @@ export interface Report {
   warnings: string[];
   metrics: Metric[];
   tables: Table[];
+  /** Summary tab only; absent for future periods and detail requests. */
+  overview?: Overview;
 }
 export interface DetailResult {
   rows: Row[];

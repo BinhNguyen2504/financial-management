@@ -5,7 +5,14 @@ import { useMoney, useMoneyHidden } from "@/components/privacy";
 import { useI18n } from "@/i18n/provider";
 import type { Report } from "@/domain/reports/model";
 
-export function ReportChart({ report }: { report: Report }) {
+export function ReportChart({
+  report,
+  goalsNote,
+}: {
+  report: Report;
+  /** Shown inside the card while a goals series is selected. */
+  goalsNote?: string;
+}) {
   const { t, numberLocale } = useI18n("reports"),
     money = useMoney(),
     hidden = useMoneyHidden(),
@@ -209,6 +216,9 @@ export function ReportChart({ report }: { report: Report }) {
           </div>
         )}
       </div>
+      {goalsNote && selected.key.startsWith("goals.current:") && (
+        <p className="reports-note">{goalsNote}</p>
+      )}
     </section>
   );
 }

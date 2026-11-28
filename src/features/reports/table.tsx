@@ -9,9 +9,12 @@ import type { Table } from "@/domain/reports/model";
 export function ReportTable({
   table,
   paginated = true,
+  note,
 }: {
   table: Table;
   paginated?: boolean;
+  /** Already translated explanation that belongs inside this card. */
+  note?: string;
 }) {
   const { t, locale } = useI18n("reports"),
     money = useMoney(),
@@ -48,6 +51,7 @@ export function ReportTable({
         <h3>{t(table.title)}</h3>
         <span aria-hidden="true">VND</span>
       </header>
+      {note && <p className="reports-note">{note}</p>}
       {!rows.length ? (
         <p className="expense-muted">{t("Chưa có dữ liệu trong kỳ.")}</p>
       ) : (

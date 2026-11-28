@@ -329,6 +329,8 @@ Bấm chỉ số mở dialog đối chiếu chỉ đọc, phân trang 20 dòng; 
 
 Tinh chỉnh 05/11/2026: từng bảng có card riêng, cách nhau 24px thay cho một card bao tất cả. Tên bảng và đơn vị ở đầu card; header nền `surface-alt`, chữ đậm, viền phân cách 2px, số căn phải. Cuộn ngang giới hạn trong bảng; cùng quy tắc cho dialog chi tiết và header bảng preview Báo cáo. Đây là điều chỉnh phân cấp thị giác, giữ hệ màu/chữ hiện có và nghiệp vụ.
 
+Từ 28/11/2026: chú thích của báo cáo luôn nằm trong card mà nó giải thích, không đặt đoạn rời giữa các card. Tab Tổng hợp trả lời trước “đang có gì” (card Tài sản đã ghi nhận: một số lớn, thay đổi, ba sổ, cơ cấu bằng thanh ngang), rồi “có ổn không” (card Sức khỏe tài chính: lưới 2 cột, 1 cột dưới 600px, mức dùng `StatusBadge` có chữ và icon, công thức trong mục mở rộng), sau đó mới đến số liệu kỳ; sáu bảng chi tiết thu gọn mặc định. Không có điểm sức khỏe tổng. Quy tắc này thay cho ghi chú “không có số tài sản ròng tổng hợp” ở trên theo nghĩa: vẫn không có tài sản ròng, nhưng có tổng tài sản đã ghi nhận kèm giới hạn.
+
 ## Lời nhắn có nhịp riêng — 02/11/2026
 
 Một chút bình yên là điểm nghỉ ngắn trước nội dung làm việc: câu serif nghiêng 18–24px, nhãn nhỏ và dấu ngoặc kép SVG, nền tint phẳng cùng theme, không emoji. Không cắt câu, không tự xoay theo giờ, không chiếm focus. Chuyển trang/reload đổi câu; thao tác trong trang giữ câu để tránh phân tâm. Việt/Anh cùng ID; tất cả theme dùng chung kho. Tổng quan giữ vị trí widget nếu đang bật, nếu không hiển thị đầu trang; luôn chỉ một câu. Preview công khai giữ câu cố định. Xem [quote](features/quotes.md).

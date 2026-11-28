@@ -165,6 +165,7 @@ export const modules = [
     description:
       "Nhìn lại thu chi và biến động từng sổ theo tháng, quý hoặc năm.",
     scope: [
+      "Tài sản đã ghi nhận và sức khỏe tài chính theo từng chỉ số",
       "So sánh với kỳ trước",
       "Bảng số liệu tách rõ từng nội dung",
       "Mở chi tiết để hiểu số tổng",

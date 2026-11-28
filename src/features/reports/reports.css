@@ -109,7 +109,7 @@
   border-bottom: 1px solid var(--border);
   min-width: 0;
 }
-.reports-metrics h2 {
+.reports-metrics :is(h2, h3) {
   font-size: 14px;
   color: var(--muted);
   margin: 0 0 8px;
@@ -134,9 +134,203 @@
   cursor: pointer;
   max-width: 100%;
 }
+/* Figures are buttons; keep them above the shared action text size. */
+.app-shell main .reports-metric-value {
+  font-size: clamp(18px, 2vw, 26px);
+}
 .reports-metric-value:hover {
   text-decoration: underline;
   text-underline-offset: 5px;
+}
+.reports-metrics > .reports-note {
+  grid-column: 1 / -1;
+  padding: 12px 20px;
+}
+.reports-table-section > .reports-note {
+  margin-bottom: 16px;
+}
+/* Card footnotes and secondary lines stay quieter than shared panel text. */
+.app-shell .reports-content .reports-note,
+.app-shell .reports-assets > .reports-asset-change,
+.app-shell .reports-health .reports-indicator-basis {
+  font-size: var(--text-label);
+}
+.reports-assets,
+.reports-health,
+.reports-figures {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 24px;
+}
+.reports-card-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.reports-card-heading h2 {
+  font-size: 20px;
+  margin: 0;
+}
+.reports-card-heading > span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.reports-assets p,
+.reports-health p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.reports-assets > h3 {
+  font-size: 16px;
+  margin: 8px 0 0;
+}
+.app-shell .reports-assets > .reports-asset-total {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.reports-asset-change {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.reports-asset-change strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.reports-asset-change small {
+  display: block;
+  font-size: 13px;
+}
+.reports-asset-linked {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.reports-asset-linked strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.app-shell .reports-allocation {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+.reports-allocation li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(64px, auto);
+  align-items: baseline;
+  gap: 4px 16px;
+}
+.reports-allocation strong,
+.reports-allocation-share {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.reports-allocation-share {
+  color: var(--muted);
+}
+.reports-allocation .reports-bar-track {
+  grid-column: 1 / -1;
+}
+.reports-bar-track > span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}
+.reports-assets > .reports-note {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+.reports-indicators {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.reports-indicators article {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.reports-indicators article > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.reports-indicators h3 {
+  font-size: 16px;
+  margin: 0;
+}
+.reports-indicator-value {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: var(--muted);
+}
+.reports-indicator-value strong {
+  color: var(--text);
+  font-size: 26px;
+  font-variant-numeric: tabular-nums;
+}
+.reports-indicators dl {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+.reports-indicators dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.reports-indicators dt,
+.reports-indicator-basis,
+.reports-skipped {
+  color: var(--muted);
+}
+.reports-indicators dd {
+  margin: 0;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.reports-skipped {
+  font-size: 13px;
+  margin: 0;
+  padding-inline-start: 20px;
+}
+.reports-indicators details {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+}
+.reports-indicators summary,
+.reports-all-tables > summary {
+  min-height: 44px;
+  padding-block: 10px;
+  cursor: pointer;
+  color: var(--muted);
+}
+.reports-all-tables > .reports-tables {
+  margin-top: 8px;
 }
 .reports-chart {
   padding: 24px;
@@ -312,9 +506,13 @@
   }
 }
 @media (max-width: 600px) {
-  .reports-metrics {
+  .reports-metrics,
+  .reports-indicators {
     grid-template-columns: minmax(0, 1fr);
   }
+  .reports-assets,
+  .reports-health,
+  .reports-figures,
   .reports-chart,
   .panel.reports-table-section {
     padding: 16px;

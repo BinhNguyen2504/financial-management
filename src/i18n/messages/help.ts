@@ -842,4 +842,14 @@ export const help = {
     "Result: the home page, preview, sign-in, app interface and Help follow your selected language, preserving drafts and filters. The browser saves your choice; it is not backed up or synced to your account.",
   "Để dùng tiền đã ghi ở Tiết kiệm, chọn Loại nguồn là Danh mục Tiết kiệm, chọn danh mục và quỹ được gắn.":
     "To use money recorded in Savings, set Source type to Savings category, then choose the category and its fund.",
+  "Tab Tổng hợp mở đầu bằng tài sản đã ghi nhận và bốn chỉ số sức khỏe tài chính, rồi đến số liệu trong kỳ. Các bảng chi tiết được thu gọn.":
+    "The Summary tab starts with recorded assets and four financial health indicators, followed by the period figures. Detail tables are collapsed.",
+  "Tài sản đã ghi nhận cộng Tiết kiệm, Đầu tư và Quỹ an toàn, trừ phần Quỹ lấy từ Tiết kiệm. Chưa trừ nợ nên không phải tài sản ròng; tiến độ mục tiêu không được cộng vào tổng.":
+    "Recorded assets add Savings, Investments and Safety funds, less the fund money taken from Savings. Debts are not subtracted, so this is not net worth; goal progress is never added to the total.",
+  "Tổng giá trị đã ghi đến ngày chốt số, theo định giá bạn đã nhập. Thay đổi so đầu kỳ gồm cả tiền góp hoặc rút nên không phải lợi nhuận.":
+    "The total value recorded up to the report date, using the valuations you entered. The change since period start includes deposits or withdrawals, so it is not profit.",
+  "Mỗi chỉ số được xếp mức riêng, không có điểm tổng. Mở Cách tính để xem công thức và các tháng không được tính; Chưa đủ dữ liệu không có nghĩa là xấu.":
+    "Each indicator is rated on its own, with no combined score. Open How it is calculated for the formula and the months that were not counted; Incomplete data does not mean a poor result.",
+  "Tiền bạn tự nhập ở hai sổ vẫn có thể bị cộng trùng trong tài sản đã ghi nhận; hãy đối chiếu các nơi giữ tiền.":
+    "Money you entered by hand in two ledgers can still be counted twice in recorded assets; check where each amount is held.",
 } as const;

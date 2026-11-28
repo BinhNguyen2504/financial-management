@@ -10,8 +10,8 @@ import { Download, RefreshCw } from "lucide-react";
 import { HelpPageTitle } from "@/features/help/provider";
 import { useUser } from "@/features/profile/user-provider";
 import { useI18n } from "@/i18n/provider";
-import { formatDate, formatDecimal, formatTime } from "@/i18n/format";
-import { useMoney, useMoneyHidden } from "@/components/privacy";
+import { formatDate, formatTime } from "@/i18n/format";
+import { AnimatedDetails } from "@/components/animated-details";
 import { LoadingStatus, LoadingSpinner } from "@/components/loading";
 import { ScrollTabs } from "@/components/scroll-tabs";
 import { useForegroundRefresh } from "@/components/use-foreground-refresh";
@@ -30,19 +30,15 @@ import { reportsJSON, ReportAPIError } from "./api";
 import { ReportTable } from "./table";
 import { ReportChart } from "./chart";
 import { ReportDetails } from "./details";
+import { ReportAssets } from "./assets";
+import { ReportHealth } from "./health";
+import { MetricCard } from "./metric-card";
+import { sourceNames } from "./names";
 import "./reports.css";
 
 const tabNames = {
   summary: "Tổng hợp",
   cashflow: "Thu–chi",
-  savings: "Tiết kiệm",
-  investments: "Đầu tư",
-  funds: "Quỹ an toàn",
-  goals: "Mục tiêu",
-};
-const sourceNames = {
-  income: "Thu nhập",
-  expenses: "Chi tiêu",
   savings: "Tiết kiệm",
   investments: "Đầu tư",
   funds: "Quỹ an toàn",
@@ -61,8 +57,6 @@ export function ReportsWorkspace({ configured }: { configured: boolean }) {
 }
 function AccountReports({ configured }: { configured: boolean }) {
   const { t, locale } = useI18n("reports"),
-    money = useMoney(),
-    hidden = useMoneyHidden(),
     search = useSearchParams();
   const [rememberedQuery, rememberQuery] = useViewState<ReportQuery>(
     "reports",
@@ -157,6 +151,51 @@ function AccountReports({ configured }: { configured: boolean }) {
     anchor.download = `reports-${query.tab}-${report.period.from}-${report.period.to}.csv`;
     anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  const goalsNote = report
+    ? `${t("Mục tiêu hiển thị tiến độ hiện tại, độc lập với kỳ báo cáo đang chọn.")} · ${formatTime(report.generatedAt, locale)}`
+    : undefined;
+  /** Balances sit under the asset total; the remaining figures describe the period. */
+  const isBalance = (metric: Metric) =>
+    ["savings", "investments", "funds"].includes(metric.source);
+  function metricCards(current: Report, list: Metric[], heading: "h2" | "h3") {
+    const difference = list.some((m) => m.id === "cashflow.difference");
+    return (
+      <div className="reports-metrics">
+        {list.map((metric) => (
+          <MetricCard
+            key={metric.id}
+            report={current}
+            metric={metric}
+            heading={heading}
+            disabled={busy || !!error}
+            onDetail={setDetail}
+          />
+        ))}
+        {difference && (
+          <p className="reports-note">
+            {t(
+              "Thu nhập trừ Chi tiêu theo sổ hũ; chưa phải số dư tài khoản hoặc tiền có thể sử dụng.",
+            )}
+          </p>
+        )}
+      </div>
+    );
+  }
+  function reportTables(current: Report) {
+    return (
+      <div className="reports-tables">
+        {current.tables.map((table) => (
+          <div key={table.id}>
+            <ReportTable
+              key={`${key}:${table.id}`}
+              table={table}
+              note={table.id === "goals.current" ? goalsNote : undefined}
+            />
+          </div>
+        ))}
+      </div>
+    );
   }
   return (
     <div className="reports-workspace" onMouseDownCapture={focusPointerControl}>
@@ -348,71 +387,33 @@ function AccountReports({ configured }: { configured: boolean }) {
                 {t("Lỗi tải nguồn")}
               </p>
             ))}
-          <div className="reports-metrics">
-            {report.metrics.map((metric) => (
-              <article key={metric.id}>
-                <h2>{t(metric.label)}</h2>
-                {report.sources[metric.source]?.empty &&
-                  report.metrics.find(
-                    (item) => item.source === metric.source,
-                  ) === metric && (
-                    <p className="reports-empty-source">
-                      <span>
-                        {t(sourceNames[metric.source])}: {t("Chưa có dữ liệu")}
-                      </span>{" "}
-                      <Link
-                        className="text-link"
-                        href={`/${metric.source === "expenses" ? "budgets" : metric.source}`}
-                      >
-                        {t("Mở {0}", { 0: t(sourceNames[metric.source]) })}
-                      </Link>
-                    </p>
-                  )}
-                {report.warnings
-                  .filter((warning) =>
-                    warning.startsWith(sourceNames[metric.source]),
-                  )
-                  .map((warning) => (
-                    <p key={warning} className="reports-metric-warning">
-                      {t(warning)}
-                    </p>
-                  ))}
-                <button
-                  className="reports-metric-value"
-                  disabled={busy || !!error}
-                  aria-label={`${t("Xem nguồn số liệu")}: ${t(metric.label)}`}
-                  onClick={() => setDetail(metric)}
-                >
-                  {metric.value === null ? "—" : money(metric.value)}
-                </button>
-                <p>
-                  {t("Kỳ trước")}:{" "}
-                  {metric.previous === null ? "—" : money(metric.previous)}
-                  {report.warnings.some((warning) =>
-                    warning.startsWith("Kỳ trước"),
-                  ) && (
-                    <span className="reports-metric-warning">
-                      {" "}
-                      · {t("Kỳ trước có lưu ý")}
-                    </span>
-                  )}
-                </p>
-                <p>
-                  {t("Chênh lệch")}:{" "}
-                  {metric.delta === null
-                    ? "—"
-                    : `${!hidden && BigInt(metric.delta) > 0n ? "+" : ""}${money(metric.delta)}`}
-                  {metric.percent !== null && (
-                    <span>
-                      {" "}
-                      ({hidden ? "•••" : formatDecimal(metric.percent, locale)}
-                      %)
-                    </span>
-                  )}
-                </p>
-              </article>
-            ))}
-          </div>
+          {report.overview ? (
+            <>
+              <ReportAssets assets={report.overview.assets}>
+                {metricCards(report, report.metrics.filter(isBalance), "h3")}
+              </ReportAssets>
+              <ReportHealth
+                key={key}
+                indicators={report.overview.indicators}
+                asOf={report.period.asOf}
+              />
+              <section
+                className="panel reports-figures"
+                aria-labelledby="reports-figures-title"
+              >
+                <header className="reports-card-heading">
+                  <h2 id="reports-figures-title">{t("Số liệu trong kỳ")}</h2>
+                </header>
+                {metricCards(
+                  report,
+                  report.metrics.filter((metric) => !isBalance(metric)),
+                  "h3",
+                )}
+              </section>
+            </>
+          ) : (
+            metricCards(report, report.metrics, "h2")
+          )}
           <details className="reports-explanation">
             <summary>
               {t("Chi tiết kỳ và chất lượng số liệu")} ·{" "}
@@ -445,41 +446,24 @@ function AccountReports({ configured }: { configured: boolean }) {
                 </p>
               ))}
           </details>
-          {(query.tab === "cashflow" || query.tab === "summary") && (
-            <p className="reports-note">
-              {t(
-                "Thu nhập trừ Chi tiêu theo sổ hũ; chưa phải số dư tài khoản hoặc tiền có thể sử dụng.",
-              )}
-            </p>
+          <ReportChart
+            key={key}
+            report={report}
+            goalsNote={query.tab === "summary" ? goalsNote : undefined}
+          />
+          {query.tab === "summary" ? (
+            <AnimatedDetails
+              key={`tables:${key}`}
+              className="reports-all-tables"
+            >
+              <summary>
+                {t("Bảng chi tiết")} · {report.tables.length}
+              </summary>
+              {reportTables(report)}
+            </AnimatedDetails>
+          ) : (
+            reportTables(report)
           )}
-          {query.tab === "goals" && (
-            <p className="reports-note">
-              {t(
-                "Mục tiêu hiển thị tiến độ hiện tại, độc lập với kỳ báo cáo đang chọn.",
-              )}
-            </p>
-          )}
-          <ReportChart key={key} report={report} />
-          <div className="reports-tables">
-            {report.tables.map((table) => (
-              <div key={table.id}>
-                {table.id === "goals.current" && (
-                  <p className="reports-note">
-                    {t(
-                      "Mục tiêu hiển thị tiến độ hiện tại, độc lập với kỳ báo cáo đang chọn.",
-                    )}{" "}
-                    · {formatTime(report.generatedAt, locale)}
-                  </p>
-                )}
-                <ReportTable key={`${key}:${table.id}`} table={table} />
-              </div>
-            ))}
-          </div>
-          <p className="reports-note">
-            {t(
-              "Không cộng số dư các chức năng hoặc tiến độ mục tiêu thành tài sản ròng; Quỹ an toàn có thể đã gồm tiền lấy từ Tiết kiệm.",
-            )}
-          </p>
           {detail && (
             <ReportDetails
               key={detail.id}

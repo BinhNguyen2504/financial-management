@@ -261,6 +261,8 @@ Help giới hạn nút giải thích theo chiều rộng vùng chứa. Header mo
 
 `GET /api/v1/reports` nhận tab, period=month|quarter|year, year, month (quý lấy từ tháng). Trả kỳ/asOf, kỳ trước đầy đủ, generatedAt, phiên bản nguồn/generation, trạng thái module, warnings, metrics và tables. `GET /api/v1/reports/details` nhận thêm metric, versions và page; 20 dòng/trang, trả 409 REPORT_CHANGED nếu nguồn đổi. Không nhận owner từ client. Client bỏ phản hồi cũ khi đổi kỳ/tài khoản; CSV dùng chính response đang hiển thị. Không lưu số liệu trên trình duyệt. Xem [đặc tả](features/reports.md).
 
+Từ 28/11/2026, tab Tổng hợp có thêm `Report.overview` (tài sản đã ghi nhận và bốn chỉ số sức khỏe). `domain/reports/build.ts` trả snapshot đầu/cuối kỳ của từng sổ để `domain/reports/health.ts` tính mà không replay lại sổ tài sản; Thu nhập và Chi tiêu được đọc thêm theo cửa sổ tháng đã kết thúc. Đây là phép cộng chỉ đọc duy nhất giữa các sổ, loại đúng phần Quỹ liên kết từ Tiết kiệm; không phải tài sản ròng, không ghi dữ liệu, không đổi repository hoặc schema.
+
 ## Hệ thống quote theo điều hướng — 02/11/2026
 
 QuoteProvider trong AppShell quản lý một controller mỗi document bằng useSyncExternalStore. Catalog tĩnh gồm 200 cặp vi/en; effect pathname chọn một câu, effect lặp không làm tiến thêm. SSR và hydration đầu đều có snapshot null. SessionStorage chỉ lưu ID/phiên bản/lượt xáo trộn; lỗi storage dùng bộ nhớ, bfcache khôi phục đọc lại tiến độ của tab. Không API, database, cache tài chính hoặc thay guard pageAccess. Card trình bày tách khỏi controller để preview công khai dùng copy cố định mà không đọc browser storage hay API. Tổng quan quyết định vị trí theo layout đang xem, giữ nguyên widget peace và cấu hình tài khoản. Xem [quote](features/quotes.md).
