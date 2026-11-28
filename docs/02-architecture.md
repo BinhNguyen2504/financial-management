@@ -141,7 +141,7 @@ Tách readiness của dữ liệu tài chính khỏi readiness của biên nhậ
 
 ## Quỹ an toàn — 19/10/2026
 
-Fund dùng domain/application/repository/API riêng tại `/api/v1/funds`; page chờ `pageAccess`. Command version/idempotency, RLS owner, lịch sử append-only. Đọc nguồn Chi tiêu trong cùng transaction và khóa Expenses → Fund. GET không khởi tạo dữ liệu. Client refetch khi foreground bằng helper hiện tại; không lưu tài chính trên thiết bị.
+Fund dùng domain/application/repository/API riêng tại `/api/v1/funds`; page chờ `pageAccess`. Command version/idempotency, RLS owner, lịch sử append-only. Đọc nguồn Chi tiêu trong cùng transaction và khóa Expenses → Fund. Từ 26/11/2026 Fund đọc thêm sổ Tiết kiệm để tính nơi giữ liên kết (`domain/funds/savings-sources.ts`), còn lệnh Tiết kiệm đọc sổ Fund để cảnh báo (`domain/funds/savings-impact.ts`) và khóa Savings → Fund; không module nào ghi vào sổ của module kia. GET không khởi tạo dữ liệu. Client refetch khi foreground bằng helper hiện tại; không lưu tài chính trên thiết bị.
 
 Tinh chỉnh 30/10/2026: `features/funds/history.tsx` trình bày audit chung, snapshot cấu hình và giao dịch trước/sau; `details.tsx` tái sử dụng cùng lịch sử/nơi giữ cho cả ba quỹ. Ledger dùng container query theo chiều rộng thực để căn cột trong trang và dialog. Cấu hình nguồn có fieldset hũ riêng, giữ logic áp dụng snapshot/xem trước hiện có; không đổi API, schema hay biên truy cập. Catalog và Help preview vi/en làm rõ nguồn đã xác nhận, dữ liệu preview tiếp tục cố định.
 

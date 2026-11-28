@@ -11,7 +11,7 @@ import { previousDate, nextMonth } from "../savings/engine";
 import { sumMoney } from "../shared/money";
 import { vietnamClock } from "../shared/clock";
 import type { Clock } from "../shared/types";
-import { fundsAt, fundBookAt } from "./funds";
+import { fundsAt, fundBookAt, fundLinkedAt } from "./funds";
 import {
   detailColumns,
   moneyColumn as money,
@@ -35,6 +35,8 @@ type Part = {
   tables: Table[];
   details: Record<string, Row[]>;
   warnings: string[];
+  /** Explains the current numbers; never marks a comparison period as incomplete. */
+  notes: string[];
   unavailable: SourceId[];
 };
 const sum = (values: Cell[]) =>
@@ -63,6 +65,7 @@ function part(source: SourceId, details: boolean, selected?: string) {
     tables: [],
     details: {},
     warnings: [],
+    notes: [],
     unavailable: [],
   };
   const metric = (
@@ -449,9 +452,25 @@ function buildSource(
       result.warnings.push("Đầu tư đang dùng định giá cũ.");
   } else if (source === "funds") {
     const book = books.funds ?? null,
-      before = fundsAt(book, previousDate(p.from)),
-      after = fundsAt(book, p.asOf),
+      savings = books.savings ?? null;
+    if (
+      input.errors.includes("savings") &&
+      book?.locations.some((l) => l.savings)
+    )
+      throw new ReportError("Chưa đọc được Tiết kiệm liên kết với quỹ.");
+    const before = fundsAt(book, previousDate(p.from), savings),
+      after = fundsAt(book, p.asOf, savings),
       atEnd = fundBookAt(book, p.asOf);
+    const linked = fundLinkedAt(book, p.asOf, savings),
+      opening = fundLinkedAt(book, previousDate(p.from), savings);
+    if (
+      [...Object.values(linked), ...Object.values(opening)].some(
+        (v) => v !== "0",
+      )
+    )
+      result.notes.push(
+        "Số dư Quỹ an toàn gồm phần lấy từ Tiết kiệm; mục góp và rút chỉ tính giao dịch ghi trong sổ Quỹ.",
+      );
     const config = atEnd?.configurations.at(-1);
     const populated = Boolean(config || atEnd?.revisions.length);
     const transactions = book
@@ -522,7 +541,13 @@ function buildSource(
               opening: before.funds.find((b) => b.id === f.id)!.balance,
               value: f.balance,
               target: config ? f.target : null,
-              percent: config ? f.percent : null,
+              percent: !config
+                ? null
+                : f.missing === "0" &&
+                    BigInt(f.target) > 0n &&
+                    Object.keys(linked).some((k) => k.startsWith(`${f.id}:`))
+                  ? "100.00"
+                  : f.percent,
             }))
           : [],
       });
@@ -567,7 +592,9 @@ function buildSource(
       months.push({
         id: month,
         month,
-        value: exists ? fundsAt(book, end < p.asOf ? end : p.asOf).total : null,
+        value: exists
+          ? fundsAt(book, end < p.asOf ? end : p.asOf, savings).total
+          : null,
       });
     }
     if (!detailOnly)
@@ -588,6 +615,12 @@ function buildSource(
         continue;
       }
       try {
+        if (
+          id === "funds" &&
+          input.errors.includes("savings") &&
+          books.funds?.locations.some((l) => l.active && l.savings)
+        )
+          throw new ReportError("Chưa đọc được Tiết kiệm liên kết với quỹ.");
         const source = goalSources(
           {
             savings: id === "savings" ? (books.savings ?? null) : null,
@@ -596,6 +629,7 @@ function buildSource(
             funds: id === "funds" ? (books.funds ?? null) : null,
           },
           clock.today,
+          books.savings ?? null,
         );
         sources.versions[id] = source.versions[id];
         sources.items.push(...source.items);
@@ -675,6 +709,13 @@ export function detailSources(query: ReportQuery, metric: string): SourceId[] {
   return [source];
 }
 
+/** Ledgers needed to rebuild the selected sources, including what a source follows. */
+export function detailReads(sources: SourceId[]): SourceId[] {
+  return sources.includes("funds") && !sources.includes("savings")
+    ? [...sources, "savings"]
+    : sources;
+}
+
 export function buildReport(
   input: ReportInput,
   query: ReportQuery,
@@ -709,7 +750,8 @@ export function buildReport(
     if (
       unavailable.has(source) ||
       (selectedSources && !selectedSources.includes(source)) ||
-      (query.tab === "goals" && source !== "goals")
+      (query.tab === "goals" && source !== "goals") ||
+      (query.tab === "funds" && source !== "funds")
     )
       continue;
     try {
@@ -742,7 +784,7 @@ export function buildReport(
               details: false,
               tables: false,
             });
-      report.warnings.push(...current.warnings);
+      report.warnings.push(...current.warnings, ...current.notes);
       if (previous?.warnings.length)
         report.warnings.push(
           "Kỳ trước có dữ liệu chưa đầy đủ, tạm tính hoặc định giá cũ; cần xem xét khi so sánh.",
@@ -772,6 +814,12 @@ export function buildReport(
       report.sources[source] = { status: "error", empty: false, version: null };
     }
   }
+  // Savings is read for the Funds tab, but it is only a source there once a fund follows it.
+  if (
+    query.tab === "funds" &&
+    !input.books.funds?.locations?.some((l) => l.savings)
+  )
+    delete report.sources.savings;
   const income = report.metrics.find((m) => m.id === "income.total"),
     expense = report.metrics.find((m) => m.id === "expenses.spent");
   if (income && expense) {

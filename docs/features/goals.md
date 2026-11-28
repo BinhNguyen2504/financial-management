@@ -20,6 +20,12 @@ Liên kết mới ghi `scope: "portfolio"`, vẫn tham chiếu UUID danh mục �
 
 Phần chia portfolio tiêu thụ cùng tỷ lệ ở từng thành phần; kiểm giới hạn chung với liên kết cũ theo tài sản/ví để tránh chia quá 100%. Tiền dùng BigInt và schema tổng hỗ trợ nhiều nguồn 24 chữ số. Ngày định giá/cảnh báo cũ theo tài sản; không thay thiếu định giá bằng tiền chờ. Báo cáo Mục tiêu dùng cùng bộ tính và giữ tương thích nguồn cũ. Backup V3 giữ scope trong cấu hình/audit; bảng liên kết vẫn là tham chiếu nguồn vật lý. Không thêm SQL/migration, không reset hoặc sửa số dư nguồn.
 
+### Quỹ có nguồn Tiết kiệm — 26/11/2026
+
+Số dư nguồn Quỹ gồm cả phần lấy từ danh mục Tiết kiệm đã gắn; `componentIds` ghi các danh mục đó. Cột mốc chọn cả quỹ lẫn danh mục đã gắn chỉ tính danh mục **một lần**. Mục tiêu dùng quỹ như vậy yêu cầu phiên bản Tiết kiệm không đổi giữa xem trước và lưu. Snapshot cũ giữ nguyên. Mục tiêu chi dùng vẫn chia tỷ lệ từ danh mục Tiết kiệm độc lập với việc danh mục đang gắn quỹ.
+
+Ba ô tiền trong form Mục tiêu (số tiền đích, góp dự định/tháng, số tiền giao dịch) đọc lại số VND ngay dưới ô như các trang khác.
+
 ## Kế hoạch và trạng thái
 
 Còn thiếu = max(đích - tiến độ, 0). Thanh tiến độ giới hạn 100%, số tiền/phần trăm vẫn thể hiện vượt đích. Mức cần góp chia phần thiếu cho số tháng lịch còn lại, gồm tháng hiện tại và tháng đến hạn, làm tròn lên VND. Hạn quá ngày hiện tại hiện quá hạn và không đưa mức góp gây hiểu nhầm. Mức góp dự định dương cho ước tính tháng đạt theo số kỳ cần góp, không giả định lãi, không tự tạo giao dịch. Dự kiến vượt năm 2099 không hiển thị.

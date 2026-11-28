@@ -4,7 +4,7 @@ import { generationOf } from "@/lib/data-generation";
 import { buildSavingsAction } from "./editor-action";
 
 import { useI18n } from "@/i18n/provider";
-import type { CommandResult } from "@/application/savings";
+import type { CommandResult, FundImpactWarning } from "@/application/savings";
 
 import { focusFirstInvalid } from "@/components/form-feedback";
 
@@ -135,8 +135,10 @@ export function useSavingsEditor({
     [uncertain, setUncertain] = useState(false);
   const [preview, setPreview] = useState<{
     command: SavingsCommand;
-    result: CommandResult;
+    result: CommandResult & { fundImpact?: FundImpactWarning | null };
   } | null>(null);
+  const [fundsAccepted, setFundsAccepted] = useState(false);
+  const needsFundConsent = Boolean(preview?.result.fundImpact);
   const pending = useRef<SavingsCommand | null>(null),
     errorRef = useRef<HTMLDivElement>(null);
   const draft = comparable({
@@ -278,7 +280,7 @@ export function useSavingsEditor({
   }
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (unchanged) return;
+    if (unchanged || (needsFundConsent && !fundsAccepted)) return;
     setBusy(true);
     setError("");
     let writing = false;
@@ -294,20 +296,23 @@ export function useSavingsEditor({
               action: a,
             };
       pending.current = command;
-      if (!preview || preview.command.id !== command.id)
-        setPreview({
-          command,
-          result: await savingsJSON<CommandResult>(
-            "/preview",
-            command,
-            generation,
-          ),
-        });
-      else {
+      if (!preview || preview.command.id !== command.id) {
+        const result = await savingsJSON<
+          CommandResult & { fundImpact?: FundImpactWarning | null }
+        >("/preview", command, generation);
+        setFundsAccepted(false);
+        setPreview({ command, result });
+      } else {
+        const impact = preview.result.fundImpact;
+        // A retry of an unconfirmed save must resend exactly this payload.
+        const confirmed = impact
+          ? { ...command, acknowledgedFundsVersion: impact.fundsVersion }
+          : command;
+        pending.current = confirmed;
         writing = true;
         const result = await savingsJSON<{ view?: SavingsView }>(
           `/commands?return=view&asOf=${endOfMonth(month)}`,
-          command,
+          confirmed,
           generation,
         );
         toast("success", tr("Đã lưu thay đổi."));
@@ -336,6 +341,15 @@ export function useSavingsEditor({
       );
       if (e instanceof SavingsAPIError && e.code === "VERSION_CONFLICT") {
         setConflict(true);
+        setPreview(null);
+      }
+      if (
+        e instanceof SavingsAPIError &&
+        e.code === "FUND_IMPACT_CONFIRMATION_REQUIRED"
+      ) {
+        // The server found no receipt before refusing, so nothing was saved.
+        setUncertain(false);
+        pending.current = null;
         setPreview(null);
       }
       focusFirstInvalid(
@@ -402,6 +416,9 @@ export function useSavingsEditor({
     unchanged,
     sensitive,
     preview,
+    fundsAccepted,
+    setFundsAccepted,
+    needsFundConsent,
     submit,
     error,
     errorRef,

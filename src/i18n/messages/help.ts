@@ -366,8 +366,8 @@ export const help = {
     "Choose date, amount, internal or external source/destination and note.",
   "Xem trước và xác nhận; kiểm tra lịch sử và số dư sau giao dịch.":
     "Preview and confirm; check history and resulting balances.",
-  "Kết quả: các phía liên quan cập nhật trong một lần lưu; không cho số dư âm tại bất kỳ thời điểm bị ảnh hưởng.":
-    "Result: related sides update in one save; no affected balance may become negative at any time.",
+  "Kết quả: các phía liên quan cập nhật trong một lần lưu; không cho số dư âm tại bất kỳ thời điểm bị ảnh hưởng. Giao dịch làm giảm Quỹ an toàn hiện cảnh báo và cần bạn xác nhận trước khi lưu.":
+    "Result: affected sides update in one save, with no negative balance at any affected date. A transaction that lowers a safety fund shows a warning and needs your confirmation before saving.",
   "Mở sổ, nhận lãi, rút gốc và tái tục":
     "Open deposits, receive interest, withdraw principal and renew",
   "Khi quản lý tiền gửi theo từng sổ.":
@@ -549,11 +549,11 @@ export const help = {
   "Bản chụp các hũ sinh hoạt dùng để tính mục tiêu. Khi nguồn Chi tiêu thay đổi, app đề xuất cập nhật; **mục tiêu chỉ đổi sau khi bạn xem trước và xác nhận**.":
     "A snapshot of living-cost jars used for targets. When Expenses sources change, the app suggests an update; **targets change only after preview and confirmation**.",
   "Nơi giữ tiền và số dư độc lập": "Holding locations and independent balances",
-  "Nơi giữ có thể là ngân hàng hoặc tiền mặt, dùng chung giữa các quỹ nhưng **số dư riêng từng quỹ**. Số dư ban đầu khác phần thêm tiền mới. Đây là sổ riêng, **không tự đồng bộ** với Tiết kiệm/Đầu tư/Chi tiêu.":
-    "Locations can be banks or cash, shared by funds but with **separate balances per fund**. Opening balances differ from new deposits. This independent ledger **does not automatically sync** with Savings/Investments/Expenses.",
+  "Nơi giữ riêng có thể là ngân hàng hoặc tiền mặt, dùng chung giữa các quỹ nhưng **số dư riêng từng quỹ**; số dư ban đầu khác phần thêm tiền mới. Bạn cũng có thể **gắn một danh mục tiền mặt hoặc tiền gửi của Tiết kiệm vào đúng một quỹ**: quỹ lấy theo số đang có của danh mục và tự đổi theo giao dịch Tiết kiệm. Quỹ không tự đồng bộ với Đầu tư hoặc Chi tiêu.":
+    "Own locations can be banks or cash, shared by funds but with **separate balances per fund**; opening balances differ from new deposits. You can also **link one Savings cash or deposit category to exactly one fund**: the fund follows the category's current balance and changes with Savings transactions. Funds do not sync with Investments or Expenses.",
   "Tiến độ và còn thiếu": "Progress and shortfall",
-  "Tiến độ so tiền đang có với mục tiêu. Tổng còn thiếu cộng phần thiếu của từng quỹ; **quỹ dư không tự bù cho quỹ khác**. Tỷ lệ có thể vượt 100%, hình minh họa giới hạn độ hoàn thiện.":
-    "Progress compares held money with targets. Total shortfall sums individual fund gaps; **one fund's excess does not cover another automatically**. Percentages can exceed 100%; illustrations cap visual completion.",
+  "Tiến độ so tiền đang có với mục tiêu. Tổng còn thiếu cộng phần thiếu của từng quỹ; **quỹ dư không tự bù cho quỹ khác**. Tỷ lệ có thể vượt 100%, hình minh họa giới hạn độ hoàn thiện. Quỹ có gắn Tiết kiệm hiện **100% · Đã đủ mức dự phòng** khi đạt mục tiêu.":
+    "Progress compares held money with targets. Total shortfall sums individual fund gaps; **one fund's excess does not cover another automatically**. Percentages can exceed 100%; illustrations cap visual completion. A fund linked to Savings shows **100% · Reserve target met** once it reaches its target.",
   "Thiết lập nền tảng sinh hoạt và mục tiêu": "Set living costs and targets",
   "Khi lần đầu tạo Quỹ an toàn.": "When first creating Safety funds.",
   "Mở thiết lập, chọn các hũ chi tháng phục vụ nhu cầu sinh hoạt.":
@@ -581,10 +581,10 @@ export const help = {
     "To track reserves at a particular place.",
   "Mở Nơi giữ tiền và chọn Thêm nơi giữ tiền.":
     "Open Holding locations and choose Add holding location.",
-  "Nhập tên, xem trước rồi lưu; ghi số dư ban đầu cho từng cặp quỹ/nơi giữ trước các giao dịch khác của cặp đó.":
-    "Enter a name, preview and save; record an opening for each fund/location pair before its other transactions.",
-  "Chỉ ngừng nơi giữ khi số dư mọi quỹ tại đó bằng 0; có thể khôi phục.":
-    "Stop a location only when all fund balances there are zero; it can be restored.",
+  "Với nơi giữ riêng: nhập tên, xem trước rồi lưu; ghi số dư ban đầu cho từng cặp quỹ/nơi giữ trước các giao dịch khác của cặp đó.":
+    "For your own location: enter a name, preview and save; record an opening for each fund/location pair before its other transactions.",
+  "Chỉ ngừng nơi giữ riêng khi số dư mọi quỹ tại đó bằng 0; có thể khôi phục. Ngừng nơi giữ lấy từ Tiết kiệm để gỡ liên kết.":
+    "Stop your own location only when all fund balances there are zero; it can be restored. Stop a Savings-based location to remove the link.",
   "Kết quả: cùng một nơi có thể giữ tiền của nhiều quỹ mà vẫn biết phần của từng quỹ.":
     "Result: one location can hold several funds while preserving each fund's share.",
   "Thêm, rút hoặc chuyển tiền": "Add, withdraw or transfer money",
@@ -840,4 +840,6 @@ export const help = {
     "If a draft number is invalid when another tab changes language, correct it using the format shown at the field; the old text is not reinterpreted.",
   "Kết quả: trang chủ, phần minh họa, đăng nhập, giao diện ứng dụng và Trợ giúp theo ngôn ngữ đã chọn, giữ bản nháp và bộ lọc. Lựa chọn lưu trên trình duyệt, không nằm trong bản sao lưu hoặc đồng bộ tài khoản.":
     "Result: the home page, preview, sign-in, app interface and Help follow your selected language, preserving drafts and filters. The browser saves your choice; it is not backed up or synced to your account.",
+  "Để dùng tiền đã ghi ở Tiết kiệm, chọn Loại nguồn là Danh mục Tiết kiệm, chọn danh mục và quỹ được gắn.":
+    "To use money recorded in Savings, set Source type to Savings category, then choose the category and its fund.",
 } as const;

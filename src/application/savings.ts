@@ -4,10 +4,19 @@ import { commandFingerprint } from "./shared/command-fingerprint";
 import { applyAction, SavingsError, toView } from "../domain/savings/engine";
 import { commandSchema, type SavingsCommand } from "../domain/savings/schema";
 import type { Clock, SavingsBook, SavingsState } from "../domain/savings/types";
+import { hasSavingsLink } from "../domain/funds/engine";
+import { fundImpact, type FundImpact } from "../domain/funds/savings-impact";
+import { savingsSources } from "../domain/funds/savings-sources";
+import type { FundBook } from "../domain/funds/types";
 export interface CommandResult {
   version: number;
   before: SavingsState;
   after: SavingsState;
+}
+/** Returned by preview only; command receipts and backups keep their original shape. */
+export interface FundImpactWarning {
+  fundsVersion: number;
+  funds: FundImpact[];
 }
 export interface StoredCommand {
   fingerprint: string;
@@ -16,6 +25,7 @@ export interface StoredCommand {
 export interface SavingsTransactionRepository {
   read(): Promise<SavingsBook | null>;
   command(id: string): Promise<StoredCommand | null>;
+  fundBook(): Promise<FundBook | null>;
   save(book: SavingsBook): Promise<void>;
   remember(id: string, value: StoredCommand): Promise<void>;
 }
@@ -33,7 +43,12 @@ export async function runSavingsCommand(
   clock: Clock,
   preview = false,
   options: CommandViewOptions = {},
-): Promise<CommandResult & { view?: SavingsView }> {
+): Promise<
+  CommandResult & {
+    view?: SavingsView;
+    fundImpact?: FundImpactWarning | null;
+  }
+> {
   const command = commandSchema.parse(raw),
     fingerprint = commandFingerprint(command);
   return repository.transaction(
@@ -67,11 +82,33 @@ export async function runSavingsCommand(
         before: toView(before, clock.today, clock).state,
         after: toView(after, clock.today, clock).state,
       };
+      const funds = await tx.fundBook();
+      // Without a link the Fund ledger cannot be affected, so it is not replayed.
+      const affected = hasSavingsLink(funds)
+        ? fundImpact(
+            funds,
+            savingsSources(before, clock.today),
+            savingsSources(after, clock.today),
+          )
+        : [];
+      const warning = affected.length
+        ? { fundsVersion: funds!.version, funds: affected }
+        : null;
       if (!preview) {
+        if (
+          warning &&
+          command.acknowledgedFundsVersion !== warning.fundsVersion
+        )
+          throw new SavingsError(
+            "Giao dịch này làm giảm Quỹ an toàn. Xem trước lại và xác nhận cảnh báo trước khi lưu.",
+            409,
+            "FUND_IMPACT_CONFIRMATION_REQUIRED",
+          );
         await tx.save(after);
         await tx.remember(command.id, { fingerprint, result });
       }
-      return options.view && !preview
+      if (preview) return { ...result, fundImpact: warning };
+      return options.view
         ? {
             ...result,
             view: toView(await tx.read(), options.asOf ?? clock.today, clock),

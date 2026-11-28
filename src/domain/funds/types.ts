@@ -7,7 +7,9 @@ import type {
   FundId,
   LivingExpenseSnapshot,
 } from "./schema";
+import type { FundSavingsSource } from "./savings-sources";
 export type { FundId, FundTransaction, LivingExpenseSnapshot } from "./schema";
+export type { FundSavingsSource } from "./savings-sources";
 export interface FundBook {
   version: number;
   funds: FundId[];
@@ -42,6 +44,8 @@ export interface FundView {
   book: FundBook | null;
   state: FundState;
   source: LivingSource;
+  /** Savings categories that can back a fund, with their balance today. */
+  savings: FundSavingsSource[];
   proposedLiving: LivingExpenseSnapshot | null;
   sourceChanged: boolean;
   sourceUnavailable: boolean;

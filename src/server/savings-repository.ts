@@ -33,6 +33,12 @@ function adapter(
       );
       return r ?? null;
     },
+    async fundBook() {
+      const [ready] = await query<{ ready: boolean }>(
+        "select to_regclass('public.funds_books') is not null as ready",
+      );
+      return ready.ready ? readBook(db, owner, "funds", false) : null;
+    },
     async save(book) {
       await query(
         "insert into public.savings_books(owner_id,version) values($1,$2) on conflict(owner_id) do update set version=excluded.version",
@@ -125,7 +131,10 @@ export function postgresSavingsRepository(
         sql,
         owner,
         async (tx) => {
-          if (!readOnly) await lockOwner(tx, [`savings:${owner}`]);
+          // Global order (restore, reset, Goals): Savings before Fund, so a link cannot
+          // appear between the impact check and the commit.
+          if (!readOnly)
+            await lockOwner(tx, [`savings:${owner}`, `funds:${owner}`]);
           return withDataGeneration(tx, owner, expectedGeneration, () =>
             fn(adapter(tx, owner, readOnly)),
           );

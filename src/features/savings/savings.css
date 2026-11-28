@@ -475,6 +475,48 @@
   font-size: var(--font-size-14);
   overflow-wrap: anywhere;
 }
+.savings-fund-impact {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--accent-soft);
+}
+.savings-fund-impact h4 {
+  margin: 0;
+  font-size: var(--font-size-18);
+}
+.savings-fund-impact ul {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.savings-fund-impact li {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.savings-fund-impact small {
+  color: var(--muted);
+}
+.savings-form .savings-fund-impact label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-weight: var(--weight-strong);
+}
+.savings-fund-impact input {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+  accent-color: var(--primary);
+}
 .savings-alert h2 {
   color: var(--primary);
 }

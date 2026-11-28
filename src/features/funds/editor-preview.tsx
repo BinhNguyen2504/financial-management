@@ -90,7 +90,7 @@ export function FundEditorPreview({
           {mode.type === "configure"
             ? tr("Điều chỉnh mục tiêu Quỹ an toàn")
             : mode.type === "location"
-              ? `${location?.name ?? tr("Thêm nơi giữ tiền")} → ${f.name} · ${f.active ? tr("Đang sử dụng") : tr("Ngừng sử dụng")}`
+              ? `${location?.name ?? tr("Thêm nơi giữ tiền")} → ${f.name} · ${f.active ? tr("Đang sử dụng") : tr("Ngừng sử dụng")}${f.source === "savings" ? ` · ${tr("Từ Tiết kiệm")} → ${tr(fundNames[f.fundId as FundId])}` : ""}`
               : mode.type === "cancel"
                 ? tr("Hủy {0}", {
                     0: old

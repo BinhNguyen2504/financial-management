@@ -242,6 +242,8 @@ describe("editor draft to action compatibility", () => {
         occurredAt: localDateTime(old.occurredAt),
         note: "",
         reason: "Correction",
+        source: "own",
+        categoryId: "",
       },
       tr: (message) => message,
     };
@@ -256,5 +258,24 @@ describe("editor draft to action compatibility", () => {
         fields: { ...input.fields, occurredAt: "invalid" },
       }),
     ).toThrow("Nhập thời điểm giao dịch hợp lệ.");
+    const location: FundActionInput = {
+      ...input,
+      mode: { type: "location" },
+      old: null,
+      fields: { ...input.fields, name: "Bank" },
+    };
+    expect(buildFundAction(location)).not.toHaveProperty("savings");
+    expect(
+      buildFundAction({
+        ...location,
+        fields: { ...location.fields, source: "savings", categoryId },
+      }),
+    ).toMatchObject({ savings: { categoryId, fundId: "emergency" } });
+    expect(() =>
+      buildFundAction({
+        ...location,
+        fields: { ...location.fields, source: "savings" },
+      }),
+    ).toThrow();
   });
 });

@@ -32,6 +32,8 @@ export interface FundActionInput {
     occurredAt: string;
     note: string;
     reason: string;
+    source: "own" | "savings";
+    categoryId: string;
   };
   tr: Translator;
   old: FundTransaction | null;
@@ -67,6 +69,9 @@ export function buildFundAction({
       id: entity,
       name: f.name,
       active: f.active,
+      ...(f.source === "savings"
+        ? { savings: { categoryId: f.categoryId, fundId: f.fundId } }
+        : {}),
     });
   if (mode.type === "cancel")
     return actionSchema.parse({

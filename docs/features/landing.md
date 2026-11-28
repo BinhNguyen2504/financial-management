@@ -233,3 +233,7 @@ Hoàn tất 05/11/2026: thứ tự tab lấy chung từ `navigationModules` (Chi
 ## Đồng bộ Mục tiêu — 05/11/2026
 
 Preview Mục tiêu làm rõ nhóm Kế hoạch góp; hướng dẫn minh họa nêu sắp xếp ưu tiên trong danh sách và biểu tượng sửa/hủy giao dịch. Giữ ví dụ cố định đích 100 triệu, đã chuẩn bị 40 triệu, thiếu 60 triệu, dự định 5 triệu/tháng trong 12 tháng. Preview không gọi API tài chính, không đọc dữ liệu tài khoản; thao tác ghi chỉ có trong ứng dụng. Xem [bố cục Mục tiêu](goals-layout-2026-11-05.md).
+
+## Mô tả preview Quỹ an toàn — 26/11/2026
+
+Mô tả cố định của preview Quỹ thêm ý có thể gắn tiền mặt hoặc tiền gửi của Tiết kiệm vào một quỹ và cảnh báo trước khi lưu giao dịch làm quỹ giảm (vi/en). Số liệu minh họa không đổi; preview không giả lập thao tác liên kết và không đọc API tài chính.

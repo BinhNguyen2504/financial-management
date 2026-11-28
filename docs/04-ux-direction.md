@@ -400,3 +400,7 @@ Tooltip hiện khi rê chuột hoặc đến bằng phím Tab; không tự hiệ
 ## Nhật ký giao dịch Đầu tư — 26/11/2026
 
 Phân biệt loại bằng icon, tên loại và màu nhóm dùng token badge/accent; không dùng đỏ cho loại giao dịch. Trạng thái đã hủy thể hiện bằng hình dạng (viền đứt), icon, nhãn và gạch ngang, không làm mờ cả dòng. Hàng trong một bảng thao tác dùng nút icon có tooltip trên desktop; thẻ mobile giữ chữ. Các nút lệnh trong cùng một nhóm dùng chung kiểu icon kèm chữ.
+
+## Nguồn Tiết kiệm trong Quỹ — 26/11/2026
+
+Số dư khả dụng và gợi ý tiền là dòng phụ ngay dưới ô, liên kết bằng `aria-describedby`; hàng hai cột của form Quỹ căn đỉnh để dòng phụ không kéo giãn ô bên cạnh. Nơi giữ lấy từ Tiết kiệm dùng `StatusBadge` thông tin. Cảnh báo giảm quỹ nằm trong vùng xem trước Tiết kiệm, màu nhấn của theme, ô chọn 24px trên hàng cao tối thiểu 44px; nút Xác nhận lưu bị khóa cho tới khi chọn.

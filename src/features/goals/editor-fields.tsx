@@ -1,6 +1,7 @@
 "use client";
 import { GoalPriority } from "./priority";
 import { LocalizedInput } from "@/components/localized-input";
+import { MoneyHint } from "@/components/money-hint";
 import { useMoney } from "@/components/privacy";
 import { formatDate, formatDecimal } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
@@ -62,6 +63,19 @@ export function GoalFields({
       ? `${fieldId(key)}-error`
       : undefined,
   });
+  const moneyProps = (key: string, label: string) => ({
+    ...fieldProps(key),
+    "aria-label": label,
+    "aria-describedby": [
+      `${fieldId(key)}-hint`,
+      fields[errorKey(key)] ? `${fieldId(key)}-error` : "",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  });
+  const moneyHint = (key: string, value: string) => (
+    <MoneyHint id={`${fieldId(key)}-hint`} value={value} />
+  );
   const fieldError = (key: string) =>
     fields[errorKey(key)] ? (
       <small
@@ -124,10 +138,11 @@ export function GoalFields({
                 required
                 numberKind="integer"
                 inputMode="numeric"
-                {...fieldProps("goal.target")}
+                {...moneyProps("goal.target", tr("Số tiền đích (VND)"))}
                 value={input.target}
                 onValueChange={(target) => updateGoal({ target })}
               />
+              {moneyHint("goal.target", input.target)}
               {fieldError("goal.target")}
             </label>
             <label>
@@ -169,10 +184,11 @@ export function GoalFields({
                 required
                 numberKind="integer"
                 inputMode="numeric"
-                {...fieldProps("goal.monthly")}
+                {...moneyProps("goal.monthly", tr("Góp dự định / tháng (VND)"))}
                 value={input.monthly}
                 onValueChange={(monthly) => updateGoal({ monthly })}
               />
+              {moneyHint("goal.monthly", input.monthly)}
               {fieldError("goal.monthly")}
             </label>
             {input.mode === "linked" && (
@@ -416,10 +432,11 @@ export function GoalFields({
               required
               numberKind="integer"
               inputMode="numeric"
-              {...fieldProps("transaction.amount")}
+              {...moneyProps("transaction.amount", tr("Số tiền (VND)"))}
               value={transaction.amount}
               onValueChange={(amount) => updateTransaction({ amount })}
             />
+            {moneyHint("transaction.amount", transaction.amount)}
             {fieldError("transaction.amount")}
           </label>
           <label>

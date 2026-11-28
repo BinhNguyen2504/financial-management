@@ -42,10 +42,26 @@ export const configurationSchema = z.strictObject({
   multipliers: multipliersSchema,
   priority: prioritySchema,
 });
+/** Present only on a holding location that follows a Savings category into one fund. */
+export const savingsLinkSchema = z.strictObject({
+  categoryId: z.uuid(),
+  fundId: fundIdSchema,
+});
 export const locationSchema = z.strictObject({
   id: z.uuid(),
   name,
   active: z.boolean(),
+  savings: savingsLinkSchema.optional(),
+  /** Each saved state of a linked location, so past reports count it only while it applied. */
+  linkHistory: z
+    .array(
+      z.strictObject({
+        at: z.iso.datetime({ offset: true }),
+        fundId: fundIdSchema,
+        active: z.boolean(),
+      }),
+    )
+    .optional(),
 });
 const transactionFields = {
   id: z.uuid(),
@@ -103,6 +119,7 @@ export const actionSchema = z.discriminatedUnion("type", [
     id: z.uuid(),
     name,
     active: z.boolean(),
+    savings: savingsLinkSchema.optional(),
   }),
   z.strictObject({
     type: z.literal("postTransaction"),
@@ -129,4 +146,5 @@ export type FundAction = z.infer<typeof actionSchema>;
 export type FundCommand = z.infer<typeof commandSchema>;
 export type FundTransaction = z.infer<typeof transactionSchema>;
 export type FundId = z.infer<typeof fundIdSchema>;
+export type SavingsLink = z.infer<typeof savingsLinkSchema>;
 export type LivingExpenseSnapshot = z.infer<typeof livingSnapshotSchema>;

@@ -104,6 +104,7 @@ export const modules = [
       "Ghi góp thêm, rút, nhận lãi và tái tục",
       "Ghi tổng giá vốn và giá vàng theo từng đơn vị để đọc lãi/lỗ",
       "Theo dõi sổ đến hạn và xem báo cáo",
+      "Cảnh báo và hỏi xác nhận khi giao dịch làm giảm Quỹ an toàn",
       "Đối chiếu lịch sử thay đổi theo dòng thời gian",
     ],
     questions: [],
@@ -134,6 +135,7 @@ export const modules = [
     scope: [
       "Đặt mục tiêu quỹ theo chi phí sinh hoạt",
       "Ghi tiền đã dành riêng và nơi giữ tiền",
+      "Gắn danh mục tiền mặt hoặc tiền gửi của Tiết kiệm làm nguồn của một quỹ",
       "Biết còn thiếu bao nhiêu và quỹ đủ trang trải mấy tháng",
     ],
     questions: [],

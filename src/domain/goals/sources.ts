@@ -4,7 +4,8 @@ import type { FundBook } from "../funds/types";
 import { replay as savingsReplay } from "../savings/engine";
 import { replay as investmentReplay } from "../investments/engine";
 import { portfolioPositions } from "../investments/portfolios";
-import { replay as fundReplay } from "../funds/engine";
+import { linkedBalances, replay as fundReplay } from "../funds/engine";
+import { savingsSources } from "../funds/savings-sources";
 import type { GoalSources } from "./schema";
 
 export function goalSources(
@@ -14,6 +15,8 @@ export function goalSources(
     funds: FundBook | null;
   },
   today: string,
+  /** Savings ledger behind linked fund balances, when it differs from the listed sources. */
+  fundSavings: SavingsBook | null = books.savings,
 ): GoalSources {
   const items: GoalSources["items"] = [];
   const legacyItems: GoalSources["items"] = [];
@@ -56,8 +59,15 @@ export function goalSources(
         stale: p.stale,
       });
   }
-  if (books.funds)
-    for (const p of fundReplay(books.funds).funds)
+  if (books.funds) {
+    const linked = linkedBalances(
+      books.funds,
+      savingsSources(fundSavings, today),
+    );
+    for (const p of fundReplay(books.funds, linked).funds) {
+      const categories = books.funds.locations.flatMap((l) =>
+        l.active && l.savings?.fundId === p.id ? [l.savings.categoryId] : [],
+      );
       items.push({
         kind: "funds",
         sourceId: p.id,
@@ -71,7 +81,11 @@ export function goalSources(
         value: p.balance,
         valueDate: null,
         stale: false,
+        // Omitted without links so earlier audit snapshots keep their shape.
+        ...(categories.length ? { componentIds: categories } : {}),
       });
+    }
+  }
   return {
     versions: {
       savings: books.savings?.version ?? 0,

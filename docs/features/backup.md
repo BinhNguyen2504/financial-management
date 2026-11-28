@@ -175,3 +175,7 @@ Ngoài làm trống cả tài khoản, người dùng chọn **Chỉ một số 
 Bảng `expense_month_inputs` có thêm cột `funded` (`true`/`false`/`null`; `null` là quy tắc mặc định). Bản sao lưu cũ không có trường này vẫn được đọc và khôi phục với `funded = null`; dòng snapshot năm đã chốt có thêm `funded` tùy chọn. `schemaVersion` giữ nguyên (V3). Khi đọc từ database chưa có cột, backup xuất `funded = null`; khôi phục bản có dấu đã đánh vào database thiếu cột bị từ chối với `SCHEMA_NOT_READY` và không ghi gì. Xem [Chi tiêu](expenses.md#đánh-dấu-đã-bỏ-hũ-theo-từng-hũ--25112026).
 
 Mỗi phần tử `rules` của `income_categories` có thêm `receiveDay` (1–31) tùy chọn; `incomeCommand.result.changes` có thêm `beforeReceiveDay`/`afterReceiveDay` tùy chọn. Hai trường **không có giá trị mặc định** vì jsonb được lưu và so sánh nguyên văn sau khôi phục; bản sao lưu cũ vẫn được đọc, không cần migration và `schemaVersion` giữ nguyên (V3). Xem [Thu nhập](income.md#ngày-nhận-tiền-hằng-tháng--25112026).
+
+## Liên kết Quỹ – Tiết kiệm — 26/11/2026
+
+Backup giữ V3; dữ liệu nơi giữ của Quỹ có thể thêm `savings` và `linkHistory`. File không có liên kết giữ nguyên định dạng cũ. Source cũ hơn không nhận file có liên kết. Khôi phục không yêu cầu danh mục được gắn còn tồn tại, vì làm trống riêng Tiết kiệm có thể để lại liên kết; phần đó tính 0.

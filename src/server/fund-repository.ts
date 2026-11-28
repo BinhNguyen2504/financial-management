@@ -31,6 +31,12 @@ function adapter(
     async source(month) {
       return readLivingSource(db, owner, month);
     },
+    async savings() {
+      const [ready] = await query<{ ready: boolean }>(
+        "select to_regclass('public.savings_books') is not null as ready",
+      );
+      return ready.ready ? readBook(db, owner, "savings", false) : null;
+    },
     async command(id) {
       return (
         (

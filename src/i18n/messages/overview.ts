@@ -295,8 +295,8 @@ export const overview = {
     "Amounts are hidden in the interface and accessible content; the data is unchanged.",
   "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn và Cần chú ý.":
     "Deposits with remaining principal, already due or maturing within seven days, appear in Maturing deposits and Needs attention.",
-  "Các chức năng là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.":
-    "Modules are independent ledgers; Overview does not combine them into net worth or calculate spendable funds.",
+  "Tổng quan không cộng các chức năng thành tài sản ròng hoặc tính tiền còn có thể chi. Quỹ an toàn có thể đã gồm tiền lấy từ Tiết kiệm, nên không cộng hai số này.":
+    "Overview does not add sections into net worth or calculate money safe to spend. Safety funds may already include money taken from Savings, so do not add the two.",
   "Lỗi một nguồn không làm mất thẻ thông tin khác. Số liệu lần tải trước được ghi nhãn khi cập nhật thất bại. Bố cục xung đột cần tải bản mới, không tự ghi đè.":
     "One source failing does not remove other cards. Previously loaded values are labelled when refresh fails. Conflicting layouts require loading the latest version and are not overwritten automatically.",
   "Kết quả: Các thẻ thông tin dùng dữ liệu thực đã ghi, không tự tạo giao dịch.":

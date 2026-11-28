@@ -1376,3 +1376,17 @@ Giới hạn: browser dùng PostgreSQL local, Auth double, production snapshot v
 - Chưa xem giao diện bằng Playwright MCP (năm theme, sáng/tối, vi/en, các bề rộng), chưa thử Firefox/WebKit/thiết bị thật hay cloud. Không có migration.
 - Đã rà README, đặc tả Đầu tư/Quỹ, kiến trúc, UX và Help (vi/en). Chưa rà lại riêng catalog và preview landing sau khi sửa; kế hoạch dự kiến không đổi nội dung.
 
+## Quỹ an toàn lấy nguồn từ Tiết kiệm, số dư khả dụng và gợi ý tiền ở Mục tiêu — 26/11/2026
+
+- Thay đổi: gắn danh mục tiền mặt/tiền gửi vào một quỹ, cảnh báo và xác nhận khi giao dịch Tiết kiệm làm quỹ giảm, số dư khả dụng trong form Ghi giao dịch, dòng đọc tiền VND cho ba ô tiền của Mục tiêu ([đặc tả](features/funds.md#nguồn-từ-tiết-kiệm-và-số-dư-khả-dụng--26112026)). Tổng quan, Mục tiêu và Báo cáo tính cùng phần liên kết.
+- `npm run check` đạt (lint, architecture, format, unit, typecheck, production build). `npm run test:db` (PostgreSQL cục bộ cô lập) **132/132**, gồm xác nhận cảnh báo ở server, ghi đồng thời Tiết kiệm/Quỹ, đọc Tổng quan và backup/restore có liên kết.
+- Browser Chromium desktop/mô phỏng iPhone, production build cô lập, Auth double: lượt cuối `fund-savings-link.spec.ts`, `funds.spec.ts`, `savings.spec.ts`, `reports.spec.ts`, `landing.spec.ts` **82/82**. Lượt rộng trước các bản sửa sau rà soát (`funds`, `fund-review`, `savings`, `goals`, `goal-review-data`, `reports`, `overview`, `localization`, `help`, `dialogs`, `usability`, `performance`) **154 đạt / 4 đỏ**; đúng bốn ca đó (`fund-review.spec.ts` desktop/mobile còn kỳ vọng “Trang 1/2”; hai ca Tiết kiệm/Đầu tư của `dialogs.spec.ts` trên mobile) cũng đỏ khi chạy trên `HEAD` chưa sửa. Chưa sửa các ca này.
+- Đã xem ảnh chụp từ browser test ở desktop và mobile, tiếng Việt, theme mặc định sáng; riêng cảnh báo xem thêm chế độ tối. Chưa kiểm đủ năm theme, tiếng Anh bằng mắt, chế độ che tiền cho các phần mới, Firefox/WebKit hoặc thiết bị thật; không dùng Playwright MCP trong đợt này.
+- Đã rà catalog, mô tả preview landing (số liệu cố định, không đọc API tài chính), README, Help và bản dịch vi/en, đặc tả Quỹ/Tiết kiệm/Mục tiêu/Báo cáo/Tổng quan/sao lưu/landing, kiến trúc, mô hình dữ liệu, UX và triển khai. Không có migration; chưa deploy hoặc kiểm chứng trên Supabase cloud.
+
+## Kiểm tra lại liên kết Quỹ – Tiết kiệm trên `main` mới — 28/11/2026
+
+- Thay đổi ngày 26/11 được kiểm lại trên working tree đặt trên `main` tại `af795fa` (đã gồm các thay đổi Thu nhập, dialog Tiết kiệm, thao tác Đầu tư và sửa test trình duyệt), trước khi commit.
+- `npm run check` đạt: architecture **341 source files / 0 violations**, format, **442/442 unit**, typecheck và production build. `npm run test:db` (PostgreSQL cục bộ cô lập) **132/132**.
+- Browser Chromium desktop/mô phỏng iPhone, production build cô lập, Auth double: `fund-savings-link`, `funds`, `fund-review`, `savings`, `goals`, `reports`, `dialogs`, `help`, `localization` **118/118**. Bốn ca đỏ ghi ở mục 26/11 nay đạt nhờ các bản sửa test trên `main`.
+- Giới hạn: không chạy toàn bộ browser suite trong lượt này; chưa kiểm đủ năm theme, tiếng Anh và chế độ che tiền của phần mới bằng mắt, Firefox/WebKit, thiết bị thật hoặc Supabase cloud; chưa deploy.

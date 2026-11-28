@@ -43,6 +43,8 @@ function EditorForm(props: Parameters<typeof useSavingsEditor>[0]) {
     unchanged,
     sensitive,
     preview,
+    fundsAccepted,
+    needsFundConsent,
     submit,
     error,
     errorRef,
@@ -75,7 +77,13 @@ function EditorForm(props: Parameters<typeof useSavingsEditor>[0]) {
               form={formId}
               aria-busy={busy}
               className={`expense-primary ${mode.type === "void" ? "expense-danger" : ""}`}
-              disabled={busy || conflict || unchanged || (sensitive && hidden)}
+              disabled={
+                busy ||
+                conflict ||
+                unchanged ||
+                (sensitive && hidden) ||
+                (needsFundConsent && !fundsAccepted)
+              }
             >
               {busy ? (
                 <LoadingSpinner />

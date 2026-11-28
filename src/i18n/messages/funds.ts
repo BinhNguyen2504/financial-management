@@ -249,4 +249,23 @@ export const funds = {
   "Lịch sử": "History",
   "% đã chuẩn bị": "% prepared",
   "Chi tiết quỹ": "Fund details",
+  "Loại nguồn": "Source type",
+  "Nơi giữ riêng": "Own holding location",
+  "Danh mục Tiết kiệm": "Savings category",
+  "Không còn danh mục này": "This category no longer exists",
+  "Chưa có danh mục tiền mặt hoặc tiền gửi nào còn trống để gắn.":
+    "There is no unlinked cash or deposit category to use.",
+  "Gắn vào quỹ": "Link to fund",
+  "Quỹ lấy theo số đang có của danh mục và tự đổi khi bạn ghi giao dịch Tiết kiệm. Ngừng sử dụng để gỡ liên kết.":
+    "The fund follows the category's current balance and changes when you record Savings transactions. Stop using it to remove the link.",
+  "Số dư khả dụng: {0}": "Available balance: {0}",
+  "Đang có tại nơi nhận: {0}": "Currently at destination: {0}",
+  "Quỹ này còn lấy {0} từ Tiết kiệm ({1}). Phần đó tự cập nhật theo Tiết kiệm, không ghi giao dịch tại đây.":
+    "This fund also takes {0} from Savings ({1}). That part updates from Savings and is not recorded here.",
+  "Từ Tiết kiệm": "From Savings",
+  "Bạn có thể thêm nơi giữ riêng hoặc gắn một danh mục Tiết kiệm vào một quỹ.":
+    "You can add your own location or link a Savings category to one fund.",
+  "Danh mục Tiết kiệm này không còn; phần liên kết đang tính 0. Ngừng nơi giữ để gỡ liên kết.":
+    "This Savings category no longer exists, so the linked part counts as 0. Stop the location to remove the link.",
+  "Gồm {0} từ Tiết kiệm": "Includes {0} from Savings",
 } as const;

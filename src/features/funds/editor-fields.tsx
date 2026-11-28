@@ -8,6 +8,7 @@ import {
   type FundId,
   type FundTransaction,
 } from "@/domain/funds/schema";
+import { positionKey } from "@/domain/funds/engine";
 
 import { normalizeInteger } from "@/lib/form-values";
 import { ArrowDown, ArrowUp } from "lucide-react";
@@ -21,6 +22,7 @@ import {
   transactionNames as transactionNamesSource,
 } from "./content";
 
+import { fundDisplay } from "./linked";
 import { type useFundEditor } from "./use-fund-editor";
 
 export function FundEditorFields({
@@ -67,6 +69,7 @@ export function FundEditorFields({
       "aria-invalid"?: boolean;
       "aria-describedby"?: string;
     }>,
+    hint?: string,
   ) {
     const err =
       fieldErrors[key] ??
@@ -86,7 +89,7 @@ export function FundEditorFields({
           "aria-invalid": Boolean(err),
           "aria-describedby":
             [
-              key === "amount" ? `${fieldId(key)}-hint` : "",
+              key === "amount" || hint ? `${fieldId(key)}-hint` : "",
               err ? `${fieldId(key)}-error` : "",
             ]
               .filter(Boolean)
@@ -94,6 +97,11 @@ export function FundEditorFields({
         })}
         {key === "amount" && (
           <MoneyHint id={`${fieldId(key)}-hint`} value={f.amount} />
+        )}
+        {hint && (
+          <small id={`${fieldId(key)}-hint`} className="fund-field-hint">
+            {hint}
+          </small>
         )}
         {err && (
           <small id={`${fieldId(key)}-error`} className="fund-field-error">
@@ -159,6 +167,10 @@ export function FundEditorFields({
     );
   }
   function locationSelect(key: "locationId" | "toLocationId", label: string) {
+    const fund = key === "locationId" ? f.fundId : f.toFundId;
+    const balance = money(
+      view.state.balances[positionKey(fund, f[key])] ?? "0",
+    );
     return field(
       key,
       label,
@@ -169,7 +181,7 @@ export function FundEditorFields({
       >
         <option value="">{tr("Chọn nơi giữ")}</option>
         {view.book?.locations
-          .filter((l) => l.active || l.id === f[key])
+          .filter((l) => !l.savings && (l.active || l.id === f[key]))
           .map((l) => (
             <option key={l.id} value={l.id}>
               {l.name}
@@ -177,7 +189,34 @@ export function FundEditorFields({
             </option>
           ))}
       </select>,
+      !f[key]
+        ? undefined
+        : key === "locationId"
+          ? tr("Số dư khả dụng: {0}", { 0: balance })
+          : tr("Đang có tại nơi nhận: {0}", { 0: balance }),
     );
+  }
+  const linkedCategory = view.savings.find(
+    (s) => s.categoryId === f.categoryId,
+  );
+  const freeCategories = view.savings.filter(
+    (s) =>
+      s.active &&
+      !view.book?.locations.some(
+        (l) => l.active && l.savings?.categoryId === s.categoryId,
+      ),
+  );
+  const chosenFund = view.state.funds.find((item) => item.id === f.fundId);
+  const fromSavings = chosenFund ? fundDisplay(view, chosenFund) : null;
+  /** Suggest the category name, marked when an existing holding place already uses it. */
+  function placeName(categoryId: string) {
+    const name = view.savings.find((s) => s.categoryId === categoryId)?.name;
+    if (!name) return "";
+    return view.book?.locations.some(
+      (l) => l.name.toLocaleLowerCase() === name.toLocaleLowerCase(),
+    )
+      ? `${name.slice(0, 80)} (${tr("Tiết kiệm")})`
+      : name;
   }
   return (
     <fieldset
@@ -376,6 +415,67 @@ export function FundEditorFields({
         </>
       ) : mode.type === "location" ? (
         <>
+          {!location &&
+            field(
+              "source",
+              tr("Loại nguồn"),
+              <select
+                id={fieldId("source")}
+                value={f.source}
+                onChange={(e) => {
+                  set("source", e.target.value as typeof f.source);
+                  set("categoryId", "");
+                  set("name", "");
+                }}
+              >
+                <option value="own">{tr("Nơi giữ riêng")}</option>
+                <option value="savings">{tr("Danh mục Tiết kiệm")}</option>
+              </select>,
+            )}
+          {f.source === "savings" && (
+            <>
+              {location ? (
+                <p>
+                  {tr("Danh mục Tiết kiệm")}:{" "}
+                  <strong>
+                    {linkedCategory
+                      ? `${linkedCategory.name} · ${money(linkedCategory.amount)}`
+                      : tr("Không còn danh mục này")}
+                  </strong>
+                </p>
+              ) : (
+                field(
+                  "categoryId",
+                  tr("Danh mục Tiết kiệm"),
+                  <select
+                    id={fieldId("categoryId")}
+                    value={f.categoryId}
+                    onChange={(e) => {
+                      if (!f.name || f.name === placeName(f.categoryId))
+                        set("name", placeName(e.target.value));
+                      set("categoryId", e.target.value);
+                    }}
+                  >
+                    <option value="">{tr("Chọn danh mục")}</option>
+                    {freeCategories.map((s) => (
+                      <option key={s.categoryId} value={s.categoryId}>
+                        {s.emoji} {s.name} · {money(s.amount)}
+                      </option>
+                    ))}
+                  </select>,
+                )
+              )}
+              {!location && !freeCategories.length && (
+                <p>
+                  {tr(
+                    "Chưa có danh mục tiền mặt hoặc tiền gửi nào còn trống để gắn.",
+                  )}{" "}
+                  <Link href="/savings">{tr("Mở Tiết kiệm")}</Link>
+                </p>
+              )}
+              {fundSelect("fundId", tr("Gắn vào quỹ"))}
+            </>
+          )}
           {input("name", tr("Tên nơi giữ tiền"))}
           {location && (
             <label className="fund-check">
@@ -388,9 +488,13 @@ export function FundEditorFields({
             </label>
           )}
           <p className="fund-note">
-            {tr(
-              "Nơi giữ là nhãn ghi sổ trong Fund. Số dư được tách cho từng quỹ.",
-            )}
+            {f.source === "savings"
+              ? tr(
+                  "Quỹ lấy theo số đang có của danh mục và tự đổi khi bạn ghi giao dịch Tiết kiệm. Ngừng sử dụng để gỡ liên kết.",
+                )
+              : tr(
+                  "Nơi giữ là nhãn ghi sổ trong Fund. Số dư được tách cho từng quỹ.",
+                )}
           </p>
         </>
       ) : (
@@ -432,6 +536,17 @@ export function FundEditorFields({
                   {locationSelect("toLocationId", tr("Nơi nhận"))}
                 </div>
               )}
+              {fromSavings && fromSavings.places.length > 0 && (
+                <p className="fund-note">
+                  {tr(
+                    "Quỹ này còn lấy {0} từ Tiết kiệm ({1}). Phần đó tự cập nhật theo Tiết kiệm, không ghi giao dịch tại đây.",
+                    {
+                      0: money(fromSavings.fromSavings),
+                      1: fromSavings.places.map((l) => l.name).join(", "),
+                    },
+                  )}
+                </p>
+              )}
               {input("amount", tr("Số tiền (VND)"))}
               {input("occurredAt", tr("Thời điểm giao dịch (giờ Việt Nam)"))}
               {input(
@@ -440,7 +555,7 @@ export function FundEditorFields({
                   ? tr("Lý do giao dịch")
                   : tr("Ghi chú"),
               )}
-              {!view.book?.locations.some((l) => l.active) && (
+              {!view.book?.locations.some((l) => l.active && !l.savings) && (
                 <p>{tr("Thêm nơi giữ tiền trước khi ghi giao dịch.")}</p>
               )}
             </>

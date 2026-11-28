@@ -20,7 +20,7 @@ Tinh chỉnh 02/11/2026: [bố cục thao tác toàn ứng dụng](docs/features
 
 **Thu nhập:** danh mục cố định có hiệu lực theo tháng, tổng thực nhận riêng mỗi tháng, khoản phát sinh một lần, ngày nhận tiền hằng tháng cho từng nguồn cố định (chỉ nhắc nhập từ ngày đó, khoản chưa đến ngày có nhãn riêng), báo cáo bảng/biểu đồ và xuất CSV. Cho xóa danh mục khi không còn số thu ở bất kỳ tháng/năm nào; bản ghi 0 đồng vẫn chặn xóa. Xem [đặc tả Thu nhập](docs/features/income.md).
 
-**Báo cáo:** `/reports` tổng hợp Thu–chi, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu. Chọn tháng/quý/năm, so kỳ trước đầy đủ, mở chi tiết chỉ đọc và xuất CSV theo tab. Mỗi bảng nằm trong một card riêng, hàng tiêu đề có nền và chữ đậm để phân biệt với dữ liệu. Kỳ hiện tại có nhãn chưa kết thúc; Mục tiêu luôn là tiến độ hiện tại. Các sổ độc lập không cộng thành tài sản ròng. Xem [đặc tả Báo cáo](docs/features/reports.md). Trạng thái source không chứng minh triển khai cloud.
+**Báo cáo:** `/reports` tổng hợp Thu–chi, Tiết kiệm, Đầu tư, Quỹ an toàn và Mục tiêu. Chọn tháng/quý/năm, so kỳ trước đầy đủ, mở chi tiết chỉ đọc và xuất CSV theo tab. Mỗi bảng nằm trong một card riêng, hàng tiêu đề có nền và chữ đậm để phân biệt với dữ liệu. Kỳ hiện tại có nhãn chưa kết thúc; Mục tiêu luôn là tiến độ hiện tại. Các chức năng không cộng thành tài sản ròng; Quỹ an toàn có thể đã gồm tiền lấy từ Tiết kiệm. Xem [đặc tả Báo cáo](docs/features/reports.md). Trạng thái source không chứng minh triển khai cloud.
 
 **Ví tiền chờ (05/11/2026):** nút thêm ví nằm cạnh tiêu đề; Nạp/Rút/Chuyển dùng icon có tooltip, các thao tác mở đầu/sửa/lưu trữ nằm trong “Thêm thao tác”. Xem [đặc tả](docs/features/investments.md).
 
@@ -175,7 +175,9 @@ Mốc Chi tiêu ban đầu: **37 unit + 9 PostgreSQL + 12 browser tests**, typec
 
 ## Quỹ an toàn — 19/10/2026
 
-`/funds` hướng dẫn xây Emergency, Rainy Day và Sinking. Living expense lấy mức cấu hình hiệu lực từ các hũ chi tháng người dùng chọn, mục tiêu = mức sinh hoạt × hệ số tự nhập. Khi nguồn đổi, xem trước rồi xác nhận; cây, tán ô và cầu thể hiện tiến độ thực tế. Sổ tiền độc lập, có nhiều nơi giữ, thêm/rút/chuyển liên quỹ, sửa/hủy giữ lịch sử. Financial Goals là module riêng.
+Từ 26/11/2026, ngoài nơi giữ riêng, một danh mục tiền mặt hoặc tiền gửi của Tiết kiệm có thể **gắn vào một quỹ**: quỹ lấy theo số đang có của danh mục; giao dịch Tiết kiệm làm quỹ giảm phải được xác nhận sau cảnh báo. Form Ghi giao dịch hiện số dư khả dụng tại nơi giữ đã chọn. Xem [đặc tả Quỹ an toàn](docs/features/funds.md#nguồn-từ-tiết-kiệm-và-số-dư-khả-dụng--26112026).
+
+`/funds` hướng dẫn xây Emergency, Rainy Day và Sinking. Living expense lấy mức cấu hình hiệu lực từ các hũ chi tháng người dùng chọn, mục tiêu = mức sinh hoạt × hệ số tự nhập. Khi nguồn đổi, xem trước rồi xác nhận; cây, tán ô và cầu thể hiện tiến độ thực tế. Sổ giao dịch riêng (có thể lấy thêm số dư từ danh mục Tiết kiệm đã gắn), có nhiều nơi giữ, thêm/rút/chuyển liên quỹ, sửa/hủy giữ lịch sử. Financial Goals là module riêng.
 
 Chạy migration `supabase/migrations/202610190001_funds.sql` sau các migration hiện có trước khi phát hành source này; tài khoản runtime không có quyền tự tạo bảng. Backup V2 bao gồm 35 bảng của năm module và vẫn nhận file V1 (Fund trống). Xem [đặc tả Fund](docs/features/funds.md). Migration cloud/deployment và thiết bị vật lý cần xác minh riêng.
 

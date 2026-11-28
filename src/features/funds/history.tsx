@@ -156,6 +156,12 @@ export function FundHistory({ view }: { view: FundView }) {
                       ? tr("Đang sử dụng")
                       : tr("Đã ngừng sử dụng")}
                   </StatusBadge>
+                  {a.action.savings && (
+                    <p className="fund-note">
+                      {tr("Từ Tiết kiệm")} →{" "}
+                      {tr(fundNames[a.action.savings.fundId])}
+                    </p>
+                  )}
                 </div>
               )}
               {previous?.transaction && (

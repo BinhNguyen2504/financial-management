@@ -127,7 +127,7 @@ export const articles: HelpArticles = {
       "Sổ tiết kiệm còn tiền gốc, đã đến hạn hoặc đến hạn trong 7 ngày tới xuất hiện trong Sổ sắp đáo hạn. Cần chú ý chỉ nhắc khi có thẻ thông tin Tiết kiệm hoặc Sổ sắp đáo hạn đang bật.",
     ],
     [
-      "Các chức năng là sổ độc lập; Tổng quan không cộng chúng thành tài sản ròng hoặc tính tiền còn có thể chi.",
+      "Tổng quan không cộng các chức năng thành tài sản ròng hoặc tính tiền còn có thể chi. Quỹ an toàn có thể đã gồm tiền lấy từ Tiết kiệm, nên không cộng hai số này.",
       "Một chút bình yên có 200 lời nhắn Việt/Anh, mỗi câu tối đa 35 từ. Câu đổi khi chuyển trang hoặc tải lại; đổi ngôn ngữ chỉ đổi bản dịch. Bật thẻ thông tin để đặt lời nhắn trong lưới Tổng quan, tắt thẻ thông tin để hiện ở đầu trang. Lượt đọc lưu theo tab, ngoài backup tài chính.",
       "Lỗi một nguồn không làm mất thẻ thông tin khác. Số liệu lần tải trước được ghi nhãn khi cập nhật thất bại. Bố cục xung đột cần tải bản mới, không tự ghi đè.",
     ],
@@ -442,7 +442,7 @@ export const articles: HelpArticles = {
           "Chọn ngày, số tiền, nguồn/đích trong Tiết kiệm hoặc bên ngoài và ghi chú.",
           "Xem trước và xác nhận; kiểm tra lịch sử và số dư sau giao dịch.",
         ],
-        "Kết quả: các phía liên quan cập nhật trong một lần lưu; không cho số dư âm tại bất kỳ thời điểm bị ảnh hưởng.",
+        "Kết quả: các phía liên quan cập nhật trong một lần lưu; không cho số dư âm tại bất kỳ thời điểm bị ảnh hưởng. Giao dịch làm giảm Quỹ an toàn hiện cảnh báo và cần bạn xác nhận trước khi lưu.",
       ),
       task(
         "deposits",
@@ -659,12 +659,12 @@ export const articles: HelpArticles = {
       term(
         "locations",
         "Nơi giữ tiền và số dư độc lập",
-        "Nơi giữ có thể là ngân hàng hoặc tiền mặt, dùng chung giữa các quỹ nhưng **số dư riêng từng quỹ**. Số dư ban đầu khác phần thêm tiền mới. Đây là sổ riêng, **không tự đồng bộ** với Tiết kiệm/Đầu tư/Chi tiêu.",
+        "Nơi giữ riêng có thể là ngân hàng hoặc tiền mặt, dùng chung giữa các quỹ nhưng **số dư riêng từng quỹ**; số dư ban đầu khác phần thêm tiền mới. Bạn cũng có thể **gắn một danh mục tiền mặt hoặc tiền gửi của Tiết kiệm vào đúng một quỹ**: quỹ lấy theo số đang có của danh mục và tự đổi theo giao dịch Tiết kiệm. Quỹ không tự đồng bộ với Đầu tư hoặc Chi tiêu.",
       ),
       term(
         "progress",
         "Tiến độ và còn thiếu",
-        "Tiến độ so tiền đang có với mục tiêu. Tổng còn thiếu cộng phần thiếu của từng quỹ; **quỹ dư không tự bù cho quỹ khác**. Tỷ lệ có thể vượt 100%, hình minh họa giới hạn độ hoàn thiện.",
+        "Tiến độ so tiền đang có với mục tiêu. Tổng còn thiếu cộng phần thiếu của từng quỹ; **quỹ dư không tự bù cho quỹ khác**. Tỷ lệ có thể vượt 100%, hình minh họa giới hạn độ hoàn thiện. Quỹ có gắn Tiết kiệm hiện **100% · Đã đủ mức dự phòng** khi đạt mục tiêu.",
       ),
     ],
     [
@@ -696,8 +696,9 @@ export const articles: HelpArticles = {
         "Khi cần theo dõi tiền dự phòng tại một nơi cụ thể.",
         [
           "Mở Nơi giữ tiền và chọn Thêm nơi giữ tiền.",
-          "Nhập tên, xem trước rồi lưu; ghi số dư ban đầu cho từng cặp quỹ/nơi giữ trước các giao dịch khác của cặp đó.",
-          "Chỉ ngừng nơi giữ khi số dư mọi quỹ tại đó bằng 0; có thể khôi phục.",
+          "Để dùng tiền đã ghi ở Tiết kiệm, chọn Loại nguồn là Danh mục Tiết kiệm, chọn danh mục và quỹ được gắn.",
+          "Với nơi giữ riêng: nhập tên, xem trước rồi lưu; ghi số dư ban đầu cho từng cặp quỹ/nơi giữ trước các giao dịch khác của cặp đó.",
+          "Chỉ ngừng nơi giữ riêng khi số dư mọi quỹ tại đó bằng 0; có thể khôi phục. Ngừng nơi giữ lấy từ Tiết kiệm để gỡ liên kết.",
         ],
         "Kết quả: cùng một nơi có thể giữ tiền của nhiều quỹ mà vẫn biết phần của từng quỹ.",
       ),
@@ -1027,7 +1028,7 @@ export const articles: HelpArticles = {
       "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
     ],
     [
-      "Mỗi chức năng là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.",
+      "Không cộng số dư các chức năng hoặc tiến độ mục tiêu thành tài sản ròng; Quỹ an toàn có thể đã gồm tiền lấy từ Tiết kiệm.",
     ],
     [
       term(

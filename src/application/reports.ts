@@ -7,6 +7,7 @@ import type { Clock } from "../domain/shared/types";
 import { reportSources } from "../domain/reports/model";
 import {
   buildReport,
+  detailReads,
   detailSources,
   reportDetails,
   type ReportBuildOptions,
@@ -45,7 +46,7 @@ export async function readReportDetails(
   versions: string,
   page: number,
 ) {
-  const fullSources = detailSources(query, metric);
+  const fullSources = detailReads(detailSources(query, metric));
   let degraded = true;
   try {
     const value = JSON.parse(versions) as { sources?: Record<string, unknown> };
