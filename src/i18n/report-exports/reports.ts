@@ -1,4 +1,5 @@
 import type { Report } from "@/domain/reports/model";
+import { TEXT } from "@/domain/reports/health";
 import type { Locale } from "../locale";
 import { translator } from "../translate";
 
@@ -49,6 +50,69 @@ export function reportCSV(report: Report, locale: Locale = "vi") {
       m.delta ?? "",
       m.percent ?? "",
     ]);
+  if (report.overview) {
+    const { assets, indicators } = report.overview;
+    lines.push(
+      [],
+      [t("Tài sản đã ghi nhận"), assets.total ?? ""],
+      [t("Tính đến ngày {date}", { date: assets.asOf })],
+      [
+        t("So với ngày {date}", { date: assets.openingDate }),
+        assets.opening ?? "",
+        assets.delta ?? "",
+        assets.percent ?? "",
+      ],
+      [
+        t("Phần Quỹ lấy từ Tiết kiệm đã được trừ khỏi tổng"),
+        assets.linked ?? "",
+      ],
+      ...[...assets.reasons, ...assets.notes].map((reason) => [t(reason)]),
+    );
+    if (assets.changeReason) lines.push([t(assets.changeReason)]);
+    if (assets.sources.some((source) => source.stale))
+      lines.push([t("Tổng đang dùng một số định giá cũ.")]);
+    if (assets.openingStale)
+      lines.push([t("Số đầu kỳ dùng một số định giá cũ.")]);
+    lines.push([t("Cơ cấu tài sản"), "VND", "%"]);
+    for (const item of assets.composition)
+      lines.push([t(item.label), item.value ?? "", item.share ?? ""]);
+    lines.push(
+      [
+        t(
+          "Chỉ gồm Tiết kiệm, Đầu tư và Quỹ an toàn. Chưa trừ nợ nên không phải tài sản ròng. Tiền bạn tự nhập ở hai sổ vẫn có thể bị cộng trùng. Không gồm tiền còn trong hũ Chi tiêu và sổ riêng của Mục tiêu.",
+        ),
+      ],
+      [],
+      [t("Sức khỏe tài chính")],
+    );
+    for (const item of indicators) {
+      // The same basis the screen shows: a fallback month or today's state is not the period.
+      const basis =
+        item.id === "emergency"
+          ? t("Số dư tại ngày {date}.", { date: report.period.asOf })
+          : item.id === "goals"
+            ? t("Theo trạng thái hôm nay, không phụ thuộc kỳ báo cáo.")
+            : item.fallback && item.months.length
+              ? t(
+                  "Kỳ đang chọn chưa có tháng kết thúc nên xét tháng gần nhất: {month}.",
+                  { month: item.months[0].month },
+                )
+              : "";
+      lines.push(
+        [t(item.label), t(TEXT.rating[item.rating])],
+        ...(item.value ? [[t(item.value.label), item.value.value ?? ""]] : []),
+        ...item.facts.map((fact) => [t(fact.label), fact.value ?? ""]),
+        ...item.months.map((m) => [
+          m.month,
+          m.excluded ? t(m.excluded) : t("Tháng được tính"),
+        ]),
+        ...(basis ? [[basis]] : []),
+        ...(item.reason ? [[t(item.reason)]] : []),
+        [t(item.suggestion)],
+        [t("Cách tính"), t(item.formula)],
+      );
+    }
+  }
   for (const table of report.tables) {
     if (table.id === "goals.current")
       lines.push([

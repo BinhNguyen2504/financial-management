@@ -33,7 +33,7 @@ const tabs = navigationModules.filter((item) =>
 );
 const helpPreview = {
   reports:
-    "Báo cáo chung dùng kỳ tháng, quý hoặc năm; mỗi bảng tách riêng từng nội dung, có chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
+    "Tab Tổng hợp cộng tài sản đã ghi nhận và xếp mức từng chỉ số sức khỏe tài chính. Báo cáo dùng kỳ tháng, quý hoặc năm, có chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.",
   goals:
     "Mục tiêu dùng nguồn đã liên kết hoặc sổ góp riêng, có kế hoạch góp và lịch sử. Mỗi danh mục Đầu tư là một nguồn gồm tài sản và toàn bộ tiền chờ. Xem trước rồi xác nhận lưu.",
   overview:
@@ -60,7 +60,8 @@ const illustrativeReport = { income: "28500000", spending: "12000000" };
 const data = {
   reports: {
     title: "Báo cáo tổng hợp, so sánh và đối chiếu từng sổ.",
-    subtitle: "Thu–chi minh họa; số dư các sổ giữ riêng.",
+    subtitle:
+      "Thu–chi minh họa; trong ứng dụng còn có tài sản đã ghi nhận và sức khỏe tài chính.",
     label: "Thu nhập đã ghi nhận",
     value: illustrativeReport.income,
     secondary: "Chênh lệch theo sổ",
@@ -84,7 +85,8 @@ const data = {
         percent: 42,
       },
     ],
-    chartLabel: "Thu–chi minh họa; số dư các sổ giữ riêng.",
+    chartLabel:
+      "Thu–chi minh họa; trong ứng dụng còn có tài sản đã ghi nhận và sức khỏe tài chính.",
     bars: [
       100,
       Number(

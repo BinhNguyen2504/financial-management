@@ -223,7 +223,7 @@ test("working screens show key figures on a phone and keep settings and navigati
     savings: ".savings-metrics",
     investments: ".investment-metrics",
     funds: ".fund-health",
-    reports: ".reports-metrics",
+    reports: ".reports-asset-total",
   };
   for (const width of [390, 320, 768, 1440]) {
     lastActivity = Date.now();

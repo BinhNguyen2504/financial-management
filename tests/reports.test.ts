@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import { buildReport, reportDetails } from "../src/domain/reports/build";
+import { TEXT } from "../src/domain/reports/health";
 import {
   parseQuery,
   periodFor,
@@ -154,9 +155,35 @@ describe("combined financial reports", () => {
         for (const c of table.columns) labels.add(c.label);
       }
     }
+    const walk = (value: unknown): string[] =>
+      typeof value === "string"
+        ? [value]
+        : Object.values(value as object).flatMap(walk);
+    for (const text of walk(TEXT)) labels.add(text);
     expect(
       [...labels].filter((label) => !Object.hasOwn(english, label)),
     ).toEqual([]);
+  });
+  it("exports the summary assets and health ratings with exact figures in both languages", () => {
+    const result = buildReport(base({ funds: funds() }), query(), clock);
+    const vi = reportCSV(result.report, "vi"),
+      en = reportCSV(result.report, "en");
+    expect(vi).toContain('"Tài sản đã ghi nhận","1000"');
+    expect(en).toContain('"Recorded assets","1000"');
+    expect(en).toContain('"Emergency cover","Good"');
+    expect(en).toContain("so this is not net worth");
+    expect(en).toContain(
+      '"Safety funds excluding linked money","1000","100.00"',
+    );
+    // The default month is unfinished, so the file says which month was rated.
+    expect(en).toContain("so the latest one is used: 2026-10.");
+    expect(en).toContain("independently of the reporting period");
+    expect(
+      reportCSV(
+        buildReport(base(), query({ tab: "cashflow" }), clock).report,
+        "en",
+      ),
+    ).not.toContain("Recorded assets");
   });
   it("resolves previous months, quarters, years and leap years without day prorating", () => {
     expect(

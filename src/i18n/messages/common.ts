@@ -144,8 +144,8 @@ export const common = {
     "Links track progress without reserving or moving money. A separate contribution book records your entries; avoid counting the same money in both methods.",
   "Chọn tháng, quý hoặc năm, rồi chọn nội dung muốn xem. Mở chi tiết để đối chiếu khoản tạo nên số tổng.":
     "Choose a month, quarter or year, then select what to review. Open details to trace the entries behind each total.",
-  "So sánh luôn đi kèm kỳ tương ứng. Số tạm tính hoặc thiếu giá chưa phản ánh đầy đủ; số cuối kỳ của các sổ được trình bày riêng để tránh cộng trùng.":
-    "Comparisons always name their periods. Provisional figures or missing prices are incomplete; closing balances are shown separately to avoid double counting.",
+  "So sánh luôn đi kèm kỳ tương ứng. Số tạm tính hoặc thiếu giá chưa phản ánh đầy đủ. Tài sản đã ghi nhận chỉ tính một lần phần Quỹ lấy từ Tiết kiệm và chưa trừ nợ.":
+    "Comparisons always name their periods. Provisional figures or missing prices are incomplete. Recorded assets count fund money taken from Savings only once and do not subtract debts.",
   "Chọn ngôn ngữ và giao diện phù hợp. Tải bản sao lưu khi cần giữ một bản dữ liệu của bạn.":
     "Choose your language and appearance. Download a backup when you want to keep a copy of your data.",
   "Khôi phục cần tài khoản trống. Đọc phạm vi bản sao lưu và điều kiện khôi phục trước khi thao tác; làm trống dữ liệu có bước xác nhận riêng.":
