@@ -1,5 +1,12 @@
 # Xác minh
 
+## Gộp hai nhánh test e2e và thao tác Đầu tư — 28/11/2026
+
+- Gộp `fix-stale-e2e-tests` và `worktree-investment-table-actions-ui` lên `main` sau thay đổi dialog Tiết kiệm. Giải quyết xung đột tài liệu (giữ cả hai mục kiểm chứng; đặc tả Đầu tư giữ quy tắc trùng tên mới hơn của `main`) và format một file unit test.
+- Trên source đã gộp (Node 22.12.0): `npm run check` qua (338 source files / 0 violations, `npm test` **432/432**, typecheck, build); `npm run test:db` **131/131** (PostgreSQL tạm, local); `npm run test:e2e` đầy đủ (Chromium desktop + mobile iPhone 13 emulation, Auth double local) **562 qua, 4 bỏ qua, 0 lỗi** trong 35,5 phút.
+- Kết quả này thay cho phần "chưa đối chiếu 39 ca đỏ" ở mục Thao tác Đầu tư: trên source đã gộp không còn ca đỏ.
+- Giới hạn: chưa chạy Firefox/WebKit hoặc thiết bị thật, chưa xem lại giao diện bằng tay sau khi gộp; chưa áp dụng hay đọc cloud.
+
 ## Sửa 26 ca e2e cũ — 27/11/2026
 
 - Khôi phục hình minh họa ở trạng thái trống của Tiết kiệm (mất sau refactor). 24 ca còn lại do test chưa theo giao diện hiện tại; chỉ sửa test. Sửa ghi chú phân trang Quỹ thành 10 dòng/trang.
