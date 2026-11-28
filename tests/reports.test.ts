@@ -186,7 +186,7 @@ describe("combined financial reports", () => {
   });
   it("requests only the dependencies of the selected tab", () => {
     expect(reportSources("cashflow")).toEqual(["income", "expenses"]);
-    expect(reportSources("funds")).toEqual(["funds"]);
+    expect(reportSources("funds")).toEqual(["funds", "savings"]);
     expect(reportSources("goals")).toEqual([
       "savings",
       "investments",

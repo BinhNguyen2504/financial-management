@@ -13,6 +13,7 @@ import { Plus, Pencil as EditCommandGlyph } from "lucide-react";
 import { useId, useState, type KeyboardEvent } from "react";
 import { fundNames, guides as guidesSource } from "./content";
 import { FundHistory } from "./history";
+import { fundDisplay } from "./linked";
 import type { EditorMode } from "./editor-config";
 import { FundLedger } from "./ledger";
 import { ProgressScene } from "./progress-scene";
@@ -70,13 +71,17 @@ export function FundLocations({
   const { t: tr } = useI18n("funds");
 
   const money = useMoney();
+  // A linked place belongs to one fund, so other funds do not list it.
+  const places = (view.book?.locations ?? []).filter(
+    (l) => !fundId || !l.savings || l.savings.fundId === fundId,
+  );
   return (
     <section className="fund-locations">
       <div className="fund-section-heading">
         <h3>{tr("Nơi giữ tiền")}</h3>
         <button
           className="expense-secondary"
-          onClick={() => onEdit({ type: "location" })}
+          onClick={() => onEdit({ type: "location", fundId })}
         >
           <Plus size={17} aria-hidden="true" />
           {tr("Thêm nơi giữ tiền")}
@@ -85,48 +90,75 @@ export function FundLocations({
       <p className="fund-note">
         {tr(
           "Số dư riêng cho từng quỹ. Chuyển tiền giữa nơi giữ không làm tăng tổng dự phòng.",
+        )}{" "}
+        {tr(
+          "Bạn có thể thêm nơi giữ riêng hoặc gắn một danh mục Tiết kiệm vào một quỹ.",
         )}
       </p>
-      {!view.book?.locations.length && (
+      {!places.length && (
         <p className="fund-empty">
           {tr(
             "Bắt đầu bằng một nơi bạn đang giữ tiền, như ngân hàng hoặc tiền mặt.",
           )}
         </p>
       )}
-      {view.book?.locations.map((l) => (
-        <article className="fund-location" key={l.id}>
-          <div className="fund-location-heading">
-            <div className="fund-location-identity">
-              <h4>{l.name}</h4>
-              <StatusBadge
-                size="compact"
-                tone={l.active ? "success" : "neutral"}
-              >
-                {l.active ? tr("Đang sử dụng") : tr("Đã ngừng sử dụng")}
-              </StatusBadge>
-            </div>
-            <button
-              className="expense-secondary"
-              aria-label={`${tr("Sửa")} ${l.name}`}
-              onClick={() => onEdit({ type: "location", id: l.id })}
-            >
-              <EditCommandGlyph size={17} aria-hidden="true" />
-              {tr("Sửa")}
-            </button>
-          </div>
-          <dl className="fund-amount-rows">
-            {(fundId ? [fundId] : fundIds).map((k) => (
-              <div key={k}>
-                <dt>{tr(fundNames[k])}</dt>
-                <dd>
-                  {money(view.state.balances[positionKey(k, l.id)] ?? "0")}
-                </dd>
+      {places.map((l) => {
+        const category = view.savings.find(
+          (s) => s.categoryId === l.savings?.categoryId,
+        );
+        return (
+          <article className="fund-location" key={l.id}>
+            <div className="fund-location-heading">
+              <div className="fund-location-identity">
+                <h4>{l.name}</h4>
+                <StatusBadge
+                  size="compact"
+                  tone={l.active ? "success" : "neutral"}
+                >
+                  {l.active ? tr("Đang sử dụng") : tr("Đã ngừng sử dụng")}
+                </StatusBadge>
+                {l.savings && (
+                  <StatusBadge size="compact" tone="info">
+                    {tr("Từ Tiết kiệm")}
+                  </StatusBadge>
+                )}
               </div>
-            ))}
-          </dl>
-        </article>
-      ))}
+              <button
+                className="expense-secondary"
+                aria-label={`${tr("Sửa")} ${l.name}`}
+                onClick={() => onEdit({ type: "location", id: l.id })}
+              >
+                <EditCommandGlyph size={17} aria-hidden="true" />
+                {tr("Sửa")}
+              </button>
+            </div>
+            {l.savings && (
+              <p className="fund-note">
+                {category
+                  ? `${tr("Danh mục Tiết kiệm")}: ${category.name}${category.active ? "" : ` · ${tr("Đã lưu trữ")}`}`
+                  : tr(
+                      "Danh mục Tiết kiệm này không còn; phần liên kết đang tính 0. Ngừng nơi giữ để gỡ liên kết.",
+                    )}
+              </p>
+            )}
+            <dl className="fund-amount-rows">
+              {(l.savings
+                ? [l.savings.fundId]
+                : fundId
+                  ? [fundId]
+                  : fundIds
+              ).map((k) => (
+                <div key={k}>
+                  <dt>{tr(fundNames[k])}</dt>
+                  <dd>
+                    {money(view.state.balances[positionKey(k, l.id)] ?? "0")}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </article>
+        );
+      })}
     </section>
   );
 }
@@ -148,7 +180,8 @@ export function FundDetails({
   const [tab, setTab] = useState(0),
     id = useId(),
     money = useMoney(),
-    state = view.state.funds.find((f) => f.id === fund)!;
+    state = view.state.funds.find((f) => f.id === fund)!,
+    display = fundDisplay(view, state);
   function key(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     const next =
       event.key === "ArrowRight"
@@ -195,18 +228,24 @@ export function FundDetails({
       }
     >
       <div className="fund-detail-summary">
-        <ProgressScene fund={fund} percent={state.percent} />
+        <ProgressScene fund={fund} percent={display.percent} />
         <div>
           <p className="eyebrow">
             <ThemeText name={fund} />
           </p>
           <h3>
-            {state.percent.replace(".", ",")}
+            {display.percent.replace(".", ",")}
             {tr("% đã chuẩn bị")}
           </h3>
           <p>
             {money(state.balance)} / {money(state.target)}
           </p>
+          {display.places.length > 0 && (
+            <p className="fund-note">
+              {tr("Gồm {0} từ Tiết kiệm", { 0: money(display.fromSavings) })}
+              {display.reached ? ` · ${tr("Đã đủ mức dự phòng")}` : ""}
+            </p>
+          )}
         </div>
       </div>
       <ScrollTabs

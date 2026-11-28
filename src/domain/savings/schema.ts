@@ -214,6 +214,8 @@ export const commandSchema = z
     id,
     expectedVersion: z.number().int().min(0),
     action: actionSchema,
+    /** Fund book version whose reduction warning the user accepted. */
+    acknowledgedFundsVersion: z.number().int().min(0).optional(),
   })
   .strict();
 export type SavingsCommand = z.infer<typeof commandSchema>;

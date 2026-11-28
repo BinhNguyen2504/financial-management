@@ -47,7 +47,7 @@ const helpPreview = {
   investments:
     "Mỗi danh mục gồm tài sản đã mua và tiền chờ. Lãi/lỗ chỉ tính trên phần đang giữ; cập nhật định giá không thay đổi tiền trong ví. Xem trước rồi xác nhận giao dịch. Trong ứng dụng, lọc theo ngày, danh mục/ví và loại; có thể hiện cả giao dịch đã hủy.",
   funds:
-    "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt đã xác nhận và hệ số bạn chọn. Cập nhật nguồn từ Chi tiêu cần xem trước và xác nhận; đổi mục tiêu không tự thêm tiền vào quỹ. Trong sổ giao dịch, dùng biểu tượng bút để sửa và thùng rác để hủy, có lưu lịch sử.",
+    "Ba quỹ có mục đích riêng. Mục tiêu lấy từ mức sinh hoạt đã xác nhận và hệ số bạn chọn. Cập nhật nguồn từ Chi tiêu cần xem trước và xác nhận; đổi mục tiêu không tự thêm tiền vào quỹ. Trong sổ giao dịch, dùng biểu tượng bút để sửa và thùng rác để hủy, có lưu lịch sử. Có thể gắn khoản tiền mặt hoặc tiền gửi trong Tiết kiệm vào một quỹ; giao dịch làm quỹ giảm sẽ được cảnh báo trước khi lưu.",
 };
 // Fixed illustrative data, including in server-rendered public SEO content.
 // Never substitute account data or fetch financial APIs for this preview.

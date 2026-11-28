@@ -114,7 +114,7 @@ Vàng là holding duy nhất có số lượng/đơn vị và valuation; hiển 
 
 ## Fund độc lập — 19/10/2026
 
-Bổ sung `funds_books`, `funds_definitions`, `funds_locations`, `funds_configurations`, `funds_transactions`, `funds_audit`, `funds_commands`. Ba loại quỹ cố định, số dư theo (fund_id,location_id). Configuration giữ bản chụp living expense, x và thứ tự ưu tiên. Giao dịch có thời điểm UTC hiển thị giờ Việt Nam; sửa/hủy append revision, replay theo thời điểm và thứ tự gốc. Composite FK owner và trigger bất biến giữ lịch sử. Backup V2 có đủ 35 bảng.
+Bổ sung `funds_books`, `funds_definitions`, `funds_locations`, `funds_configurations`, `funds_transactions`, `funds_audit`, `funds_commands`. Ba loại quỹ cố định, số dư theo (fund_id,location_id). Configuration giữ bản chụp living expense, x và thứ tự ưu tiên. Giao dịch có thời điểm UTC hiển thị giờ Việt Nam; sửa/hủy append revision, replay theo thời điểm và thứ tự gốc. Composite FK owner và trigger bất biến giữ lịch sử. Backup V2 có đủ 35 bảng. Từ 26/11/2026, `funds_locations.data` có thể thêm `savings {categoryId, fundId}` và `linkHistory[] {at, fundId, active}`; không có khóa ngoại tới Tiết kiệm, danh mục thiếu được tính 0.
 
 ## Goals đã triển khai source — 30/10/2026
 

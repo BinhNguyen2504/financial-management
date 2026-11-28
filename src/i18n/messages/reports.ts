@@ -61,8 +61,8 @@ export const reports = {
   "Tiền đã bỏ hũ": "Jar funding",
   "Thu nhập trừ Chi tiêu theo sổ hũ; chưa phải số dư tài khoản hoặc tiền có thể sử dụng.":
     "Recorded income minus jar-ledger spending; this is not an account balance or available cash.",
-  "Mỗi chức năng là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.":
-    "Each section is an independent ledger; balances and goal progress are not added into net worth.",
+  "Không cộng số dư các chức năng hoặc tiến độ mục tiêu thành tài sản ròng; Quỹ an toàn có thể đã gồm tiền lấy từ Tiết kiệm.":
+    "Do not add section balances or goal progress into net worth; Safety funds may already include money taken from Savings.",
   "Tiết kiệm cuối kỳ": "Savings at period end",
   "Tiết kiệm đầu kỳ": "Savings at period start",
   "Đầu tư cuối kỳ": "Investments at period end",
@@ -167,4 +167,6 @@ export const reports = {
     "Combined reports use months, quarters or years, with separate tables for each topic, source details and CSV export per tab. The current period is compared with the full previous period and labelled unfinished. Goals always show current progress.",
   "Báo cáo chung dùng kỳ tháng, quý hoặc năm; xem chi tiết số liệu và xuất CSV theo tab. Kỳ hiện tại so với toàn bộ kỳ trước, có nhãn chưa kết thúc. Mục tiêu luôn là tiến độ hiện tại.":
     "Combined reports use months, quarters or years, with source details and CSV export per tab. The current period is compared with the full previous period and labelled unfinished. Goals always show current progress.",
+  "Số dư Quỹ an toàn gồm phần lấy từ Tiết kiệm; mục góp và rút chỉ tính giao dịch ghi trong sổ Quỹ.":
+    "Safety fund balances include money taken from Savings; contributions and withdrawals count only transactions recorded in the fund ledger.",
 } as const;

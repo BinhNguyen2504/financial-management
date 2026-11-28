@@ -10,6 +10,10 @@ import {
 } from "../src/application/funds";
 import { postgresExpenseRepository } from "../src/server/expense-repository";
 import { runExpenseCommand } from "../src/application/expenses";
+import { postgresSavingsRepository } from "../src/server/savings-repository";
+import { runSavingsCommand } from "../src/application/savings";
+import { postgresOverviewDataRepository } from "../src/server/overview-data-repository";
+import { actionSchema as savingsAction } from "../src/domain/savings/schema";
 import { actionSchema, type FundAction } from "../src/domain/funds/schema";
 import { postgresDataRepository } from "../src/server/data-repository";
 import { backupBooks, validateBackup } from "../src/domain/backup/validate";
@@ -307,6 +311,76 @@ describe("Fund PostgreSQL", () => {
       oldTarget = await owner();
     await data.import(oldTarget, randomUUID(), legacy);
     expect((await readFundView(repo, oldTarget, clock)).book).toBeNull();
+  });
+  it("follows a linked Savings category, guards the withdrawal and restores the link", async () => {
+    const s = await setup(),
+      category = randomUUID(),
+      link = randomUUID(),
+      savings = postgresSavingsRepository(sql);
+    const save = (version: number, action: unknown, extra: object = {}) =>
+      runSavingsCommand(
+        savings,
+        s.user,
+        {
+          id: randomUUID(),
+          expectedVersion: version,
+          action: savingsAction.parse(action),
+          ...extra,
+        },
+        clock,
+      );
+    const post = (kind: string, amount: string) => ({
+      type: "postTransaction",
+      transaction: {
+        id: randomUUID(),
+        kind,
+        categoryId: category,
+        date: "2026-10-01",
+        amount,
+      },
+    });
+    await save(0, {
+      type: "createCategory",
+      id: category,
+      start: "2026-10",
+      kind: "cash",
+      name: "Ví tiết kiệm",
+      unit: null,
+    });
+    await save(1, post("deposit", "500"));
+    await run(s.user, 3, {
+      type: "saveLocation",
+      id: link,
+      name: "Ví tiết kiệm",
+      active: true,
+      savings: { categoryId: category, fundId: "emergency" },
+    });
+    expect((await readFundView(repo, s.user, clock)).state.total).toBe("500");
+    const withdrawal = post("withdraw", "200");
+    await expect(save(2, withdrawal)).rejects.toMatchObject({
+      code: "FUND_IMPACT_CONFIRMATION_REQUIRED",
+    });
+    expect((await readFundView(repo, s.user, clock)).state.total).toBe("500");
+    await save(2, withdrawal, { acknowledgedFundsVersion: 4 });
+    const view = await readFundView(repo, s.user, clock);
+    expect(view.state.total).toBe("300");
+    expect(view.book?.version).toBe(4);
+    const overview = postgresOverviewDataRepository(sql);
+    expect(
+      (await overview.loaders(s.user, clock, ["funds"]).funds()).total,
+    ).toBe("300");
+    // Both writers contend for the Fund lock without deadlocking.
+    const settled = await Promise.allSettled([
+      save(3, post("deposit", "10")),
+      run(s.user, 4, deposit(s.location, "1")),
+    ]);
+    expect(settled.map((r) => r.status)).toEqual(["fulfilled", "fulfilled"]);
+    expect((await readFundView(repo, s.user, clock)).state.total).toBe("311");
+    const backup = await data.backup(s.user, profile),
+      target = await owner();
+    await data.import(target, randomUUID(), backup);
+    expect((await data.backup(target, profile)).tables).toEqual(backup.tables);
+    expect((await readFundView(repo, target, clock)).state.total).toBe("311");
   });
   it("counts Fund-only accounts as occupied and stops when migration is missing", async () => {
     const only = await owner();

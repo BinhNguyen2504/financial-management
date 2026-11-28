@@ -435,4 +435,16 @@ export const errors = {
   "Không thể truy cập dữ liệu. Hãy kiểm tra kết nối và thử lại; nội dung đang nhập vẫn được giữ.":
     "Could not access data. Check your connection and try again; your draft is preserved.",
   "Không tìm thấy năm.": "Year not found.",
+  "Không đổi nguồn của nơi giữ đã tạo. Ngừng nơi giữ này rồi thêm nơi giữ mới.":
+    "A location's source cannot change. Stop this location, then add a new one.",
+  "Danh mục Tiết kiệm này đã gắn vào một quỹ.":
+    "This Savings category is already linked to a fund.",
+  "Nơi giữ lấy từ Tiết kiệm tự cập nhật số dư. Ghi nạp hoặc rút tại Tiết kiệm.":
+    "A Savings-based location updates itself. Record deposits and withdrawals in Savings.",
+  "Chọn danh mục Tiết kiệm tiền mặt hoặc tiền gửi đang hoạt động.":
+    "Choose an active Savings cash or deposit category.",
+  "Giao dịch này làm giảm Quỹ an toàn. Xem trước lại và xác nhận cảnh báo trước khi lưu.":
+    "This transaction lowers your safety funds. Preview again and accept the warning before saving.",
+  "Chưa đọc được Tiết kiệm liên kết với quỹ.":
+    "Could not read the Savings linked to a fund.",
 } as const;

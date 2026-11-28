@@ -10,7 +10,7 @@ Tổng quan giữ số liệu quan trọng của năm module. Mặc định có 
 | Đầu tư | Tổng giá trị hoặc giá trị đã biết và lãi/lỗ chưa chốt; cảnh báo định giá |
 | Quỹ an toàn | Tổng dự phòng, số tháng Emergency; cảnh báo nguồn tính quỹ thay đổi |
 
-Thu nhập/Chi tiêu dùng tháng hiện tại; tài sản và quỹ tính đến hôm nay theo Asia/Ho_Chi_Minh. Không cộng các sổ độc lập thành tài sản ròng hay số tiền có thể chi. Thu nhập chưa nhập khác với 0 đồng. Không tự truy cập ngân hàng hoặc giá thị trường.
+Thu nhập/Chi tiêu dùng tháng hiện tại; tài sản và quỹ tính đến hôm nay theo Asia/Ho_Chi_Minh. Không cộng các chức năng thành tài sản ròng hay số tiền có thể chi. Từ 26/11/2026, tổng Quỹ an toàn gồm danh mục Tiết kiệm đã gắn (chỉ đọc thêm sổ Tiết kiệm khi có liên kết), nên không cộng với số Tiết kiệm. Thu nhập chưa nhập khác với 0 đồng. Không tự truy cập ngân hàng hoặc giá thị trường.
 
 ## Widget tùy chọn
 

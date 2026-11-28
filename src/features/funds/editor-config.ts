@@ -3,7 +3,7 @@ import type { FundView } from "@/domain/funds/types";
 
 export type EditorMode =
   | { type: "configure" }
-  | { type: "location"; id?: string }
+  | { type: "location"; id?: string; fundId?: FundId }
   | { type: "transaction"; fundId?: FundId; kind?: FundTransaction["kind"] }
   | { type: "revise" | "cancel"; transaction: FundTransaction };
 export type Props = {

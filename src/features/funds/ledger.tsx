@@ -160,11 +160,13 @@ export function FundLedger({
                 onChange={(e) => setLocation(e.target.value)}
               >
                 <option value="">{tr("Tất cả nơi giữ")}</option>
-                {view.book?.locations.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name}
-                  </option>
-                ))}
+                {view.book?.locations
+                  .filter((l) => !l.savings)
+                  .map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))}
               </select>
             </label>
             <label>

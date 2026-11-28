@@ -46,6 +46,8 @@ export function reportSources(tab: ReportQuery["tab"]): SourceId[] {
   if (tab === "summary") return [...sourceIds];
   if (tab === "cashflow") return ["income", "expenses"];
   if (tab === "goals") return ["savings", "investments", "funds", "goals"];
+  // Fund balances may follow Savings categories, so that ledger is read too.
+  if (tab === "funds") return ["funds", "savings"];
   return [tab];
 }
 export class ReportError extends Error {

@@ -384,4 +384,9 @@ export const savings = {
   "Lần ghi": "Revision",
   "Thay đổi": "Changes",
   "Xem dữ liệu tại lần ghi này": "View data at this revision",
+  "Giao dịch này làm giảm Quỹ an toàn":
+    "This transaction lowers your safety funds",
+  "Còn thiếu {0} so với mục tiêu {1}.": "{0} short of the {1} target.",
+  "Vẫn đủ mục tiêu {0}.": "Still meets the {0} target.",
+  "Tôi đã hiểu và vẫn muốn lưu": "I understand and still want to save",
 } as const;

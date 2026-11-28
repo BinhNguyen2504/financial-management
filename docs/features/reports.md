@@ -17,10 +17,10 @@ Bấm chỉ số để xem các dòng đóng góp vào số đó; 20 dòng/trang
 - Chênh lệch theo sổ = Thu nhập đã ghi nhận − Chi tiêu theo sổ hũ. Đây chưa phải số dư tài khoản hoặc tiền có thể sử dụng; không tự nhận diện/loại trùng các khoản giữa module.
 - Tiết kiệm giữ nghiệp vụ đầu/cuối kỳ, nạp/rút bên ngoài, kết quả trong kỳ và phân bổ theo danh mục; không dùng giá tương lai, giá cũ có cảnh báo.
 - Đầu tư: tổng = tài sản đang giữ + tiền chờ; lãi/lỗ = giá trị tài sản − giá vốn phần đang giữ. Bán hết trả giá vốn/giá trị tài sản/lãi lỗ về 0, giữ tiền trong ví. Không trình bày lãi đã bán.
-- Quỹ an toàn: giải quyết bản sửa/hủy mới nhất trước, rồi lọc ngày giao dịch theo giờ Việt Nam. Số đầu/cuối kỳ replay riêng; mục tiêu theo cấu hình đã xác nhận tại cuối kỳ. Góp/rút loại số dư ban đầu và chuyển nội bộ. Chuyển giữa quỹ/nơi giữ giữ nguyên tổng.
+- Quỹ an toàn: giải quyết bản sửa/hủy mới nhất trước, rồi lọc ngày giao dịch theo giờ Việt Nam. Từ 26/11/2026, số dư gồm danh mục Tiết kiệm đã gắn, lấy tại ngày báo cáo và chỉ từ lúc liên kết được lưu; mục góp/rút chỉ gồm giao dịch trong sổ Quỹ và báo cáo có cảnh báo. Tab Quỹ đọc thêm sổ Tiết kiệm (chỉ liệt kê là nguồn khi có liên kết); tiến độ của quỹ có liên kết đã đủ mục tiêu ghi 100%; có liên kết mà không đọc được Tiết kiệm thì phần Quỹ báo lỗi thay vì hiện số thiếu. Số đầu/cuối kỳ replay riêng; mục tiêu theo cấu hình đã xác nhận tại cuối kỳ. Góp/rút loại số dư ban đầu và chuyển nội bộ. Chuyển giữa quỹ/nơi giữ giữ nguyên tổng.
 - Mục tiêu dùng tiến độ hiện tại, ghi thời điểm cập nhật, kể cả đang xem kỳ cũ. Không dựng lịch sử tiến độ và không cộng Mục tiêu liên kết vào tài sản nguồn.
 
-Các sổ độc lập không cộng thành tài sản ròng. Báo cáo không có ghi sổ, chuyển tiền, dự báo lợi nhuận, PDF hoặc tự chốt kỳ.
+Không cộng các chức năng thành tài sản ròng; Quỹ an toàn có thể đã gồm tiền của Tiết kiệm nên không cộng hai số. Báo cáo không có ghi sổ, chuyển tiền, dự báo lợi nhuận, PDF hoặc tự chốt kỳ.
 
 ## API và an toàn dữ liệu
 

@@ -449,6 +449,7 @@
 .fund-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: start;
   gap: 16px;
 }
 .fund-total {
@@ -475,6 +476,12 @@
 }
 .fund-priorities button {
   margin: 0;
+}
+.fund-field-hint {
+  color: var(--muted);
+  font-size: var(--font-size-12);
+  font-weight: var(--weight-regular);
+  overflow-wrap: anywhere;
 }
 .fund-field-error {
   color: var(--accent);
@@ -630,6 +637,10 @@
   justify-items: start;
   gap: 8px;
   min-width: 0;
+}
+.fund-location > .fund-note {
+  margin: 0 0 12px;
+  overflow-wrap: anywhere;
 }
 .fund-location h4 {
   margin: 0;

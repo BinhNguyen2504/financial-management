@@ -9,6 +9,7 @@ import {
 } from "@/server/financial-api";
 import { readSavingsView, runSavingsCommand } from "@/application/savings";
 import { ExpenseError } from "@/domain/expenses/engine";
+import { FundError } from "@/domain/funds/engine";
 import {
   endOfMonth,
   savingsClock,
@@ -32,7 +33,9 @@ export const dynamic = "force-dynamic";
 function failure(error: unknown) {
   return financialFailure(error, {
     accepts: (error): error is SavingsError =>
-      error instanceof SavingsError || error instanceof ExpenseError,
+      error instanceof SavingsError ||
+      error instanceof ExpenseError ||
+      error instanceof FundError,
     log: "Savings API failed",
     unavailable:
       "Không thể truy cập dữ liệu. Kiểm tra kết nối rồi thử lại; nội dung đang nhập được giữ.",

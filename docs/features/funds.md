@@ -18,7 +18,7 @@ Mức sinh hoạt bằng 0 hoặc hũ không phù hợp chặn áp dụng. Ngu�
 
 ## Tiền và lịch sử
 
-Sổ độc lập với Tiết kiệm/Đầu tư/Chi tiêu. Nơi giữ dùng chung, số dư riêng từng quỹ. Số dư ban đầu phải là giao dịch đầu tiên tại cặp quỹ/nơi giữ. Hỗ trợ thêm, rút, chuyển cùng quỹ hoặc liên quỹ. Chuyển nguyên tử, giữ tổng, không tính là góp mới. Thêm tiền khác số dư ban đầu trong tổng đóng góp.
+Sổ giao dịch Quỹ độc lập với Đầu tư/Chi tiêu; từ 26/11/2026 có thể lấy thêm số dư từ danh mục Tiết kiệm đã gắn (xem cuối trang). Nơi giữ riêng dùng chung, số dư riêng từng quỹ. Số dư ban đầu phải là giao dịch đầu tiên tại cặp quỹ/nơi giữ. Hỗ trợ thêm, rút, chuyển cùng quỹ hoặc liên quỹ. Chuyển nguyên tử, giữ tổng, không tính là góp mới. Thêm tiền khác số dư ban đầu trong tổng đóng góp.
 
 Thời điểm hiển thị Việt Nam, persist ISO timestamp; mặc định hiện tại và không nhận tương lai. Rút/chuyển cần lý do. Sửa/hủy cần lý do, giữ mọi revision; replay theo thời điểm và thứ tự ghi gốc khi trùng thời điểm. Mọi số dư phải không âm ở mọi bước. Nơi giữ chỉ ngừng khi mọi quỹ tại đó bằng 0; có thể khôi phục. Giao dịch cũ có thể đối soát tại nơi đã ngừng nếu kết quả vẫn bằng 0.
 
@@ -126,3 +126,25 @@ Nút bắt đầu xây quỹ tách khỏi mô tả và ghi chú; lỗi tải/th�
 ## Nội dung cho người dùng phổ thông — 04/11/2026
 
 Đã rà soát cách gọi, hướng dẫn bắt đầu/đọc số liệu và khả năng tìm thao tác theo [bảng đối chiếu nội dung và tác vụ](friendly-content-2026-11-04.md). Giữ nguyên nghiệp vụ và dữ liệu; kết quả kiểm chứng mới ghi riêng trong nhật ký validation.
+
+## Nguồn từ Tiết kiệm và số dư khả dụng — 26/11/2026
+
+### Gắn danh mục
+
+**Thêm nơi giữ tiền** có **Loại nguồn**: *Nơi giữ riêng* (như trước) hoặc *Danh mục Tiết kiệm*. Nhánh sau chọn một danh mục **tiền mặt hoặc tiền gửi** đang hoạt động và chưa gắn, rồi chọn quỹ. Không gồm vàng vì giá trị đổi theo giá nhập. Mỗi danh mục gắn đúng một quỹ tại một thời điểm; một quỹ gắn được nhiều danh mục. Sau khi tạo được đổi tên, đổi quỹ, ngừng (gỡ liên kết) và khôi phục; không đổi danh mục hoặc loại nguồn. Chỉ tạo mới và khôi phục yêu cầu danh mục còn hoạt động; đổi tên hoặc quỹ vẫn được khi danh mục đã lưu trữ hay không còn.
+
+Số dư quỹ = giao dịch trong sổ Quỹ + số đang có của danh mục đã gắn tại ngày hôm nay (tiền mặt: số dư; tiền gửi: gốc còn lại). Phần liên kết không phải góp mới, không có giao dịch Quỹ và không nhận ghi/chuyển tại nơi giữ đó. Danh mục không còn (ví dụ sau khi làm trống Tiết kiệm) được tính 0 và báo rõ trên thẻ nơi giữ. Quỹ có liên kết đạt mục tiêu hiển thị **100% · Đã đủ mức dự phòng**, số tiền vẫn là số thật; quỹ không liên kết giữ cách hiển thị tỷ lệ vượt 100%.
+
+### Cảnh báo ở Tiết kiệm
+
+Xem trước ghi, sửa hoặc hủy giao dịch Tiết kiệm so tổng từng quỹ trước và sau. Quỹ nào giảm tổng thì hiện cảnh báo gồm số trước/sau, phần còn thiếu so với mục tiêu (hoặc vẫn đủ) và từng danh mục thay đổi; phải chọn **Tôi đã hiểu và vẫn muốn lưu** mới xác nhận được. Chuyển giữa hai danh mục cùng gắn một quỹ không cảnh báo. Xác nhận chỉ lưu giao dịch Tiết kiệm; sổ Quỹ không bị ghi thêm, quỹ hiện số còn lại.
+
+Server tính lại khi lưu: thiếu `acknowledgedFundsVersion` hoặc sổ Quỹ đã đổi so với lúc xem trước trả 409 `FUND_IMPACT_CONFIRMATION_REQUIRED`, không ghi. Gửi lại cùng ID và nội dung vẫn trả kết quả đã lưu. Ghi Tiết kiệm khóa Savings → Fund theo thứ tự toàn cục của restore/reset.
+
+### Số dư khả dụng khi ghi giao dịch
+
+Dưới **Nơi giữ tiền** (hoặc **Nơi nguồn**) hiện “Số dư khả dụng” của đúng cặp quỹ/nơi giữ đã chọn; chuyển tiền hiện thêm số đang có tại **Nơi nhận**. Đổi quỹ hoặc nơi giữ cập nhật ngay, tuân theo chế độ che tiền. Khi sửa giao dịch, đây là số dư hiện tại (đã gồm giao dịch đang sửa). Danh sách chỉ có nơi giữ riêng; quỹ có liên kết kèm ghi chú số lấy từ Tiết kiệm.
+
+### Dữ liệu
+
+Liên kết nằm trong dữ liệu nơi giữ: `savings { categoryId, fundId }` và `linkHistory` (thời điểm, quỹ, trạng thái) để Báo cáo chỉ tính liên kết trong khoảng đã áp dụng. Không cần migration, backup vẫn V3.

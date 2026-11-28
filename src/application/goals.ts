@@ -12,6 +12,7 @@ import {
   type GoalCommand,
   type GoalSources,
 } from "../domain/goals/schema";
+import { linkedSource } from "../domain/goals/source-links";
 import type { Clock } from "../domain/shared/types";
 
 export type GoalPreviewState = {
@@ -101,7 +102,17 @@ export function runGoalCommand(
           : action.type === "setStatus"
             ? before?.goals.find((g) => g.id === action.goalId)
             : undefined;
-      for (const kind of new Set(goal?.links.map((l) => l.kind) ?? []))
+      const kinds = new Set(goal?.links.map((l) => l.kind) ?? []);
+      // A fund fed by Savings categories also changes when Savings changes.
+      if (
+        goal?.links.some(
+          (l) =>
+            l.kind === "funds" &&
+            linkedSource(sources, l)?.componentIds?.length,
+        )
+      )
+        kinds.add("savings");
+      for (const kind of kinds)
         if (sources.versions[kind] !== command.expectedSources[kind])
           throw new GoalError(
             "Nguồn tiền đã thay đổi. Tải dữ liệu mới và xem trước lại; nội dung nhập được giữ.",

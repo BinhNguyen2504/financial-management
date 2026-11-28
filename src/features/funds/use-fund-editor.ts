@@ -52,7 +52,10 @@ export function useFundEditor({
     hidden = useMoneyHidden(),
     money = useMoney(),
     id = useId();
+  const ownPlace = initial.book?.locations.find((l) => l.active && !l.savings);
   const [f, setF] = useState({
+    source: (location?.savings ? "savings" : "own") as "own" | "savings",
+    categoryId: location?.savings?.categoryId ?? "",
     name: location?.name ?? "",
     active: location?.active ?? true,
     kind:
@@ -61,17 +64,15 @@ export function useFundEditor({
       "deposit",
     fundId:
       old?.fundId ??
-      (mode.type === "transaction" ? mode.fundId : undefined) ??
+      location?.savings?.fundId ??
+      (mode.type === "transaction" || mode.type === "location"
+        ? mode.fundId
+        : undefined) ??
       "emergency",
-    locationId:
-      old?.locationId ??
-      initial.book?.locations.find((l) => l.active)?.id ??
-      "",
+    locationId: old?.locationId ?? ownPlace?.id ?? "",
     toFundId: old?.kind === "transfer" ? old.toFundId : "rainy_day",
     toLocationId:
-      old?.kind === "transfer"
-        ? old.toLocationId
-        : (initial.book?.locations.find((l) => l.active)?.id ?? ""),
+      old?.kind === "transfer" ? old.toLocationId : (ownPlace?.id ?? ""),
     amount: old?.amount ?? "",
     occurredAt: localDateTime(old?.occurredAt ?? initial.now),
     note: old?.note ?? "",
@@ -291,7 +292,7 @@ export function useFundEditor({
         const [fund, locationId] = key.split(":");
         return [
           {
-            label: `${tr(fundNames[fund as FundId])} · ${view.book?.locations.find((item) => item.id === locationId)?.name ?? tr("Nơi giữ tiền")}`,
+            label: `${tr(fundNames[fund as FundId])} · ${view.book?.locations.find((item) => item.id === locationId)?.name ?? (mode.type === "location" ? f.name : tr("Nơi giữ tiền"))}`,
             before,
             after,
           },

@@ -5,6 +5,7 @@ import {
   DialogChanges,
   DialogPreview,
 } from "@/components/dialog-content";
+import { fundNames } from "@/features/funds/content";
 
 import { type useSavingsEditor } from "./use-savings-editor";
 
@@ -13,7 +14,18 @@ export function SavingsEditorPreview({
 }: {
   controller: ReturnType<typeof useSavingsEditor>;
 }) {
-  const { preview, tr, money, hidden, locale } = controller;
+  const {
+    preview,
+    tr,
+    money,
+    hidden,
+    locale,
+    busy,
+    uncertain,
+    fundsAccepted,
+    setFundsAccepted,
+  } = controller;
+  const impact = preview?.result.fundImpact;
 
   return (
     preview && (
@@ -63,6 +75,44 @@ export function SavingsEditorPreview({
             }),
           ]}
         />
+        {impact && (
+          <div className="savings-fund-impact" role="alert">
+            <h4>{tr("Giao dịch này làm giảm Quỹ an toàn")}</h4>
+            <ul>
+              {impact.funds.map((fund) => (
+                <li key={fund.fundId}>
+                  <strong>{tr(fundNames[fund.fundId])}</strong>
+                  <span>
+                    {money(fund.before)} → {money(fund.after)}
+                  </span>
+                  <span>
+                    {BigInt(fund.missing) > 0n
+                      ? tr("Còn thiếu {0} so với mục tiêu {1}.", {
+                          0: money(fund.missing),
+                          1: money(fund.target),
+                        })
+                      : tr("Vẫn đủ mục tiêu {0}.", { 0: money(fund.target) })}
+                  </span>
+                  {fund.sources.map((source, index) => (
+                    <small key={index}>
+                      {source.name}: {money(source.before)} →{" "}
+                      {money(source.after)}
+                    </small>
+                  ))}
+                </li>
+              ))}
+            </ul>
+            <label>
+              <input
+                type="checkbox"
+                checked={fundsAccepted}
+                disabled={busy || uncertain}
+                onChange={(e) => setFundsAccepted(e.target.checked)}
+              />
+              <span>{tr("Tôi đã hiểu và vẫn muốn lưu")}</span>
+            </label>
+          </div>
+        )}
       </DialogPreview>
     )
   );

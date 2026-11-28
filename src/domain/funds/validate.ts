@@ -20,7 +20,19 @@ function normalized(book: FundBook) {
       ...c,
       at: new Date(c.at).toISOString(),
     })),
-    locations: [...book.locations].sort((a, b) => a.id.localeCompare(b.id)),
+    locations: book.locations
+      .map((l) =>
+        l.linkHistory
+          ? {
+              ...l,
+              linkHistory: l.linkHistory.map((h) => ({
+                ...h,
+                at: new Date(h.at).toISOString(),
+              })),
+            }
+          : l,
+      )
+      .sort((a, b) => a.id.localeCompare(b.id)),
   };
 }
 /** Rebuild every immutable action so a forged balance/configuration cannot be restored. */

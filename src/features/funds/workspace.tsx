@@ -22,6 +22,7 @@ import { FundDetails, FundGuide, FundLocations } from "./details";
 import { FundEditor } from "./editor";
 
 import { FundLedger } from "./ledger";
+import { fundDisplay } from "./linked";
 import { ProgressScene } from "./progress-scene";
 import { useFundsWorkspace } from "./use-funds-workspace";
 
@@ -275,61 +276,71 @@ export function FundsWorkspace() {
             )}
           </section>
           <div className="fund-card-grid">
-            {view.state.funds.map((f) => (
-              <article className="fund-card" key={f.id} data-fund={f.id}>
-                <ProgressScene
-                  key={`${f.id}-${celebration}`}
-                  fund={f.id}
-                  percent={f.percent}
-                  animate={celebration > 0}
-                />
-                <div className="fund-card-title">
-                  <p className="eyebrow">
-                    <ThemeText name={f.id} />
+            {view.state.funds.map((f) => {
+              const display = fundDisplay(view, f);
+              return (
+                <article className="fund-card" key={f.id} data-fund={f.id}>
+                  <ProgressScene
+                    key={`${f.id}-${celebration}`}
+                    fund={f.id}
+                    percent={display.percent}
+                    animate={celebration > 0}
+                  />
+                  <div className="fund-card-title">
+                    <p className="eyebrow">
+                      <ThemeText name={f.id} />
+                    </p>
+                    <span className="fund-percentage">
+                      {display.percent.replace(".", ",")}%
+                    </span>
+                  </div>
+                  <h2>{tr(fundNames[f.id])}</h2>
+                  <p className="fund-note">{tr(guides[f.id].concept)}</p>
+                  <p className="fund-balance">{money(f.balance)}</p>
+                  <p>
+                    {tr("Mục tiêu")} {money(f.target)} ·{" "}
+                    {config.multipliers[f.id]} {tr("tháng")}
                   </p>
-                  <span className="fund-percentage">
-                    {f.percent.replace(".", ",")}%
-                  </span>
-                </div>
-                <h2>{tr(fundNames[f.id])}</h2>
-                <p className="fund-note">{tr(guides[f.id].concept)}</p>
-                <p className="fund-balance">{money(f.balance)}</p>
-                <p>
-                  {tr("Mục tiêu")} {money(f.target)} ·{" "}
-                  {config.multipliers[f.id]} {tr("tháng")}
-                </p>
-                <p className="fund-note">
-                  {BigInt(f.excess) > 0n
-                    ? tr("Vượt mục tiêu {0}", { 0: money(f.excess) })
-                    : BigInt(f.missing) > 0n
-                      ? tr("Còn {0} để đủ mức bạn chọn", {
-                          0: money(f.missing),
+                  <p className="fund-note">
+                    {!display.reached && BigInt(f.excess) > 0n
+                      ? tr("Vượt mục tiêu {0}", { 0: money(f.excess) })
+                      : BigInt(f.missing) > 0n
+                        ? tr("Còn {0} để đủ mức bạn chọn", {
+                            0: money(f.missing),
+                          })
+                        : tr("Đã đủ mức dự phòng")}
+                  </p>
+                  {display.places.length > 0 && (
+                    <p className="fund-note">
+                      {tr("Gồm {0} từ Tiết kiệm", {
+                        0: money(display.fromSavings),
+                      })}
+                    </p>
+                  )}
+                  <div className="fund-actions">
+                    <button
+                      className="expense-secondary"
+                      aria-label={tr("Xem {0}", { 0: tr(fundNames[f.id]) })}
+                      onClick={() => setDetail(f.id)}
+                    >
+                      {tr("Chi tiết")}
+                    </button>
+                    <button
+                      className="expense-primary"
+                      onClick={() =>
+                        setEditor({
+                          type: "transaction",
+                          fundId: f.id,
+                          kind: "deposit",
                         })
-                      : tr("Đã đủ mức dự phòng")}
-                </p>
-                <div className="fund-actions">
-                  <button
-                    className="expense-secondary"
-                    aria-label={tr("Xem {0}", { 0: tr(fundNames[f.id]) })}
-                    onClick={() => setDetail(f.id)}
-                  >
-                    {tr("Chi tiết")}
-                  </button>
-                  <button
-                    className="expense-primary"
-                    onClick={() =>
-                      setEditor({
-                        type: "transaction",
-                        fundId: f.id,
-                        kind: "deposit",
-                      })
-                    }
-                  >
-                    {tr("Thêm tiền")}
-                  </button>
-                </div>
-              </article>
-            ))}
+                      }
+                    >
+                      {tr("Thêm tiền")}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
           <div className="panel">
             <FundLedger view={view} onEdit={setEditor} />

@@ -18,7 +18,12 @@ import { materialize } from "../domain/expenses/engine";
 import { toView as incomeView } from "../domain/income/engine";
 import { toView as savingsView } from "../domain/savings/engine";
 import { toView as investmentView } from "../domain/investments/engine";
-import { toView as fundView, livingSource } from "../domain/funds/engine";
+import {
+  hasSavingsLink,
+  livingSource,
+  toView as fundView,
+} from "../domain/funds/engine";
+import { savingsSources } from "../domain/funds/savings-sources";
 import {
   expenseSummary,
   incomeSummary,
@@ -65,6 +70,16 @@ export function postgresOverviewDataRepository(sql: postgres.Sql) {
         from public.expense_books where owner_id=$1`,
           needsExpenses ? [owner, month] : [owner],
         ));
+      // Shared by Savings and by Funds that follow a Savings category.
+      let savings: Promise<SavingsBook | null> | undefined;
+      const savingsBook = () =>
+        (savings ??= read<SavingsBook>(`
+          select jsonb_build_object('version',version,
+            'categories',${data("savings_categories", "id")},
+            'revisions',${data("savings_transactions", "sequence")},
+            'prices',${data("savings_prices", "sequence")},
+            'closes','[]'::jsonb,'audit','[]'::jsonb) as book
+          from public.savings_books where owner_id=$1`));
       return {
         expenses: async () => {
           const book = await expenseBook();
@@ -93,16 +108,11 @@ export function postgresOverviewDataRepository(sql: postgres.Sql) {
             incomeView(book, Number(clock.today.slice(0, 4)), clock, month),
           );
         },
-        savings: async () => {
-          const book = await read<SavingsBook>(`
-            select jsonb_build_object('version',version,
-              'categories',${data("savings_categories", "id")},
-              'revisions',${data("savings_transactions", "sequence")},
-              'prices',${data("savings_prices", "sequence")},
-              'closes','[]'::jsonb,'audit','[]'::jsonb) as book
-            from public.savings_books where owner_id=$1`);
-          return savingsSummary(savingsView(book, clock.today, clock), widgets);
-        },
+        savings: async () =>
+          savingsSummary(
+            savingsView(await savingsBook(), clock.today, clock),
+            widgets,
+          ),
         investments: async () => {
           const book = await read<InvestmentBook>(`
             select jsonb_build_object('version',version,
@@ -126,7 +136,14 @@ export function postgresOverviewDataRepository(sql: postgres.Sql) {
             expenseBook(),
           ]);
           return fundSummary(
-            fundView(book, livingSource(source, month), clock),
+            fundView(
+              book,
+              livingSource(source, month),
+              clock,
+              hasSavingsLink(book)
+                ? savingsSources(await savingsBook(), clock.today)
+                : [],
+            ),
           );
         },
       };

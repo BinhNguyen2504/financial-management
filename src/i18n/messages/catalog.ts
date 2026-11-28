@@ -197,4 +197,8 @@ export const catalog = {
     "Choose Vietnamese/English and appearance; back up, review restore requirements, clear financial data after saving a backup and install on your home screen.",
   "Tiếng Việt/English với định dạng vi-VN/en-GB; cùng tiền VND và giờ Việt Nam":
     "Vietnamese/English with vi-VN/en-GB formats; VND and Vietnam time",
+  "Gắn danh mục tiền mặt hoặc tiền gửi của Tiết kiệm làm nguồn của một quỹ":
+    "Link a Savings cash or deposit category as a fund's source",
+  "Cảnh báo và hỏi xác nhận khi giao dịch làm giảm Quỹ an toàn":
+    "Warn and ask for confirmation when a transaction lowers a safety fund",
 } as const;

@@ -85,9 +85,16 @@ export function balances(book: GoalBook) {
 }
 function linkedCurrent(goal: Goal, sources: GoalSources): string | null {
   let sum = 0n;
+  // Savings categories already counted inside a selected fund are counted once.
+  const insideFunds = new Set(
+    goal.links.flatMap((l) =>
+      l.kind === "funds" ? (linkedSource(sources, l)?.componentIds ?? []) : [],
+    ),
+  );
   for (const link of goal.links) {
     const s = linkedSource(sources, link);
     if (!s || sources.versions[link.kind] === null) return null;
+    if (link.kind === "savings" && insideFunds.has(link.sourceId)) continue;
     const amount = goal.basis === "capital" ? s.capital : s.value;
     if (amount === null) return null;
     sum += (BigInt(amount) * BigInt(link.share)) / 10000n;

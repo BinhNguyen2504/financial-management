@@ -8,7 +8,13 @@ import {
   type FundTransaction,
   type LivingExpenseSnapshot,
 } from "./schema";
-import type { FundBook, FundState, FundView, LivingSource } from "./types";
+import type {
+  FundBook,
+  FundSavingsSource,
+  FundState,
+  FundView,
+  LivingSource,
+} from "./types";
 export class FundError extends Error {
   constructor(
     message: string,
@@ -100,7 +106,29 @@ export function activeTransactions(book: FundBook) {
           Date.parse(b.transaction.occurredAt) || a.sequence - b.sequence,
     );
 }
-export function replay(book: FundBook | null): FundState {
+export const hasSavingsLink = (book: FundBook | null) =>
+  Boolean(book?.locations.some((l) => l.active && l.savings));
+/**
+ * Balances that come from linked Savings categories. A category that no longer exists (for example
+ * after clearing Savings) counts as zero instead of keeping a stale amount.
+ */
+export function linkedBalances(
+  book: FundBook | null,
+  sources: Pick<FundSavingsSource, "categoryId" | "amount">[],
+) {
+  const balances: Record<string, string> = {};
+  for (const l of book?.locations ?? [])
+    if (l.active && l.savings)
+      balances[positionKey(l.savings.fundId, l.id)] =
+        sources.find((s) => s.categoryId === l.savings!.categoryId)?.amount ??
+        "0";
+  return balances;
+}
+/** Ledger history decides what is valid; linked amounts are only added to the resulting totals. */
+export function replay(
+  book: FundBook | null,
+  linked: Record<string, string> = {},
+): FundState {
   const balances: Record<string, string> = {};
   let contributed = 0n,
     withdrawn = 0n;
@@ -142,6 +170,7 @@ export function replay(book: FundBook | null): FundState {
         used.add(to);
       }
     }
+  Object.assign(balances, linked);
   const config = book?.configurations.at(-1);
   const funds = fundIds.map((id) => {
     const balance = Object.entries(balances)
@@ -178,6 +207,7 @@ export function toView(
   book: FundBook | null,
   source: LivingSource,
   clock: Clock,
+  savings: FundSavingsSource[] = [],
 ): FundView {
   const living = book?.configurations.at(-1)?.living;
   let proposedLiving: LivingExpenseSnapshot | null = null;
@@ -199,8 +229,9 @@ export function toView(
     });
   return {
     book,
-    state: replay(book),
+    state: replay(book, linkedBalances(book, savings)),
     source,
+    savings,
     proposedLiving,
     sourceChanged: Boolean(
       living &&
@@ -280,14 +311,38 @@ export function applyAction(
       )
     )
       fail("Chỉ ngừng nơi giữ khi số dư của mọi quỹ bằng 0.");
-    if (existing)
-      Object.assign(existing, { name: action.name, active: action.active });
-    else
-      book.locations.push({
-        id: action.id,
-        name: action.name,
-        active: action.active,
-      });
+    const link = action.savings;
+    if (existing && existing.savings?.categoryId !== link?.categoryId)
+      fail(
+        "Không đổi nguồn của nơi giữ đã tạo. Ngừng nơi giữ này rồi thêm nơi giữ mới.",
+      );
+    if (
+      link &&
+      action.active &&
+      book.locations.some(
+        (l) =>
+          l.id !== action.id &&
+          l.active &&
+          l.savings?.categoryId === link.categoryId,
+      )
+    )
+      fail("Danh mục Tiết kiệm này đã gắn vào một quỹ.");
+    // An absent link stays absent, so restored history compares equal to older books.
+    const next = {
+      name: action.name,
+      active: action.active,
+      ...(link
+        ? {
+            savings: structuredClone(link),
+            linkHistory: [
+              ...(existing?.linkHistory ?? []),
+              { at: clock.now, fundId: link.fundId, active: action.active },
+            ],
+          }
+        : {}),
+    };
+    if (existing) Object.assign(existing, next);
+    else book.locations.push({ id: action.id, ...next });
   } else {
     let transaction: FundTransaction | null,
       rootId: string,
@@ -318,6 +373,14 @@ export function applyAction(
         t.locationId,
         ...(t.kind === "transfer" ? [t.toLocationId] : []),
       ];
+      if (
+        endpoints(transaction).some(
+          (id) => book.locations.find((l) => l.id === id)?.savings,
+        )
+      )
+        fail(
+          "Nơi giữ lấy từ Tiết kiệm tự cập nhật số dư. Ghi nạp hoặc rút tại Tiết kiệm.",
+        );
       for (const id of endpoints(transaction))
         if (
           !book.locations.some(

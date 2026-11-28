@@ -477,7 +477,7 @@ function AccountReports({ configured }: { configured: boolean }) {
           </div>
           <p className="reports-note">
             {t(
-              "Mỗi chức năng là một sổ độc lập; các số dư và tiến độ mục tiêu không được cộng thành tài sản ròng.",
+              "Không cộng số dư các chức năng hoặc tiến độ mục tiêu thành tài sản ròng; Quỹ an toàn có thể đã gồm tiền lấy từ Tiết kiệm.",
             )}
           </p>
           {detail && (
