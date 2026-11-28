@@ -176,6 +176,9 @@ test("outside and Escape cannot interrupt a pending save; dragging out does not 
     page.getByRole("button", { name: "Xác nhận lưu", exact: true }),
   ).toBeEnabled();
   await page.getByRole("button", { name: "Hủy", exact: true }).click();
+  // The newly picked emoji is unsaved, so cancelling asks before discarding it.
+  await expect(dialog).toHaveAccessibleName("Bỏ thay đổi?");
+  await page.getByRole("button", { name: "Bỏ thay đổi", exact: true }).click();
   await expect(dialog).toHaveAccessibleName("Du lịch");
   await page.keyboard.press("Escape");
 });

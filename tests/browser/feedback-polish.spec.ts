@@ -66,16 +66,19 @@ test("thin menu scrollbars retain keyboard access in expanded, collapsed and mob
         "scrollbar-width",
         browserName === "firefox" ? /^(thin|none)$/ : "thin",
       );
-      await sidebar.locator("nav a").first().focus();
-      for (let i = 1; i < (await sidebar.locator("nav a").count()); i++)
+      // Planned modules sit in a collapsed group and are not tab stops.
+      const links = sidebar.locator("nav a:visible");
+      await links.first().focus();
+      for (let i = 1; i < (await links.count()); i++)
         await page.keyboard.press("Tab");
-      await expect(sidebar.locator("nav a").last()).toBeFocused();
-      await expect(sidebar.locator("nav a").last()).toBeInViewport({
+      await expect(links.last()).toBeFocused();
+      await expect(links.last()).toBeInViewport({
         ratio: 1,
       });
       const metrics = await sidebar.evaluate((el: HTMLElement) => {
-        const last = el
-          .querySelector("nav a:last-child")!
+        const last = [...el.querySelectorAll("nav a")]
+          .filter((link) => link.checkVisibility())
+          .at(-1)!
           .getBoundingClientRect();
         return {
           top: el.scrollTop,
@@ -93,8 +96,8 @@ test("thin menu scrollbars retain keyboard access in expanded, collapsed and mob
     await page.setViewportSize({ width: 375, height: 400 });
     await page.locator(".mobile-menu > summary").click();
     const nav = page.locator(".mobile-menu .navigation");
-    await nav.locator("a").last().focus();
-    await expect(nav.locator("a").last()).toBeInViewport();
+    await nav.locator("a:visible").last().focus();
+    await expect(nav.locator("a:visible").last()).toBeInViewport();
     expect(await nav.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
     await page.screenshot({
       path: info.outputPath(`menu-mobile-${theme}.png`),

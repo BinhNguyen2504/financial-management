@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { completeTestEmailLogin } from "./helpers/test-email-login";
+import { openFilters } from "./helpers/filters";
 import { visualThemeKeys } from "../../src/components/visual-theme";
 import postgres from "postgres";
 import { investmentClock } from "../../src/domain/investments/engine";
@@ -269,6 +270,7 @@ test("investment filter geometry keeps fields aligned and cancelled checkbox on 
     { width: 844, height: 390 },
   ]) {
     await page.setViewportSize(viewport);
+    await openFilters(page);
     await page
       .locator(".investment-filters")
       .screenshot({ path: info.outputPath(`filters-${viewport.width}.png`) });
@@ -349,6 +351,7 @@ test("selects retain native selection and filter live and cancelled investment t
   await page.getByRole("tab", { name: "Giao dịch", exact: true }).click();
   const rows = page.locator(".investment-activity");
   await expect(rows).toHaveCount(3);
+  await openFilters(page);
   const category = page.getByRole("combobox", {
     name: "Danh mục / ví giao dịch",
     exact: true,
@@ -436,10 +439,17 @@ test("shared selects keep size and arrows across modules, dialogs and client nav
         .getByRole("button", { name: "Tạo mục tiêu", exact: true })
         .click();
     }
+    if (path === "funds") {
+      // The Funds ledger keeps its selects inside a collapsed filter block.
+      const filters = page.locator(".fund-filter-options").first();
+      await filters.locator("summary").first().click();
+      await expect(filters).toHaveAttribute("open", "");
+    }
     const scope =
       path === "goals" ? page.getByRole("dialog").last() : page.locator("main");
     for (const width of [1440, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });
+      if (path !== "goals") await openFilters(page);
       await controlsFit(scope);
       expect(
         await page.evaluate(
@@ -504,6 +514,7 @@ test("investment filters fit both locales, five themes, dark mode and enlarged t
         );
         for (const width of [1440, 390]) {
           await page.setViewportSize({ width, height: 1000 });
+          await openFilters(page);
           await controlsFit(page.locator(".investment-filters"));
           assertFilterGeometry(await filterGeometry(page));
           if (theme === "forest" || theme === "earth")
@@ -518,6 +529,7 @@ test("investment filters fit both locales, five themes, dark mode and enlarged t
       }, size);
       for (const width of [1440, 768, 320]) {
         await page.setViewportSize({ width, height: 1000 });
+        await openFilters(page);
         assertFilterGeometry(await filterGeometry(page));
       }
     }

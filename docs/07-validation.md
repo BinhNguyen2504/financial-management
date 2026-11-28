@@ -1,5 +1,11 @@
 # Xác minh
 
+## Sửa 26 ca e2e cũ — 27/11/2026
+
+- Khôi phục hình minh họa ở trạng thái trống của Tiết kiệm (mất sau refactor). 24 ca còn lại do test chưa theo giao diện hiện tại; chỉ sửa test. Sửa ghi chú phân trang Quỹ thành 10 dòng/trang.
+- `npm run check` qua (411/411, build). Chín spec từng lỗi đã qua trong các lượt chạy riêng.
+- Lượt `npm run test:e2e` đầy đủ sau đó: **551 qua, 4 lỗi, 1 bỏ qua**, cả 4 là quá thời gian trên mobile. Chạy lại `select-controls`, `status-badges`, `visual-themes`: **35 qua, 5 lỗi**. Máy đã ngủ nhiều lần khi dùng pin và có tiến trình test của worktree khác chạy song song; đây là nguyên nhân nghi ngờ, **chưa được chứng minh**. Chưa có lượt đầy đủ sạch.
+
 ## Chọn danh mục trước loại giao dịch Tiết kiệm — 26/11/2026
 
 - Thay đổi: dialog Ghi/sửa giao dịch Tiết kiệm đặt Danh mục trên Loại giao dịch; loại giao dịch lọc theo loại tài sản của danh mục; thêm câu giải thích vi/en dưới select; bỏ khung ghi chú riêng của giao dịch mở đầu; cập nhật ba bước trong Help. Không đổi quy tắc tính, schema, API, migration.

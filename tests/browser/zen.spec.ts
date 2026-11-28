@@ -74,7 +74,15 @@ async function confirm(page: Page) {
 test("privacy persists without flashing and scopes form disclosure, charts and income", async ({
   page,
 }) => {
-  await setup(page);
+  const { id } = await setup(page);
+  // Jars start the month unfunded; mark this one so the yearly charts have values.
+  await command(page, {
+    type: "setJarFunded",
+    jarId: id,
+    month: current,
+    funded: true,
+  });
+  await page.reload();
   await expect(page.locator("main")).toContainText(formatted);
   await page.getByRole("button", { name: "Ẩn số tiền", exact: true }).click();
   await expect(page.locator("main")).not.toContainText(formatted);
@@ -102,6 +110,8 @@ test("privacy persists without flashing and scopes form disclosure, charts and i
     page.getByRole("button", { name: "Xác nhận lưu" }),
   ).toBeDisabled();
   await page.keyboard.press("Escape");
+  // The changed amount is unsaved, so closing asks before discarding it.
+  await page.getByRole("button", { name: "Bỏ thay đổi", exact: true }).click();
   // Canceling the editor returns to its detail dialog.
   await expect(
     page.getByRole("dialog", { name: "Ăn uống riêng tư", exact: true }),
@@ -374,7 +384,7 @@ test("overview distinguishes auth, missing data and retry; privacy works with bl
     page
       .locator('[data-widget="expenses"]')
       .getByText(
-        "Chưa có dữ liệu. Chọn liên kết phía trên để bắt đầu ghi nhận.",
+        "Chưa có số liệu chi tiêu. Tạo hũ cho một mục đích như sinh hoạt rồi đặt số tiền dự kiến.",
       ),
   ).toBeVisible();
   await page.unroute(/\/api\/v1\/overview(?:\?.*)?$/);
