@@ -80,9 +80,13 @@ export function PrivacyToggle() {
       disabled={!ready}
       aria-pressed={hidden}
       aria-label={hidden ? tr("Hiện số tiền") : tr("Ẩn số tiền")}
+      data-tooltip={hidden ? tr("Hiện số tiền") : tr("Ẩn số tiền")}
+      data-tooltip-placement="bottom"
     >
       <Icon size={19} aria-hidden="true" />
-      <span>{hidden ? tr("Hiện số tiền") : tr("Ẩn số tiền")}</span>
+      <span data-tooltip-label>
+        {hidden ? tr("Hiện số tiền") : tr("Ẩn số tiền")}
+      </span>
     </button>
   );
 }

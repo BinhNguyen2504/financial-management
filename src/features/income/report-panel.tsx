@@ -111,7 +111,17 @@ export function IncomeReports({
               <tr key={c.id}>
                 <th scope="row">{c.name}</th>
                 {c.months.map((m) => (
-                  <td key={m.month} title={m.name || undefined}>
+                  <td
+                    key={m.month}
+                    // The missing-entry button has its own tooltip.
+                    title={
+                      missing.some(
+                        (r) => r.categoryId === c.id && r.month === m.month,
+                      )
+                        ? undefined
+                        : m.name || undefined
+                    }
+                  >
                     {m.name && m.name !== c.name && (
                       <small>
                         {m.name}
@@ -130,7 +140,7 @@ export function IncomeReports({
                             0: c.name,
                             1: monthName(m.month, locale),
                           })}
-                          title={tr("Chưa nhập — bấm để bổ sung")}
+                          data-tooltip={tr("Chưa nhập — bấm để bổ sung")}
                           onClick={() => onEnter(row)}
                         >
                           —

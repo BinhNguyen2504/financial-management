@@ -262,6 +262,15 @@
   overflow-wrap: anywhere;
   text-align: left;
 }
+/* Mobile cards (640px and below) keep the automatic width. */
+@media (min-width: 641px) {
+  .dialog-shell .dialog-data-table .is-wide-actions {
+    width: 11rem;
+  }
+}
+.dialog-data-table .is-wide-actions button {
+  white-space: nowrap;
+}
 .dialog-data-table th {
   color: var(--muted);
   font-size: var(--font-size-12);

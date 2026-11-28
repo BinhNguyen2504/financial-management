@@ -446,6 +446,59 @@ test("investments page and API enforce auth and cookie origin", async ({
   ).toBe("private, no-store");
 });
 
+test("a portfolio row records any transaction type without losing its portfolio", async ({
+  page,
+}) => {
+  await login(page);
+  const asset = await category(page, "Danh mục một nút");
+  const wallet = (await view(page)).book!.categories.find(
+    (c) => c.parentCategoryId === asset,
+  )!.id;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const row = page.locator(".investment-table tbody tr");
+  await expect(row.getByRole("button")).toHaveCount(2);
+  const record = row.getByRole("button", {
+    name: "Giao dịch Danh mục một nút",
+    exact: true,
+  });
+  await record.hover();
+  await expect(page.getByRole("tooltip")).toHaveText("Ghi giao dịch");
+  await record.click();
+  await expect(page.getByRole("tooltip")).toHaveCount(0);
+  const editor = page.getByRole("dialog", {
+    name: "Ghi giao dịch",
+    exact: true,
+  });
+  const kind = editor.getByLabel("Loại giao dịch", { exact: true });
+  const target = editor.getByLabel("Danh mục / ví", { exact: true });
+  await expect(kind).toHaveValue("buy");
+  await expect(target).toHaveValue(asset);
+  await expect(editor.getByLabel("Nguồn tiền", { exact: true })).toHaveValue(
+    wallet,
+  );
+  for (const value of ["deposit", "withdraw", "transfer", "openingCash"]) {
+    await kind.selectOption(value);
+    await expect(target).toHaveValue(wallet);
+  }
+  for (const value of ["valuation", "openingInvestment", "sell"]) {
+    await kind.selectOption(value);
+    await expect(target).toHaveValue(asset);
+  }
+  await expect(editor.getByLabel("Nơi nhận tiền", { exact: true })).toHaveValue(
+    wallet,
+  );
+  await editor
+    .getByRole("button", { name: "Đóng cửa sổ", exact: true })
+    .click();
+  // Cards below the table breakpoint keep visible command names.
+  await page.setViewportSize({ width: 390, height: 900 });
+  const card = page.locator(".investment-card");
+  await expect(card.getByRole("button")).toHaveCount(2);
+  await expect(
+    card.getByRole("button", { name: "Giao dịch Danh mục một nút" }),
+  ).toContainText("Giao dịch");
+});
+
 test("portfolio-owned wallets follow 10/7/3/8, sell all, withdraw and restart current gain/loss", async ({
   page,
 }, info) => {

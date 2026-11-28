@@ -20,8 +20,8 @@ export const help = {
     "Preview and confirm; review holdings and wallets in portfolio details.",
   "Mở chi tiết danh mục, chọn nạp/rút hoặc chuyển ở ví tiền chờ.":
     "Open portfolio details, then deposit, withdraw or transfer from a cash wallet.",
-  "Mở danh mục, chọn mua hoặc bán và ví tiền chờ thuộc danh mục đó. Cần nạp đủ tiền vào ví trước khi mua.":
-    "Open the portfolio, choose buy or sell, and select one of its cash wallets. Fund the wallet before buying.",
+  "Bấm Giao dịch ở danh mục (hoặc mở chi tiết), chọn mua hoặc bán và ví tiền chờ thuộc danh mục đó. Cần nạp đủ tiền vào ví trước khi mua.":
+    "Use Transactions on the portfolio (or open its details), choose buy or sell, and select one of its cash wallets. Fund the wallet before buying.",
   "Kết quả: mua tăng vốn bằng tiền mua + phí + thuế và trừ ví; bán giảm giá vốn phần bán và đưa tiền ròng về ví. Chỉ rút khỏi ví mới đưa tiền ra ngoài.":
     "Result: buying increases cost by price plus fees and taxes and debits the wallet. Selling reduces the sold portion’s cost and credits net proceeds to the wallet. Only a withdrawal takes money outside.",
   "Kết quả: giá trị tài sản và lãi/lỗ phần đang giữ thay đổi; tiền chờ và vốn không thay đổi.":
@@ -497,8 +497,8 @@ export const help = {
   "Cập nhật định giá": "Update valuations",
   "Khi muốn cập nhật giá trị danh mục ở một ngày thực tế.":
     "To update a portfolio's value on a real date.",
-  "Mở danh mục, chọn định giá và ngày không vượt hôm nay.":
-    "Open the portfolio, choose valuation and a date no later than today.",
+  "Bấm Giao dịch ở danh mục rồi chọn loại Định giá (hoặc mở chi tiết), với ngày không vượt hôm nay.":
+    "Use Transactions on the portfolio and select Valuation (or open its details), with a date no later than today.",
   "Nhập tổng giá trị tài sản còn giữ, không cộng tiền chờ.":
     "Enter total retained asset value, excluding cash.",
   "**Xem trước** và lưu; đối chiếu ngày định giá hiển thị trên danh mục.":

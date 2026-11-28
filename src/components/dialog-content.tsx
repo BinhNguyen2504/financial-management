@@ -178,7 +178,8 @@ export interface DialogColumn<T> {
   label: string;
   render: (item: T) => ReactNode;
   numeric?: boolean;
-  kind?: "text" | "date" | "actions";
+  /** "wide-actions" fits a text command on one line. */
+  kind?: "text" | "date" | "actions" | "wide-actions";
   width?: string;
 }
 export interface DialogFilter<T> {
@@ -304,6 +305,18 @@ export function DialogList<T>({
       )}
     </>
   );
+  const cellClass = (column: (typeof columns)[number]) => {
+    if (column.numeric) return "is-numeric";
+    if (
+      column.kind === "date" ||
+      /^(Tháng|Ngày|Month|Date)$/.test(column.label)
+    )
+      return "is-date";
+    if (column.kind === "wide-actions") return "is-actions is-wide-actions";
+    return column.kind === "actions" || column.label === tr("Thao tác")
+      ? "is-actions"
+      : "";
+  };
   return (
     <div
       className={`dialog-collection${renderItem ? " dialog-collection-compact" : ""}`}
@@ -381,17 +394,7 @@ export function DialogList<T>({
                 <th
                   scope="col"
                   key={column.label}
-                  className={
-                    column.numeric
-                      ? "is-numeric"
-                      : column.kind === "date" ||
-                          /^(Tháng|Ngày|Month|Date)$/.test(column.label)
-                        ? "is-date"
-                        : column.kind === "actions" ||
-                            column.label === tr("Thao tác")
-                          ? "is-actions"
-                          : ""
-                  }
+                  className={cellClass(column)}
                   style={column.width ? { width: column.width } : undefined}
                 >
                   {column.label}
@@ -405,17 +408,7 @@ export function DialogList<T>({
                 {columns.map((column) => (
                   <td
                     key={column.label}
-                    className={
-                      column.numeric
-                        ? "is-numeric"
-                        : column.kind === "date" ||
-                            /^(Tháng|Ngày|Month|Date)$/.test(column.label)
-                          ? "is-date"
-                          : column.kind === "actions" ||
-                              column.label === tr("Thao tác")
-                            ? "is-actions"
-                            : ""
-                    }
+                    className={cellClass(column)}
                     style={column.width ? { width: column.width } : undefined}
                   >
                     <span className="dialog-cell-label" aria-hidden="true">

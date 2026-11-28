@@ -368,9 +368,9 @@ test("selects retain native selection and filter live and cancelled investment t
   await page.locator(".investment-filters .investment-checkbox span").click();
   await expect(checkbox).toBeChecked();
   await expect(rows).toHaveCount(2);
-  await expect(rows.filter({ hasText: "Khoản đã hủy" })).toContainText(
-    "đã hủy",
-  );
+  const voided = rows.filter({ hasText: "Khoản đã hủy" });
+  await expect(voided).toHaveAttribute("data-cancelled", "true");
+  await expect(voided.getByText("Đã hủy", { exact: true })).toBeVisible();
   const kind = page.getByRole("combobox", {
     name: "Loại giao dịch lọc",
     exact: true,

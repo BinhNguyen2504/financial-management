@@ -18,9 +18,19 @@ import { ruleAt } from "@/domain/investments/engine";
 
 import type { Position, PortfolioPosition } from "@/domain/investments/types";
 import { HelpButton, HelpPageTitle } from "@/features/help/provider";
-import { Pencil as EditCommandGlyph } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  Ban,
+  CirclePlus,
+  History,
+  Info,
+  Pencil as EditCommandGlyph,
+} from "lucide-react";
+import { StatusBadge } from "@/components/status-badge";
 import Link from "next/link";
 
+import { activityStyles } from "./activity-style";
 import { InvestmentDetails, InvestmentTransactionDetails } from "./details";
 import { InvestmentEditor } from "./editor";
 
@@ -90,38 +100,46 @@ function AccountInvestment(
     setEditor,
     hidden,
   } = controller;
-  function positionActions(p: Position) {
+  /** The table shows icons with tooltips; touch-first cards keep the text. */
+  function positionActions(p: Position, compact: boolean) {
+    const actions = [
+      {
+        label: tr("Chi tiết"),
+        hint: tr("Chi tiết"),
+        Icon: Info,
+        run: () => setDetails(p.id),
+      },
+      ...(p.active
+        ? [
+            {
+              label: tr("Giao dịch"),
+              hint: tr("Ghi giao dịch"),
+              Icon: CirclePlus,
+              run: () =>
+                open({ type: "transaction", kind: "buy", categoryId: p.id }),
+            },
+          ]
+        : []),
+    ];
     return (
-      <div className="expense-actions">
-        <button className="expense-secondary" onClick={() => setDetails(p.id)}>
-          {tr("Chi tiết")} <span className="sr-only">{p.name}</span>
-        </button>
-        {p.active && (
+      <div className="expense-actions investment-position-actions">
+        {actions.map(({ label, hint, Icon, run }) => (
           <button
-            className="expense-secondary"
-            onClick={() =>
-              open({
-                type: "transaction",
-                kind: p.kind === "cash" ? "deposit" : "buy",
-                categoryId: p.id,
-              })
-            }
+            type="button"
+            key={label}
+            className={compact ? "expense-icon-button" : "expense-secondary"}
+            aria-label={compact ? `${label} ${p.name}` : undefined}
+            data-tooltip={compact ? hint : undefined}
+            onClick={run}
           >
-            {p.kind === "cash" ? tr("Nạp") : tr("Mua")}
-            <span className="sr-only"> {p.name}</span>
+            <Icon size={18} aria-hidden="true" />
+            {!compact && (
+              <>
+                {label} <span className="sr-only">{p.name}</span>
+              </>
+            )}
           </button>
-        )}
-        {p.active && p.kind === "investment" && (
-          <button
-            className="expense-secondary"
-            onClick={() =>
-              open({ type: "transaction", kind: "valuation", categoryId: p.id })
-            }
-          >
-            {tr("Định giá")}
-            <span className="sr-only"> {p.name}</span>
-          </button>
-        )}
+        ))}
       </div>
     );
   }
@@ -162,7 +180,66 @@ function AccountInvestment(
                 1: p.stale ? tr(" · từ kỳ trước") : "",
               })}
         </p>
-        {positionActions(p)}
+        {positionActions(p, false)}
+      </article>
+    );
+  }
+  function journalRow({ t, cancelled }: (typeof visible)[number]) {
+    const effect = state!.effects.find((e) => e.id === t.id);
+    const { Icon, tone } = activityStyles[t.kind];
+    const Chip = cancelled ? Ban : Icon;
+    // A voided transaction has no effect; show what was originally entered.
+    const entered =
+      "amount" in t ? t.amount : "value" in t ? t.value : undefined;
+    return (
+      <article
+        className="investment-activity investment-journal-row"
+        data-kind={t.kind}
+        data-cancelled={cancelled || undefined}
+        key={t.id}
+      >
+        <span className="investment-journal-icon" aria-hidden="true">
+          <Chip size={20} />
+        </span>
+        <div className="investment-journal-body">
+          <div className="investment-journal-heading">
+            <h3>{name(t.categoryId)}</h3>
+            <StatusBadge size="compact" tone={tone} icon={false}>
+              {localize(transactionNames)[t.kind]}
+            </StatusBadge>
+            {cancelled && (
+              <StatusBadge size="compact" icon={Ban}>
+                {tr("Đã hủy")}
+              </StatusBadge>
+            )}
+          </div>
+          <p>
+            {formatDate(t.date!, locale)}
+            {"cashCategoryId" in t && t.cashCategoryId
+              ? ` · ${name(t.cashCategoryId)}`
+              : ""}
+            {t.note ? ` · ${t.note}` : ""}
+          </p>
+          <strong>
+            {effect ? (
+              money(effect.net)
+            ) : cancelled && entered !== undefined ? (
+              <s>{money(entered)}</s>
+            ) : (
+              "—"
+            )}
+          </strong>
+        </div>
+        <button
+          className="expense-secondary investment-view-transaction"
+          onClick={() => setTransaction(t.id)}
+        >
+          {tr("Xem giao dịch")}
+          <span className="sr-only">
+            {" "}
+            {formatDate(t.date!, locale)} {name(t.categoryId)}
+          </span>
+        </button>
       </article>
     );
   }
@@ -423,7 +500,7 @@ function AccountInvestment(
                                           <small>{tr("Từ kỳ trước")}</small>
                                         )}
                                       </td>
-                                      <td>{positionActions(p)}</td>
+                                      <td>{positionActions(p, true)}</td>
                                     </tr>
                                   ))}
                               </tbody>
@@ -530,39 +607,9 @@ function AccountInvestment(
                       {!visible.length ? (
                         <p>{tr("Chưa có giao dịch phù hợp bộ lọc.")}</p>
                       ) : (
-                        visible.map(({ t, cancelled }) => {
-                          const e = state!.effects.find((e) => e.id === t.id);
-                          return (
-                            <article className="investment-activity" key={t.id}>
-                              <div>
-                                <h3>
-                                  {localize(transactionNames)[t.kind]} ·{" "}
-                                  {name(t.categoryId)}
-                                  {cancelled ? tr(" · đã hủy") : ""}
-                                </h3>
-                                <p>
-                                  {formatDate(t.date!, locale)}
-                                  {"cashCategoryId" in t && t.cashCategoryId
-                                    ? ` · ${name(t.cashCategoryId)}`
-                                    : ""}
-                                  {t.note ? ` · ${t.note}` : ""}
-                                </p>
-                                <strong>{e ? money(e.net) : "—"}</strong>
-                              </div>
-                              <button
-                                className="expense-secondary"
-                                onClick={() => setTransaction(t.id)}
-                              >
-                                {tr("Xem giao dịch")}
-                                <span className="sr-only">
-                                  {" "}
-                                  {formatDate(t.date!, locale)}{" "}
-                                  {name(t.categoryId)}
-                                </span>
-                              </button>
-                            </article>
-                          );
-                        })
+                        <div className="investment-journal">
+                          {visible.map(journalRow)}
+                        </div>
                       )}
                     </section>
                   </>
@@ -648,6 +695,7 @@ function AccountInvestment(
                                     })
                                   }
                                 >
+                                  <History size={17} aria-hidden="true" />
                                   {tr("Mở đầu")}
                                   <span className="sr-only"> {name(c.id)}</span>
                                 </button>
@@ -663,6 +711,14 @@ function AccountInvestment(
                                     })
                                   }
                                 >
+                                  {r?.active === false ? (
+                                    <ArchiveRestore
+                                      size={17}
+                                      aria-hidden="true"
+                                    />
+                                  ) : (
+                                    <Archive size={17} aria-hidden="true" />
+                                  )}
                                   {r?.active === false
                                     ? tr("Khôi phục")
                                     : tr("Xóa / lưu trữ")}

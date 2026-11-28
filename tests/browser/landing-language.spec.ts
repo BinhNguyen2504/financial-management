@@ -72,9 +72,11 @@ async function noVietnameseCopy(page: Page) {
       )
         found.push(node.textContent!.trim());
     }
-    for (const el of document.querySelectorAll("[aria-label], [title]")) {
+    for (const el of document.querySelectorAll(
+      "[aria-label], [title], [data-tooltip]",
+    )) {
       if (!el.getClientRects().length) continue;
-      for (const attribute of ["aria-label", "title"])
+      for (const attribute of ["aria-label", "title", "data-tooltip"])
         if (
           /[ĂăÂâĐđÊêÔôƠơƯư\u0300-\u036f]/u.test(
             strip(el.getAttribute(attribute) ?? "").normalize("NFD"),

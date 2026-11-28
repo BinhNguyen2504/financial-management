@@ -520,9 +520,12 @@ test("wallet actions stay compact, named and keyboard accessible across widths",
     await expect(wallet.getByRole("button")).toHaveCount(4);
     for (const name of quick) {
       const action = wallet.getByRole("button", { name, exact: true });
+      // Tooltips follow keyboard focus, not programmatic focus on its own.
+      await page.keyboard.press("Tab");
       await action.focus();
-      const hint = action.locator("..").getByRole("tooltip");
+      const hint = detail.getByRole("tooltip");
       await expect(hint).toHaveText(name);
+      await expect(action).toHaveAttribute("aria-describedby", /.+/);
       const box = await action.boundingBox();
       expect(box!.width).toBeGreaterThanOrEqual(44);
       expect(box!.height).toBeGreaterThanOrEqual(44);

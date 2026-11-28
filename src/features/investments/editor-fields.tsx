@@ -129,10 +129,7 @@ export function InvestmentEditorFields({
           aria-describedby={
             fieldErrors[key] ? `investment-error-${key}` : undefined
           }
-          onChange={(event) => {
-            set(key, event.target.value);
-            if (key === "transactionKind") set("categoryId", "");
-          }}
+          onChange={(event) => set(key, event.target.value)}
         >
           {options}
         </select>

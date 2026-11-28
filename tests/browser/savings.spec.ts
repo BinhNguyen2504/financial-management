@@ -280,7 +280,7 @@ test("savings ledgers keep fields, filters, privacy and actions usable across wi
           expect(size.width).toBeGreaterThanOrEqual(44);
           expect(size.height).toBeGreaterThanOrEqual(44);
           await expect(action).toHaveAttribute(
-            "title",
+            "data-tooltip",
             /Sửa|Lưu trữ|Khôi phục/,
           );
         }

@@ -161,7 +161,7 @@ function Workspace({
                   <button
                     className="expense-icon-button goal-reload"
                     aria-label={tr("Tải lại")}
-                    title={tr("Tải lại")}
+                    data-tooltip={tr("Tải lại")}
                     onClick={() => void reload().catch(() => {})}
                   >
                     <RotateCw size={18} aria-hidden="true" />

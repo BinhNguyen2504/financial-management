@@ -1,0 +1,23 @@
+/* Positioned by TooltipLayer; reset the browser's centred popover defaults. */
+.app-tooltip {
+  position: fixed;
+  inset: auto;
+  z-index: 100;
+  width: max-content;
+  max-width: min(240px, calc(100vw - 16px));
+  margin: 0;
+  padding: 7px 10px;
+  overflow: visible;
+  border: 0;
+  border-radius: 6px;
+  background: var(--text);
+  color: var(--surface);
+  font-size: var(--font-size-14);
+  font-weight: var(--weight-regular, 400);
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-align: center;
+  text-transform: none;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}

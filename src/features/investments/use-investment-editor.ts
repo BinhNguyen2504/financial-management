@@ -31,6 +31,12 @@ import { userFacingError } from "@/i18n/user-facing-errors";
 import { investmentFieldErrors } from "./editor-errors";
 import { InvestmentAPIError, investmentsJSON } from "./api";
 import { transactionNames, type EditorMode } from "./editor-config";
+import {
+  isWalletKind,
+  portfolioIdOf,
+  selectionForCategory,
+  selectionForKind,
+} from "./transaction-selection";
 export function useInvestmentEditor({
   mode,
   view: initial,
@@ -68,6 +74,10 @@ export function useInvestmentEditor({
       view.today,
     start: view.today,
     categoryId: old?.categoryId ?? mode.categoryId ?? "",
+    portfolioId: portfolioIdOf(
+      initial.book,
+      old?.categoryId ?? mode.categoryId ?? "",
+    ),
     cashCategoryId:
       "cashCategoryId" in (old ?? {})
         ? ((old as { cashCategoryId: string | null }).cashCategoryId ?? "")
@@ -116,20 +126,43 @@ export function useInvestmentEditor({
     (mode.type === "configure" || mode.type === "revise") &&
     draft === originalDraft;
   const set = (key: string, value: string) => {
-    setF((s) => ({
-      ...s,
-      [key]: value,
-      ...(key === "categoryId" && ["buy", "sell"].includes(s.transactionKind)
-        ? {
-            cashCategoryId: settlementWallet(view.book, value, s.date),
-          }
-        : {}),
-    }));
+    setF((s) => {
+      const selection = {
+        categoryId: s.categoryId,
+        cashCategoryId: s.cashCategoryId,
+        portfolioId: s.portfolioId,
+      };
+      return {
+        ...s,
+        [key]: value,
+        ...(key === "transactionKind"
+          ? selectionForKind(
+              view.book,
+              value as InvestmentTransaction["kind"],
+              selection,
+              s.date,
+            )
+          : {}),
+        ...(key === "categoryId"
+          ? selectionForCategory(
+              view.book,
+              s.transactionKind as InvestmentTransaction["kind"],
+              value,
+              selection,
+              s.date,
+            )
+          : {}),
+      };
+    });
     setPreview(null);
     setError("");
     setFieldErrors((previous) => {
       const next = { ...previous };
       delete next[key];
+      if (key === "transactionKind") {
+        delete next.categoryId;
+        delete next.cashCategoryId;
+      }
       return next;
     });
   };
@@ -159,9 +192,7 @@ export function useInvestmentEditor({
     if (draft === originalDraft && !f.reason.trim() && !invalidDraft) onClose();
     else setConfirmDiscard(true);
   }
-  const isCash = ["openingCash", "deposit", "withdraw", "transfer"].includes(
-    kind,
-  );
+  const isCash = isWalletKind(kind);
   const eligible = categories.filter(
     (c) =>
       c.kind === (isCash ? "cash" : "investment") &&

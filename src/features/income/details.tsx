@@ -89,7 +89,7 @@ export function IncomeDetails({
                   className="expense-secondary icon-action action-edit"
                   aria-label={tr("Sửa {0}", { 0: r.name })}
                   onClick={() => onEdit({ type: "oneoff", row: r })}
-                  title={tr("Sửa")}
+                  data-tooltip={tr("Sửa")}
                 >
                   <EditActionIcon size={18} aria-hidden="true" />
                 </button>
@@ -98,7 +98,7 @@ export function IncomeDetails({
                   className="expense-secondary icon-action action-delete"
                   aria-label={tr("Xóa {0}", { 0: r.name })}
                   onClick={() => onEdit({ type: "deleteOneOff", row: r })}
-                  title={tr("Xóa")}
+                  data-tooltip={tr("Xóa")}
                 >
                   <DeleteActionIcon size={18} aria-hidden="true" />
                 </button>

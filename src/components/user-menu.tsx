@@ -80,7 +80,8 @@ export function UserMenu({
       <button
         className="user-trigger"
         aria-label={tr("Thử tải thông tin cá nhân")}
-        title={tr(error)}
+        data-tooltip={tr(error)}
+        data-tooltip-placement="bottom"
         onClick={() => void reload()}
       >
         <UserRound size={19} aria-hidden="true" />
@@ -94,10 +95,11 @@ export function UserMenu({
         aria-label={
           showSignInLabel ? tr("Đăng nhập") : tr("Đăng nhập tài khoản")
         }
-        title={tr("Đăng nhập")}
+        data-tooltip={tr("Đăng nhập")}
+        data-tooltip-placement="bottom"
       >
         <UserRound size={19} aria-hidden="true" />
-        {showSignInLabel && <span>{tr("Đăng nhập")}</span>}
+        {showSignInLabel && <span data-tooltip-label>{tr("Đăng nhập")}</span>}
       </Link>
     );
   const name = profileFields(user.user_metadata).full_name || tr("Bạn");
@@ -114,6 +116,8 @@ export function UserMenu({
         ref={trigger}
         className="user-trigger"
         aria-label={tr("Tài khoản của {0}", { 0: name })}
+        data-tooltip={open ? undefined : tr("Tài khoản của {0}", { 0: name })}
+        data-tooltip-placement="bottom"
         aria-expanded={open}
         aria-controls={id}
         onKeyDown={(event) => {
@@ -134,7 +138,9 @@ export function UserMenu({
         <span className="user-avatar" aria-hidden="true">
           {initials(name)}
         </span>
-        <span className="user-trigger-name">{name}</span>
+        <span className="user-trigger-name" data-tooltip-label>
+          {name}
+        </span>
         <ChevronDown size={15} aria-hidden="true" className="user-chevron" />
       </button>
       {open && (

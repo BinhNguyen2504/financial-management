@@ -1361,3 +1361,11 @@ Giới hạn: browser dùng PostgreSQL local, Auth double, production snapshot v
 - Phát hiện khi chạy lặp: hai ca của `expense-sort-filter-delete.spec.ts` mở panel bộ lọc ngay sau `reload()`, trước khi danh sách hũ tải xong nên đôi lúc không mở được (đỏ chập chờn, lộ ra rõ hơn từ khi có ô lọc thứ tư). Đã sửa test bằng cách chờ danh sách hiện trước; không đổi code sản phẩm.
 - Xem trực tiếp bằng Playwright MCP trên preview local (dữ liệu review, 1440px và 390px, giao diện sáng, tiếng Việt): 18/18 hàng có các nút trên một dòng và cùng cột; trạng thái đang lưu (mạng giả lập chậm 4 giây) và kết quả sau khi lưu; không tràn ngang. Chưa kiểm chế độ tối, năm theme, tiếng Anh, Firefox/WebKit hay thiết bị thật; không có migration mới.
 - Bổ sung cùng ngày: bảng desktop bỏ nhãn trạng thái trong ô, phân biệt bằng chính dòng (nền, vạch trái, số 0 nhạt). Đã xem bảng ở 1440px giao diện sáng và tối (một theme, đặt `data-theme="dark"`), đo style tính ra của hàng đã bỏ/chưa bỏ; `npm run check` đạt và các spec Chi tiêu **39/39** đạt (gồm kiểm tra bảng không còn nhãn, nền và vạch trái khác nhau). Chưa xem đủ năm theme hay mobile sau thay đổi này (thẻ mobile không đổi).
+
+## Thao tác Đầu tư, nhật ký giao dịch và tooltip chung — 26–27/11/2026
+
+- `npm run check` đạt trước các sửa sau review: lint, architecture **338 source files / 0 violations**, format, **423/423 unit**, typecheck, build. Sau sửa review chỉ chạy lại ba file unit liên quan (**30/30**).
+- Browser toàn bộ (Chromium desktop/mô phỏng iPhone, build production cô lập, Auth double, source trước các sửa sau review): **521 đạt, 39 đỏ, 4 skip** trong 2,4 giờ. **Chưa đối chiếu 39 ca đỏ với bản trước thay đổi**, nên chưa kết luận ca nào do thay đổi này; cần xem kỹ `investments.spec.ts:203`, `select-controls.spec.ts` (258, 294, 402, 486), `dialogs.spec.ts:285`, `workspace-spacing.spec.ts:64`, `zen.spec.ts`, `ui-feedback.spec.ts:138`.
+- Chưa xem giao diện bằng Playwright MCP (năm theme, sáng/tối, vi/en, các bề rộng), chưa thử Firefox/WebKit/thiết bị thật hay cloud. Không có migration.
+- Đã rà README, đặc tả Đầu tư/Quỹ, kiến trúc, UX và Help (vi/en). Chưa rà lại riêng catalog và preview landing sau khi sửa; kế hoạch dự kiến không đổi nội dung.
+

@@ -31,7 +31,8 @@ export function Navigation({ mobile = false }: { mobile?: boolean }) {
         });
       }}
       aria-label={`${item.title}${item.status === "planned" ? tr(" · Đang phát triển") : ""}`}
-      title={`${item.title}${item.status === "planned" ? tr(" · Đang phát triển") : ""}`}
+      data-tooltip={`${item.title}${item.status === "planned" ? tr(" · Đang phát triển") : ""}`}
+      data-tooltip-placement="right"
       aria-current={pathname === `/${item.slug}` ? "page" : undefined}
       onClick={(event) => {
         if (mobile)
@@ -39,7 +40,9 @@ export function Navigation({ mobile = false }: { mobile?: boolean }) {
       }}
     >
       <ModuleIcon name={item.icon} />
-      <span className="navigation-name">{item.title}</span>
+      <span className="navigation-name" data-tooltip-label>
+        {item.title}
+      </span>
     </Link>
   );
   const group = (slugs: string[], label?: string) => (
@@ -69,10 +72,11 @@ export function Navigation({ mobile = false }: { mobile?: boolean }) {
       >
         <summary
           aria-label={tr("Đang phát triển")}
-          title={tr("Đang phát triển")}
+          data-tooltip={tr("Đang phát triển")}
+          data-tooltip-placement="right"
         >
           <Clock3 size={18} aria-hidden="true" />
-          <span>{tr("Đang phát triển")}</span>
+          <span data-tooltip-label>{tr("Đang phát triển")}</span>
         </summary>
         {items.filter((item) => item.status === "planned").map(link)}
       </details>

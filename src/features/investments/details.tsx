@@ -265,6 +265,7 @@ export function InvestmentDetails({
           },
           {
             label: tr("Thao tác"),
+            kind: "wide-actions",
             render: (e) => (
               <button
                 type="button"

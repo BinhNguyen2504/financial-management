@@ -113,7 +113,7 @@ export function SavingsCategoryTable({
                       type="button"
                       className="expense-secondary icon-action action-edit"
                       aria-label={tr("Sửa danh mục {0}", { 0: r.name })}
-                      title={tr("Sửa")}
+                      data-tooltip={tr("Sửa")}
                       onClick={() => onEdit({ type: "configure", category: c })}
                     >
                       <Pencil size={18} aria-hidden="true" />
@@ -122,7 +122,7 @@ export function SavingsCategoryTable({
                       type="button"
                       className="expense-secondary icon-action"
                       aria-label={`${r.active ? tr("Lưu trữ") : tr("Khôi phục")} ${r.name}`}
-                      title={r.active ? tr("Lưu trữ") : tr("Khôi phục")}
+                      data-tooltip={r.active ? tr("Lưu trữ") : tr("Khôi phục")}
                       onClick={() =>
                         onEdit({
                           type: r.active ? "archive" : "restore",
@@ -281,7 +281,7 @@ export function SavingsTransactionTable({
                           : "Sửa giao dịch {0}",
                         { 0: t.id },
                       )}
-                      title={tr("Sửa")}
+                      data-tooltip={report ? undefined : tr("Sửa")}
                       onClick={() =>
                         onEdit({ type: "transaction", transaction: t })
                       }
@@ -297,7 +297,7 @@ export function SavingsTransactionTable({
                         type="button"
                         className="expense-secondary icon-action action-delete"
                         aria-label={tr("Hủy giao dịch {0}", { 0: t.id })}
-                        title={tr("Hủy giao dịch")}
+                        data-tooltip={tr("Hủy giao dịch")}
                         onClick={() => onEdit({ type: "void", transaction: t })}
                       >
                         <Trash2 size={18} aria-hidden="true" />

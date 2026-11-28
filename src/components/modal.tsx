@@ -251,6 +251,8 @@ export function Modal({
           type="button"
           className="expense-icon-button"
           aria-label={tr("Đóng")}
+          data-tooltip={tr("Đóng")}
+          data-tooltip-escape="pass"
           disabled={busy}
           onMouseDown={focusPointerControl}
           onClick={requestClose}

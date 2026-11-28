@@ -289,6 +289,7 @@ export function SettingsWorkspace() {
                 <button
                   className="expense-secondary settings-icon-button"
                   aria-label={tr("Bỏ file đã chọn")}
+                  data-tooltip={tr("Bỏ file đã chọn")}
                   disabled={!!busy}
                   onClick={clearFile}
                 >

@@ -152,9 +152,12 @@ export function Customize({
                     aria-label={t("Chuyển {0} lên", {
                       0: t(widgetCatalog[id].title),
                     })}
+                    data-tooltip={t("Chuyển {0} lên", {
+                      0: t(widgetCatalog[id].title),
+                    })}
                     onClick={() => move(index, -1)}
                   >
-                    <ArrowUp size={18} />
+                    <ArrowUp size={18} aria-hidden="true" />
                   </button>
                   <button
                     className="expense-icon-button"
@@ -162,9 +165,12 @@ export function Customize({
                     aria-label={t("Chuyển {0} xuống", {
                       0: t(widgetCatalog[id].title),
                     })}
+                    data-tooltip={t("Chuyển {0} xuống", {
+                      0: t(widgetCatalog[id].title),
+                    })}
                     onClick={() => move(index, 1)}
                   >
-                    <ArrowDown size={18} />
+                    <ArrowDown size={18} aria-hidden="true" />
                   </button>
                 </div>
               )}

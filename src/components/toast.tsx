@@ -136,6 +136,8 @@ export function ToastViewport({
           type="button"
           onClick={dismiss}
           aria-label={tr("Đóng thông báo")}
+          data-tooltip={tr("Đóng thông báo")}
+          data-tooltip-escape="pass"
         >
           <X size={18} aria-hidden="true" />
         </button>

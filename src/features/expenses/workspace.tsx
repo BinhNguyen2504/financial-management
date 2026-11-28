@@ -779,7 +779,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                                         aria-label={tr("Điều chỉnh {0}", {
                                           0: row.name,
                                         })}
-                                        title={tr("Điều chỉnh {0}", {
+                                        data-tooltip={tr("Điều chỉnh {0}", {
                                           0: row.name,
                                         })}
                                         onClick={() =>
@@ -795,7 +795,7 @@ function AccountExpense(props: Parameters<typeof useExpenseWorkspace>[0]) {
                                         <button
                                           className="expense-icon-button expense-spend-action"
                                           aria-label={tr("Dùng tiền")}
-                                          title={tr("Dùng tiền")}
+                                          data-tooltip={tr("Dùng tiền")}
                                           onClick={() =>
                                             openEditor({ mode: "spend", row })
                                           }

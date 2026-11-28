@@ -281,6 +281,8 @@ export function ColumnPicker({
             type="button"
             className="icon-action"
             aria-label={tr("Đóng tùy chọn cột")}
+            data-tooltip={tr("Đóng tùy chọn cột")}
+            data-tooltip-escape="pass"
             onClick={close}
           >
             <X size={18} aria-hidden="true" />

@@ -201,7 +201,6 @@ export const investments = {
   "Hiện cả giao dịch đã hủy": "Include voided transactions",
   "Nhật ký giao dịch": "Transaction journal",
   "Chưa có giao dịch phù hợp bộ lọc.": "No transactions match the filters.",
-  " · đã hủy": " · voided",
   "Xem giao dịch": "View transaction",
   "Danh mục và ví": "Portfolios and wallets",
   "Xóa khỏi danh sách đang dùng bằng cách lưu trữ khi hết tài sản. Toàn bộ lịch sử vẫn được giữ.":

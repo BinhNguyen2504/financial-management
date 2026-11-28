@@ -390,3 +390,13 @@ Dòng nguồn thu cố định ở tab Tháng của Thu nhập có ba trạng th
 ## Nút hành động, ô thiếu và Về kỳ hiện tại — 25/11/2026
 
 Danh sách nguồn thu dùng một kiểu nút: icon 17px kèm chữ (`expense-secondary`, thêm `expense-warning`/`expense-danger` cho Ngừng/Xóa), không trộn nút chỉ icon với nút chữ trong cùng hàng. Ô “—” trong bảng thu nhập là dấu gọn căn mép phải như số, hàng không cao thêm; vùng bấm 44px nằm ở phần tử giả `::after`. Nút “Về kỳ hiện tại” dùng chung (`CurrentPeriodButton`) và đặt sát bộ chọn kỳ: dưới hai ô năm/tháng ở Thu nhập, Chi tiêu, Tiết kiệm; cùng hàng sau ô ngày ở Đầu tư và sau ô chọn kỳ ở Báo cáo. `ViewControls` chỉ còn nút “Đặt lại bộ lọc”.
+
+## Tooltip cho nút chỉ có icon — 26/11/2026
+
+Mọi nút/liên kết chỉ có icon dùng một tooltip chung (`components/tooltip.tsx`): gắn `data-tooltip` (và vẫn phải có tên truy cập riêng), không dùng `title` trên các nút này. Nút ẩn chữ theo kích thước hoặc trạng thái (sidebar thu gọn, nút ẩn số tiền trên màn nhỏ, ảnh đại diện) đặt `data-tooltip-label` ở phần chữ để tooltip chỉ hiện khi chữ không hiển thị.
+
+Tooltip hiện khi rê chuột hoặc đến bằng phím Tab; không tự hiện khi mở hộp thoại, trả focus hay chạm màn hình. Bấm vào nút, cuộn khỏi màn hình hoặc đổi hộp thoại sẽ ẩn. Escape chỉ đóng tooltip, lần Escape kế tiếp mới đóng hộp thoại; riêng nút đóng (`data-tooltip-escape="pass"`) đóng ngay. Tooltip nằm ở lớp trên cùng nên không bị bảng cuộn hoặc thân hộp thoại cắt. Gợi ý trên biểu đồ vẫn theo cơ chế riêng của biểu đồ; `title` trên chữ/ô dữ liệu không đổi.
+
+## Nhật ký giao dịch Đầu tư — 26/11/2026
+
+Phân biệt loại bằng icon, tên loại và màu nhóm dùng token badge/accent; không dùng đỏ cho loại giao dịch. Trạng thái đã hủy thể hiện bằng hình dạng (viền đứt), icon, nhãn và gạch ngang, không làm mờ cả dòng. Hàng trong một bảng thao tác dùng nút icon có tooltip trên desktop; thẻ mobile giữ chữ. Các nút lệnh trong cùng một nhóm dùng chung kiểu icon kèm chữ.

@@ -72,6 +72,8 @@ export function ImportSuggestion() {
       <button
         className="expense-secondary"
         aria-label={tr("Đóng gợi ý khôi phục")}
+        data-tooltip={tr("Đóng gợi ý khôi phục")}
+        data-tooltip-escape="pass"
         onClick={() => {
           setVisible(false);
           try {
